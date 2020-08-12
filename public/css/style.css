@@ -1,0 +1,152 @@
+body{
+    margin: 0;
+    padding: 0;
+    height:100%;
+    width:100%;
+}
+.contenedor{
+    width: 100%;
+    min-height: 100vh;
+    max-height: 100%;
+    padding-bottom: 25px;
+}
+.contenedor-abs{
+    position: absolute;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    max-height: 100%;
+    z-index: 999;
+    background-color: rgb(248,250,252);
+}
+.img-fondo{
+    background: linear-gradient(to right,#000428e1,#004e92de),url('../img/center.jpeg');
+    animation: movimiento 20s linear infinite alternate;
+}
+@keyframes movimiento{
+    from{
+        background-position: bottom left;
+    }to{
+        background-position: top right;
+    }  
+}
+.bg-blue{
+    background-color: rgb(3,42,81);
+}
+.bg-turquesa{
+    background-color: rgb(5, 81, 156);
+}
+.bg-gray{
+    background-color: rgb(244,245,251);
+}
+.bg-green{
+    background-color: #41afa5;
+}
+/* text color */
+.text-white{
+    color: #ffff;
+}
+.text-white-light{
+    color: rgba(255, 255, 255, 0.979);
+}
+.text-ambar{
+    color:#f323a3;
+}
+.text-green{
+    color: #41afa5;
+}
+/* font-size */
+.font-15{
+    font-size: 15px;
+}
+.font-18{
+    font-size: 18px;
+}
+.font-20{
+    font-size: 20px;
+}
+.font-25{
+    font-size: 25px;
+}
+
+.item-menu{
+    color: #cfdeec;
+    font-size: .925rem;
+    font-weight: 400;
+}
+.item-menu:hover{
+    color: rgb(255, 231, 167);
+    text-decoration: none;
+}
+.menu-activado{
+    color: rgb(255, 231, 167);
+    text-decoration: none;
+}
+/*card  */
+.card-contenedor{
+    border-radius: 9px;
+    background-color: #ffff;
+}
+
+/*table*/
+table td:nth-child(1){
+    min-width: 1.5rem;
+}
+table td:nth-child(11){
+    min-width: 1rem;
+}
+table td{
+    min-width: 3rem;
+}
+.table td, .table th {
+    padding: .4rem .2rem;
+    font-size:13px;
+}
+
+/* modal */
+.modalCarga{
+    background-color: rgba(0, 0, 0, 0.6);
+}
+#modalCarga{
+    background-color: rgba(3,42,81,0.6);
+}
+.modal-resize{
+    height:calc(100vh - 160px);
+}
+
+/* panel */
+.panel-item a{
+    color: rgba(0, 0, 0, 0.2);
+}
+
+.panel-item a:hover{
+    color: rgb(5, 81, 156);
+}
+
+.panel-item:hover{
+    background-color: rgb(244,245,251);
+    color: rgb(0,0,0);
+}
+
+.h-100{
+    height:100%;
+}
+
+/* list bg */
+.bg-1{
+    background-color: #008cd8; 
+}
+.bg-2{
+    background-color: #91d500; 
+}
+.bg-3{
+    background-color: #db1c13; 
+}
+.bg-4{
+    background-color: #ff4c00; 
+}
+.bg-5{
+    background-color:#ff4512; 
+}
