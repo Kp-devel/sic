@@ -249,7 +249,7 @@
             } );
         },
         components:{
-            detalleCliente
+            // detalleCliente
         }
     }
 </script>
