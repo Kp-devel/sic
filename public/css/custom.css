@@ -1,0 +1,25 @@
+.v-text-field .v-input__control .v-input__slot{
+    /*height:15px !important;*/
+    min-height: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0%;
+    margin: 0%;
+  }
+
+.v-col {
+    min-height: auto !important;
+}
+
+.theme--light.v-card {
+    background-color: #E1ECFE !important;
+    color: rgba(0,0,0,.87);
+}
+
+.theme--light.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+    background-color: #325CA6 !important;
+}
+
+.theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+    background-color: #325CA6 !important;
+}

@@ -6,6 +6,13 @@ Route::get('/', function () {
     return view('gestor.home');
 })->name("inicio");
 
+Route::get('/wel', function () {
+    return view('layouts.welcome');
+})->name("inicio_wel");
+
+Route::get('/gestion', function () {
+    return view('gestor.gestion');
+})->name("gestion");
 
 Auth::routes();
 
