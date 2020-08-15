@@ -1,3 +1,7 @@
+body { 
+    font-size: 11px !important;
+}
+
 .v-text-field .v-input__control .v-input__slot{
     /*height:15px !important;*/
     min-height: auto !important;
@@ -22,4 +26,93 @@
 
 .theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
     background-color: #325CA6 !important;
+}
+
+label {
+    display: inline-block;
+    margin-bottom: 0.1rem !important;
+}
+
+.btn-azul{
+    background-color: #325CA6 !important;
+    color: white;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.2);
+}
+.btn-icono{
+    background-color: #325CA6 !important;
+    color: white;
+    border-radius: 3px;
+
+}
+.btn-azul:hover{
+    background :  transparent;
+    color: white;
+}
+
+.card-fondo{
+    background-color: #E1ECFE !important;
+    box-shadow: 0px 5px 5px 0px rgba(0,0,0,.2)
+}
+
+.card-borde{
+    border-bottom-width: 2px !important;
+    border-bottom-color: #325CA6 !important;
+}
+
+.input-xs {
+    height: 25px;
+   /* width: 70px;*/
+    padding: 2px 5px;
+    font-size: 11px;
+    line-height: 1.5; /* If Placeholder of the input is moved up, rem/modify this. */
+    border-radius: 3px;
+    border-color:#808B96 !important;
+    border-width: 1px;
+  }
+
+.boton-xs {
+    height: 25px;
+    width: 80px;
+    padding: 2px 5px;
+    font-size: 11px;
+    line-height: 1.5; /* If Placeholder of the input is moved up, rem/modify this. */
+    border-radius: 3px;
+}
+
+.btn-circle{ 
+    background-color: #325CA6 !important;
+    color: white;
+    width: 30px; 
+    height: 30px; 
+    padding: 6px 0px; 
+    border-radius: 15px; 
+    text-align: center; 
+} 
+
+.boton-xs:hover{
+    background : lightblue;
+    color: white;
+}
+
+.cab-fondo{
+    background-color: #325CA6 !important;
+    color: white;
+    font-size: 11px !important;
+    text-align: center;
+    border-radius: 3px !important;
+}
+
+.cab-fondo-gris{
+    background-color: lightgray !important;
+    color: #325CA6;
+    font-size: 11px !important;
+    text-align: center;
+    border-radius: 3px !important;
+}
+
+.body-fondo{
+    background-color: white !important;
+    color: black;
+    font-size: 11px !important;
+    text-align: center;
 }

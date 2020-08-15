@@ -14,6 +14,14 @@ Route::get('/gestion', function () {
     return view('gestor.gestion');
 })->name("gestion");
 
+Route::get('/cliente', function () {
+    return view('gestor.cliente');
+})->name("cliente");
+
+Route::get('/detalle', function () {
+    return view('gestor.detalleGestion');
+})->name("detalle");
+
 Auth::routes();
 
 Route::group(['middleware' => ['auth']], function(){

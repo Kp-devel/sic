@@ -1,5 +1,5 @@
 @extends('layouts.app')
 
 @section('content')
-    <frm-gestion></frm-gestion>
+    <frm-cliente></frm-cliente>
 @endsection
