@@ -1990,6 +1990,188 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ["carteras"],
+  data: function data() {
+    return {
+      llamadas: [],
+      busqueda: {
+        cartera: '',
+        fecha: ''
+      },
+      loading: false
+    };
+  },
+  created: function created() {
+    this.diaActual(); // this.control();
+  },
+  methods: {
+    control: function control() {
+      var _this = this;
+
+      this.loading = true;
+
+      if (this.busqueda.cartera != "" && this.busqueda.fecha != "") {
+        axios.post("controlLLamadas", this.busqueda).then(function (res) {
+          if (res.data) {
+            _this.llamadas = res.data;
+            _this.loading = false;
+          }
+        });
+      }
+    },
+    diaActual: function diaActual() {
+      var n = new Date();
+      var hoy = n.getFullYear() + "-" + this.addZero(n.getMonth() + 1) + "-" + this.addZero(n.getDate());
+      this.busqueda.fecha = hoy;
+    },
+    addZero: function addZero(i) {
+      if (i < 10) {
+        i = '0' + i;
+      }
+
+      return i;
+    },
+    formatoVacio: function formatoVacio(item) {
+      if (item == null || item == "") {
+        return "-";
+      } else {
+        return item;
+      }
+    }
+  },
+  components: {}
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/ControlLlamadasGestor.vue?vue&type=script&lang=js&":
+/*!**************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/ControlLlamadasGestor.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/vue-paginate */ "./node_modules/vue-paginate/dist/vue-paginate.js");
+/* harmony import */ var _node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2011,28 +2193,118 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  // props:["vrol"],
+  props: ["carteras"],
   data: function data() {
     return {
-      temp: []
+      paginate: ['pagLista'],
+      llamadas: [],
+      agentes: [],
+      busqueda: {
+        cartera: '',
+        fecha: '',
+        agente: ''
+      },
+      loading: false,
+      deshabilitar: true,
+      agente: '',
+      promedio_duracion: '00:00:00',
+      intento_marcaciones: 0,
+      llamadas_conectadas: 0,
+      llamadas_no_conectadas: 0
     };
   },
-  created: function created() {},
+  created: function created() {
+    this.diaActual(); // this.control();
+  },
   methods: {
-    listCLientes: function listCLientes() {
+    listaAgentes: function listaAgentes(cartera) {
       var _this = this;
 
-      axios.get("listClientes").then(function (res) {
+      this.agentes = [];
+      this.deshabilitar = true;
+      axios.get("agentesElastix/" + cartera).then(function (res) {
         if (res.data) {
-          _this.temp = res.data;
-          _this.clientes = _this.temp;
-          _this.total_clientes = _this.clientes.length;
-          _this.view_carga = false;
+          _this.agentes = res.data;
+
+          if (_this.agentes.length > 0) {
+            _this.deshabilitar = false;
+          }
         }
       });
+    },
+    control: function control() {
+      var _this2 = this;
+
+      var ac_duracion = 0;
+      this.intento_marcaciones = 0;
+      this.promedio_duracion = '00:00:00';
+      this.llamadas_conectadas = 0;
+      this.llamadas_no_conectadas = 0;
+      this.loading = true;
+
+      if (this.busqueda.agente != "" && this.busqueda.fecha != "") {
+        axios.post("controlLLamadasGestor", this.busqueda).then(function (res) {
+          if (res.data) {
+            _this2.llamadas = res.data;
+            _this2.loading = false;
+            _this2.intento_marcaciones = _this2.llamadas.length;
+
+            for (var i = 0; i < _this2.llamadas.length; i++) {
+              if (_this2.llamadas[i].estado == 'ANSWERED') {
+                _this2.llamadas_conectadas += 1;
+              } else {
+                _this2.llamadas_no_conectadas += 1;
+              }
+
+              ac_duracion += parseInt(_this2.llamadas[i].duracion_segundos);
+              _this2.promedio_duracion = (ac_duracion / _this2.llamadas_conectadas).toFixed(0);
+            }
+
+            _this2.promedio_duracion = _this2.secondsToString(_this2.promedio_duracion);
+
+            for (var j = 0; j < _this2.agentes.length; j++) {
+              if (_this2.agentes[j].extension == _this2.busqueda.agente) {
+                _this2.agente = _this2.agentes[j].agente;
+              }
+
+              ;
+            }
+          }
+        });
+      }
+    },
+    diaActual: function diaActual() {
+      var n = new Date();
+      var hoy = n.getFullYear() + "-" + this.addZero(n.getMonth() + 1) + "-" + this.addZero(n.getDate());
+      this.busqueda.fecha = hoy;
+    },
+    addZero: function addZero(i) {
+      if (i < 10) {
+        i = '0' + i;
+      }
+
+      return i;
+    },
+    secondsToString: function secondsToString(seconds) {
+      var hour = Math.floor(seconds / 3600);
+      hour = hour < 10 ? '0' + hour : hour;
+      var minute = Math.floor(seconds / 60 % 60);
+      minute = minute < 10 ? '0' + minute : minute;
+      var second = seconds % 60;
+      second = second < 10 ? '0' + second : second;
+      return hour + ':' + minute + ':' + second;
+    },
+    formatoVacio: function formatoVacio(item) {
+      if (item == null || item == "") {
+        return "-";
+      } else {
+        return item;
+      }
     }
   },
-  components: {}
+  components: {
+    vuePaginate: _node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0___default.a
+  }
 });
 
 /***/ }),
@@ -37893,212 +38165,738 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", {}, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "py-3 row" }, [
+      _c("div", { staticClass: "col-md-4 form-group" }, [
+        _c("label", { attrs: { for: "exampleInputPassword1" } }, [
+          _vm._v("Cartera")
+        ]),
+        _vm._v(" "),
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.busqueda.cartera,
+                expression: "busqueda.cartera"
+              }
+            ],
+            staticClass: "form-control",
+            on: {
+              change: [
+                function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.$set(
+                    _vm.busqueda,
+                    "cartera",
+                    $event.target.multiple ? $$selectedVal : $$selectedVal[0]
+                  )
+                },
+                function($event) {
+                  return _vm.control()
+                }
+              ]
+            }
+          },
+          [
+            _c("option", { attrs: { value: "" } }, [_vm._v("SELECCIONAR")]),
+            _vm._v(" "),
+            _vm._l(_vm.carteras, function(item, index) {
+              return _c(
+                "option",
+                { key: index, domProps: { value: item.id } },
+                [_vm._v(_vm._s(item.cartera))]
+              )
+            })
+          ],
+          2
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-2 form-group" }, [
+        _c("label", [_vm._v("Fecha")]),
+        _vm._v(" "),
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.busqueda.fecha,
+              expression: "busqueda.fecha"
+            }
+          ],
+          staticClass: "form-control",
+          attrs: { type: "date" },
+          domProps: { value: _vm.busqueda.fecha },
+          on: {
+            change: function($event) {
+              return _vm.control()
+            },
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.$set(_vm.busqueda, "fecha", $event.target.value)
+            }
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-2" })
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "pb-4" }, [
+      _c("div", { staticClass: "table-responsive" }, [
+        _c("table", { staticClass: "table table-hover" }, [
+          _vm._m(1),
+          _vm._v(" "),
+          _c(
+            "tbody",
+            [
+              _vm.llamadas == "" && _vm.loading == false
+                ? _c("tr", { staticClass: "text-center" }, [
+                    _c("td", { attrs: { colspan: "12" } }, [
+                      _vm._v("No se encontraron datos")
+                    ])
+                  ])
+                : _vm.loading == false
+                ? _vm._l(_vm.llamadas, function(item, index) {
+                    return _c("tr", { key: index }, [
+                      _c("td", { staticClass: "text-center" }, [
+                        _vm._v(_vm._s(item.extension))
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(item.agente))]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "text-center" }, [
+                        _vm._v(_vm._s(_vm.formatoVacio(item.tiempo_logeo)))
+                      ]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "text-center" }, [
+                        _vm._v(_vm._s(_vm.formatoVacio(item.intento_llamadas)))
+                      ]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "text-center" }, [
+                        _vm._v(
+                          _vm._s(_vm.formatoVacio(item.llamadas_conectadas))
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "text-center" }, [
+                        _vm._v(
+                          _vm._s(_vm.formatoVacio(item.llamadas_noconectadas))
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "text-center" }, [
+                        _vm._v(_vm._s(_vm.formatoVacio(item.promedio_duracion)))
+                      ]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "text-center" }, [
+                        _vm._v("00:02:00")
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v("925624122")]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "text-center" }, [
+                        _vm._v("00:00:25")
+                      ]),
+                      _vm._v(" "),
+                      _vm._m(2, true)
+                    ])
+                  })
+                : _vm._e()
+            ],
+            2
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _vm.loading
+        ? _c("div", { staticClass: "d-flex justify-content-center py-3" }, [
+            _vm._m(3)
+          ])
+        : _vm._e()
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", {}, [
-      _c("div", { staticClass: "d-flex" }, [
-        _c("i", { staticClass: "fa fa-desktop pr-2 fa-lg pt-3 text-green" }),
+    return _c("div", { staticClass: "d-flex" }, [
+      _c("i", { staticClass: "fa fa-desktop pr-2 fa-lg pt-3 text-green" }),
+      _vm._v(" "),
+      _c("div", [
+        _c("p", { staticClass: "subheader-title mb-0" }, [
+          _vm._v("Panel de Control de Llamadas")
+        ]),
         _vm._v(" "),
-        _c("div", [
-          _c("p", { staticClass: "subheader-title mb-0" }, [
-            _vm._v("Panel de Control de Llamadas")
-          ]),
-          _vm._v(" "),
-          _c("p", { staticClass: "mb-0" }, [_vm._v("Monitoreo en tiempo real")])
+        _c("p", { staticClass: "mb-0" }, [_vm._v("Monitoreo en tiempo real")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", { staticClass: "text-center bg-blue text-white" }, [
+      _c("tr", [
+        _c("td", { staticClass: "align-middle" }, [_vm._v("Extensión")]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [_vm._v("Agente")]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [
+          _vm._v("Tiempo de"),
+          _c("br"),
+          _vm._v("Logeo")
+        ]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [
+          _vm._v("Intento"),
+          _c("br"),
+          _vm._v("Marcaciones")
+        ]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [
+          _vm._v("Llamadas"),
+          _c("br"),
+          _vm._v("Conectadas")
+        ]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [
+          _vm._v("Llamadas"),
+          _c("br"),
+          _vm._v("No Conectadas")
+        ]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [
+          _vm._v("Prom. Duración"),
+          _c("br"),
+          _vm._v("de Llamadas")
+        ]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [
+          _vm._v("Intervalo de"),
+          _c("br"),
+          _vm._v("Duración Llam.")
+        ]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [
+          _vm._v("Número en"),
+          _c("br"),
+          _vm._v("LLamada")
+        ]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [
+          _vm._v("Duración de"),
+          _c("br"),
+          _vm._v("Llamada")
+        ]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [
+          _vm._v("Escuchar"),
+          _c("br"),
+          _vm._v("Audio")
         ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "py-3 row" }, [
-        _c("div", { staticClass: "col-md-3 form-group" }, [
-          _c("label", { attrs: { for: "exampleInputPassword1" } }, [
-            _vm._v("Cartera")
-          ]),
-          _vm._v(" "),
-          _c("select", { staticClass: "form-control" }, [
-            _c("option", { attrs: { value: "" } }, [_vm._v("Banco Falabella")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "" } }, [_vm._v("Ripley Castigo")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "" } }, [_vm._v("Ripley Provision")])
-          ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", { staticClass: "text-center" }, [
+      _c("a", { attrs: { href: "" } }, [
+        _c("i", { staticClass: "fa fa-volume-down fa-lg" })
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "spinner-border text-blue", attrs: { role: "status" } },
+      [_c("span", { staticClass: "sr-only" }, [_vm._v("Loading...")])]
+    )
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/ControlLlamadasGestor.vue?vue&type=template&id=73480945&":
+/*!******************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/ControlLlamadasGestor.vue?vue&type=template&id=73480945& ***!
+  \******************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", {}, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "py-3 row" }, [
+      _c("div", { staticClass: "col-md-4 form-group" }, [
+        _c("label", { attrs: { for: "exampleInputPassword1" } }, [
+          _vm._v("Cartera")
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "col-md-2 form-group" }, [
-          _c("label", [_vm._v("Fecha")]),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "form-control font-12",
-            attrs: { type: "date" }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-3" })
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.busqueda.cartera,
+                expression: "busqueda.cartera"
+              }
+            ],
+            staticClass: "form-control",
+            on: {
+              change: [
+                function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.$set(
+                    _vm.busqueda,
+                    "cartera",
+                    $event.target.multiple ? $$selectedVal : $$selectedVal[0]
+                  )
+                },
+                function($event) {
+                  return _vm.listaAgentes(_vm.busqueda.cartera)
+                }
+              ]
+            }
+          },
+          [
+            _c("option", { attrs: { value: "" } }, [_vm._v("SELECCIONAR")]),
+            _vm._v(" "),
+            _vm._l(_vm.carteras, function(item, index) {
+              return _c(
+                "option",
+                { key: index, domProps: { value: item.id } },
+                [_vm._v(_vm._s(item.cartera))]
+              )
+            })
+          ],
+          2
+        )
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "pb-4" }, [
-        _c("div", { staticClass: "table-responsive" }, [
-          _c("table", { staticClass: "table table-hover" }, [
-            _c("thead", { staticClass: "text-center bg-blue text-white" }, [
-              _c("tr", [
-                _c("td", { staticClass: "align-middle" }, [_vm._v("Fecha")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "align-middle" }, [_vm._v("Agente")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "align-middle" }, [
-                  _vm._v("Tiempo de"),
-                  _c("br"),
-                  _vm._v("Logeo")
+      _c("div", { staticClass: "col-md-4 form-group" }, [
+        _c("label", { attrs: { for: "exampleInputPassword1" } }, [
+          _vm._v("Gestor")
+        ]),
+        _vm._v(" "),
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.busqueda.agente,
+                expression: "busqueda.agente"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { disabled: _vm.deshabilitar },
+            on: {
+              change: [
+                function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.$set(
+                    _vm.busqueda,
+                    "agente",
+                    $event.target.multiple ? $$selectedVal : $$selectedVal[0]
+                  )
+                },
+                function($event) {
+                  return _vm.control()
+                }
+              ]
+            }
+          },
+          _vm._l(_vm.agentes, function(item, index) {
+            return _c(
+              "option",
+              { key: index, domProps: { value: item.extension } },
+              [_vm._v(_vm._s(item.agente))]
+            )
+          }),
+          0
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-2 form-group" }, [
+        _c("label", [_vm._v("Fecha")]),
+        _vm._v(" "),
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.busqueda.fecha,
+              expression: "busqueda.fecha"
+            }
+          ],
+          staticClass: "form-control",
+          attrs: { type: "date" },
+          domProps: { value: _vm.busqueda.fecha },
+          on: {
+            change: function($event) {
+              return _vm.control()
+            },
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.$set(_vm.busqueda, "fecha", $event.target.value)
+            }
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-2" })
+    ]),
+    _vm._v(" "),
+    _vm.loading
+      ? _c("div", { staticClass: "d-flex justify-content-center py-3" }, [
+          _vm._m(1)
+        ])
+      : _vm.llamadas == ""
+      ? _c("div", { staticClass: "py-5 mt-2 text-center" }, [
+          _c("i", { staticClass: "fa fa-list text-blue fa-2x" }),
+          _vm._v(" "),
+          _vm._m(2)
+        ])
+      : _c("div", { staticClass: "row py-2" }, [
+          _c("div", { staticClass: "col-md-3 pb-4" }, [
+            _c("div", { staticClass: "card border" }, [
+              _c("div", { staticClass: "card-header px-2 border-top-blue" }, [
+                _c("p", { staticClass: "font-15 mb-0 text-blue font-bold" }, [
+                  _vm._v(_vm._s(_vm.agente))
                 ]),
                 _vm._v(" "),
-                _c("td", { staticClass: "align-middle" }, [
-                  _vm._v("Intento"),
-                  _c("br"),
-                  _vm._v("Marcaciones")
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "align-middle" }, [
-                  _vm._v("Llamadas"),
-                  _c("br"),
-                  _vm._v("Conectadas")
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "align-middle" }, [
-                  _vm._v("Llamadas"),
-                  _c("br"),
-                  _vm._v("No Conectadas")
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "align-middle" }, [
-                  _vm._v("Prom. Duración"),
-                  _c("br"),
-                  _vm._v("de Llamadas")
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "align-middle" }, [
-                  _vm._v("Intervalo de Dur."),
-                  _c("br"),
-                  _vm._v("de Llamadas")
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "align-middle" }, [
-                  _vm._v("Número en"),
-                  _c("br"),
-                  _vm._v("LLamada")
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "align-middle" }, [
-                  _vm._v("Duración de"),
-                  _c("br"),
-                  _vm._v("Llamada")
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "align-middle" }, [
-                  _vm._v("Escuchar"),
-                  _c("br"),
-                  _vm._v("Audio")
-                ])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("tbody", [
-              _c("tr", [
-                _c("td", { staticClass: "text-center" }, [
-                  _vm._v("2020-08-15")
-                ]),
-                _vm._v(" "),
-                _c("td", [_vm._v("1001 - Daniel Mendoza Uribe")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("00:25:00")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("15")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("10")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("5")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("00:15:00")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("00:02:00")]),
-                _vm._v(" "),
-                _c("td", [_vm._v("925624122")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("00:00:25")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [
-                  _c("a", { attrs: { href: "" } }, [
-                    _c("i", { staticClass: "fa fa-volume-down fa-lg" })
-                  ])
+                _c("p", { staticClass: "mb-0" }, [
+                  _vm._v("Extensión:" + _vm._s(_vm.busqueda.agente))
                 ])
               ]),
               _vm._v(" "),
-              _c("tr", [
-                _c("td", { staticClass: "text-center" }, [
-                  _vm._v("2020-08-15")
-                ]),
-                _vm._v(" "),
-                _c("td", [_vm._v("1001 - Daniel Mendoza Uribe")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("00:25:00")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("15")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("10")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("5")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("00:15:00")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("00:02:00")]),
-                _vm._v(" "),
-                _c("td", [_vm._v("925624122")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("00:00:25")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [
-                  _c("a", { attrs: { href: "" } }, [
-                    _c("i", { staticClass: "fa fa-volume-down fa-lg" })
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("tr", [
-                _c("td", { staticClass: "text-center" }, [
-                  _vm._v("2020-08-15")
-                ]),
-                _vm._v(" "),
-                _c("td", [_vm._v("1001 - Daniel Mendoza Uribe")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("00:25:00")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("15")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("10")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("5")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("00:15:00")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("00:02:00")]),
-                _vm._v(" "),
-                _c("td", [_vm._v("925624122")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [_vm._v("00:00:25")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [
-                  _c("a", { attrs: { href: "" } }, [
-                    _c("i", { staticClass: "fa fa-volume-down fa-lg" })
+              _c("div", { staticClass: "card-body px-2 pt-4" }, [
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col-md-6 text-center pb-4" }, [
+                    _c(
+                      "div",
+                      { staticClass: "d-flex justify-content-center" },
+                      [
+                        _c("i", {
+                          staticClass: "far fa-clock fa-1x pr-1 pt-1 text-gray"
+                        }),
+                        _vm._v(" "),
+                        _c("h5", [_vm._v(_vm._s(_vm.promedio_duracion))])
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c("p", { staticClass: "mb-0 font-12" }, [
+                      _vm._v("Prom. Duración LLamadas")
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-md-6 text-center pb-4" }, [
+                    _c(
+                      "div",
+                      { staticClass: "d-flex justify-content-center" },
+                      [
+                        _c("i", {
+                          staticClass:
+                            "fa fa-headphones-alt fa-1x pr-1 pt-1 text-gray"
+                        }),
+                        _vm._v(" "),
+                        _c("h5", [_vm._v(_vm._s(_vm.intento_marcaciones))])
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _vm._m(3)
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-md-6 text-center pb-4" }, [
+                    _c(
+                      "div",
+                      { staticClass: "d-flex justify-content-center" },
+                      [
+                        _c("i", {
+                          staticClass: "fa fa-phone fa-1x pr-1 pt-1 text-gray"
+                        }),
+                        _vm._v(" "),
+                        _c("h5", [_vm._v(_vm._s(_vm.llamadas_conectadas))])
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _vm._m(4)
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-md-6 text-center pb-4" }, [
+                    _c(
+                      "div",
+                      { staticClass: "d-flex justify-content-center" },
+                      [
+                        _c("i", {
+                          staticClass:
+                            "fa fa-phone-slash fa-1x pr-1 pt-1 text-gray"
+                        }),
+                        _vm._v(" "),
+                        _c("h5", [_vm._v(_vm._s(_vm.llamadas_no_conectadas))])
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c("p", { staticClass: "mb-0 font-12" }, [
+                      _vm._v("Llamadas No Conectadas")
+                    ])
                   ])
                 ])
               ])
             ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-9" }, [
+            _c(
+              "div",
+              { staticClass: "table-responsive" },
+              [
+                _c(
+                  "paginate",
+                  {
+                    staticClass: "px-0",
+                    attrs: { name: "pagLista", list: _vm.llamadas, per: 20 }
+                  },
+                  [
+                    _c("table", { staticClass: "table table-hover" }, [
+                      _c(
+                        "thead",
+                        { staticClass: "text-center bg-blue text-white" },
+                        [
+                          _c("tr", [
+                            _c("td", { staticClass: "align-middle" }, [
+                              _vm._v("Fecha")
+                            ]),
+                            _vm._v(" "),
+                            _c("td", { staticClass: "align-middle" }, [
+                              _vm._v("Grupo de Timbrado")
+                            ]),
+                            _vm._v(" "),
+                            _c("td", { staticClass: "align-middle" }, [
+                              _vm._v("Destino")
+                            ]),
+                            _vm._v(" "),
+                            _c("td", { staticClass: "align-middle" }, [
+                              _vm._v("Duración")
+                            ]),
+                            _vm._v(" "),
+                            _c("td", { staticClass: "align-middle" }, [
+                              _vm._v("Estado")
+                            ]),
+                            _vm._v(" "),
+                            _c("td", { staticClass: "align-middle" }, [
+                              _vm._v("Grabación")
+                            ])
+                          ])
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "tbody",
+                        [
+                          _vm.llamadas == "" && _vm.loading == false
+                            ? _c("tr", { staticClass: "text-center" }, [
+                                _c("td", { attrs: { colspan: "6" } }, [
+                                  _vm._v("No se encontraron datos")
+                                ])
+                              ])
+                            : _vm.loading == false
+                            ? _vm._l(_vm.paginated("pagLista"), function(
+                                item,
+                                index
+                              ) {
+                                return _c("tr", { key: index }, [
+                                  _c("td", { staticClass: "text-center" }, [
+                                    _vm._v(_vm._s(item.fecha))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(_vm._s(item.grupo_timbrado))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", { staticClass: "text-center" }, [
+                                    _vm._v(
+                                      _vm._s(_vm.formatoVacio(item.destino))
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", { staticClass: "text-center" }, [
+                                    _vm._v(_vm._s(item.duracion.substr(0, 8)))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", { staticClass: "text-center" }, [
+                                    _vm._v(
+                                      _vm._s(_vm.formatoVacio(item.estado))
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", { staticClass: "text-center" }, [
+                                    _c(
+                                      "a",
+                                      {
+                                        attrs: {
+                                          href: "",
+                                          title: "reproducir audio"
+                                        }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass:
+                                            "fa fa-volume-down fa-lg pr-2"
+                                        })
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "a",
+                                      {
+                                        attrs: { href: "", title: "descargar" }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "fa fa-download fa-lg"
+                                        })
+                                      ]
+                                    )
+                                  ])
+                                ])
+                              })
+                            : _vm._e()
+                        ],
+                        2
+                      )
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
+                _c("paginate-links", {
+                  attrs: {
+                    for: "pagLista",
+                    async: true,
+                    limit: 4,
+                    classes: {
+                      ul: "pagination",
+                      li: "page-item",
+                      a: "page-link"
+                    }
+                  }
+                })
+              ],
+              1
+            )
           ])
         ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "d-flex" }, [
+      _c("i", { staticClass: "fa fa-desktop pr-2 fa-lg pt-3 text-green" }),
+      _vm._v(" "),
+      _c("div", [
+        _c("p", { staticClass: "subheader-title mb-0" }, [
+          _vm._v("Control de Llamadas por Gestor")
+        ]),
+        _vm._v(" "),
+        _c("p", { staticClass: "mb-0" }, [
+          _vm._v("Historial de llamadas realizadas")
+        ])
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "spinner-border text-blue", attrs: { role: "status" } },
+      [_c("span", { staticClass: "sr-only" }, [_vm._v("Loading...")])]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", {}, [
+      _c("b", [_vm._v("No se encontraron datos!!")]),
+      _c("br"),
+      _vm._v("Por favor, seleccionar otro criterio de búsqueda")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", { staticClass: "mb-0 font-12" }, [
+      _vm._v("Intento de"),
+      _c("br"),
+      _vm._v(" Marcaciones")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", { staticClass: "mb-0 font-12" }, [
+      _vm._v("Llamadas"),
+      _c("br"),
+      _vm._v(" Conectadas")
     ])
   }
 ]
@@ -51522,6 +52320,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 Vue.component('example-component', __webpack_require__(/*! ./components/ExampleComponent.vue */ "./resources/js/components/ExampleComponent.vue")["default"]);
 Vue.component('list-clientes', __webpack_require__(/*! ./components/Gestor/Clientes.vue */ "./resources/js/components/Gestor/Clientes.vue")["default"]);
 Vue.component('control-llamadas', __webpack_require__(/*! ./components/Admin/ControlLlamadas.vue */ "./resources/js/components/Admin/ControlLlamadas.vue")["default"]);
+Vue.component('control-llamadas-gestor', __webpack_require__(/*! ./components/Admin/ControlLlamadasGestor.vue */ "./resources/js/components/Admin/ControlLlamadasGestor.vue")["default"]);
 var app = new Vue({
   el: '#app'
 });
@@ -51637,6 +52436,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ControlLlamadas_vue_vue_type_template_id_52f856fa___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ControlLlamadas_vue_vue_type_template_id_52f856fa___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/Admin/ControlLlamadasGestor.vue":
+/*!*****************************************************************!*\
+  !*** ./resources/js/components/Admin/ControlLlamadasGestor.vue ***!
+  \*****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ControlLlamadasGestor_vue_vue_type_template_id_73480945___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ControlLlamadasGestor.vue?vue&type=template&id=73480945& */ "./resources/js/components/Admin/ControlLlamadasGestor.vue?vue&type=template&id=73480945&");
+/* harmony import */ var _ControlLlamadasGestor_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ControlLlamadasGestor.vue?vue&type=script&lang=js& */ "./resources/js/components/Admin/ControlLlamadasGestor.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _ControlLlamadasGestor_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _ControlLlamadasGestor_vue_vue_type_template_id_73480945___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _ControlLlamadasGestor_vue_vue_type_template_id_73480945___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/Admin/ControlLlamadasGestor.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/Admin/ControlLlamadasGestor.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************!*\
+  !*** ./resources/js/components/Admin/ControlLlamadasGestor.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ControlLlamadasGestor_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./ControlLlamadasGestor.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/ControlLlamadasGestor.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ControlLlamadasGestor_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/Admin/ControlLlamadasGestor.vue?vue&type=template&id=73480945&":
+/*!************************************************************************************************!*\
+  !*** ./resources/js/components/Admin/ControlLlamadasGestor.vue?vue&type=template&id=73480945& ***!
+  \************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ControlLlamadasGestor_vue_vue_type_template_id_73480945___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./ControlLlamadasGestor.vue?vue&type=template&id=73480945& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/ControlLlamadasGestor.vue?vue&type=template&id=73480945&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ControlLlamadasGestor_vue_vue_type_template_id_73480945___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ControlLlamadasGestor_vue_vue_type_template_id_73480945___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

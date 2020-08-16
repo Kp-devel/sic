@@ -2,6 +2,6 @@
 
 @section('panel-contenido')           
     <div class="contenedor">
-        <control-llamadas :carteras="{{$carteras}}"/>
+        <control-llamadas-gestor :carteras="{{$carteras}}"/>
     </div>
 @endsection
