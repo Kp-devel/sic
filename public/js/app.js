@@ -2499,29 +2499,93 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
  //import detalleCliente from './detalleCliente';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   // props:["vrol"],
   data: function data() {
-    return {
-      temp: [],
-      clientes: [],
-      detalle: [],
-      telefonos: [],
-      respuestas: [],
-      total_clientes: 0,
-      paginate: ['paginar'],
-      buscar_codigo: '',
-      view_detalle: false,
-      view_carga: true,
-      idCliente: ''
-    };
+    return {};
   },
-  created: function created() {
-    this.listCLientes();
-    this.listRespuestas();
-  },
+  created: function created() {},
   methods: {
     listCLientes: function listCLientes() {
       var _this = this;
@@ -2607,6 +2671,10 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       return x1 + x2;
+    },
+    menu: function menu() {
+      $('.content-menu-2').toggleClass('abrir-menu-2');
+      $('.content-body-2').toggleClass('p-left-menu-2');
     }
   },
   mounted: function mounted() {
@@ -38968,392 +39036,426 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {},
-    [
-      _vm._m(0),
+  return _c("div", [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "contenedor-general-2" }, [
+      _vm._m(1),
       _vm._v(" "),
-      _vm.view_carga == true
-        ? _c("div", { staticClass: "d-flex justify-content-center pt-5" }, [
-            _vm._m(1)
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.view_detalle == false && _vm.view_carga == false
-        ? _c("div", [
-            _c("div", { staticClass: "row mx-0 p-5" }, [
-              _c("div", { staticClass: "col-md-4 offset-md-4" }, [
-                _c("div", { staticClass: "input-group" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.buscar_codigo,
-                        expression: "buscar_codigo"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: {
-                      type: "text",
-                      placeholder: "Buscar por código del cliente"
-                    },
-                    domProps: { value: _vm.buscar_codigo },
-                    on: {
-                      keyup: function($event) {
-                        return _vm.buscar(_vm.buscar_codigo)
-                      },
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.buscar_codigo = $event.target.value
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
+      _c("div", { staticClass: "content-body-2" }, [
+        _c("div", { staticClass: "contenedor-body" }, [
+          _c(
+            "nav",
+            {
+              staticClass:
+                "navbar navbar-expand-lg navbar-transparent pt-3 pb-2 bg-white"
+            },
+            [
+              _c("div", { staticClass: "container-fluid px-0" }, [
+                _c("div", { staticClass: "navbar-wrapper d-flex" }, [
                   _c(
                     "a",
                     {
-                      staticClass: "input-group-append  p-0",
+                      staticClass: "icono-bars waves-effect",
                       attrs: { href: "" },
                       on: {
                         click: function($event) {
                           $event.preventDefault()
-                          return _vm.buscar(_vm.buscar_codigo)
+                          return _vm.menu()
                         }
                       }
                     },
-                    [_vm._m(2)]
-                  ),
-                  _vm._v(" "),
-                  _vm._m(3)
-                ])
+                    [_c("i", { staticClass: "fa fa-bars fa-lg" })]
+                  )
+                ]),
+                _vm._v(" "),
+                _vm._m(2)
               ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "mx-4 card-contenedor" }, [
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "card-header bg-gray rounded d-flex justify-content-between"
-                },
-                [
-                  _c("p", { staticClass: "font-15 mb-0" }, [
-                    _c("i", { staticClass: "far fa-user pr-2" }),
-                    _vm._v(_vm._s(_vm.formatoCant(_vm.total_clientes)))
-                  ]),
-                  _vm._v(" "),
-                  _vm._m(4)
-                ]
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "card-body" }, [
-                _c(
-                  "div",
-                  { staticClass: "table-responsive" },
-                  [
-                    _c(
-                      "paginate",
-                      {
-                        staticClass: "p-0",
-                        attrs: { name: "paginar", list: _vm.clientes, per: 20 }
-                      },
-                      [
-                        _c("table", { staticClass: "table table-hover" }, [
-                          _c(
-                            "tbody",
-                            _vm._l(_vm.paginated("paginar"), function(
-                              item,
-                              index
-                            ) {
-                              return _c("tr", { key: index }, [
-                                _c("td", [
-                                  _c("i", {
-                                    staticClass:
-                                      "rounded-circle far fa-user p-2 text-white",
-                                    class: "bg-" + item.bg
-                                  })
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _c("p", { staticClass: "mb-0" }, [
-                                    _vm._v(_vm._s(item.codigo))
-                                  ]),
-                                  _c(
-                                    "small",
-                                    {
-                                      staticClass: "font-weight-bold mt-0 pt-0"
-                                    },
-                                    [_vm._v("Código")]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _c("p", { staticClass: "mb-0" }, [
-                                    _vm._v(_vm._s(item.cliente))
-                                  ]),
-                                  _c(
-                                    "small",
-                                    {
-                                      staticClass: "font-weight-bold mt-0 pt-0"
-                                    },
-                                    [_vm._v("Cliente")]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _c("p", { staticClass: "mb-0" }, [
-                                    _vm._v(_vm._s(item.dni))
-                                  ]),
-                                  _c(
-                                    "small",
-                                    {
-                                      staticClass: "font-weight-bold mt-0 pt-0"
-                                    },
-                                    [_vm._v("DNI")]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _c("p", { staticClass: "mb-0" }, [
-                                    _vm._v(
-                                      "S/." +
-                                        _vm._s(_vm.formatoMonto(item.capital))
-                                    )
-                                  ]),
-                                  _c(
-                                    "small",
-                                    {
-                                      staticClass: "font-weight-bold mt-0 pt-0"
-                                    },
-                                    [_vm._v("Deuda Capital")]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _c("p", { staticClass: "mb-0" }, [
-                                    _vm._v(
-                                      "S/." +
-                                        _vm._s(_vm.formatoMonto(item.deuda))
-                                    )
-                                  ]),
-                                  _c(
-                                    "small",
-                                    {
-                                      staticClass: "font-weight-bold mt-0 pt-0"
-                                    },
-                                    [_vm._v("Saldo Moroso Total")]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _c("p", { staticClass: "mb-0" }, [
-                                    _vm._v(
-                                      "S/." +
-                                        _vm._s(_vm.formatoMonto(item.importe))
-                                    )
-                                  ]),
-                                  _c(
-                                    "small",
-                                    {
-                                      staticClass: "font-weight-bold mt-0 pt-0"
-                                    },
-                                    [_vm._v("Importe Canc. Total")]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _c("p", { staticClass: "mb-0" }, [
-                                    _vm._v(_vm._s(item.oficina))
-                                  ]),
-                                  _c(
-                                    "small",
-                                    {
-                                      staticClass: "font-weight-bold mt-0 pt-0"
-                                    },
-                                    [_vm._v("Oficina")]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _c("p", { staticClass: "mb-0" }, [
-                                    _vm._v(_vm._s(item.ult_gestion))
-                                  ]),
-                                  _c(
-                                    "small",
-                                    {
-                                      staticClass: "font-weight-bold mt-0 pt-0"
-                                    },
-                                    [_vm._v("Última Gestión")]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _c("p", { staticClass: "mb-0" }, [
-                                    _vm._v(_vm._s(item.fecha_pdp))
-                                  ]),
-                                  _c(
-                                    "small",
-                                    {
-                                      staticClass: "font-weight-bold mt-0 pt-0"
-                                    },
-                                    [_vm._v("Fecha Compromiso")]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _c(
-                                    "a",
-                                    {
-                                      staticClass: "btn-detalle",
-                                      attrs: { href: "#" },
-                                      on: {
-                                        click: function($event) {
-                                          $event.preventDefault()
-                                          return _vm.btnDetalle(item.id)
-                                        }
-                                      }
-                                    },
-                                    [
-                                      _c("i", {
-                                        staticClass: "fa fa-bars fa-lg"
-                                      })
-                                    ]
-                                  )
-                                ])
-                              ])
-                            }),
-                            0
-                          )
-                        ])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("paginate-links", {
-                      attrs: {
-                        for: "paginar",
-                        async: true,
-                        limit: 5,
-                        classes: {
-                          ul: "pagination",
-                          li: "page-item",
-                          a: "page-link"
-                        }
-                      }
-                    })
-                  ],
-                  1
-                )
-              ])
-            ])
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.view_detalle == true
-        ? _c("detalleCliente", {
-            attrs: {
-              detalle: _vm.detalle,
-              telefonos: _vm.telefonos,
-              id: _vm.idCliente,
-              respuestas: _vm.respuestas
-            }
-          })
-        : _vm._e(),
-      _vm._v(" "),
-      _vm._m(5)
-    ],
-    1
-  )
+            ]
+          ),
+          _vm._v(" "),
+          _vm._m(3)
+        ])
+      ])
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "modal",
-        attrs: { tabindex: "-1", role: "dialog", id: "modalCarga" }
-      },
-      [
+    return _c("div", { staticClass: "panel-top text-center" }, [
+      _c("a", { staticClass: "btn-up", attrs: { href: "" } }, [
+        _c("i", { staticClass: "fa fa-sort-down fa-lg" })
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "content-menu-2" }, [
+      _c("div", { staticClass: "logo d-flex" }, [
+        _c("img", {
+          staticClass: "pr-2",
+          attrs: { src: "img/logo.png", width: "45px", height: "40px" }
+        }),
+        _vm._v(" "),
+        _c("div", [
+          _c("h5", { staticClass: "mb-0 " }, [
+            _vm._v("Crédito y Cobranzas S.A.C")
+          ]),
+          _vm._v(" "),
+          _c("small", [_vm._v("Ingeniería en su cobranza")])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("hr", { staticClass: "mx-0 px-0" }),
+      _vm._v(" "),
+      _c("div", { staticClass: "panel-busqueda" }, [
+        _c("div", { staticClass: "d-flex" }, [
+          _c("div", { staticClass: "pr-1" }, [
+            _c("i", {
+              staticClass: "rounded-circle fa fa-user bg-blue text-white p-1"
+            })
+          ]),
+          _vm._v(" "),
+          _c(
+            "p",
+            {
+              staticClass:
+                " badge bg-blue text-white py-2 px-2 min-w-125 text-left"
+            },
+            [_vm._v("LISTA DE CLIENTES")]
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "body mb-4 pl-4" }, [
+          _c("table", [
+            _c("tr", { staticClass: "font-12" }, [
+              _c("td", [_vm._v("Código")]),
+              _vm._v(" "),
+              _c("td", { staticClass: "pb-1" }, [
+                _c("input", {
+                  staticClass: "form-control font-12 form-control-sm",
+                  attrs: { type: "text" }
+                })
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "font-11" }, [_vm._v("DNI/RUC")]),
+              _vm._v(" "),
+              _c("td", [
+                _c("input", {
+                  staticClass: "form-control font-12 form-control-sm w-5",
+                  attrs: { type: "text" }
+                })
+              ])
+            ]),
+            _vm._v(" "),
+            _c("tr", { staticClass: "font-12" }, [
+              _c("td", [_vm._v("Nombre")]),
+              _vm._v(" "),
+              _c("td", { staticClass: "pb-1", attrs: { colspan: "3" } }, [
+                _c("input", {
+                  staticClass: "form-control font-12 form-control-sm",
+                  attrs: { type: "text" }
+                })
+              ])
+            ]),
+            _vm._v(" "),
+            _c("tr", { staticClass: "font-12" }, [
+              _c("td", [_vm._v("Teléfono")]),
+              _vm._v(" "),
+              _c("td", [
+                _c("input", {
+                  staticClass: "form-control font-12 form-control-sm",
+                  attrs: { type: "text" }
+                })
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Tramo")]),
+              _vm._v(" "),
+              _c("td", [
+                _c("input", {
+                  staticClass: "form-control font-12 form-control-sm w-5",
+                  attrs: { type: "text" }
+                })
+              ])
+            ]),
+            _vm._v(" "),
+            _c("tr", { staticClass: "font-12" }, [
+              _c("td", [_vm._v("Ult. Gest.")]),
+              _vm._v(" "),
+              _c("td", { attrs: { colspan: "3" } }, [
+                _c(
+                  "select",
+                  { staticClass: "form-control font-12 form-control-sm " },
+                  [
+                    _c("option", { attrs: { value: "" } }, [
+                      _vm._v("Selecionar")
+                    ])
+                  ]
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c("tr", { staticClass: "font-12" }, [
+              _c("td", [_vm._v("PDP Desde")]),
+              _vm._v(" "),
+              _c("td", [
+                _c("input", {
+                  staticClass: "form-control font-12 form-control-sm",
+                  attrs: { type: "text" }
+                })
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right pr-1" }, [
+                _vm._v("PDP Hasta")
+              ]),
+              _vm._v(" "),
+              _c("td", [
+                _c("input", {
+                  staticClass: "form-control font-12 form-control-sm w-5",
+                  attrs: { type: "text" }
+                })
+              ])
+            ]),
+            _vm._v(" "),
+            _c("tr", { staticClass: "font-12" }, [
+              _c("td", [_vm._v("Ordenar")]),
+              _vm._v(" "),
+              _c("td", [
+                _c(
+                  "select",
+                  { staticClass: "form-control font-12 form-control-sm" },
+                  [
+                    _c("option", { attrs: { value: "" } }, [
+                      _vm._v("Seleccionar")
+                    ]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "" } }, [_vm._v("Capital")]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "" } }, [_vm._v("Deuda")]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "" } }, [_vm._v("IC")])
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("td", { attrs: { colspan: "2" } }, [
+                _c("div", { staticClass: "d-flex justify-content-end" }, [
+                  _vm._v(
+                    "\n                                    Listar Campaña\n                                    "
+                  ),
+                  _c("div", { staticClass: "pt-1" }, [
+                    _c("input", {
+                      staticClass: "ml-2",
+                      attrs: { type: "checkbox" }
+                    })
+                  ])
+                ])
+              ])
+            ]),
+            _vm._v(" "),
+            _c("tr", { staticClass: "font-12" }, [
+              _c("td", { staticClass: "pt-3", attrs: { colspan: "2" } }, [
+                _c(
+                  "a",
+                  {
+                    staticClass:
+                      "btn btn-outline-blue btn-sm btn-block btn-waves",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("Buscar")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "pt-3", attrs: { colspan: "2" } }, [
+                _c(
+                  "a",
+                  {
+                    staticClass:
+                      "btn  btn-sm btn-block btn-waves btn-outline-blue",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("Limpiar")]
+                )
+              ])
+            ])
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "datos-mes" }, [
+        _c("div", { staticClass: "d-flex" }, [
+          _c("div", { staticClass: "pr-1" }, [
+            _c("i", {
+              staticClass:
+                "rounded-circle fa fa-chart-pie bg-blue text-white p-1"
+            })
+          ]),
+          _vm._v(" "),
+          _c(
+            "p",
+            {
+              staticClass:
+                " badge bg-blue text-white py-2 px-2 min-w-125 text-left"
+            },
+            [_vm._v("DATOS DEL MES")]
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "body mb-4 pl-4" }, [
+          _c("table", { staticClass: "w-100" }, [
+            _c("tr", [
+              _c("td", { staticClass: "text-left font-bold" }, [
+                _vm._v("Meta Asignada")
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right" }, [_vm._v("S/50,000")])
+            ]),
+            _vm._v(" "),
+            _c("tr", [
+              _c("td", { staticClass: "text-left font-bold" }, [
+                _vm._v("Recupero al 15")
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right" }, [_vm._v("S/25,000")])
+            ]),
+            _vm._v(" "),
+            _c("tr", [
+              _c("td", { staticClass: "text-left font-bold" }, [
+                _vm._v("Alcance de Meta")
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right" }, [_vm._v("50%")])
+            ]),
+            _vm._v(" "),
+            _c("tr", [
+              _c("td", { staticClass: "text-left font-bold" }, [
+                _vm._v("Efectividad sobre PDPS")
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right" }, [_vm._v("65%")])
+            ]),
+            _vm._v(" "),
+            _c("tr", [
+              _c("td", { staticClass: "text-left font-bold" }, [
+                _vm._v("PDP Caídas (S/.)")
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right" }, [_vm._v("S/.11,000")])
+            ]),
+            _vm._v(" "),
+            _c("tr", [
+              _c("td", { staticClass: "text-left font-bold" }, [
+                _vm._v("PDP Pendientes (S/.)")
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right" }, [_vm._v("S/.35,000")])
+            ])
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "estandar" }, [
+        _c("div", { staticClass: "d-flex" }, [
+          _c("div", { staticClass: "pr-1" }, [
+            _c("i", {
+              staticClass: "rounded-circle fa fa-phone bg-blue text-white p-1"
+            })
+          ]),
+          _vm._v(" "),
+          _c(
+            "p",
+            {
+              staticClass:
+                " badge bg-blue text-white py-2 px-2 min-w-125 text-left"
+            },
+            [_vm._v("ESTÁNDAR")]
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "body mb-4 pl-4" }, [
+          _c("div", { staticClass: "form-group row" }, [
+            _c("input", {
+              staticClass: "form-control w-5 col-3 ml-3 form-control-sm",
+              attrs: { type: "text" }
+            }),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "btn btn-outline-blue col-4 btn-sm btn-waves",
+                attrs: { href: "#" }
+              },
+              [_vm._v("Consultar")]
+            )
+          ]),
+          _vm._v(" "),
+          _c("table", { staticClass: "w-100" }, [
+            _c("tr", [
+              _c("td", { staticClass: "text-left font-bold py-0" }, [
+                _vm._v("Gestiones")
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right py-0" }, [_vm._v("200")])
+            ]),
+            _vm._v(" "),
+            _c("tr", [
+              _c("td", { staticClass: "text-left font-bold py-0" }, [
+                _vm._v("Contactos")
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right py-0" }, [_vm._v("40")])
+            ]),
+            _vm._v(" "),
+            _c("tr", [
+              _c("td", { staticClass: "text-left font-bold" }, [
+                _vm._v("Contactabilidad")
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right" }, [_vm._v("20%")])
+            ]),
+            _vm._v(" "),
+            _c("tr", [
+              _c("td", { staticClass: "text-left font-bold" }, [
+                _vm._v("PDPS")
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right" }, [_vm._v("2")])
+            ]),
+            _vm._v(" "),
+            _c("tr", [
+              _c("td", { staticClass: "text-left font-bold" }, [
+                _vm._v("Monto PDPS")
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right" }, [_vm._v("S/.11,000")])
+            ]),
+            _vm._v(" "),
+            _c("tr", [
+              _c("td", { staticClass: "text-left font-bold" }, [
+                _vm._v("Monto Confirmaciones")
+              ]),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right" }, [_vm._v("S/.35,000")])
+            ])
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "campana pb-3 pl-4" }, [
         _c(
           "div",
-          { staticClass: "text-center p-5 m-5 d-flex justify-content-center" },
+          { staticClass: "btn-outline-blue rounded py-1 px-2 text-center" },
           [
-            _c(
-              "div",
-              {
-                staticClass: "spinner-border text-center text-white",
-                staticStyle: { width: "3rem", height: "3rem" },
-                attrs: { role: "status" }
-              },
-              [
-                _c("span", { staticClass: "sr-only text-white" }, [
-                  _vm._v("Cargando...")
-                ])
-              ]
+            _vm._v(
+              "\n                    Campaña más cercana: 08/08 - 12:00PM\n                "
             )
           ]
         )
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "spinner-border text-center text-white",
-        staticStyle: { width: "3rem", height: "3rem" },
-        attrs: { role: "status" }
-      },
-      [
-        _c("span", { staticClass: "sr-only text-white" }, [
-          _vm._v("Cargando...")
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "span",
-      { staticClass: "input-group-text bg-turquesa text-white" },
-      [_c("i", { staticClass: "fa fa-search" })]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "a",
-      {
-        staticClass: "px-2 rounded mx-2 px-1 pt-1 item-menu",
-        attrs: {
-          href: "#",
-          "data-toggle": "modal",
-          "data-target": "#busqueda-avanzada"
-        }
-      },
-      [_c("i", { staticClass: "fa fa-expand fa-2x" })]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "d-flex" }, [
-      _c("a", { attrs: { href: "" } }, [
-        _c("i", { staticClass: "fa fa-sort-amount-up fa-lg text-dark" })
       ])
     ])
   },
@@ -39363,176 +39465,88 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c(
       "div",
-      {
-        staticClass: "modal fade modalCarga",
-        attrs: {
-          id: "busqueda-avanzada",
-          tabindex: "-1",
-          role: "dialog",
-          "aria-labelledby": "exampleModalCenterTitle",
-          "aria-hidden": "true"
-        }
-      },
+      { staticClass: "justify-content-end", attrs: { id: "navigation" } },
       [
-        _c(
-          "div",
-          {
-            staticClass: "modal-dialog modal-dialog-centered modal-lg",
-            attrs: { role: "document" }
-          },
-          [
-            _c("div", { staticClass: "modal-content" }, [
-              _c(
-                "div",
-                { staticClass: "modal-header bg-blue text-white px-5" },
-                [
-                  _c("h5", { staticClass: "modal-title" }, [
-                    _vm._v("Búsqueda Avanzada")
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "close text-white",
-                      attrs: {
-                        href: "",
-                        "data-dismiss": "modal",
-                        "aria-label": "Close"
-                      }
-                    },
-                    [
-                      _c("span", { attrs: { "aria-hidden": "true" } }, [
-                        _vm._v("×")
-                      ])
-                    ]
-                  )
-                ]
-              ),
+        _c("ul", { staticClass: "navbar-nav" }, [
+          _c("li", { staticClass: "nav-item pt-1" }, [
+            _c("img", {
+              staticClass: " rounded-circle border",
+              attrs: {
+                src: "img/center.jpeg",
+                alt: "",
+                width: "35px",
+                height: "35px"
+              }
+            })
+          ])
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "px-3 py-1" }, [
+      _c("div", { staticClass: "table-responsive" }, [
+        _c("table", { staticClass: "table table-hover" }, [
+          _c("thead", { staticClass: "bg-blue text-white" }, [
+            _c("tr", { staticClass: "text-center" }, [
+              _c("td", { staticClass: "align-middle" }, [_vm._v("CODIGO")]),
               _vm._v(" "),
-              _c("div", { staticClass: "modal-body px-5" }, [
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-md-6" }, [
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { attrs: { for: "" } }, [_vm._v("Código")]),
-                      _vm._v(" "),
-                      _c("input", {
-                        staticClass: "form-control",
-                        attrs: { type: "text" }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { attrs: { for: "" } }, [_vm._v("DNI")]),
-                      _vm._v(" "),
-                      _c("input", {
-                        staticClass: "form-control",
-                        attrs: { type: "text" }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { attrs: { for: "" } }, [
-                        _vm._v("Nombre del Cliente")
-                      ]),
-                      _vm._v(" "),
-                      _c("input", {
-                        staticClass: "form-control",
-                        attrs: { type: "text" }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { attrs: { for: "" } }, [
-                        _vm._v("Nro. de Doc. del Producto")
-                      ]),
-                      _vm._v(" "),
-                      _c("input", {
-                        staticClass: "form-control",
-                        attrs: { type: "text" }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { attrs: { for: "" } }, [_vm._v("Producto")]),
-                      _vm._v(" "),
-                      _c("input", {
-                        staticClass: "form-control",
-                        attrs: { type: "text" }
-                      })
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-md-6" }, [
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { attrs: { for: "" } }, [_vm._v("Tramo")]),
-                      _vm._v(" "),
-                      _c("input", {
-                        staticClass: "form-control",
-                        attrs: { type: "text" }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { attrs: { for: "" } }, [_vm._v("Oficina")]),
-                      _vm._v(" "),
-                      _c("input", {
-                        staticClass: "form-control",
-                        attrs: { type: "text" }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { attrs: { for: "" } }, [
-                        _vm._v("Última Gestión")
-                      ]),
-                      _vm._v(" "),
-                      _c("input", {
-                        staticClass: "form-control",
-                        attrs: { type: "text" }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { attrs: { for: "" } }, [
-                        _vm._v("Fecha de Compromiso")
-                      ]),
-                      _vm._v(" "),
-                      _c("input", {
-                        staticClass: "form-control",
-                        attrs: { type: "text" }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("label", { attrs: { for: "" } }, [_vm._v("Teléfono")]),
-                      _vm._v(" "),
-                      _c("input", {
-                        staticClass: "form-control",
-                        attrs: { type: "text" }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "text-right pb-2" }, [
-                      _c(
-                        "a",
-                        { staticClass: "btn btn-success", attrs: { href: "" } },
-                        [_vm._v("Generar Busqueda")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        { staticClass: "btn shadow", attrs: { href: "" } },
-                        [_vm._v("Limpiar")]
-                      )
-                    ])
-                  ])
+              _c("td", { staticStyle: { width: "20%" } }, [_vm._v("NOMBRE")]),
+              _vm._v(" "),
+              _c("td", { staticClass: "align-middle" }, [_vm._v("DNI/RUC")]),
+              _vm._v(" "),
+              _c("td", { staticClass: "align-middle" }, [_vm._v("CAPITAL")]),
+              _vm._v(" "),
+              _c("td", { staticClass: "align-middle" }, [_vm._v("DEUDA")]),
+              _vm._v(" "),
+              _c("td", { staticClass: "align-middle" }, [_vm._v("IC")]),
+              _vm._v(" "),
+              _c("td", { staticClass: "align-middle" }, [_vm._v("MEDIO")]),
+              _vm._v(" "),
+              _c("td", { staticClass: "align-middle" }, [_vm._v("PRODUCTO")]),
+              _vm._v(" "),
+              _c("td", { staticClass: "align-middle" }, [_vm._v("ULT. RPTA")]),
+              _vm._v(" "),
+              _c("td", {
+                staticClass: "border-0 bg-white rounded-0",
+                staticStyle: { width: "10px" }
+              })
+            ])
+          ]),
+          _vm._v(" "),
+          _c("tbody", [
+            _c("tr", [
+              _c("td", [_vm._v("1")]),
+              _vm._v(" "),
+              _c("td", [_vm._v("1")]),
+              _vm._v(" "),
+              _c("td", [_vm._v("1")]),
+              _vm._v(" "),
+              _c("td", [_vm._v("1")]),
+              _vm._v(" "),
+              _c("td", [_vm._v("1")]),
+              _vm._v(" "),
+              _c("td", [_vm._v("1")]),
+              _vm._v(" "),
+              _c("td", [_vm._v("1")]),
+              _vm._v(" "),
+              _c("td", [_vm._v("1")]),
+              _vm._v(" "),
+              _c("td", [_vm._v("1")]),
+              _vm._v(" "),
+              _c("td", { staticClass: "border-0 bg-white" }, [
+                _c("a", { staticClass: "btn-phone ", attrs: { href: "#" } }, [
+                  _c("i", { staticClass: "fa fa-phone" })
                 ])
               ])
             ])
-          ]
-        )
-      ]
-    )
+          ])
+        ])
+      ])
+    ])
   }
 ]
 render._withStripped = true
