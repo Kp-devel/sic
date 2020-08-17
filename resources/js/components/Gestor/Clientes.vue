@@ -1,146 +1,225 @@
 <template>
-    <div class="">
-        <!-- modal de carga -->
-        <div  class="modal" tabindex="-1" role="dialog" id="modalCarga">
-            <div class="text-center p-5 m-5 d-flex justify-content-center">
-                <div class="spinner-border text-center text-white" style="width: 3rem; height: 3rem;" role="status">
-                    <span class="sr-only text-white">Cargando...</span>
-                </div>
-                <!-- <spinner  :loading = "loadingModal" :color="color" :size="size" > </spinner> -->
-            </div>
+    <div>
+        <div class="panel-top text-center">
+            <a href="" class="btn-up"><i class="fa fa-sort-down fa-lg"></i></a>
         </div>
-        <!-- end modal de carga -->
-
-        <div v-if="view_carga==true" class="d-flex justify-content-center pt-5">
-            <div class="spinner-border text-center text-white" style="width: 3rem; height: 3rem;" role="status">
-                <span class="sr-only text-white">Cargando...</span>
-            </div>
-        </div>
-
-        <div v-if="view_detalle==false && view_carga==false">
-            <!-- busqueda -->
-            <div class="row mx-0 p-5">
-                <div class="col-md-4 offset-md-4">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Buscar por código del cliente" v-model="buscar_codigo"  @keyup="buscar(buscar_codigo)">
-                        <a href="" class="input-group-append  p-0" @click.prevent="buscar(buscar_codigo)">
-                            <span class="input-group-text bg-turquesa text-white"><i class="fa fa-search"></i></span>
-                        </a>
-                        <a href="#" class="px-2 rounded mx-2 px-1 pt-1 item-menu" data-toggle="modal" data-target="#busqueda-avanzada">
-                            <i class="fa fa-expand fa-2x"></i>
-                        </a>
+        <div class="contenedor-general-2">
+            <div class="content-menu-2">
+                <div class="logo d-flex">
+                    <img src="img/logo.png" width="45px" height="40px" class="pr-2">
+                    <div>
+                        <h5 class="mb-0 ">Crédito y Cobranzas S.A.C</h5>
+                        <small>Ingeniería en su cobranza</small>
                     </div>
                 </div>
-            </div> 
-            <!-- endbusqueda -->
-            <!-- contenido -->
-            <div class="mx-4 card-contenedor">
-                <div class="card-header bg-gray rounded d-flex justify-content-between">
-                    <p class="font-15 mb-0"><i class="far fa-user pr-2"></i>{{formatoCant(total_clientes)}}</p>
+                <hr class="mx-0 px-0">
+                <div class="panel-busqueda">
                     <div class="d-flex">
-                        <a href=""><i class="fa fa-sort-amount-up fa-lg text-dark"></i></a>
+                        <div class="pr-1">
+                            <i class="rounded-circle fa fa-user bg-blue text-white p-1"></i>
+                        </div>
+                        <p class=" badge bg-blue text-white py-2 px-2 min-w-125 text-left">LISTA DE CLIENTES</p>
+                    </div>
+                    <div class="body mb-4 pl-4">
+                        <table>
+                            <tr class="font-12"> 
+                                <td>Código</td>
+                                <td class="pb-1"><input type="text" class="form-control font-12 form-control-sm"></td>
+                                <td class="font-11">DNI/RUC</td>
+                                <td><input type="text" class="form-control font-12 form-control-sm w-5"></td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>Nombre</td>
+                                <td colspan="3" class="pb-1"><input type="text" class="form-control font-12 form-control-sm"></td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>Teléfono</td>
+                                <td><input type="text" class="form-control font-12 form-control-sm"></td>
+                                <td class="text-right pr-1">Tramo</td>
+                                <td><input type="text" class="form-control font-12 form-control-sm w-5"></td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>Ult. Gest.</td>
+                                <td colspan="3">
+                                    <select class="form-control font-12 form-control-sm ">
+                                        <option value="">Selecionar</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>PDP Desde</td>
+                                <td><input type="text" class="form-control font-12 form-control-sm"></td>
+                                <td class="text-right pr-1">PDP Hasta</td>
+                                <td><input type="text" class="form-control font-12 form-control-sm w-5"></td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>Ordenar</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm">
+                                        <option value="">Seleccionar</option>
+                                        <option value="">Capital</option>
+                                        <option value="">Deuda</option>
+                                        <option value="">IC</option>
+                                    </select>
+                                </td>
+                                <td colspan="2">
+                                    <div class="d-flex justify-content-end">
+                                        Listar Campaña
+                                        <div class="pt-1">
+                                            <input type="checkbox" class="ml-2">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td colspan="2" class="pt-3">
+                                    <a href="#" class="btn btn-outline-blue btn-sm btn-block btn-waves">Buscar</a>
+                                </td>
+                                <td colspan="2" class="pt-3">
+                                    <a href="#" class="btn  btn-sm btn-block btn-waves btn-outline-blue">Limpiar</a>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                            <paginate name="paginar" :list="clientes" :per="20" class="p-0">
-                                <table class="table table-hover">
-                                        <tbody>
-                                            <tr v-for="(item,index) in paginated('paginar')" :key="index">
-                                                <td><i class="rounded-circle far fa-user p-2 text-white" :class="'bg-'+item.bg"></i></td>
-                                                <td><p class="mb-0">{{item.codigo}}</p><small class="font-weight-bold mt-0 pt-0">Código</small></td>
-                                                <td><p class="mb-0">{{item.cliente}}</p><small class="font-weight-bold mt-0 pt-0">Cliente</small></td>
-                                                <td><p class="mb-0">{{item.dni}}</p><small class="font-weight-bold mt-0 pt-0">DNI</small></td>
-                                                <td><p class="mb-0">S/.{{formatoMonto(item.capital)}}</p><small class="font-weight-bold mt-0 pt-0">Deuda Capital</small></td>
-                                                <td><p class="mb-0">S/.{{formatoMonto(item.deuda)}}</p><small class="font-weight-bold mt-0 pt-0">Saldo Moroso Total</small></td>
-                                                <td><p class="mb-0">S/.{{formatoMonto(item.importe)}}</p><small class="font-weight-bold mt-0 pt-0">Importe Canc. Total</small></td>
-                                                <td><p class="mb-0">{{item.oficina}}</p><small class="font-weight-bold mt-0 pt-0">Oficina</small></td>
-                                                <td><p class="mb-0">{{item.ult_gestion}}</p><small class="font-weight-bold mt-0 pt-0">Última Gestión</small></td>
-                                                <td><p class="mb-0">{{item.fecha_pdp}}</p><small class="font-weight-bold mt-0 pt-0">Fecha Compromiso</small></td>
-                                                <td><a href="#" class="btn-detalle" @click.prevent="btnDetalle(item.id)"><i class="fa fa-bars fa-lg"></i></a></td>
-                                            </tr>
-                                        </tbody>
-                                </table>
-                            </paginate>
-                            <paginate-links for="paginar" 
-                                :async="true"                     
-                                :limit="5"
-                                :classes="{'ul': 'pagination', 'li': 'page-item', 'a': 'page-link'}"
-                            ></paginate-links>
+                <div class="datos-mes">
+                    <div class="d-flex">
+                        <div class="pr-1">
+                            <i class="rounded-circle fa fa-chart-pie bg-blue text-white p-1"></i>
+                        </div>
+                        <p class=" badge bg-blue text-white py-2 px-2 min-w-125 text-left">DATOS DEL MES</p>
+                    </div>
+                    <div class="body mb-4 pl-4">
+                       <table class="w-100">
+                           <tr>
+                               <td class="text-left font-bold">Meta Asignada</td>
+                               <td class="text-right">S/50,000</td>
+                           </tr>
+                           <tr>
+                               <td class="text-left font-bold">Recupero al 15</td>
+                               <td class="text-right">S/25,000</td>
+                           </tr>
+                           <tr>
+                               <td class="text-left font-bold">Alcance de Meta</td>
+                               <td class="text-right">50%</td>
+                           </tr>
+                           <tr>
+                               <td class="text-left font-bold">Efectividad sobre PDPS</td>
+                               <td class="text-right">65%</td>
+                           </tr>
+                           <tr>
+                               <td class="text-left font-bold">PDP Caídas (S/.)</td>
+                               <td class="text-right">S/.11,000</td>
+                           </tr>
+                           <tr>
+                               <td class="text-left font-bold">PDP Pendientes (S/.)</td>
+                               <td class="text-right">S/.35,000</td>
+                           </tr>
+                       </table>
+                    </div>
+                </div>
+                <div class="estandar">
+                    <div class="d-flex">
+                        <div class="pr-1">
+                            <i class="rounded-circle fa fa-phone bg-blue text-white p-1"></i>
+                        </div>
+                        <p class=" badge bg-blue text-white py-2 px-2 min-w-125 text-left">ESTÁNDAR</p>
+                    </div>
+                    <div class="body mb-4 pl-4">
+                        <div class="form-group row">
+                            <!-- <label for="">Provincia</label> -->
+                            <input type="text" class="form-control w-5 col-3 ml-3 form-control-sm" >
+                            <a href="#" class="btn btn-outline-blue col-4 btn-sm btn-waves">Consultar</a>
+                        </div>
+                        <table class="w-100">
+                           <tr>
+                               <td class="text-left font-bold py-0">Gestiones</td>
+                               <td class="text-right py-0">200</td>
+                           </tr>
+                           <tr>
+                               <td class="text-left font-bold py-0">Contactos</td>
+                               <td class="text-right py-0">40</td>
+                           </tr>
+                           <tr>
+                               <td class="text-left font-bold">Contactabilidad</td>
+                               <td class="text-right">20%</td>
+                           </tr>
+                           <tr>
+                               <td class="text-left font-bold">PDPS</td>
+                               <td class="text-right">2</td>
+                           </tr>
+                           <tr>
+                               <td class="text-left font-bold">Monto PDPS</td>
+                               <td class="text-right">S/.11,000</td>
+                           </tr>
+                           <tr>
+                               <td class="text-left font-bold">Monto Confirmaciones</td>
+                               <td class="text-right">S/.35,000</td>
+                           </tr>
+                       </table>
+                    </div>
+                </div>
+                <div class="campana pb-3 pl-4">
+                    <div class="btn-outline-blue rounded py-1 px-2 text-center">
+                        Campaña más cercana: 08/08 - 12:00PM
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- detalle -->
-        <detalleCliente  v-if="view_detalle==true" :detalle="detalle" :telefonos="telefonos" :id="idCliente" :respuestas="respuestas" />
-
-        <!-- modal busqueda avanzada -->
-        <div class="modal fade modalCarga" id="busqueda-avanzada" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header bg-blue text-white px-5">
-                        <h5 class="modal-title">Búsqueda Avanzada</h5>
-                        <a href="" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </a>
-                    </div>
-                    <div class="modal-body px-5">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="">Código</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="">DNI</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="">Nombre del Cliente</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="">Nro. de Doc. del Producto</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="">Producto</label>
-                                    <input type="text" class="form-control">
-                                </div>
+            <div class="content-body-2">
+                <div class="contenedor-body">
+                    <nav class="navbar navbar-expand-lg navbar-transparent pt-3 pb-2 bg-white">
+                        <div class="container-fluid px-0">
+                            <div class="navbar-wrapper d-flex">
+                                <a href="" class="icono-bars waves-effect" @click.prevent="menu()"><i class="fa fa-bars fa-lg"></i></a>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="">Tramo</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="">Oficina</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="">Última Gestión</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="">Fecha de Compromiso</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="">Teléfono</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="text-right pb-2">
-                                    <a href="" class="btn btn-success">Generar Busqueda</a>
-                                    <a href="" class="btn shadow">Limpiar</a>
-                                </div>
+                            <div class="justify-content-end" id="navigation">
+                                <ul class="navbar-nav">
+                                    <li class="nav-item pt-1">
+                                        <img src="img/center.jpeg" alt="" width="35px" height="35px" class=" rounded-circle border">
+                                    </li>
+                                </ul>
                             </div>
+                        </div>
+                    </nav>
+                    <div class="px-3 py-1">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="bg-blue text-white">
+                                    <tr class="text-center">
+                                        <td class="align-middle">CODIGO</td>
+                                        <td style="width:20%;">NOMBRE</td>
+                                        <td class="align-middle">DNI/RUC</td>
+                                        <td class="align-middle">CAPITAL</td>
+                                        <td class="align-middle">DEUDA</td>
+                                        <td class="align-middle">IC</td>
+                                        <td class="align-middle">MEDIO</td>
+                                        <td class="align-middle">PRODUCTO</td>
+                                        <td class="align-middle">ULT. RPTA</td>
+                                        <td class="border-0 bg-white rounded-0" style="width:10px;"></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td class="border-0 bg-white">
+                                            <a href="#" class="btn-phone "><i class="fa fa-phone"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- end modal -->
     </div>
 </template>
 
@@ -152,22 +231,11 @@
         // props:["vrol"],
         data() {
             return {
-                temp:[],
-                clientes:[],
-                detalle:[],
-                telefonos:[],
-                respuestas:[],
-                total_clientes:0,
-                paginate: ['paginar'],
-                buscar_codigo:'',
-                view_detalle:false,
-                view_carga:true,
-                idCliente:''
+
             }
         },
         created(){
-            this.listCLientes();
-            this.listRespuestas();
+           
         },
         methods:{
             listCLientes(){    
@@ -241,6 +309,10 @@
                         x1 = x1.replace(rgx, '$1' + ',' + '$2');
                 }
                 return x1 + x2
+            },
+            menu(){
+                 $('.content-menu-2').toggleClass('abrir-menu-2');            
+                 $('.content-body-2').toggleClass('p-left-menu-2');               
             }
         },
         mounted() {

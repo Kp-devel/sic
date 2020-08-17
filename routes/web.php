@@ -6,8 +6,10 @@ Route::get('/', function () {
     return view('gestor.home');
 })->name("inicio");
 
+//clientes
+Route::get('clientes', function () {return view('gestor.clientes');})->name("clientes");
+
 // control de llamadas - elastix
-// Route::get('panelcontrolllamadas', function () {return view('admin.controlLlamadas');})->name("panelcontrolllamadas");
 Route::get('panelcontrolllamadas', 'ControlLLamadaController@panelcontrolllamadas')->name('panelcontrolllamadas');
 Route::post('controlLLamadas', 'ControlLLamadaController@controlLLamadas')->name('controlLLamadas');
 Route::get('panelcontrolllamadasgestor', 'ControlLLamadaController@panelcontrolllamadasgestor')->name('panelcontrolllamadasgestor');
