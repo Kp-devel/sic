@@ -8,6 +8,8 @@ Route::get('/', function () {
 
 //clientes
 Route::get('clientes', function () {return view('gestor.clientes');})->name("clientes");
+Route::get('listClientes', 'ClienteController@listaClientes');
+Route::get('listRespuestas', 'ClienteController@listaRespuestas');
 
 // control de llamadas - elastix
 Route::get('panelcontrolllamadas', 'ControlLLamadaController@panelcontrolllamadas')->name('panelcontrolllamadas');
