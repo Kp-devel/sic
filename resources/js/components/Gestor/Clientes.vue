@@ -24,42 +24,43 @@
                         <table>
                             <tr class="font-12"> 
                                 <td>Código</td>
-                                <td class="pb-1"><input type="text" class="form-control font-12 form-control-sm"></td>
+                                <td class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.codigo"></td>
                                 <td class="font-11">DNI/RUC</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm w-5"></td>
+                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.dni"></td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>Nombre</td>
-                                <td colspan="3" class="pb-1"><input type="text" class="form-control font-12 form-control-sm"></td>
+                                <td colspan="3" class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.nombre"></td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>Teléfono</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm"></td>
+                                <td><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.telefono"></td>
                                 <td class="text-right pr-1">Tramo</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm w-5"></td>
+                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.tramo"></td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>Ult. Gest.</td>
                                 <td colspan="3">
-                                    <select class="form-control font-12 form-control-sm ">
+                                    <select class="form-control font-12 form-control-sm " v-model="busqueda.respuesta" @change="listRespuestas()">
                                         <option value="">Selecionar</option>
+                                        <option v-for="(item,index) in respuestas" :key="index" :value="item.res_id">{{item.res_des}}</option>
                                     </select>
                                 </td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>PDP Desde</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm"></td>
+                                <td><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.pdp_desde"></td>
                                 <td class="text-right pr-1">PDP Hasta</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm w-5"></td>
+                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.pdp_hasta"></td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>Ordenar</td>
                                 <td>
-                                    <select class="form-control font-12 form-control-sm">
+                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.ordenar">
                                         <option value="">Seleccionar</option>
-                                        <option value="">Capital</option>
-                                        <option value="">Deuda</option>
-                                        <option value="">IC</option>
+                                        <option value="1">Capital</option>
+                                        <option value="2">Deuda</option>
+                                        <option value="3">IC</option>
                                     </select>
                                 </td>
                                 <td colspan="2">
@@ -73,7 +74,7 @@
                             </tr>
                             <tr class="font-12"> 
                                 <td colspan="2" class="pt-3">
-                                    <a href="#" class="btn btn-outline-blue btn-sm btn-block btn-waves">Buscar</a>
+                                    <a href="#" @click="listCLientes()" class="btn btn-outline-blue btn-sm btn-block btn-waves">Buscar</a>
                                 </td>
                                 <td colspan="2" class="pt-3">
                                     <a href="#" class="btn  btn-sm btn-block btn-waves btn-outline-blue">Limpiar</a>
@@ -199,16 +200,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>1</td>
-                                        <td>1</td>
-                                        <td>1</td>
-                                        <td>1</td>
-                                        <td>1</td>
-                                        <td>1</td>
-                                        <td>1</td>
-                                        <td>1</td>
+                                    <tr v-for="(item,index) in lista" :key="index">
+                                        <td>{{item.codigo}}</td>
+                                        <td>{{item.nombre}}</td>
+                                        <td>{{item.dni}}</td>
+                                        <td>{{formatoMonto(item.capital)}}</td>
+                                        <td>{{formatoMonto(item.deuda)}}</td>
+                                        <td>{{formatoMonto(item.importe)}}</td>
+                                        <td>{{item.telefono}}</td>
+                                        <td>{{item.producto}}</td>
+                                        <td>{{item.ult_resp}}</td>
                                         <td class="border-0 bg-white">
                                             <a href="#" class="btn-phone "><i class="fa fa-phone"></i></a>
                                         </td>
@@ -231,22 +232,39 @@
         // props:["vrol"],
         data() {
             return {
-
+                lista: [],
+                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:''},
+                //codigo:'',
+                respuestas: [],
             }
         },
         created(){
-           
+           this.listRespuestas();
         },
         methods:{
-            listCLientes(){    
-                axios.get("listClientes").then(res=>{
-                    if(res.data){
-                        this.temp=res.data;
-                        this.clientes=this.temp;
-                        this.total_clientes=this.clientes.length;
-                        this.view_carga=false;
-                    }
-                })
+            listCLientes(){
+                //if(this.busqueda.codigo!="" && this.busqueda.dni!="" && this.busqueda.nombre!=""){
+                    const codigo = this.busqueda.codigo;
+                    const dni = this.busqueda.dni;
+                    const nombre = this.busqueda.nombre;
+                    const telefono = this.busqueda.telefono;
+                    const tramo = this.busqueda.tramo;
+                    const respuesta = this.busqueda.respuesta;
+                    const pdp_desde = this.busqueda.pdp_desde;
+                    const pdp_hasta = this.busqueda.pdp_hasta;
+                    const ordenar = this.busqueda.ordenar;
+                    axios.get("listClientes?codigo="+ (codigo || null)+"&dni="+(dni || null)+"&nombre="+(nombre || null)
+                                +"&telefono="+(telefono || null)+"&tramo="+(tramo || null)+"&respuesta="+(respuesta || null)
+                                +"&pdp_desde="+(pdp_desde || null)+"&pdp_hasta="+(pdp_hasta || null)+"&ordenar="+(ordenar || null))
+                    .then(res=>{
+                        if(res.data){
+                            this.lista=res.data;
+                            //this.clientes=this.listCLientes;
+                            //this.total_clientes=this.clientes.length;
+                            //this.view_carga=false;
+                        }
+                    })
+                //}
             },
             listRespuestas(){    
                 axios.get("listRespuestas").then(res=>{
@@ -320,6 +338,13 @@
                 this.view_detalle=false;
             } );
         },
+
+        /*computed:{
+            buscarClientes(){
+                return this.listCLientes.filter((item) => item.codigo.includes(this.codigo));
+            }
+        },*/
+
         components:{
             // detalleCliente
         }
