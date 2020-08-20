@@ -13,4 +13,8 @@ class ClienteController extends Controller
     public function listaClientes(Request $rq){
         return cliente::listarClientes($rq);
     }
+
+    public function datosEstandar(Request $rq){
+        return cliente::datosEstandar($rq);
+    }
 }
