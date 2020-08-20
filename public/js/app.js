@@ -2579,12 +2579,33 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
  //import detalleCliente from './detalleCliente';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   // props:["vrol"],
   data: function data() {
     return {
+      paginate: ['lista'],
       lista: [],
       busqueda: {
         codigo: '',
@@ -2598,13 +2619,28 @@ __webpack_require__.r(__webpack_exports__);
         ordenar: ''
       },
       //codigo:'',
-      respuestas: []
+      loading: false,
+      respuestas: [],
+      firma: '',
+      estandar: [] //datos:[],
+
     };
   },
   created: function created() {
     this.listRespuestas();
   },
   methods: {
+    limpiar: function limpiar() {
+      this.busqueda.codigo = '';
+      this.busqueda.dni = '';
+      this.busqueda.nombre = '';
+      this.busqueda.telefono = '';
+      this.busqueda.tramo = '';
+      this.busqueda.respuesta = '';
+      this.busqueda.pdp_desde = '';
+      this.busqueda.pdp_hasta = '';
+      this.busqueda.ordenar = '';
+    },
     listCLientes: function listCLientes() {
       var _this = this;
 
@@ -2618,9 +2654,11 @@ __webpack_require__.r(__webpack_exports__);
       var pdp_desde = this.busqueda.pdp_desde;
       var pdp_hasta = this.busqueda.pdp_hasta;
       var ordenar = this.busqueda.ordenar;
+      this.loading = true;
       axios.get("listClientes?codigo=" + (codigo || null) + "&dni=" + (dni || null) + "&nombre=" + (nombre || null) + "&telefono=" + (telefono || null) + "&tramo=" + (tramo || null) + "&respuesta=" + (respuesta || null) + "&pdp_desde=" + (pdp_desde || null) + "&pdp_hasta=" + (pdp_hasta || null) + "&ordenar=" + (ordenar || null)).then(function (res) {
         if (res.data) {
-          _this.lista = res.data; //this.clientes=this.listCLientes;
+          _this.lista = res.data;
+          _this.loading = false; //this.clientes=this.listCLientes;
           //this.total_clientes=this.clientes.length;
           //this.view_carga=false;
         }
@@ -2634,6 +2672,24 @@ __webpack_require__.r(__webpack_exports__);
           _this2.respuestas = res.data;
         }
       });
+    },
+    datosEstandar: function datosEstandar() {
+      var _this3 = this;
+
+      this.datos = [];
+
+      if (this.frima != "") {
+        var firma = this.firma;
+        axios.get("datosEstandar?firma=" + firma).then(function (res) {
+          if (res.data) {
+            _this3.estandar = res.data;
+            console.log('======='); //this.$forceUpdate();
+
+            console.log(_this3.estandar);
+            console.log(_this3.estandar[0].gestiones);
+          }
+        });
+      }
     },
     buscar: function buscar(codigo) {
       if (codigo != "") {
@@ -2651,7 +2707,7 @@ __webpack_require__.r(__webpack_exports__);
       this.total_clientes = this.clientes.length;
     },
     btnDetalle: function btnDetalle(id) {
-      var _this3 = this;
+      var _this4 = this;
 
       $("#modalCarga").modal({
         backdrop: 'static',
@@ -2661,14 +2717,14 @@ __webpack_require__.r(__webpack_exports__);
       this.view_detalle = false;
       axios.get("listDetalle/" + id).then(function (res) {
         if (res.data) {
-          _this3.detalle = res.data;
-          _this3.view_detalle = true;
+          _this4.detalle = res.data;
+          _this4.view_detalle = true;
           $("#modalCarga").modal('hide');
         }
       });
       axios.get("listTelefonos/" + id).then(function (res) {
         if (res.data) {
-          _this3.telefonos = res.data;
+          _this4.telefonos = res.data;
         }
       });
     },
@@ -2702,13 +2758,20 @@ __webpack_require__.r(__webpack_exports__);
     menu: function menu() {
       $('.content-menu-2').toggleClass('abrir-menu-2');
       $('.content-body-2').toggleClass('p-left-menu-2');
+    },
+    soloNumeros: function soloNumeros(e) {
+      var key = window.event ? e.which : e.keyCode;
+
+      if (key < 48 || key > 57) {
+        e.preventDefault();
+      }
     }
   },
   mounted: function mounted() {
-    var _this4 = this;
+    var _this5 = this;
 
     this.$root.$on('cerrar', function () {
-      _this4.view_detalle = false;
+      _this5.view_detalle = false;
     });
   },
 
@@ -2717,7 +2780,9 @@ __webpack_require__.r(__webpack_exports__);
           return this.listCLientes.filter((item) => item.codigo.includes(this.codigo));
       }
   },*/
-  components: {// detalleCliente
+  components: {
+    // detalleCliente
+    vuePaginate: _node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0___default.a
   }
 });
 
@@ -52614,6 +52679,7 @@ var render = function() {
                     attrs: { type: "text" },
                     domProps: { value: _vm.busqueda.codigo },
                     on: {
+                      keypress: _vm.soloNumeros,
                       input: function($event) {
                         if ($event.target.composing) {
                           return
@@ -52640,6 +52706,7 @@ var render = function() {
                     attrs: { type: "text" },
                     domProps: { value: _vm.busqueda.dni },
                     on: {
+                      keypress: _vm.soloNumeros,
                       input: function($event) {
                         if ($event.target.composing) {
                           return
@@ -52696,6 +52763,7 @@ var render = function() {
                     attrs: { type: "text" },
                     domProps: { value: _vm.busqueda.telefono },
                     on: {
+                      keypress: _vm.soloNumeros,
                       input: function($event) {
                         if ($event.target.composing) {
                           return
@@ -52923,17 +52991,177 @@ var render = function() {
                   )
                 ]),
                 _vm._v(" "),
-                _vm._m(4)
+                _c("td", { staticClass: "pt-3", attrs: { colspan: "2" } }, [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "btn  btn-sm btn-block btn-waves btn-outline-blue",
+                      attrs: { href: "#" },
+                      on: {
+                        click: function($event) {
+                          return _vm.limpiar()
+                        }
+                      }
+                    },
+                    [_vm._v("Limpiar")]
+                  )
+                ])
               ])
             ])
           ])
         ]),
         _vm._v(" "),
-        _vm._m(5),
+        _vm._m(4),
         _vm._v(" "),
-        _vm._m(6),
+        _c("div", { staticClass: "estandar" }, [
+          _vm._m(5),
+          _vm._v(" "),
+          _c("div", { staticClass: "body mb-4 pl-4" }, [
+            _c("div", { staticClass: "form-group row" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.firma,
+                    expression: "firma"
+                  }
+                ],
+                staticClass: "form-control w-5 col-3 ml-3 form-control-sm",
+                attrs: { type: "text" },
+                domProps: { value: _vm.firma },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.firma = $event.target.value
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "btn btn-outline-blue col-4 btn-sm btn-waves",
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      return _vm.datosEstandar()
+                    }
+                  }
+                },
+                [_vm._v("Consultar")]
+              )
+            ]),
+            _vm._v(" "),
+            _c(
+              "table",
+              { staticClass: "w-100" },
+              [
+                _vm.estandar.length > 0
+                  ? [
+                      _c("tr", [
+                        _c("td", { staticClass: "text-left font-bold py-0" }, [
+                          _vm._v("Gestiones")
+                        ]),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "text-right py-0" }, [
+                          _vm._v(_vm._s(_vm.estandar[0].gestiones))
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("tr", [
+                        _c("td", { staticClass: "text-left font-bold py-0" }, [
+                          _vm._v("Contactos")
+                        ]),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "text-right py-0" }, [
+                          _vm._v(
+                            _vm._s(
+                              _vm.estandar[0].contactos
+                                ? _vm.estandar[0].contactos
+                                : "-"
+                            )
+                          )
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("tr", [
+                        _c("td", { staticClass: "text-left font-bold" }, [
+                          _vm._v("Contactabilidad")
+                        ]),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "text-right" }, [
+                          _vm._v(
+                            _vm._s(
+                              _vm.estandar[0].contactabilidad
+                                ? "-" + _vm.estandar[0].contactabilidad
+                                : "-"
+                            )
+                          )
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("tr", [
+                        _c("td", { staticClass: "text-left font-bold" }, [
+                          _vm._v("PDPS")
+                        ]),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "text-right" }, [
+                          _vm._v(
+                            _vm._s(
+                              _vm.estandar[0].pdps ? _vm.estandar[0].pdps : "-"
+                            )
+                          )
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("tr", [
+                        _c("td", { staticClass: "text-left font-bold" }, [
+                          _vm._v("Monto PDPS")
+                        ]),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "text-right" }, [
+                          _vm._v(
+                            _vm._s(
+                              _vm.estandar[0].monto_pdps
+                                ? "S/." +
+                                    _vm.formatoMonto(_vm.estandar[0].monto_pdps)
+                                : "-"
+                            )
+                          )
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("tr", [
+                        _c("td", { staticClass: "text-left font-bold" }, [
+                          _vm._v("Monto Confirmaciones")
+                        ]),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "text-right" }, [
+                          _vm._v(
+                            _vm._s(
+                              _vm.estandar[0].monto_confs
+                                ? "S/." +
+                                    _vm.formatoMonto(
+                                      _vm.estandar[0].monto_confs
+                                    )
+                                : "-"
+                            )
+                          )
+                        ])
+                      ])
+                    ]
+                  : _vm._e()
+              ],
+              2
+            )
+          ])
+        ]),
         _vm._v(" "),
-        _vm._m(7)
+        _vm._m(6)
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "content-body-2" }, [
@@ -52963,49 +53191,170 @@ var render = function() {
                   )
                 ]),
                 _vm._v(" "),
-                _vm._m(8)
+                _vm._m(7)
               ])
             ]
           ),
           _vm._v(" "),
           _c("div", { staticClass: "px-3 py-1" }, [
-            _c("div", { staticClass: "table-responsive" }, [
-              _c("table", { staticClass: "table table-hover" }, [
-                _vm._m(9),
-                _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "table-responsive" },
+              [
                 _c(
-                  "tbody",
-                  _vm._l(_vm.lista, function(item, index) {
-                    return _c("tr", { key: index }, [
-                      _c("td", [_vm._v(_vm._s(item.codigo))]),
-                      _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(item.nombre))]),
-                      _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(item.dni))]),
-                      _vm._v(" "),
-                      _c("td", [
-                        _vm._v(_vm._s(_vm.formatoMonto(item.capital)))
+                  "paginate",
+                  {
+                    staticClass: "px-0",
+                    attrs: { name: "lista", list: _vm.lista, per: 20 }
+                  },
+                  [
+                    _c("table", { staticClass: "table table-hover" }, [
+                      _c("thead", { staticClass: "bg-blue text-white" }, [
+                        _c("tr", { staticClass: "text-center" }, [
+                          _c("td", { staticClass: "align-middle" }, [
+                            _vm._v("CODIGO")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticStyle: { width: "20%" } }, [
+                            _vm._v("NOMBRE")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "align-middle" }, [
+                            _vm._v("DNI/RUC")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "align-middle" }, [
+                            _vm._v("CAPITAL")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "align-middle" }, [
+                            _vm._v("DEUDA")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "align-middle" }, [
+                            _vm._v("IC")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "align-middle" }, [
+                            _vm._v("MEDIO")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "align-middle" }, [
+                            _vm._v("PRODUCTO")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "align-middle" }, [
+                            _vm._v("ULT. RPTA")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", {
+                            staticClass: "border-0 bg-white rounded-0",
+                            staticStyle: { width: "10px" }
+                          })
+                        ])
                       ]),
                       _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(_vm.formatoMonto(item.deuda)))]),
-                      _vm._v(" "),
-                      _c("td", [
-                        _vm._v(_vm._s(_vm.formatoMonto(item.importe)))
-                      ]),
-                      _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(item.telefono))]),
-                      _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(item.producto))]),
-                      _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(item.ult_resp))]),
-                      _vm._v(" "),
-                      _vm._m(10, true)
+                      _c(
+                        "tbody",
+                        [
+                          _vm.lista == "" && _vm.loading == false
+                            ? _c("tr", { staticClass: "text-center" }, [
+                                _c(
+                                  "td",
+                                  {
+                                    staticStyle: { border: "none" },
+                                    attrs: { colspan: "9" }
+                                  },
+                                  [_vm._v("No hay registros")]
+                                )
+                              ])
+                            : _vm.loading == false
+                            ? _vm._l(_vm.paginated("lista"), function(
+                                item,
+                                index
+                              ) {
+                                return _c("tr", { key: index }, [
+                                  _c("td", [_vm._v(_vm._s(item.codigo))]),
+                                  _vm._v(" "),
+                                  _c("td", [_vm._v(_vm._s(item.nombre))]),
+                                  _vm._v(" "),
+                                  _c("td", [_vm._v(_vm._s(item.dni))]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(
+                                      _vm._s(_vm.formatoMonto(item.capital))
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(_vm._s(_vm.formatoMonto(item.deuda)))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(
+                                      _vm._s(_vm.formatoMonto(item.importe))
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [_vm._v(_vm._s(item.telefono))]),
+                                  _vm._v(" "),
+                                  _c("td", [_vm._v(_vm._s(item.producto))]),
+                                  _vm._v(" "),
+                                  _c("td", [_vm._v(_vm._s(item.ult_resp))]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "td",
+                                    { staticClass: "border-0 bg-white" },
+                                    [
+                                      _c(
+                                        "a",
+                                        {
+                                          staticClass: "btn-phone ",
+                                          attrs: { href: "#" }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "fa fa-phone"
+                                          })
+                                        ]
+                                      )
+                                    ]
+                                  )
+                                ])
+                              })
+                            : _vm._e()
+                        ],
+                        2
+                      )
                     ])
-                  }),
-                  0
+                  ]
+                ),
+                _vm._v(" "),
+                _c("hr"),
+                _vm._v(" "),
+                _c("paginate-links", {
+                  attrs: {
+                    for: "lista",
+                    async: true,
+                    limit: 4,
+                    classes: {
+                      ul: "pagination",
+                      li: "page-item",
+                      a: "page-link"
+                    }
+                  }
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _vm.loading
+              ? _c(
+                  "div",
+                  { staticClass: "d-flex justify-content-center py-3" },
+                  [_vm._m(8)]
                 )
-              ])
-            ])
+              : _vm._e()
           ])
         ])
       ])
@@ -53075,21 +53424,6 @@ var staticRenderFns = [
           _c("input", { staticClass: "ml-2", attrs: { type: "checkbox" } })
         ])
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", { staticClass: "pt-3", attrs: { colspan: "2" } }, [
-      _c(
-        "a",
-        {
-          staticClass: "btn  btn-sm btn-block btn-waves btn-outline-blue",
-          attrs: { href: "#" }
-        },
-        [_vm._v("Limpiar")]
-      )
     ])
   },
   function() {
@@ -53171,89 +53505,20 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "estandar" }, [
-      _c("div", { staticClass: "d-flex" }, [
-        _c("div", { staticClass: "pr-1" }, [
-          _c("i", {
-            staticClass: "rounded-circle fa fa-phone bg-blue text-white p-1"
-          })
-        ]),
-        _vm._v(" "),
-        _c(
-          "p",
-          {
-            staticClass:
-              " badge bg-blue text-white py-2 px-2 min-w-125 text-left"
-          },
-          [_vm._v("ESTÁNDAR")]
-        )
+    return _c("div", { staticClass: "d-flex" }, [
+      _c("div", { staticClass: "pr-1" }, [
+        _c("i", {
+          staticClass: "rounded-circle fa fa-phone bg-blue text-white p-1"
+        })
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "body mb-4 pl-4" }, [
-        _c("div", { staticClass: "form-group row" }, [
-          _c("input", {
-            staticClass: "form-control w-5 col-3 ml-3 form-control-sm",
-            attrs: { type: "text" }
-          }),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              staticClass: "btn btn-outline-blue col-4 btn-sm btn-waves",
-              attrs: { href: "#" }
-            },
-            [_vm._v("Consultar")]
-          )
-        ]),
-        _vm._v(" "),
-        _c("table", { staticClass: "w-100" }, [
-          _c("tr", [
-            _c("td", { staticClass: "text-left font-bold py-0" }, [
-              _vm._v("Gestiones")
-            ]),
-            _vm._v(" "),
-            _c("td", { staticClass: "text-right py-0" }, [_vm._v("200")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("td", { staticClass: "text-left font-bold py-0" }, [
-              _vm._v("Contactos")
-            ]),
-            _vm._v(" "),
-            _c("td", { staticClass: "text-right py-0" }, [_vm._v("40")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("td", { staticClass: "text-left font-bold" }, [
-              _vm._v("Contactabilidad")
-            ]),
-            _vm._v(" "),
-            _c("td", { staticClass: "text-right" }, [_vm._v("20%")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("td", { staticClass: "text-left font-bold" }, [_vm._v("PDPS")]),
-            _vm._v(" "),
-            _c("td", { staticClass: "text-right" }, [_vm._v("2")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("td", { staticClass: "text-left font-bold" }, [
-              _vm._v("Monto PDPS")
-            ]),
-            _vm._v(" "),
-            _c("td", { staticClass: "text-right" }, [_vm._v("S/.11,000")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("td", { staticClass: "text-left font-bold" }, [
-              _vm._v("Monto Confirmaciones")
-            ]),
-            _vm._v(" "),
-            _c("td", { staticClass: "text-right" }, [_vm._v("S/.35,000")])
-          ])
-        ])
-      ])
+      _c(
+        "p",
+        {
+          staticClass: " badge bg-blue text-white py-2 px-2 min-w-125 text-left"
+        },
+        [_vm._v("ESTÁNDAR")]
+      )
     ])
   },
   function() {
@@ -53300,42 +53565,11 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("thead", { staticClass: "bg-blue text-white" }, [
-      _c("tr", { staticClass: "text-center" }, [
-        _c("td", { staticClass: "align-middle" }, [_vm._v("CODIGO")]),
-        _vm._v(" "),
-        _c("td", { staticStyle: { width: "20%" } }, [_vm._v("NOMBRE")]),
-        _vm._v(" "),
-        _c("td", { staticClass: "align-middle" }, [_vm._v("DNI/RUC")]),
-        _vm._v(" "),
-        _c("td", { staticClass: "align-middle" }, [_vm._v("CAPITAL")]),
-        _vm._v(" "),
-        _c("td", { staticClass: "align-middle" }, [_vm._v("DEUDA")]),
-        _vm._v(" "),
-        _c("td", { staticClass: "align-middle" }, [_vm._v("IC")]),
-        _vm._v(" "),
-        _c("td", { staticClass: "align-middle" }, [_vm._v("MEDIO")]),
-        _vm._v(" "),
-        _c("td", { staticClass: "align-middle" }, [_vm._v("PRODUCTO")]),
-        _vm._v(" "),
-        _c("td", { staticClass: "align-middle" }, [_vm._v("ULT. RPTA")]),
-        _vm._v(" "),
-        _c("td", {
-          staticClass: "border-0 bg-white rounded-0",
-          staticStyle: { width: "10px" }
-        })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", { staticClass: "border-0 bg-white" }, [
-      _c("a", { staticClass: "btn-phone ", attrs: { href: "#" } }, [
-        _c("i", { staticClass: "fa fa-phone" })
-      ])
-    ])
+    return _c(
+      "div",
+      { staticClass: "spinner-border text-blue", attrs: { role: "status" } },
+      [_c("span", { staticClass: "sr-only" }, [_vm._v("Loading...")])]
+    )
   }
 ]
 render._withStripped = true
