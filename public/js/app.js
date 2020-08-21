@@ -2599,6 +2599,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
  //import detalleCliente from './detalleCliente';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2616,20 +2627,57 @@ __webpack_require__.r(__webpack_exports__);
         respuesta: '',
         pdp_desde: '',
         pdp_hasta: '',
-        ordenar: ''
+        ordenar: '',
+        camp: ''
       },
       //codigo:'',
       loading: false,
       respuestas: [],
       firma: '',
-      estandar: [] //datos:[],
-
+      estandar: [],
+      metas: [],
+      promesas: [],
+      pdps: [],
+      pagos: [],
+      data: []
     };
   },
   created: function created() {
     this.listRespuestas();
+    this.datosMes();
+  },
+  watch: {
+    'busqueda.pdp_desde': function busquedaPdp_desde(val) {
+      this.busqueda.pdp_desde = this.validarFormatoFecha(val);
+    },
+    'busqueda.pdp_hasta': function busquedaPdp_hasta(val) {
+      this.busqueda.pdp_hasta = this.validarFormatoFecha(val);
+    }
   },
   methods: {
+    validarFormatoFecha: function validarFormatoFecha(value) {
+      var input = value;
+      if (/\D\/$/.test(input)) input = input.substr(0, input.length - 3);
+      var values = input.split('/').map(function (v) {
+        return v.replace(/\D/g, '');
+      });
+      if (values[0]) values[0] = this.checkValue(values[0], 31);
+      if (values[1]) values[1] = this.checkValue(values[1], 12);
+      var output = values.map(function (v, i) {
+        return v.length == 2 && i < 2 ? v + ' / ' : v;
+      });
+      return output.join('').substr(0, 14);
+    },
+    checkValue: function checkValue(str, max) {
+      if (str.charAt(0) !== '0' || str == '00') {
+        var num = parseInt(str);
+        if (isNaN(num) || num <= 0 || num > max) num = 1;
+        str = num > parseInt(max.toString().charAt(0)) && num.toString().length == 1 ? '0' + num : num.toString();
+      }
+
+      ;
+      return str;
+    },
     limpiar: function limpiar() {
       this.busqueda.codigo = '';
       this.busqueda.dni = '';
@@ -2654,8 +2702,20 @@ __webpack_require__.r(__webpack_exports__);
       var pdp_desde = this.busqueda.pdp_desde;
       var pdp_hasta = this.busqueda.pdp_hasta;
       var ordenar = this.busqueda.ordenar;
+      var camp = this.busqueda.camp;
       this.loading = true;
-      axios.get("listClientes?codigo=" + (codigo || null) + "&dni=" + (dni || null) + "&nombre=" + (nombre || null) + "&telefono=" + (telefono || null) + "&tramo=" + (tramo || null) + "&respuesta=" + (respuesta || null) + "&pdp_desde=" + (pdp_desde || null) + "&pdp_hasta=" + (pdp_hasta || null) + "&ordenar=" + (ordenar || null)).then(function (res) {
+      var fechas_i = pdp_desde.split('/');
+      var nuevaFecha_i = "".concat(fechas_i[2], "-").concat(fechas_i[1], "-").concat(fechas_i[0]);
+      var fec_desde = nuevaFecha_i.split(' ').join('');
+      var fechas_f = pdp_hasta.split('/');
+      var nuevaFecha_f = "".concat(fechas_f[2], "-").concat(fechas_f[1], "-").concat(fechas_f[0]);
+      var fec_hasta = nuevaFecha_f.split(' ').join('');
+      /*console.log(this.busqueda.pdp_desde);*/
+
+      console.log(fec_desde); // this.lista=[];
+
+      console.log(camp);
+      axios.get("listClientes?codigo=" + (codigo || null) + "&dni=" + (dni || null) + "&nombre=" + (nombre || null) + "&telefono=" + (telefono || null) + "&tramo=" + (tramo || null) + "&respuesta=" + (respuesta || null) + "&fec_desde=" + (fec_desde || null) + "&fec_hasta=" + (fec_hasta || null) + "&ordenar=" + (ordenar || null)).then(function (res) {
         if (res.data) {
           _this.lista = res.data;
           _this.loading = false; //this.clientes=this.listCLientes;
@@ -2676,8 +2736,6 @@ __webpack_require__.r(__webpack_exports__);
     datosEstandar: function datosEstandar() {
       var _this3 = this;
 
-      this.datos = [];
-
       if (this.frima != "") {
         var firma = this.firma;
         axios.get("datosEstandar?firma=" + firma).then(function (res) {
@@ -2690,6 +2748,24 @@ __webpack_require__.r(__webpack_exports__);
           }
         });
       }
+    },
+    datosMes: function datosMes() {
+      var _this4 = this;
+
+      axios.get("datosMes").then(function (res) {
+        if (res.data) {
+          //this.data=res.data;
+          _this4.promesas = res.data.datos;
+          _this4.pdps = res.data.pdp;
+          _this4.pagos = res.data.pagos;
+          console.log(_this4.promesas);
+          console.log(_this4.promesas[0].caido);
+          console.log(_this4.pdps);
+          console.log(_this4.pdps[0].monto_pdp);
+          console.log(_this4.pagos);
+          console.log(_this4.pagos[0].monto_pago);
+        }
+      });
     },
     buscar: function buscar(codigo) {
       if (codigo != "") {
@@ -2707,7 +2783,7 @@ __webpack_require__.r(__webpack_exports__);
       this.total_clientes = this.clientes.length;
     },
     btnDetalle: function btnDetalle(id) {
-      var _this4 = this;
+      var _this5 = this;
 
       $("#modalCarga").modal({
         backdrop: 'static',
@@ -2717,14 +2793,14 @@ __webpack_require__.r(__webpack_exports__);
       this.view_detalle = false;
       axios.get("listDetalle/" + id).then(function (res) {
         if (res.data) {
-          _this4.detalle = res.data;
-          _this4.view_detalle = true;
+          _this5.detalle = res.data;
+          _this5.view_detalle = true;
           $("#modalCarga").modal('hide');
         }
       });
       axios.get("listTelefonos/" + id).then(function (res) {
         if (res.data) {
-          _this4.telefonos = res.data;
+          _this5.telefonos = res.data;
         }
       });
     },
@@ -2768,10 +2844,10 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    var _this5 = this;
+    var _this6 = this;
 
     this.$root.$on('cerrar', function () {
-      _this5.view_detalle = false;
+      _this6.view_detalle = false;
     });
   },
 
@@ -52970,7 +53046,60 @@ var render = function() {
                   )
                 ]),
                 _vm._v(" "),
-                _vm._m(3)
+                _c("td", { attrs: { colspan: "2" } }, [
+                  _c("div", { staticClass: "d-flex justify-content-end" }, [
+                    _vm._v(
+                      "\n                                    Listar Campaña\n                                    "
+                    ),
+                    _c("div", { staticClass: "pt-1" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.busqueda.camp,
+                            expression: "busqueda.camp"
+                          }
+                        ],
+                        staticClass: "ml-2",
+                        attrs: { type: "checkbox" },
+                        domProps: {
+                          checked: Array.isArray(_vm.busqueda.camp)
+                            ? _vm._i(_vm.busqueda.camp, null) > -1
+                            : _vm.busqueda.camp
+                        },
+                        on: {
+                          change: function($event) {
+                            var $$a = _vm.busqueda.camp,
+                              $$el = $event.target,
+                              $$c = $$el.checked ? true : false
+                            if (Array.isArray($$a)) {
+                              var $$v = null,
+                                $$i = _vm._i($$a, $$v)
+                              if ($$el.checked) {
+                                $$i < 0 &&
+                                  _vm.$set(
+                                    _vm.busqueda,
+                                    "camp",
+                                    $$a.concat([$$v])
+                                  )
+                              } else {
+                                $$i > -1 &&
+                                  _vm.$set(
+                                    _vm.busqueda,
+                                    "camp",
+                                    $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                                  )
+                              }
+                            } else {
+                              _vm.$set(_vm.busqueda, "camp", $$c)
+                            }
+                          }
+                        }
+                      })
+                    ])
+                  ])
+                ])
               ]),
               _vm._v(" "),
               _c("tr", { staticClass: "font-12" }, [
@@ -53012,10 +53141,90 @@ var render = function() {
           ])
         ]),
         _vm._v(" "),
-        _vm._m(4),
+        _c("div", { staticClass: "datos-mes" }, [
+          _vm._m(3),
+          _vm._v(" "),
+          _c("div", { staticClass: "body mb-4 pl-4" }, [
+            _c(
+              "table",
+              { staticClass: "w-100" },
+              [
+                _vm._m(4),
+                _vm._v(" "),
+                _vm._m(5),
+                _vm._v(" "),
+                _vm._m(6),
+                _vm._v(" "),
+                _vm.pdps.length > 0 && _vm.pagos.length > 0
+                  ? [
+                      _c("tr", [
+                        _c("td", { staticClass: "text-left font-bold" }, [
+                          _vm._v("Efectividad sobre PDPS")
+                        ]),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "text-right" }, [
+                          _vm._v(
+                            _vm._s(
+                              _vm.pagos[0].monto_pago / _vm.pdps[0].monto_pdp >
+                                0
+                                ? Math.round(
+                                    (_vm.pagos[0].monto_pago /
+                                      _vm.pdps[0].monto_pdp) *
+                                      100
+                                  )
+                                : "0"
+                            ) + "%"
+                          )
+                        ])
+                      ])
+                    ]
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.promesas.length > 0
+                  ? [
+                      _c("tr", [
+                        _c("td", { staticClass: "text-left font-bold" }, [
+                          _vm._v("PDP Caídas (S/.)")
+                        ]),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "text-right" }, [
+                          _vm._v(
+                            "S/." +
+                              _vm._s(
+                                _vm.promesas[0].caido
+                                  ? _vm.formatoMonto(_vm.promesas[0].caido)
+                                  : "0"
+                              )
+                          )
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("tr", [
+                        _c("td", { staticClass: "text-left font-bold" }, [
+                          _vm._v("PDP Pendientes (S/.)")
+                        ]),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "text-right" }, [
+                          _vm._v(
+                            "S/." +
+                              _vm._s(
+                                _vm.promesas[0].pendiente
+                                  ? _vm.formatoMonto(_vm.promesas[0].pendiente)
+                                  : "0"
+                              )
+                          )
+                        ])
+                      ])
+                    ]
+                  : _vm._e()
+              ],
+              2
+            )
+          ])
+        ]),
         _vm._v(" "),
         _c("div", { staticClass: "estandar" }, [
-          _vm._m(5),
+          _vm._m(7),
           _vm._v(" "),
           _c("div", { staticClass: "body mb-4 pl-4" }, [
             _c("div", { staticClass: "form-group row" }, [
@@ -53161,7 +53370,7 @@ var render = function() {
           ])
         ]),
         _vm._v(" "),
-        _vm._m(6)
+        _vm._m(8)
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "content-body-2" }, [
@@ -53191,7 +53400,7 @@ var render = function() {
                   )
                 ]),
                 _vm._v(" "),
-                _vm._m(7)
+                _vm._m(9)
               ])
             ]
           ),
@@ -53330,29 +53539,31 @@ var render = function() {
                   ]
                 ),
                 _vm._v(" "),
-                _c("hr"),
-                _vm._v(" "),
-                _c("paginate-links", {
-                  attrs: {
-                    for: "lista",
-                    async: true,
-                    limit: 4,
-                    classes: {
-                      ul: "pagination",
-                      li: "page-item",
-                      a: "page-link"
-                    }
-                  }
-                })
+                _vm.lista.length > 0 && !_vm.loading
+                  ? [
+                      _c("paginate-links", {
+                        attrs: {
+                          for: "lista",
+                          async: true,
+                          limit: 4,
+                          classes: {
+                            ul: "pagination",
+                            li: "page-item",
+                            a: "page-link"
+                          }
+                        }
+                      })
+                    ]
+                  : _vm._e()
               ],
-              1
+              2
             ),
             _vm._v(" "),
             _vm.loading
               ? _c(
                   "div",
                   { staticClass: "d-flex justify-content-center py-3" },
-                  [_vm._m(8)]
+                  [_vm._m(10)]
                 )
               : _vm._e()
           ])
@@ -53415,90 +53626,56 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("td", { attrs: { colspan: "2" } }, [
-      _c("div", { staticClass: "d-flex justify-content-end" }, [
-        _vm._v(
-          "\n                                    Listar Campaña\n                                    "
-        ),
-        _c("div", { staticClass: "pt-1" }, [
-          _c("input", { staticClass: "ml-2", attrs: { type: "checkbox" } })
-        ])
-      ])
+    return _c("div", { staticClass: "d-flex" }, [
+      _c("div", { staticClass: "pr-1" }, [
+        _c("i", {
+          staticClass: "rounded-circle fa fa-chart-pie bg-blue text-white p-1"
+        })
+      ]),
+      _vm._v(" "),
+      _c(
+        "p",
+        {
+          staticClass: " badge bg-blue text-white py-2 px-2 min-w-125 text-left"
+        },
+        [_vm._v("DATOS DEL MES")]
+      )
     ])
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "datos-mes" }, [
-      _c("div", { staticClass: "d-flex" }, [
-        _c("div", { staticClass: "pr-1" }, [
-          _c("i", {
-            staticClass: "rounded-circle fa fa-chart-pie bg-blue text-white p-1"
-          })
-        ]),
-        _vm._v(" "),
-        _c(
-          "p",
-          {
-            staticClass:
-              " badge bg-blue text-white py-2 px-2 min-w-125 text-left"
-          },
-          [_vm._v("DATOS DEL MES")]
-        )
+    return _c("tr", [
+      _c("td", { staticClass: "text-left font-bold" }, [
+        _vm._v("Meta Asignada")
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "body mb-4 pl-4" }, [
-        _c("table", { staticClass: "w-100" }, [
-          _c("tr", [
-            _c("td", { staticClass: "text-left font-bold" }, [
-              _vm._v("Meta Asignada")
-            ]),
-            _vm._v(" "),
-            _c("td", { staticClass: "text-right" }, [_vm._v("S/50,000")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("td", { staticClass: "text-left font-bold" }, [
-              _vm._v("Recupero al 15")
-            ]),
-            _vm._v(" "),
-            _c("td", { staticClass: "text-right" }, [_vm._v("S/25,000")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("td", { staticClass: "text-left font-bold" }, [
-              _vm._v("Alcance de Meta")
-            ]),
-            _vm._v(" "),
-            _c("td", { staticClass: "text-right" }, [_vm._v("50%")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("td", { staticClass: "text-left font-bold" }, [
-              _vm._v("Efectividad sobre PDPS")
-            ]),
-            _vm._v(" "),
-            _c("td", { staticClass: "text-right" }, [_vm._v("65%")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("td", { staticClass: "text-left font-bold" }, [
-              _vm._v("PDP Caídas (S/.)")
-            ]),
-            _vm._v(" "),
-            _c("td", { staticClass: "text-right" }, [_vm._v("S/.11,000")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("td", { staticClass: "text-left font-bold" }, [
-              _vm._v("PDP Pendientes (S/.)")
-            ]),
-            _vm._v(" "),
-            _c("td", { staticClass: "text-right" }, [_vm._v("S/.35,000")])
-          ])
-        ])
-      ])
+      _c("td", { staticClass: "text-right" }, [_vm._v("S/50,000")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", [
+      _c("td", { staticClass: "text-left font-bold" }, [
+        _vm._v("Recupero al 15")
+      ]),
+      _vm._v(" "),
+      _c("td", { staticClass: "text-right" }, [_vm._v("S/25,000")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", [
+      _c("td", { staticClass: "text-left font-bold" }, [
+        _vm._v("Alcance de Meta")
+      ]),
+      _vm._v(" "),
+      _c("td", { staticClass: "text-right" }, [_vm._v("50%")])
     ])
   },
   function() {
