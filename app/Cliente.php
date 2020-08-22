@@ -27,45 +27,45 @@ class Cliente extends Model
         $telefono=$rq->telefono;
         $tramo=$rq->tramo;
         $respuesta=$rq->respuesta;
-        $pdp_desde=$rq->pdp_desde;
-        $pdp_hasta=$rq->pdp_hasta;
+        $fec_desde=$rq->fec_desde;
+        $fec_hasta=$rq->fec_hasta;
         $ordenar=$rq->ordenar;
+
+        /*$sql_cartera="
+            select car_id_FK as idcartera from cliente where cli_est=0 and cli_pas=0 and emp_tel_id_FK=2531 LIMIT 1
+        ";
+        $query_cartera=DB::connection('mysql')->select(DB::raw($sql_cartera));
+        foreach($query_cartera as $q){
+            $car_id=$q->car_id_FK;
+        }
+        $cartera=$car_id;
+        $fec_actual=date("Y-m-d H:i:00");
+        dd($fec_actual);
+		$sql_campana = " select clientes,fecha_i,fecha_f from indicadores.campana
+					WHERE id_cartera=$cartera and fecha_i <= '$fec_actual' and fecha_f >= '$fec_actual' 
+					LIMIT 1";*/
 
         $sql="
             SELECT 
-                dc.cli_id_FK,
-                cli_id as id,
                 cli_cod as codigo,
                 cli_nom as nombre,
                 cli_num_doc as dni,
-                det_cli_num_doc as cuenta,
-                det_cli_tra as tramo,
                 det_cli_deu_cap as capital,
                 det_cli_deu_mor as deuda,
                 det_cli_imp_can as importe,
                 det_cli_pro as producto,
-                cli_tel_tel as telefono,
-                if(res_des is null,'Sin Gestión',res_des) as ult_resp,
-                ges_cli_com_can as monto
+                if(ges_cli_med is null,'-',ges_cli_med) as telefono,
+                if(res_id_FK is null,'Sin Gestión',res_des) as ult_resp
             FROM 
                 cliente as c
-            left JOIN
-                (select max(ges_cli_id) as maxid,cli_id_FK from creditoy_cobranzas.gestion_cliente where date_format(ges_cli_fec,'%Y-%m')=date_format(now(),'%Y-%m') GROUP BY cli_id_FK) as g
-                on g.cli_id_FK=c.cli_id
-            left JOIN 
-                creditoy_cobranzas.gestion_cliente as gg on gg.ges_cli_id=g.maxid
-            left JOIN
-                detalle_cliente as dc ON c.cli_id=dc.cli_id_FK
-            left JOIN 
-                empleado as e ON c.emp_tel_id_FK=e.emp_id
-            left JOIN 
-                cliente_telefono as ct ON ct.cli_id_FK=c.cli_id
-            left JOIN
-                respuesta as r on r.res_id=gg.res_id_FK
+            inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
+            left JOIN gestion_cliente g ON c.ges_cli_tel_id_FK=g.ges_cli_id
+            left JOIN respuesta as r on r.res_id=g.res_id_FK
             where 
-                cli_est=0 and cli_pas=0 and det_cli_est=0 and det_cli_pas=0
-                and emp_cod=4090
-                and det_cli_deu_mor = (SELECT MAX(det_cli_deu_mor) FROM detalle_cliente WHERE det_cli_est = 0 AND det_cli_pas = 0 AND cli_id_FK = c.cli_id ORDER BY det_cli_deu_mor DESC LIMIT 1)
+                cli_est=0 and cli_pas=0 
+                and det_cli_est=0 and det_cli_pas=0
+                and emp_tel_id_FK=2531
+                and det_cli_deu_mor = (SELECT MAX(det_cli_deu_mor) FROM detalle_cliente WHERE det_cli_est = 0 AND det_cli_pas = 0 AND cli_id_FK = c.cli_id)
                     
         ";
         if($codigo!= "null"){
@@ -86,11 +86,11 @@ class Cliente extends Model
         if($respuesta!= "null"){
             $sql = $sql." and res_id_FK=$respuesta ";
         }
-        if($pdp_desde!= "null"){
-            $sql = $sql." and ges_cli_com_can >=$pdp_desde ";
+        if($fec_desde!= "undefined-undefined-"){
+            $sql = $sql." and date_format(ges_cli_com_fec,'%Y-%m-%d') >='$fec_desde' ";
         }
-        if($pdp_hasta!= "null"){
-            $sql = $sql." and ges_cli_com_can <=$pdp_hasta ";
+        if($fec_hasta!= "undefined-undefined-"){
+            $sql = $sql." and date_format(ges_cli_com_fec,'%Y-%m-%d') <='$fec_hasta' ";
         }
 
         $sql= $sql." GROUP BY cli_id";
@@ -105,7 +105,11 @@ class Cliente extends Model
             if($ordenar=='3'){
                 $sql = $sql." order by det_cli_imp_can desc ";
             }
+        }else{
+                $sql = $sql." order by det_cli_deu_mor desc ";
         }
+
+
         
 
         $query=DB::connection('mysql')->select(DB::raw($sql));
@@ -146,6 +150,107 @@ class Cliente extends Model
                     and ges_cli_id = (SELECT MAX(ges_cli_id) FROM gestion_cliente WHERE cli_id_FK = c.cli_id ORDER BY ges_cli_id DESC LIMIT 1)
                 GROUP BY cli_id
             "),array("codigo"=>$codigo));*/
+    }
+
+    public static function datosMes(Request $rq){
+        $sql_metas="
+            SELECT  meta,  recupero, if((recupero/meta)>0,format((recupero/meta)*100,2),0) as alcance
+            FROM
+            (
+                SELECT meta,
+                    (	select 
+                    if(sum(pag_cli_mon)>0,sum(pag_cli_mon),0) as recu
+                    from pago_cliente_2 as p
+                    INNER JOIN 
+                        indicadores.cartera as car on p.car_id_FK=car.cartera_id_fk
+                    inner join 
+                        cliente as c on p.pag_cli_cod=c.cli_cod
+                    where 
+                        p.car_id_FK=72			
+                        and date_format(pag_cli_fec,'%Y-%m') = date_format(now(),'%Y-%m')
+                        and date_format(fecha,'%Y-%m') = date_format(now(),'%Y-%m')
+                    ) as recupero
+                from indicadores.cartera
+                WHERE cartera_id_fk=72 and date_format(fecha,'%Y-%m')= date_format(now(),'%Y-%m')
+            ) a
+        ";
+
+        $sql_datos="
+            SELECT 
+                CARTERA,
+                USUARIO,
+                SUM(MONTO_CAIDO) AS caido,
+                SUM(MONTO_CUMPLIDO) AS cumplido,
+                SUM(MONTO_PENDIENTE) AS pendiente,
+                SUM(MONTO) AS total
+            FROM 
+            (SELECT 
+                CARTERA,
+                USUARIO,
+                SUBSTR(USUARIO,1,4) AS COD,
+                CASE WHEN ESTADO='CAIDO' THEN MONTO
+                END AS MONTO_CAIDO,
+                CASE WHEN ESTADO='P' THEN MONTO 
+                END AS MONTO_PENDIENTE,
+                CASE WHEN ESTADO='CUM' THEN MONTO 
+                END AS MONTO_CUMPLIDO,
+                MONTO
+            FROM 
+            (SELECT
+            CAR.car_id AS CARTERA,
+            CONCAT(E2.emp_cod,'-',E2.emp_nom) as USUARIO,
+            COMCLI.com_cli_can AS MONTO,
+            CASE WHEN COMCLI.com_cli_est<>0 THEN 'CUM'
+            WHEN DATEDIFF(DATE_FORMAT(now(),'%Y-%m-%d'),DATE_FORMAT(COMCLI.com_cli_fec_pag,'%Y-%m-%d'))<=0 THEN 'P'
+            WHEN DATEDIFF(DATE_FORMAT(now(),'%Y-%m-%d'),DATE_FORMAT(COMCLI.com_cli_fec_pag,'%Y-%m-%d'))>0 THEN 'CAIDO'
+            ELSE '' END AS ESTADO
+            FROM
+            (
+            SELECT MAX(CC.com_cli_id) AS com_cli_id, C.cli_id, C.cli_cod, C.cli_nom, C.car_id_FK, C.loc_id_FK, C.emp_tel_id_FK, C.emp_dom_id_FK
+            FROM (SELECT cli_id, cli_cod, cli_nom, car_id_FK, loc_id_FK, emp_tel_id_FK, emp_dom_id_FK FROM cliente WHERE cli_est=0 AND cli_pas=0) C
+            INNER JOIN compromiso_cliente CC ON C.cli_id=CC.cli_id_FK
+            INNER JOIN gestion_cliente g ON CC.ges_cli_id_FK=g.ges_cli_id
+            WHERE DATE_FORMAT(CC.com_cli_fec_pag,'%Y-%m')=DATE_FORMAT(now(),'%Y-%m')
+            AND ges_cli_acc IN (1,2)
+            GROUP BY C.cli_id
+            ) T1  
+            LEFT JOIN compromiso_cliente COMCLI ON T1.com_cli_id=COMCLI.com_cli_id
+            LEFT JOIN empleado E2 ON T1.emp_tel_id_FK=E2.emp_id
+            LEFT JOIN cartera CAR ON T1.car_id_FK=CAR.car_id
+            WHERE CAR.car_est=0 AND CAR.car_pas=0
+            AND E2.emp_cod IN (4090) 
+            )X
+            )K
+            GROUP BY USUARIO
+            ORDER BY CARTERA, COD
+        ";
+
+        $sql_pdp="
+            SELECT if(SUM(ges_cli_com_can)>0,SUM(ges_cli_com_can),0) as monto_pdp
+            from gestion_cliente as gc
+            INNER JOIN cliente as c on gc.cli_id_FK=c.cli_id
+            INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+            WHERE emp_cod=7696 AND cli_est=0 and cli_pas=0
+            and DATE_FORMAT(ges_cli_fec,'%Y-%m')=DATE_FORMAT(NOW(),'%Y-%m')
+        ";
+
+        $sql_pagos="
+            select if(SUM(pag_cli_mon)>0,SUM(pag_cli_mon),0) monto_pago
+            from pago_cliente_2 as p
+            INNER JOIN cliente as c on p.pag_cli_cod=c.cli_cod
+            INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+            WHERE emp_cod=7696 AND cli_est=0 and cli_pas=0
+            and DATE_FORMAT(pag_cli_fec,'%Y-%m')=DATE_FORMAT(NOW(),'%Y-%m')
+        ";
+
+        $metas=DB::connection('mysql')->select(DB::raw($sql_metas));
+        $datos=DB::connection('mysql')->select(DB::raw($sql_datos));
+        $pdp=DB::connection('mysql')->select(DB::raw($sql_pdp));
+        $pagos=DB::connection('mysql')->select(DB::raw($sql_pagos));
+        
+
+        return response()->json(['metas' => $metas, 'datos' => $datos, 'pdp' => $pdp , 'pagos' => $pagos]);
+        //return $query;
     }
 
     public static function datosEstandar(Request $rq){

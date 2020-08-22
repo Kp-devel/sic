@@ -49,7 +49,12 @@
                             </tr>
                             <tr class="font-12"> 
                                 <td>PDP Desde</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.pdp_desde"></td>
+                                <td>
+                                    <input 
+                                        type="text" 
+                                        class="form-control font-12 form-control-sm"                                        
+                                        v-model="busqueda.pdp_desde">
+                                </td>
                                 <td class="text-right pr-1">PDP Hasta</td>
                                 <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.pdp_hasta"></td>
                             </tr>
@@ -67,7 +72,7 @@
                                     <div class="d-flex justify-content-end">
                                         Listar Campaña
                                         <div class="pt-1">
-                                            <input type="checkbox" class="ml-2">
+                                            <input type="checkbox" class="ml-2" v-model="busqueda.camp">
                                         </div>
                                     </div>
                                 </td>
@@ -91,32 +96,37 @@
                         <p class=" badge bg-blue text-white py-2 px-2 min-w-125 text-left">DATOS DEL MES</p>
                     </div>
                     <div class="body mb-4 pl-4">
-                       <table class="w-100">
-                           <tr>
-                               <td class="text-left font-bold">Meta Asignada</td>
-                               <td class="text-right">S/50,000</td>
-                           </tr>
-                           <tr>
-                               <td class="text-left font-bold">Recupero al 15</td>
-                               <td class="text-right">S/25,000</td>
-                           </tr>
-                           <tr>
-                               <td class="text-left font-bold">Alcance de Meta</td>
-                               <td class="text-right">50%</td>
-                           </tr>
-                           <tr>
-                               <td class="text-left font-bold">Efectividad sobre PDPS</td>
-                               <td class="text-right">65%</td>
-                           </tr>
-                           <tr>
-                               <td class="text-left font-bold">PDP Caídas (S/.)</td>
-                               <td class="text-right">S/.11,000</td>
-                           </tr>
-                           <tr>
-                               <td class="text-left font-bold">PDP Pendientes (S/.)</td>
-                               <td class="text-right">S/.35,000</td>
-                           </tr>
-                       </table>
+                        <table class="w-100">
+                           
+                                <tr>
+                                    <td class="text-left font-bold">Meta Asignada</td>
+                                    <td class="text-right">S/50,000</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-left font-bold">Recupero al 15</td>
+                                    <td class="text-right">S/25,000</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-left font-bold">Alcance de Meta</td>
+                                    <td class="text-right">50%</td>
+                                </tr>
+                            <template v-if="pdps.length>0 && pagos.length>0">
+                                <tr>
+                                    <td class="text-left font-bold">Efectividad sobre PDPS</td>
+                                    <td class="text-right">{{(pagos[0].monto_pago/pdps[0].monto_pdp)>0? Math.round((pagos[0].monto_pago/pdps[0].monto_pdp)*100):'0'}}%</td>
+                                </tr>
+                            </template>
+                            <template v-if="promesas.length>0">
+                                <tr>
+                                    <td class="text-left font-bold">PDP Caídas (S/.)</td>
+                                    <td class="text-right">S/.{{promesas[0].caido? formatoMonto(promesas[0].caido):'0'}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-left font-bold">PDP Pendientes (S/.)</td>
+                                    <td class="text-right">S/.{{promesas[0].pendiente? formatoMonto(promesas[0].pendiente):'0'}}</td>
+                                </tr>
+                            </template>
+                        </table>
                     </div>
                 </div>
                 <div class="estandar">
@@ -225,12 +235,13 @@
                                     </tbody>
                                 </table>
                             </paginate>
-                            <hr>
-                            <paginate-links for="lista" 
-                                :async="true"                     
-                                :limit="4"
-                                :classes="{'ul': 'pagination', 'li': 'page-item', 'a': 'page-link'}"
-                            ></paginate-links>
+                            <template v-if="lista.length>0 && !loading">
+                                <paginate-links  for="lista" 
+                                    :async="true"                     
+                                    :limit="4"
+                                    :classes="{'ul': 'pagination', 'li': 'page-item', 'a': 'page-link'}"
+                                ></paginate-links>
+                            </template>
                         </div>
                         <div class="d-flex justify-content-center py-3" v-if="loading">
                             <div class="spinner-border text-blue" role="status">
@@ -254,19 +265,47 @@
             return {
                 paginate: ['lista'],
                 lista: [],
-                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:''},
+                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:''},
                 //codigo:'',
                 loading:false,
                 respuestas: [],
                 firma:'',
                 estandar:[],
-                //datos:[],
+                metas:[],
+                promesas:[],
+                pdps:[],
+                pagos:[],
+                data:[],
             }
         },
         created(){
-           this.listRespuestas();
+             this.listRespuestas(); 
+             this.datosMes();     
+                      
+        },
+        watch:{
+            'busqueda.pdp_desde': function(val){this.busqueda.pdp_desde = this.validarFormatoFecha(val)},
+            'busqueda.pdp_hasta': function(val){this.busqueda.pdp_hasta = this.validarFormatoFecha(val)}            
         },
         methods:{
+            validarFormatoFecha(value){
+                let input = value;
+                if (/\D\/$/.test(input)) input = input.substr(0, input.length - 3);
+                let values = input.split('/').map(v=> v.replace(/\D/g, ''));     
+                if (values[0]) values[0] = this.checkValue(values[0], 31);
+                if (values[1]) values[1] = this.checkValue(values[1], 12);
+                var output = values.map((v, i) => v.length == 2 && i < 2 ? v + ' / ' : v);                
+                return output.join('').substr(0,14);
+            },
+            checkValue(str,max){
+                if (str.charAt(0) !== '0' || str == '00') {
+                    var num = parseInt(str);
+                    if (isNaN(num) || num <= 0 || num > max) num = 1;
+                    str = num > parseInt(max.toString().charAt(0)) 
+                        && num.toString().length == 1 ? '0' + num : num.toString();
+                };
+                return str;
+            },
             limpiar(){
                 this.busqueda.codigo='';
                 this.busqueda.dni='';
@@ -289,10 +328,24 @@
                     const pdp_desde = this.busqueda.pdp_desde;
                     const pdp_hasta = this.busqueda.pdp_hasta;
                     const ordenar = this.busqueda.ordenar;
+                    const camp = this.busqueda.camp;
                     this.loading=true;
+
+                    const fechas_i =  pdp_desde.split('/');                   
+                    const nuevaFecha_i = `${fechas_i[2]}-${fechas_i[1]}-${fechas_i[0]}`
+                    const fec_desde= nuevaFecha_i.split(' ').join('');
+
+                    const fechas_f =  pdp_hasta.split('/');                   
+                    const nuevaFecha_f = `${fechas_f[2]}-${fechas_f[1]}-${fechas_f[0]}`
+                    const fec_hasta= nuevaFecha_f.split(' ').join('');
+
+                    /*console.log(this.busqueda.pdp_desde);*/
+                    console.log(fec_desde);
+                    // this.lista=[];
+                    console.log(camp)
                     axios.get("listClientes?codigo="+ (codigo || null)+"&dni="+(dni || null)+"&nombre="+(nombre || null)
                                 +"&telefono="+(telefono || null)+"&tramo="+(tramo || null)+"&respuesta="+(respuesta || null)
-                                +"&pdp_desde="+(pdp_desde || null)+"&pdp_hasta="+(pdp_hasta || null)+"&ordenar="+(ordenar || null))
+                                +"&fec_desde="+(fec_desde || null)+"&fec_hasta="+(fec_hasta || null)+"&ordenar="+(ordenar || null))
                     .then(res=>{
                         if(res.data){
                             this.lista=res.data;
@@ -312,7 +365,6 @@
                 })
             },
             datosEstandar(){
-                this.datos=[];
                 if(this.frima!=""){
                     const firma = this.firma;
                     axios.get("datosEstandar?firma="+firma).then(res=>{
@@ -325,6 +377,23 @@
                         }
                     })
                 }
+            },
+
+            datosMes(){
+                axios.get("datosMes").then(res=>{
+                    if(res.data){
+                        //this.data=res.data;
+                        this.promesas=res.data.datos;
+                        this.pdps=res.data.pdp;
+                        this.pagos=res.data.pagos;
+                        console.log(this.promesas);
+                        console.log(this.promesas[0].caido);
+                        console.log(this.pdps);
+                        console.log(this.pdps[0].monto_pdp);
+                        console.log(this.pagos);
+                        console.log(this.pagos[0].monto_pago);
+                    }
+                })
             },
 
             buscar(codigo){
@@ -392,8 +461,7 @@
                 if (key < 48 || key > 57) {
                     e.preventDefault();
                 }
-            }
-            
+            },        
         },
         mounted() {
             this.$root.$on ('cerrar', () => {
