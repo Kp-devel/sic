@@ -14,11 +14,11 @@
                 </div>
                 <hr class="mx-0 px-0">
                 <div class="panel-busqueda">
-                    <div class="d-flex">
+                    <div class="d-flex"> 
                         <div class="pr-1">
                             <i class="rounded-circle fa fa-user bg-blue text-white p-1"></i>
                         </div>
-                        <p class=" badge bg-blue text-white py-2 px-2 min-w-125 text-left">LISTA DE CLIENTES</p>
+                        <p class=" badge bg-blue text-white py-2 px-2 min-w-125 text-left">LISTA DE CLIENTES <span v-if="lista.length>0">( {{total_clientes}} )</span> </p>
                     </div>
                     <div class="body mb-4 pl-4">
                         <table>
@@ -139,12 +139,17 @@
                     <div class="body mb-4 pl-4">
                         <div class="form-group row">
                             <!-- <label for="">Provincia</label> -->
-                            <input type="text" class="form-control w-5 col-3 ml-3 form-control-sm" v-model="firma">
+                            <input type="text" class="form-control w-5 col-3 ml-3 form-control-sm" v-model="firma" v-on:keyup.enter="datosEstandar()">
                             <a href="#" @click="datosEstandar()" class="btn btn-outline-blue col-4 btn-sm btn-waves">Consultar</a>
+                        </div>
+                        <div class="d-flex justify-content-center py-3" v-if="loading2">
+                            <div class="spinner-border spinner-border-sm text-blue" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
                         </div>
                         
                         <table class="w-100">
-                            <template v-if="estandar.length>0">
+                            <template v-if="estandar.length>0 && loading2==false">
                                 <tr>
                                     <td class="text-left font-bold py-0">Gestiones</td>
                                     <td class="text-right py-0">{{estandar[0].gestiones}}</td>
@@ -152,33 +157,47 @@
                            
                                 <tr>
                                     <td class="text-left font-bold py-0">Contactos</td>
-                                    <td class="text-right py-0">{{estandar[0].contactos? estandar[0].contactos:'-'}}</td>
+                                    <td class="text-right py-0">{{estandar[0].contactos? estandar[0].contactos:'0'}}</td>
                                 </tr>
                                 <tr>
                                     <td class="text-left font-bold">Contactabilidad</td>
-                                    <td class="text-right">{{estandar[0].contactabilidad? '-'+estandar[0].contactabilidad:'-'}}</td>
+                                    <td class="text-right">{{estandar[0].contactabilidad? '-'+estandar[0].contactabilidad:'0'}}</td>
                                 </tr>
                                 <tr>
                                     <td class="text-left font-bold">PDPS</td>
-                                    <td class="text-right">{{estandar[0].pdps? estandar[0].pdps:'-'}}</td>
+                                    <td class="text-right">{{estandar[0].pdps? estandar[0].pdps:'0'}}</td>
                                 </tr>
                                 <tr>
                                     <td class="text-left font-bold">Monto PDPS</td>
-                                    <td class="text-right">{{estandar[0].monto_pdps? 'S/.'+formatoMonto(estandar[0].monto_pdps):'-'}}</td>
+                                    <td class="text-right">S/.{{estandar[0].monto_pdps? formatoMonto(estandar[0].monto_pdps):'0'}}</td>
                                 </tr>
                                 <tr>
                                     <td class="text-left font-bold">Monto Confirmaciones</td>
-                                    <td class="text-right">{{estandar[0].monto_confs? 'S/.'+formatoMonto(estandar[0].monto_confs):'-'}}</td>
+                                    <td class="text-right">S/.{{estandar[0].monto_confs? formatoMonto(estandar[0].monto_confs):'0'}}</td>
                                 </tr>
                             </template>
                        </table>
                     </div>
                 </div>
-                <div class="campana pb-3 pl-4">
-                    <div class="btn-outline-blue rounded py-1 px-2 text-center">
-                        Campaña más cercana: 08/08 - 12:00PM
+                <template v-if="estados.length>0">
+                    <div class="campana pb-3 pl-4" v-if="estados[0].estado=='CE'">
+                        <div class="btn-outline-blue bg-success rounded py-1 px-2 text-center">
+                           <h5> {{estados[0].nombre_camp}}</h5>
+                            <p>Campaña en Ejecución</p>
+                        </div>
                     </div>
-                </div>
+                    <div class="campana pb-3 pl-4" v-if="estados[0].estado=='PC'">
+                        <div class="btn-outline-blue bg-primary rounded py-1 px-2 text-center">
+                            Campaña más cercana: {{estados[0].fecha_i}}
+                        </div>
+                    </div>
+                    <div class="campana pb-3 pl-4" v-if="estados[0].estado=='CC'">
+                        <div class="btn-outline-blue bg-danger rounded py-1 px-2 text-center">
+                            <h5> {{estados[0].nombre_camp}}</h5>
+                            <p>Campaña en Detenida o Culminada</p>
+                        </div>
+                    </div>
+                </template>
             </div>
             <div class="content-body-2">
                 <div class="contenedor-body">
@@ -268,6 +287,7 @@
                 busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:''},
                 //codigo:'',
                 loading:false,
+                loading2:false,
                 respuestas: [],
                 firma:'',
                 estandar:[],
@@ -276,11 +296,13 @@
                 pdps:[],
                 pagos:[],
                 data:[],
+                estados:[],
             }
         },
         created(){
              this.listRespuestas(); 
-             this.datosMes();     
+             this.datosMes(); 
+             this.estadoCampana();   
                       
         },
         watch:{
@@ -316,6 +338,7 @@
                 this.busqueda.pdp_desde='';
                 this.busqueda.pdp_hasta='';
                 this.busqueda.ordenar='';
+                this.busqueda.camp='';
             },
             listCLientes(){
                 //if(this.busqueda.codigo!="" && this.busqueda.dni!="" && this.busqueda.nombre!=""){
@@ -340,16 +363,18 @@
                     const fec_hasta= nuevaFecha_f.split(' ').join('');
 
                     /*console.log(this.busqueda.pdp_desde);*/
-                    console.log(fec_desde);
+                    //console.log(fec_desde);
                     // this.lista=[];
                     console.log(camp)
                     axios.get("listClientes?codigo="+ (codigo || null)+"&dni="+(dni || null)+"&nombre="+(nombre || null)
                                 +"&telefono="+(telefono || null)+"&tramo="+(tramo || null)+"&respuesta="+(respuesta || null)
-                                +"&fec_desde="+(fec_desde || null)+"&fec_hasta="+(fec_hasta || null)+"&ordenar="+(ordenar || null))
+                                +"&fec_desde="+(fec_desde || null)+"&fec_hasta="+(fec_hasta || null)+"&ordenar="+(ordenar || null)
+                                +"&camp="+(camp || null))
                     .then(res=>{
                         if(res.data){
                             this.lista=res.data;
                             this.loading=false;
+                            this.total_clientes=this.lista.length;
                             //this.clientes=this.listCLientes;
                             //this.total_clientes=this.clientes.length;
                             //this.view_carga=false;
@@ -365,15 +390,17 @@
                 })
             },
             datosEstandar(){
+                this.loading2=true;
                 if(this.frima!=""){
                     const firma = this.firma;
                     axios.get("datosEstandar?firma="+firma).then(res=>{
                         if(res.data){
                             this.estandar=res.data;
-                            console.log('=======');
+                            this.loading2=false;
+                            //console.log('=======');
                             //this.$forceUpdate();
-                            console.log(this.estandar);
-                            console.log(this.estandar[0].gestiones);
+                            //console.log(this.estandar);
+                            //console.log(this.estandar[0].gestiones);
                         }
                     })
                 }
@@ -386,12 +413,15 @@
                         this.promesas=res.data.datos;
                         this.pdps=res.data.pdp;
                         this.pagos=res.data.pagos;
-                        console.log(this.promesas);
-                        console.log(this.promesas[0].caido);
-                        console.log(this.pdps);
-                        console.log(this.pdps[0].monto_pdp);
-                        console.log(this.pagos);
-                        console.log(this.pagos[0].monto_pago);
+                    }
+                })
+            },
+
+            estadoCampana(){
+                axios.get("estadosCampana").then(res=>{
+                    if(res.data){
+                        this.estados=res.data;
+                        console.log(this.estados);
                     }
                 })
             },

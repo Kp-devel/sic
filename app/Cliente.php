@@ -30,20 +30,41 @@ class Cliente extends Model
         $fec_desde=$rq->fec_desde;
         $fec_hasta=$rq->fec_hasta;
         $ordenar=$rq->ordenar;
+        $camp=$rq->camp;
+        //dd($camp);
 
-        /*$sql_cartera="
-            select car_id_FK as idcartera from cliente where cli_est=0 and cli_pas=0 and emp_tel_id_FK=2531 LIMIT 1
-        ";
-        $query_cartera=DB::connection('mysql')->select(DB::raw($sql_cartera));
-        foreach($query_cartera as $q){
-            $car_id=$q->car_id_FK;
+        
+        
+        if($camp!= "null"){
+
+            $sql_cartera="
+                select car_id_FK as idcartera from cliente where cli_est=0 and cli_pas=0 and emp_tel_id_FK=2531 LIMIT 1
+            ";
+            $query_cartera=DB::connection('mysql')->select(DB::raw($sql_cartera));
+            foreach($query_cartera as $q){
+                $car_id=$q->idcartera;
+            }
+            $cartera=$car_id;
+            //$fec_actual=date("Y-m-d H:i:00");
+            //fecha_i <= '2020-07-25 16:04:18' and fecha_f >= '2020-07-25 16:50:51'
+            $fec_actual='2020-07-25 16:04:18';
+        
+            $sql_campana = " select clientes,fecha_i,fecha_f from indicadores.campana
+                        WHERE id_cartera=$cartera and fecha_i <= '$fec_actual' and fecha_f >= '$fec_actual' 
+                        LIMIT 1";
+            
+            $query_campana=DB::connection('mysql')->select(DB::raw($sql_campana));
+
+            foreach($query_campana as $q){
+                $cadena = $q->clientes;
+            }
+            $cadena_cli=$cadena;
+            $array=explode(',',$cadena_cli);
+            $cantidad_cli=count($array);
+            //dd($cadena);
+        }else{
+            $cantidad_cli=0;
         }
-        $cartera=$car_id;
-        $fec_actual=date("Y-m-d H:i:00");
-        dd($fec_actual);
-		$sql_campana = " select clientes,fecha_i,fecha_f from indicadores.campana
-					WHERE id_cartera=$cartera and fecha_i <= '$fec_actual' and fecha_f >= '$fec_actual' 
-					LIMIT 1";*/
 
         $sql="
             SELECT 
@@ -92,6 +113,11 @@ class Cliente extends Model
         if($fec_hasta!= "undefined-undefined-"){
             $sql = $sql." and date_format(ges_cli_com_fec,'%Y-%m-%d') <='$fec_hasta' ";
         }
+        //$cadena_cli!=[""]
+        //dd($cantidad_cli);
+        if( $cantidad_cli>0){
+            $sql = $sql." and cli_cod in ($cadena_cli) and emp_tel_id_FK=2531 ";
+        }
 
         $sql= $sql." GROUP BY cli_id";
 
@@ -114,42 +140,6 @@ class Cliente extends Model
 
         $query=DB::connection('mysql')->select(DB::raw($sql));
         return $query;
-
-        /*return DB::connection('mysql')->select(DB::raw("
-                SELECT 
-                    dc.cli_id_FK,
-                    cli_id as id,
-                    cli_cod as codigo,
-                    cli_nom as nombre,
-                    cli_num_doc as dni,
-                    det_cli_num_doc as cuenta,
-                    det_cli_tra as tramo,
-                    det_cli_deu_cap as capital,
-                    det_cli_deu_mor as deuda,
-                    det_cli_imp_can as importe,
-                    det_cli_pro as producto,
-                    cli_tel_tel as telefono,
-                    res_des as ult_resp
-                FROM
-                    cliente as c
-                INNER JOIN
-                    detalle_cliente as dc ON c.cli_id=dc.cli_id_FK
-                INNER JOIN 
-                    empleado as e ON c.emp_tel_id_FK=e.emp_id
-                INNER JOIN 
-                    cliente_telefono as ct ON ct.cli_id_FK=c.cli_id
-                INNER JOIN 
-                    gestion_cliente as gc on gc.cli_id_FK=c.cli_id
-                INNER JOIN
-                    respuesta as r on r.res_id=gc.res_id_FK
-                WHERE
-                    cli_est=0 and cli_pas=0 and det_cli_est=0 and det_cli_pas=0 and cli_tel_est =0 AND cli_tel_pas=0 and res_est=0 and res_pas=0
-                    and emp_cod=4090
-                    and cli_cod=:codigo
-                    and det_cli_deu_mor = (SELECT MAX(det_cli_deu_mor) FROM detalle_cliente WHERE det_cli_est = 0 AND det_cli_pas = 0 AND cli_id_FK = c.cli_id ORDER BY det_cli_deu_mor DESC LIMIT 1)
-                    and ges_cli_id = (SELECT MAX(ges_cli_id) FROM gestion_cliente WHERE cli_id_FK = c.cli_id ORDER BY ges_cli_id DESC LIMIT 1)
-                GROUP BY cli_id
-            "),array("codigo"=>$codigo));*/
     }
 
     public static function datosMes(Request $rq){
@@ -283,6 +273,39 @@ class Cliente extends Model
                 AND RIGHT (rtrim(ges_cli_det), 4) LIKE ('%$firma')
                 )b                   
         ";
+        $query=DB::connection('mysql')->select(DB::raw($sql));
+        return $query;
+    }
+
+    public static function estadosCampana(Request $rq){
+
+        $sql_cartera="
+                select car_id_FK as idcartera from cliente where cli_est=0 and cli_pas=0 and emp_tel_id_FK=2531 LIMIT 1
+            ";
+        $query_cartera=DB::connection('mysql')->select(DB::raw($sql_cartera));
+        foreach($query_cartera as $q){
+            $car_id=$q->idcartera;
+        }
+        $cartera=$car_id;
+
+        //$fec_actual=date("Y-m-d H:i:00");
+        $fec_actual='2020-07-25 16:04:18';
+
+        $sql="
+            select 
+            id_cartera,nombre_camp,fecha_i,fecha_f,
+            (case 
+                WHEN fecha_i > '$fec_actual' THEN 'PC'
+                WHEN fecha_i = '$fec_actual' or (fecha_i < '$fec_actual' and fecha_f >= '$fec_actual') THEN 'CE'
+                WHEN fecha_i < '$fec_actual' or fecha_f < '$fec_actual' THEN 'CC'
+            end) as estado
+            from indicadores.campana 
+            where id_cartera=$cartera
+                and '$fec_actual' BETWEEN fecha_i and fecha_f
+            ORDER BY fecha_i asc
+            limit 1
+        ";
+
         $query=DB::connection('mysql')->select(DB::raw($sql));
         return $query;
     }

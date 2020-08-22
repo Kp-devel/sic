@@ -2610,6 +2610,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
  //import detalleCliente from './detalleCliente';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2632,6 +2651,7 @@ __webpack_require__.r(__webpack_exports__);
       },
       //codigo:'',
       loading: false,
+      loading2: false,
       respuestas: [],
       firma: '',
       estandar: [],
@@ -2639,12 +2659,14 @@ __webpack_require__.r(__webpack_exports__);
       promesas: [],
       pdps: [],
       pagos: [],
-      data: []
+      data: [],
+      estados: []
     };
   },
   created: function created() {
     this.listRespuestas();
     this.datosMes();
+    this.estadoCampana();
   },
   watch: {
     'busqueda.pdp_desde': function busquedaPdp_desde(val) {
@@ -2688,6 +2710,7 @@ __webpack_require__.r(__webpack_exports__);
       this.busqueda.pdp_desde = '';
       this.busqueda.pdp_hasta = '';
       this.busqueda.ordenar = '';
+      this.busqueda.camp = '';
     },
     listCLientes: function listCLientes() {
       var _this = this;
@@ -2711,14 +2734,15 @@ __webpack_require__.r(__webpack_exports__);
       var nuevaFecha_f = "".concat(fechas_f[2], "-").concat(fechas_f[1], "-").concat(fechas_f[0]);
       var fec_hasta = nuevaFecha_f.split(' ').join('');
       /*console.log(this.busqueda.pdp_desde);*/
-
-      console.log(fec_desde); // this.lista=[];
+      //console.log(fec_desde);
+      // this.lista=[];
 
       console.log(camp);
-      axios.get("listClientes?codigo=" + (codigo || null) + "&dni=" + (dni || null) + "&nombre=" + (nombre || null) + "&telefono=" + (telefono || null) + "&tramo=" + (tramo || null) + "&respuesta=" + (respuesta || null) + "&fec_desde=" + (fec_desde || null) + "&fec_hasta=" + (fec_hasta || null) + "&ordenar=" + (ordenar || null)).then(function (res) {
+      axios.get("listClientes?codigo=" + (codigo || null) + "&dni=" + (dni || null) + "&nombre=" + (nombre || null) + "&telefono=" + (telefono || null) + "&tramo=" + (tramo || null) + "&respuesta=" + (respuesta || null) + "&fec_desde=" + (fec_desde || null) + "&fec_hasta=" + (fec_hasta || null) + "&ordenar=" + (ordenar || null) + "&camp=" + (camp || null)).then(function (res) {
         if (res.data) {
           _this.lista = res.data;
-          _this.loading = false; //this.clientes=this.listCLientes;
+          _this.loading = false;
+          _this.total_clientes = _this.lista.length; //this.clientes=this.listCLientes;
           //this.total_clientes=this.clientes.length;
           //this.view_carga=false;
         }
@@ -2736,15 +2760,17 @@ __webpack_require__.r(__webpack_exports__);
     datosEstandar: function datosEstandar() {
       var _this3 = this;
 
+      this.loading2 = true;
+
       if (this.frima != "") {
         var firma = this.firma;
         axios.get("datosEstandar?firma=" + firma).then(function (res) {
           if (res.data) {
             _this3.estandar = res.data;
-            console.log('======='); //this.$forceUpdate();
-
-            console.log(_this3.estandar);
-            console.log(_this3.estandar[0].gestiones);
+            _this3.loading2 = false; //console.log('=======');
+            //this.$forceUpdate();
+            //console.log(this.estandar);
+            //console.log(this.estandar[0].gestiones);
           }
         });
       }
@@ -2758,12 +2784,16 @@ __webpack_require__.r(__webpack_exports__);
           _this4.promesas = res.data.datos;
           _this4.pdps = res.data.pdp;
           _this4.pagos = res.data.pagos;
-          console.log(_this4.promesas);
-          console.log(_this4.promesas[0].caido);
-          console.log(_this4.pdps);
-          console.log(_this4.pdps[0].monto_pdp);
-          console.log(_this4.pagos);
-          console.log(_this4.pagos[0].monto_pago);
+        }
+      });
+    },
+    estadoCampana: function estadoCampana() {
+      var _this5 = this;
+
+      axios.get("estadosCampana").then(function (res) {
+        if (res.data) {
+          _this5.estados = res.data;
+          console.log(_this5.estados);
         }
       });
     },
@@ -2783,7 +2813,7 @@ __webpack_require__.r(__webpack_exports__);
       this.total_clientes = this.clientes.length;
     },
     btnDetalle: function btnDetalle(id) {
-      var _this5 = this;
+      var _this6 = this;
 
       $("#modalCarga").modal({
         backdrop: 'static',
@@ -2793,14 +2823,14 @@ __webpack_require__.r(__webpack_exports__);
       this.view_detalle = false;
       axios.get("listDetalle/" + id).then(function (res) {
         if (res.data) {
-          _this5.detalle = res.data;
-          _this5.view_detalle = true;
+          _this6.detalle = res.data;
+          _this6.view_detalle = true;
           $("#modalCarga").modal('hide');
         }
       });
       axios.get("listTelefonos/" + id).then(function (res) {
         if (res.data) {
-          _this5.telefonos = res.data;
+          _this6.telefonos = res.data;
         }
       });
     },
@@ -2844,10 +2874,10 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    var _this6 = this;
+    var _this7 = this;
 
     this.$root.$on('cerrar', function () {
-      _this6.view_detalle = false;
+      _this7.view_detalle = false;
     });
   },
 
@@ -52728,174 +52758,323 @@ var render = function() {
     _vm._m(0),
     _vm._v(" "),
     _c("div", { staticClass: "contenedor-general-2" }, [
-      _c("div", { staticClass: "content-menu-2" }, [
-        _vm._m(1),
-        _vm._v(" "),
-        _c("hr", { staticClass: "mx-0 px-0" }),
-        _vm._v(" "),
-        _c("div", { staticClass: "panel-busqueda" }, [
-          _vm._m(2),
+      _c(
+        "div",
+        { staticClass: "content-menu-2" },
+        [
+          _vm._m(1),
           _vm._v(" "),
-          _c("div", { staticClass: "body mb-4 pl-4" }, [
-            _c("table", [
-              _c("tr", { staticClass: "font-12" }, [
-                _c("td", [_vm._v("Código")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "pb-1" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.busqueda.codigo,
-                        expression: "busqueda.codigo"
-                      }
-                    ],
-                    staticClass: "form-control font-12 form-control-sm",
-                    attrs: { type: "text" },
-                    domProps: { value: _vm.busqueda.codigo },
-                    on: {
-                      keypress: _vm.soloNumeros,
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.busqueda, "codigo", $event.target.value)
-                      }
-                    }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "font-11" }, [_vm._v("DNI/RUC")]),
-                _vm._v(" "),
-                _c("td", [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.busqueda.dni,
-                        expression: "busqueda.dni"
-                      }
-                    ],
-                    staticClass: "form-control font-12 form-control-sm w-5",
-                    attrs: { type: "text" },
-                    domProps: { value: _vm.busqueda.dni },
-                    on: {
-                      keypress: _vm.soloNumeros,
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.busqueda, "dni", $event.target.value)
-                      }
-                    }
-                  })
-                ])
-              ]),
+          _c("hr", { staticClass: "mx-0 px-0" }),
+          _vm._v(" "),
+          _c("div", { staticClass: "panel-busqueda" }, [
+            _c("div", { staticClass: "d-flex" }, [
+              _vm._m(2),
               _vm._v(" "),
-              _c("tr", { staticClass: "font-12" }, [
-                _c("td", [_vm._v("Nombre")]),
-                _vm._v(" "),
-                _c("td", { staticClass: "pb-1", attrs: { colspan: "3" } }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.busqueda.nombre,
-                        expression: "busqueda.nombre"
-                      }
-                    ],
-                    staticClass: "form-control font-12 form-control-sm",
-                    attrs: { type: "text" },
-                    domProps: { value: _vm.busqueda.nombre },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.busqueda, "nombre", $event.target.value)
-                      }
-                    }
-                  })
-                ])
-              ]),
-              _vm._v(" "),
-              _c("tr", { staticClass: "font-12" }, [
-                _c("td", [_vm._v("Teléfono")]),
-                _vm._v(" "),
-                _c("td", [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.busqueda.telefono,
-                        expression: "busqueda.telefono"
-                      }
-                    ],
-                    staticClass: "form-control font-12 form-control-sm",
-                    attrs: { type: "text" },
-                    domProps: { value: _vm.busqueda.telefono },
-                    on: {
-                      keypress: _vm.soloNumeros,
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.busqueda, "telefono", $event.target.value)
-                      }
-                    }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Tramo")]),
-                _vm._v(" "),
-                _c("td", [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.busqueda.tramo,
-                        expression: "busqueda.tramo"
-                      }
-                    ],
-                    staticClass: "form-control font-12 form-control-sm w-5",
-                    attrs: { type: "text" },
-                    domProps: { value: _vm.busqueda.tramo },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.busqueda, "tramo", $event.target.value)
-                      }
-                    }
-                  })
-                ])
-              ]),
-              _vm._v(" "),
-              _c("tr", { staticClass: "font-12" }, [
-                _c("td", [_vm._v("Ult. Gest.")]),
-                _vm._v(" "),
-                _c("td", { attrs: { colspan: "3" } }, [
-                  _c(
-                    "select",
-                    {
+              _c(
+                "p",
+                {
+                  staticClass:
+                    " badge bg-blue text-white py-2 px-2 min-w-125 text-left"
+                },
+                [
+                  _vm._v("LISTA DE CLIENTES "),
+                  _vm.lista.length > 0
+                    ? _c("span", [
+                        _vm._v("( " + _vm._s(_vm.total_clientes) + " )")
+                      ])
+                    : _vm._e()
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "body mb-4 pl-4" }, [
+              _c("table", [
+                _c("tr", { staticClass: "font-12" }, [
+                  _c("td", [_vm._v("Código")]),
+                  _vm._v(" "),
+                  _c("td", { staticClass: "pb-1" }, [
+                    _c("input", {
                       directives: [
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.busqueda.respuesta,
-                          expression: "busqueda.respuesta"
+                          value: _vm.busqueda.codigo,
+                          expression: "busqueda.codigo"
                         }
                       ],
-                      staticClass: "form-control font-12 form-control-sm ",
+                      staticClass: "form-control font-12 form-control-sm",
+                      attrs: { type: "text" },
+                      domProps: { value: _vm.busqueda.codigo },
                       on: {
-                        change: [
-                          function($event) {
+                        keypress: _vm.soloNumeros,
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(_vm.busqueda, "codigo", $event.target.value)
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("td", { staticClass: "font-11" }, [_vm._v("DNI/RUC")]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.busqueda.dni,
+                          expression: "busqueda.dni"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm w-5",
+                      attrs: { type: "text" },
+                      domProps: { value: _vm.busqueda.dni },
+                      on: {
+                        keypress: _vm.soloNumeros,
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(_vm.busqueda, "dni", $event.target.value)
+                        }
+                      }
+                    })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("tr", { staticClass: "font-12" }, [
+                  _c("td", [_vm._v("Nombre")]),
+                  _vm._v(" "),
+                  _c("td", { staticClass: "pb-1", attrs: { colspan: "3" } }, [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.busqueda.nombre,
+                          expression: "busqueda.nombre"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm",
+                      attrs: { type: "text" },
+                      domProps: { value: _vm.busqueda.nombre },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(_vm.busqueda, "nombre", $event.target.value)
+                        }
+                      }
+                    })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("tr", { staticClass: "font-12" }, [
+                  _c("td", [_vm._v("Teléfono")]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.busqueda.telefono,
+                          expression: "busqueda.telefono"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm",
+                      attrs: { type: "text" },
+                      domProps: { value: _vm.busqueda.telefono },
+                      on: {
+                        keypress: _vm.soloNumeros,
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.busqueda,
+                            "telefono",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("td", { staticClass: "text-right pr-1" }, [
+                    _vm._v("Tramo")
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.busqueda.tramo,
+                          expression: "busqueda.tramo"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm w-5",
+                      attrs: { type: "text" },
+                      domProps: { value: _vm.busqueda.tramo },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(_vm.busqueda, "tramo", $event.target.value)
+                        }
+                      }
+                    })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("tr", { staticClass: "font-12" }, [
+                  _c("td", [_vm._v("Ult. Gest.")]),
+                  _vm._v(" "),
+                  _c("td", { attrs: { colspan: "3" } }, [
+                    _c(
+                      "select",
+                      {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.busqueda.respuesta,
+                            expression: "busqueda.respuesta"
+                          }
+                        ],
+                        staticClass: "form-control font-12 form-control-sm ",
+                        on: {
+                          change: [
+                            function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.busqueda,
+                                "respuesta",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            },
+                            function($event) {
+                              return _vm.listRespuestas()
+                            }
+                          ]
+                        }
+                      },
+                      [
+                        _c("option", { attrs: { value: "" } }, [
+                          _vm._v("Selecionar")
+                        ]),
+                        _vm._v(" "),
+                        _vm._l(_vm.respuestas, function(item, index) {
+                          return _c(
+                            "option",
+                            { key: index, domProps: { value: item.res_id } },
+                            [_vm._v(_vm._s(item.res_des))]
+                          )
+                        })
+                      ],
+                      2
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("tr", { staticClass: "font-12" }, [
+                  _c("td", [_vm._v("PDP Desde")]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.busqueda.pdp_desde,
+                          expression: "busqueda.pdp_desde"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm",
+                      attrs: { type: "text" },
+                      domProps: { value: _vm.busqueda.pdp_desde },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.busqueda,
+                            "pdp_desde",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("td", { staticClass: "text-right pr-1" }, [
+                    _vm._v("PDP Hasta")
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.busqueda.pdp_hasta,
+                          expression: "busqueda.pdp_hasta"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm w-5",
+                      attrs: { type: "text" },
+                      domProps: { value: _vm.busqueda.pdp_hasta },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.busqueda,
+                            "pdp_hasta",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("tr", { staticClass: "font-12" }, [
+                  _c("td", [_vm._v("Ordenar")]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c(
+                      "select",
+                      {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.busqueda.ordenar,
+                            expression: "busqueda.ordenar"
+                          }
+                        ],
+                        staticClass: "form-control font-12 form-control-sm",
+                        on: {
+                          change: function($event) {
                             var $$selectedVal = Array.prototype.filter
                               .call($event.target.options, function(o) {
                                 return o.selected
@@ -52906,472 +53085,449 @@ var render = function() {
                               })
                             _vm.$set(
                               _vm.busqueda,
-                              "respuesta",
+                              "ordenar",
                               $event.target.multiple
                                 ? $$selectedVal
                                 : $$selectedVal[0]
                             )
+                          }
+                        }
+                      },
+                      [
+                        _c("option", { attrs: { value: "" } }, [
+                          _vm._v("Seleccionar")
+                        ]),
+                        _vm._v(" "),
+                        _c("option", { attrs: { value: "1" } }, [
+                          _vm._v("Capital")
+                        ]),
+                        _vm._v(" "),
+                        _c("option", { attrs: { value: "2" } }, [
+                          _vm._v("Deuda")
+                        ]),
+                        _vm._v(" "),
+                        _c("option", { attrs: { value: "3" } }, [_vm._v("IC")])
+                      ]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("td", { attrs: { colspan: "2" } }, [
+                    _c("div", { staticClass: "d-flex justify-content-end" }, [
+                      _vm._v(
+                        "\n                                    Listar Campaña\n                                    "
+                      ),
+                      _c("div", { staticClass: "pt-1" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.busqueda.camp,
+                              expression: "busqueda.camp"
+                            }
+                          ],
+                          staticClass: "ml-2",
+                          attrs: { type: "checkbox" },
+                          domProps: {
+                            checked: Array.isArray(_vm.busqueda.camp)
+                              ? _vm._i(_vm.busqueda.camp, null) > -1
+                              : _vm.busqueda.camp
                           },
-                          function($event) {
-                            return _vm.listRespuestas()
-                          }
-                        ]
-                      }
-                    },
-                    [
-                      _c("option", { attrs: { value: "" } }, [
-                        _vm._v("Selecionar")
-                      ]),
-                      _vm._v(" "),
-                      _vm._l(_vm.respuestas, function(item, index) {
-                        return _c(
-                          "option",
-                          { key: index, domProps: { value: item.res_id } },
-                          [_vm._v(_vm._s(item.res_des))]
-                        )
-                      })
-                    ],
-                    2
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c("tr", { staticClass: "font-12" }, [
-                _c("td", [_vm._v("PDP Desde")]),
-                _vm._v(" "),
-                _c("td", [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.busqueda.pdp_desde,
-                        expression: "busqueda.pdp_desde"
-                      }
-                    ],
-                    staticClass: "form-control font-12 form-control-sm",
-                    attrs: { type: "text" },
-                    domProps: { value: _vm.busqueda.pdp_desde },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.busqueda, "pdp_desde", $event.target.value)
-                      }
-                    }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-right pr-1" }, [
-                  _vm._v("PDP Hasta")
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.busqueda.pdp_hasta,
-                        expression: "busqueda.pdp_hasta"
-                      }
-                    ],
-                    staticClass: "form-control font-12 form-control-sm w-5",
-                    attrs: { type: "text" },
-                    domProps: { value: _vm.busqueda.pdp_hasta },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.busqueda, "pdp_hasta", $event.target.value)
-                      }
-                    }
-                  })
-                ])
-              ]),
-              _vm._v(" "),
-              _c("tr", { staticClass: "font-12" }, [
-                _c("td", [_vm._v("Ordenar")]),
-                _vm._v(" "),
-                _c("td", [
-                  _c(
-                    "select",
-                    {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.busqueda.ordenar,
-                          expression: "busqueda.ordenar"
-                        }
-                      ],
-                      staticClass: "form-control font-12 form-control-sm",
-                      on: {
-                        change: function($event) {
-                          var $$selectedVal = Array.prototype.filter
-                            .call($event.target.options, function(o) {
-                              return o.selected
-                            })
-                            .map(function(o) {
-                              var val = "_value" in o ? o._value : o.value
-                              return val
-                            })
-                          _vm.$set(
-                            _vm.busqueda,
-                            "ordenar",
-                            $event.target.multiple
-                              ? $$selectedVal
-                              : $$selectedVal[0]
-                          )
-                        }
-                      }
-                    },
-                    [
-                      _c("option", { attrs: { value: "" } }, [
-                        _vm._v("Seleccionar")
-                      ]),
-                      _vm._v(" "),
-                      _c("option", { attrs: { value: "1" } }, [
-                        _vm._v("Capital")
-                      ]),
-                      _vm._v(" "),
-                      _c("option", { attrs: { value: "2" } }, [
-                        _vm._v("Deuda")
-                      ]),
-                      _vm._v(" "),
-                      _c("option", { attrs: { value: "3" } }, [_vm._v("IC")])
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", { attrs: { colspan: "2" } }, [
-                  _c("div", { staticClass: "d-flex justify-content-end" }, [
-                    _vm._v(
-                      "\n                                    Listar Campaña\n                                    "
-                    ),
-                    _c("div", { staticClass: "pt-1" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.busqueda.camp,
-                            expression: "busqueda.camp"
-                          }
-                        ],
-                        staticClass: "ml-2",
-                        attrs: { type: "checkbox" },
-                        domProps: {
-                          checked: Array.isArray(_vm.busqueda.camp)
-                            ? _vm._i(_vm.busqueda.camp, null) > -1
-                            : _vm.busqueda.camp
-                        },
-                        on: {
-                          change: function($event) {
-                            var $$a = _vm.busqueda.camp,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = null,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 &&
-                                  _vm.$set(
-                                    _vm.busqueda,
-                                    "camp",
-                                    $$a.concat([$$v])
-                                  )
+                          on: {
+                            change: function($event) {
+                              var $$a = _vm.busqueda.camp,
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = null,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    _vm.$set(
+                                      _vm.busqueda,
+                                      "camp",
+                                      $$a.concat([$$v])
+                                    )
+                                } else {
+                                  $$i > -1 &&
+                                    _vm.$set(
+                                      _vm.busqueda,
+                                      "camp",
+                                      $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1))
+                                    )
+                                }
                               } else {
-                                $$i > -1 &&
-                                  _vm.$set(
-                                    _vm.busqueda,
-                                    "camp",
-                                    $$a.slice(0, $$i).concat($$a.slice($$i + 1))
-                                  )
+                                _vm.$set(_vm.busqueda, "camp", $$c)
                               }
-                            } else {
-                              _vm.$set(_vm.busqueda, "camp", $$c)
                             }
                           }
-                        }
-                      })
+                        })
+                      ])
                     ])
                   ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("tr", { staticClass: "font-12" }, [
-                _c("td", { staticClass: "pt-3", attrs: { colspan: "2" } }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "btn btn-outline-blue btn-sm btn-block btn-waves",
-                      attrs: { href: "#" },
-                      on: {
-                        click: function($event) {
-                          return _vm.listCLientes()
-                        }
-                      }
-                    },
-                    [_vm._v("Buscar")]
-                  )
                 ]),
                 _vm._v(" "),
-                _c("td", { staticClass: "pt-3", attrs: { colspan: "2" } }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "btn  btn-sm btn-block btn-waves btn-outline-blue",
-                      attrs: { href: "#" },
-                      on: {
-                        click: function($event) {
-                          return _vm.limpiar()
+                _c("tr", { staticClass: "font-12" }, [
+                  _c("td", { staticClass: "pt-3", attrs: { colspan: "2" } }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "btn btn-outline-blue btn-sm btn-block btn-waves",
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            return _vm.listCLientes()
+                          }
                         }
-                      }
-                    },
-                    [_vm._v("Limpiar")]
-                  )
+                      },
+                      [_vm._v("Buscar")]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("td", { staticClass: "pt-3", attrs: { colspan: "2" } }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "btn  btn-sm btn-block btn-waves btn-outline-blue",
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            return _vm.limpiar()
+                          }
+                        }
+                      },
+                      [_vm._v("Limpiar")]
+                    )
+                  ])
                 ])
               ])
             ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "datos-mes" }, [
-          _vm._m(3),
+          ]),
           _vm._v(" "),
-          _c("div", { staticClass: "body mb-4 pl-4" }, [
-            _c(
-              "table",
-              { staticClass: "w-100" },
-              [
-                _vm._m(4),
-                _vm._v(" "),
-                _vm._m(5),
-                _vm._v(" "),
-                _vm._m(6),
-                _vm._v(" "),
-                _vm.pdps.length > 0 && _vm.pagos.length > 0
-                  ? [
-                      _c("tr", [
-                        _c("td", { staticClass: "text-left font-bold" }, [
-                          _vm._v("Efectividad sobre PDPS")
-                        ]),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "text-right" }, [
-                          _vm._v(
-                            _vm._s(
-                              _vm.pagos[0].monto_pago / _vm.pdps[0].monto_pdp >
-                                0
-                                ? Math.round(
-                                    (_vm.pagos[0].monto_pago /
-                                      _vm.pdps[0].monto_pdp) *
-                                      100
-                                  )
-                                : "0"
-                            ) + "%"
-                          )
-                        ])
-                      ])
-                    ]
-                  : _vm._e(),
-                _vm._v(" "),
-                _vm.promesas.length > 0
-                  ? [
-                      _c("tr", [
-                        _c("td", { staticClass: "text-left font-bold" }, [
-                          _vm._v("PDP Caídas (S/.)")
-                        ]),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "text-right" }, [
-                          _vm._v(
-                            "S/." +
+          _c("div", { staticClass: "datos-mes" }, [
+            _vm._m(3),
+            _vm._v(" "),
+            _c("div", { staticClass: "body mb-4 pl-4" }, [
+              _c(
+                "table",
+                { staticClass: "w-100" },
+                [
+                  _vm._m(4),
+                  _vm._v(" "),
+                  _vm._m(5),
+                  _vm._v(" "),
+                  _vm._m(6),
+                  _vm._v(" "),
+                  _vm.pdps.length > 0 && _vm.pagos.length > 0
+                    ? [
+                        _c("tr", [
+                          _c("td", { staticClass: "text-left font-bold" }, [
+                            _vm._v("Efectividad sobre PDPS")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-right" }, [
+                            _vm._v(
                               _vm._s(
-                                _vm.promesas[0].caido
-                                  ? _vm.formatoMonto(_vm.promesas[0].caido)
+                                _vm.pagos[0].monto_pago /
+                                  _vm.pdps[0].monto_pdp >
+                                  0
+                                  ? Math.round(
+                                      (_vm.pagos[0].monto_pago /
+                                        _vm.pdps[0].monto_pdp) *
+                                        100
+                                    )
                                   : "0"
-                              )
-                          )
+                              ) + "%"
+                            )
+                          ])
                         ])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", { staticClass: "text-left font-bold" }, [
-                          _vm._v("PDP Pendientes (S/.)")
+                      ]
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.promesas.length > 0
+                    ? [
+                        _c("tr", [
+                          _c("td", { staticClass: "text-left font-bold" }, [
+                            _vm._v("PDP Caídas (S/.)")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-right" }, [
+                            _vm._v(
+                              "S/." +
+                                _vm._s(
+                                  _vm.promesas[0].caido
+                                    ? _vm.formatoMonto(_vm.promesas[0].caido)
+                                    : "0"
+                                )
+                            )
+                          ])
                         ]),
                         _vm._v(" "),
-                        _c("td", { staticClass: "text-right" }, [
-                          _vm._v(
-                            "S/." +
-                              _vm._s(
-                                _vm.promesas[0].pendiente
-                                  ? _vm.formatoMonto(_vm.promesas[0].pendiente)
-                                  : "0"
-                              )
-                          )
+                        _c("tr", [
+                          _c("td", { staticClass: "text-left font-bold" }, [
+                            _vm._v("PDP Pendientes (S/.)")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-right" }, [
+                            _vm._v(
+                              "S/." +
+                                _vm._s(
+                                  _vm.promesas[0].pendiente
+                                    ? _vm.formatoMonto(
+                                        _vm.promesas[0].pendiente
+                                      )
+                                    : "0"
+                                )
+                            )
+                          ])
                         ])
-                      ])
-                    ]
-                  : _vm._e()
-              ],
-              2
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "estandar" }, [
-          _vm._m(7),
-          _vm._v(" "),
-          _c("div", { staticClass: "body mb-4 pl-4" }, [
-            _c("div", { staticClass: "form-group row" }, [
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.firma,
-                    expression: "firma"
-                  }
+                      ]
+                    : _vm._e()
                 ],
-                staticClass: "form-control w-5 col-3 ml-3 form-control-sm",
-                attrs: { type: "text" },
-                domProps: { value: _vm.firma },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
+                2
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "estandar" }, [
+            _vm._m(7),
+            _vm._v(" "),
+            _c("div", { staticClass: "body mb-4 pl-4" }, [
+              _c("div", { staticClass: "form-group row" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.firma,
+                      expression: "firma"
                     }
-                    _vm.firma = $event.target.value
+                  ],
+                  staticClass: "form-control w-5 col-3 ml-3 form-control-sm",
+                  attrs: { type: "text" },
+                  domProps: { value: _vm.firma },
+                  on: {
+                    keyup: function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                      ) {
+                        return null
+                      }
+                      return _vm.datosEstandar()
+                    },
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.firma = $event.target.value
+                    }
                   }
-                }
-              }),
+                }),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "btn btn-outline-blue col-4 btn-sm btn-waves",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.datosEstandar()
+                      }
+                    }
+                  },
+                  [_vm._v("Consultar")]
+                )
+              ]),
+              _vm._v(" "),
+              _vm.loading2
+                ? _c(
+                    "div",
+                    { staticClass: "d-flex justify-content-center py-3" },
+                    [_vm._m(8)]
+                  )
+                : _vm._e(),
               _vm._v(" "),
               _c(
-                "a",
-                {
-                  staticClass: "btn btn-outline-blue col-4 btn-sm btn-waves",
-                  attrs: { href: "#" },
-                  on: {
-                    click: function($event) {
-                      return _vm.datosEstandar()
-                    }
-                  }
-                },
-                [_vm._v("Consultar")]
+                "table",
+                { staticClass: "w-100" },
+                [
+                  _vm.estandar.length > 0 && _vm.loading2 == false
+                    ? [
+                        _c("tr", [
+                          _c(
+                            "td",
+                            { staticClass: "text-left font-bold py-0" },
+                            [_vm._v("Gestiones")]
+                          ),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-right py-0" }, [
+                            _vm._v(_vm._s(_vm.estandar[0].gestiones))
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c(
+                            "td",
+                            { staticClass: "text-left font-bold py-0" },
+                            [_vm._v("Contactos")]
+                          ),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-right py-0" }, [
+                            _vm._v(
+                              _vm._s(
+                                _vm.estandar[0].contactos
+                                  ? _vm.estandar[0].contactos
+                                  : "0"
+                              )
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c("td", { staticClass: "text-left font-bold" }, [
+                            _vm._v("Contactabilidad")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-right" }, [
+                            _vm._v(
+                              _vm._s(
+                                _vm.estandar[0].contactabilidad
+                                  ? "-" + _vm.estandar[0].contactabilidad
+                                  : "0"
+                              )
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c("td", { staticClass: "text-left font-bold" }, [
+                            _vm._v("PDPS")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-right" }, [
+                            _vm._v(
+                              _vm._s(
+                                _vm.estandar[0].pdps
+                                  ? _vm.estandar[0].pdps
+                                  : "0"
+                              )
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c("td", { staticClass: "text-left font-bold" }, [
+                            _vm._v("Monto PDPS")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-right" }, [
+                            _vm._v(
+                              "S/." +
+                                _vm._s(
+                                  _vm.estandar[0].monto_pdps
+                                    ? _vm.formatoMonto(
+                                        _vm.estandar[0].monto_pdps
+                                      )
+                                    : "0"
+                                )
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c("td", { staticClass: "text-left font-bold" }, [
+                            _vm._v("Monto Confirmaciones")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-right" }, [
+                            _vm._v(
+                              "S/." +
+                                _vm._s(
+                                  _vm.estandar[0].monto_confs
+                                    ? _vm.formatoMonto(
+                                        _vm.estandar[0].monto_confs
+                                      )
+                                    : "0"
+                                )
+                            )
+                          ])
+                        ])
+                      ]
+                    : _vm._e()
+                ],
+                2
               )
-            ]),
-            _vm._v(" "),
-            _c(
-              "table",
-              { staticClass: "w-100" },
-              [
-                _vm.estandar.length > 0
-                  ? [
-                      _c("tr", [
-                        _c("td", { staticClass: "text-left font-bold py-0" }, [
-                          _vm._v("Gestiones")
-                        ]),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "text-right py-0" }, [
-                          _vm._v(_vm._s(_vm.estandar[0].gestiones))
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", { staticClass: "text-left font-bold py-0" }, [
-                          _vm._v("Contactos")
-                        ]),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "text-right py-0" }, [
+            ])
+          ]),
+          _vm._v(" "),
+          _vm.estados.length > 0
+            ? [
+                _vm.estados[0].estado == "CE"
+                  ? _c("div", { staticClass: "campana pb-3 pl-4" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass:
+                            "btn-outline-blue bg-success rounded py-1 px-2 text-center"
+                        },
+                        [
+                          _c("h5", [
+                            _vm._v(" " + _vm._s(_vm.estados[0].nombre_camp))
+                          ]),
+                          _vm._v(" "),
+                          _c("p", [_vm._v("Campaña en Ejecución")])
+                        ]
+                      )
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.estados[0].estado == "PC"
+                  ? _c("div", { staticClass: "campana pb-3 pl-4" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass:
+                            "btn-outline-blue bg-primary rounded py-1 px-2 text-center"
+                        },
+                        [
                           _vm._v(
-                            _vm._s(
-                              _vm.estandar[0].contactos
-                                ? _vm.estandar[0].contactos
-                                : "-"
-                            )
+                            "\n                        Campaña más cercana: " +
+                              _vm._s(_vm.estados[0].fecha_i) +
+                              "\n                    "
                           )
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", { staticClass: "text-left font-bold" }, [
-                          _vm._v("Contactabilidad")
-                        ]),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "text-right" }, [
-                          _vm._v(
-                            _vm._s(
-                              _vm.estandar[0].contactabilidad
-                                ? "-" + _vm.estandar[0].contactabilidad
-                                : "-"
-                            )
-                          )
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", { staticClass: "text-left font-bold" }, [
-                          _vm._v("PDPS")
-                        ]),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "text-right" }, [
-                          _vm._v(
-                            _vm._s(
-                              _vm.estandar[0].pdps ? _vm.estandar[0].pdps : "-"
-                            )
-                          )
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", { staticClass: "text-left font-bold" }, [
-                          _vm._v("Monto PDPS")
-                        ]),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "text-right" }, [
-                          _vm._v(
-                            _vm._s(
-                              _vm.estandar[0].monto_pdps
-                                ? "S/." +
-                                    _vm.formatoMonto(_vm.estandar[0].monto_pdps)
-                                : "-"
-                            )
-                          )
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", { staticClass: "text-left font-bold" }, [
-                          _vm._v("Monto Confirmaciones")
-                        ]),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "text-right" }, [
-                          _vm._v(
-                            _vm._s(
-                              _vm.estandar[0].monto_confs
-                                ? "S/." +
-                                    _vm.formatoMonto(
-                                      _vm.estandar[0].monto_confs
-                                    )
-                                : "-"
-                            )
-                          )
-                        ])
-                      ])
-                    ]
+                        ]
+                      )
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.estados[0].estado == "CC"
+                  ? _c("div", { staticClass: "campana pb-3 pl-4" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass:
+                            "btn-outline-blue bg-danger rounded py-1 px-2 text-center"
+                        },
+                        [
+                          _c("h5", [
+                            _vm._v(" " + _vm._s(_vm.estados[0].nombre_camp))
+                          ]),
+                          _vm._v(" "),
+                          _c("p", [_vm._v("Campaña en Detenida o Culminada")])
+                        ]
+                      )
+                    ])
                   : _vm._e()
-              ],
-              2
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _vm._m(8)
-      ]),
+              ]
+            : _vm._e()
+        ],
+        2
+      ),
       _vm._v(" "),
       _c("div", { staticClass: "content-body-2" }, [
         _c("div", { staticClass: "contenedor-body" }, [
@@ -53606,20 +53762,10 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "d-flex" }, [
-      _c("div", { staticClass: "pr-1" }, [
-        _c("i", {
-          staticClass: "rounded-circle fa fa-user bg-blue text-white p-1"
-        })
-      ]),
-      _vm._v(" "),
-      _c(
-        "p",
-        {
-          staticClass: " badge bg-blue text-white py-2 px-2 min-w-125 text-left"
-        },
-        [_vm._v("LISTA DE CLIENTES")]
-      )
+    return _c("div", { staticClass: "pr-1" }, [
+      _c("i", {
+        staticClass: "rounded-circle fa fa-user bg-blue text-white p-1"
+      })
     ])
   },
   function() {
@@ -53702,17 +53848,14 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "campana pb-3 pl-4" }, [
-      _c(
-        "div",
-        { staticClass: "btn-outline-blue rounded py-1 px-2 text-center" },
-        [
-          _vm._v(
-            "\n                    Campaña más cercana: 08/08 - 12:00PM\n                "
-          )
-        ]
-      )
-    ])
+    return _c(
+      "div",
+      {
+        staticClass: "spinner-border spinner-border-sm text-blue",
+        attrs: { role: "status" }
+      },
+      [_c("span", { staticClass: "sr-only" }, [_vm._v("Loading...")])]
+    )
   },
   function() {
     var _vm = this
