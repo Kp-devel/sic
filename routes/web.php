@@ -14,6 +14,8 @@ Route::get('panelcontrolllamadas', 'ControlLLamadaController@panelcontrolllamada
 Route::post('controlLLamadas', 'ControlLLamadaController@controlLLamadas')->name('controlLLamadas');
 Route::get('panelcontrolllamadasgestor', 'ControlLLamadaController@panelcontrolllamadasgestor')->name('panelcontrolllamadasgestor');
 Route::post('controlLLamadasGestor', 'ControlLLamadaController@controlLLamadasGestor')->name('controlLLamadasGestor');
+Route::get('llamarExtension', 'ControlLLamadaController@llamarExtension')->name('llamarExtension');
+Route::get('ftpArchivos', 'ControlLLamadaController@ftpArchivos')->name('ftpArchivos');
 
 // empleado
 Route::get('agentesElastix/{cartera}', 'EmpleadoController@agentesElastix')->name('agentesElastix');

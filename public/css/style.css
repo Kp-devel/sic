@@ -229,8 +229,8 @@ table tbody tr:last-of-type{
 }
 .content-body{
     margin-left: 15px;
-    /* background-color: rgb(3,42,81); */
-    background-color:rgb(160, 85, 0);
+    background-color: rgb(3,42,81);
+    /* background-color:rgb(160, 85, 0); */
     transition: 0.3s all;
 }
 .contenedor-body{
@@ -327,7 +327,7 @@ table tbody tr:last-of-type{
 
 
 /* panel menu gestor */
-.contenedor-general{
+.contenedor-general-2{
     width: 100%;
     min-height: 100vh;
     max-height: 100%;

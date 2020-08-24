@@ -65,6 +65,16 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
         ],
 
+        'sftp' => [
+            'driver' => 'sftp',
+            'host' => env('SFTP_HOST'),
+            'port' => env('SFTP_PORT', 22),
+            'username' => env('SFTP_USERNAME'),
+            'password' => env('SFTP_PASSWORD'),
+            // 'privateKey' => storage_path('keys') . '/sftp_key', // This can also be the full private key contents
+            'root' => env('SFTP_ROOT'),
+            // 'timeout' => env('SFTP_TIMEOUT', 10),
+        ],
     ],
 
     /*

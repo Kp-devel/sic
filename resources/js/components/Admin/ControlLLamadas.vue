@@ -54,16 +54,16 @@
                             <td colspan="12">No se encontraron datos</td>
                         </tr>
                         <tr v-for="(item,index) in llamadas" :key="index" v-else-if="loading==false">
-                            <td class="text-center">{{item.extension}}</td>
+                            <td class="text-center"><b>*5</b>{{item.extension}}</td>
                             <td>{{item.agente}}</td>
                             <td class="text-center">{{formatoVacio(item.tiempo_logeo)}}</td>
                             <td class="text-center">{{formatoVacio(item.intento_llamadas)}}</td>
                             <td class="text-center">{{formatoVacio(item.llamadas_conectadas)}}</td>
                             <td class="text-center">{{formatoVacio(item.llamadas_noconectadas)}}</td>
                             <td class="text-center">{{formatoVacio(item.promedio_duracion)}}</td>
-                            <td class="text-center">00:02:00</td>
-                            <td>925624122</td>
-                            <td class="text-center">00:00:25</td>
+                            <td class="text-center"></td>
+                            <td></td>
+                            <td class="text-center"></td>
                             <td class="text-center"><a href=""><i class="fa fa-volume-down fa-lg"></i></a></td>
                         </tr>
                     </tbody>

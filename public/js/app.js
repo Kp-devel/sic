@@ -38342,6 +38342,7 @@ var render = function() {
                 ? _vm._l(_vm.llamadas, function(item, index) {
                     return _c("tr", { key: index }, [
                       _c("td", { staticClass: "text-center" }, [
+                        _c("b", [_vm._v("*5")]),
                         _vm._v(_vm._s(item.extension))
                       ]),
                       _vm._v(" "),
@@ -38371,15 +38372,11 @@ var render = function() {
                         _vm._v(_vm._s(_vm.formatoVacio(item.promedio_duracion)))
                       ]),
                       _vm._v(" "),
-                      _c("td", { staticClass: "text-center" }, [
-                        _vm._v("00:02:00")
-                      ]),
+                      _c("td", { staticClass: "text-center" }),
                       _vm._v(" "),
-                      _c("td", [_vm._v("925624122")]),
+                      _c("td"),
                       _vm._v(" "),
-                      _c("td", { staticClass: "text-center" }, [
-                        _vm._v("00:00:25")
-                      ]),
+                      _c("td", { staticClass: "text-center" }),
                       _vm._v(" "),
                       _vm._m(2, true)
                     ])
@@ -52680,8 +52677,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\py-git\sic\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\py-git\sic\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\xampp\htdocs\py-git\SIC\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\py-git\SIC\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
