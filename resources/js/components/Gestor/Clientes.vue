@@ -97,19 +97,20 @@
                     </div>
                     <div class="body mb-4 pl-4">
                         <table class="w-100">
-                           
+                           <template v-if="metas.length>0">
                                 <tr>
                                     <td class="text-left font-bold">Meta Asignada</td>
-                                    <td class="text-right">S/50,000</td>
+                                    <td class="text-right">S/.{{formatoMonto(metas[0].meta)}}</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-left font-bold">Recupero al 15</td>
-                                    <td class="text-right">S/25,000</td>
+                                    <td class="text-left font-bold">Recupero al {{metas[0].fecha}}</td>
+                                    <td class="text-right">S/.{{formatoMonto(metas[0].recupero)}}</td>
                                 </tr>
                                 <tr>
                                     <td class="text-left font-bold">Alcance de Meta</td>
-                                    <td class="text-right">50%</td>
+                                    <td class="text-right">{{metas[0].alcance}}%</td>
                                 </tr>
+                            </template>
                             <template v-if="pdps.length>0 && pagos.length>0">
                                 <tr>
                                     <td class="text-left font-bold">Efectividad sobre PDPS</td>
@@ -123,7 +124,7 @@
                                 </tr>
                                 <tr>
                                     <td class="text-left font-bold">PDP Pendientes (S/.)</td>
-                                    <td class="text-right">S/.{{promesas[0].pendiente? formatoMonto(promesas[0].pendiente):'0'}}</td>
+                                    <td class="text-right">S/.{{promesas[0].pendiente? formatoMonto(promesas[0].pendiente):'0.00'}}</td>
                                 </tr>
                             </template>
                         </table>
@@ -188,7 +189,7 @@
                     </div>
                     <div class="campana pb-3 pl-4" v-if="estados[0].estado=='PC'">
                         <div class="btn-outline-blue bg-primary rounded py-1 px-2 text-center">
-                            Campaña más cercana: {{estados[0].fecha_i}}
+                            Campaña más cercana: {{estados[0].dia}} {{estados[0].hora}}
                         </div>
                     </div>
                     <div class="campana pb-3 pl-4" v-if="estados[0].estado=='CC'">
@@ -297,6 +298,7 @@
                 pagos:[],
                 data:[],
                 estados:[],
+                metas:[],
             }
         },
         created(){
@@ -410,9 +412,11 @@
                 axios.get("datosMes").then(res=>{
                     if(res.data){
                         //this.data=res.data;
+                        this.metas=res.data.metas;
                         this.promesas=res.data.datos;
                         this.pdps=res.data.pdp;
                         this.pagos=res.data.pagos;
+                        console.log(this.metas);
                     }
                 })
             },
