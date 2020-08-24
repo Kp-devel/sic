@@ -12,6 +12,7 @@ Route::get('listClientes', 'ClienteController@listaClientes');
 Route::get('listRespuestas', 'ClienteController@listaRespuestas');
 Route::get('datosEstandar', 'ClienteController@datosEstandar');
 Route::get('datosMes', 'ClienteController@datosMes');
+Route::get('estadosCampana', 'ClienteController@estadoCampana');
 
 // control de llamadas - elastix
 Route::get('panelcontrolllamadas', 'ControlLLamadaController@panelcontrolllamadas')->name('panelcontrolllamadas');

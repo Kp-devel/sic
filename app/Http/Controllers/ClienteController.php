@@ -21,4 +21,8 @@ class ClienteController extends Controller
     public function datosEstandar(Request $rq){
         return cliente::datosEstandar($rq);
     }
+
+    public function estadoCampana(Request $rq){
+        return cliente::estadosCampana($rq);
+    }
 }
