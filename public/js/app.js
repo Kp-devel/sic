@@ -2353,6 +2353,9 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/vue-paginate */ "./node_modules/vue-paginate/dist/vue-paginate.js");
 /* harmony import */ var _node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0__);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
 //
 //
 //
@@ -2634,7 +2637,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   // props:["vrol"],
   data: function data() {
-    return {
+    return _defineProperty({
       paginate: ['lista'],
       lista: [],
       busqueda: {
@@ -2661,7 +2664,7 @@ __webpack_require__.r(__webpack_exports__);
       pagos: [],
       data: [],
       estados: []
-    };
+    }, "metas", []);
   },
   created: function created() {
     this.listRespuestas();
@@ -2781,9 +2784,11 @@ __webpack_require__.r(__webpack_exports__);
       axios.get("datosMes").then(function (res) {
         if (res.data) {
           //this.data=res.data;
+          _this4.metas = res.data.metas;
           _this4.promesas = res.data.datos;
           _this4.pdps = res.data.pdp;
           _this4.pagos = res.data.pagos;
+          console.log(_this4.metas);
         }
       });
     },
@@ -53216,11 +53221,45 @@ var render = function() {
                 "table",
                 { staticClass: "w-100" },
                 [
-                  _vm._m(4),
-                  _vm._v(" "),
-                  _vm._m(5),
-                  _vm._v(" "),
-                  _vm._m(6),
+                  _vm.metas.length > 0
+                    ? [
+                        _c("tr", [
+                          _c("td", { staticClass: "text-left font-bold" }, [
+                            _vm._v("Meta Asignada")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-right" }, [
+                            _vm._v(
+                              "S/." +
+                                _vm._s(_vm.formatoMonto(_vm.metas[0].meta))
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c("td", { staticClass: "text-left font-bold" }, [
+                            _vm._v("Recupero al " + _vm._s(_vm.metas[0].fecha))
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-right" }, [
+                            _vm._v(
+                              "S/." +
+                                _vm._s(_vm.formatoMonto(_vm.metas[0].recupero))
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c("td", { staticClass: "text-left font-bold" }, [
+                            _vm._v("Alcance de Meta")
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-right" }, [
+                            _vm._v(_vm._s(_vm.metas[0].alcance) + "%")
+                          ])
+                        ])
+                      ]
+                    : _vm._e(),
                   _vm._v(" "),
                   _vm.pdps.length > 0 && _vm.pagos.length > 0
                     ? [
@@ -53280,7 +53319,7 @@ var render = function() {
                                     ? _vm.formatoMonto(
                                         _vm.promesas[0].pendiente
                                       )
-                                    : "0"
+                                    : "0.00"
                                 )
                             )
                           ])
@@ -53294,7 +53333,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "estandar" }, [
-            _vm._m(7),
+            _vm._m(4),
             _vm._v(" "),
             _c("div", { staticClass: "body mb-4 pl-4" }, [
               _c("div", { staticClass: "form-group row" }, [
@@ -53348,7 +53387,7 @@ var render = function() {
                 ? _c(
                     "div",
                     { staticClass: "d-flex justify-content-center py-3" },
-                    [_vm._m(8)]
+                    [_vm._m(5)]
                   )
                 : _vm._e(),
               _vm._v(" "),
@@ -53497,7 +53536,9 @@ var render = function() {
                         [
                           _vm._v(
                             "\n                        Campaña más cercana: " +
-                              _vm._s(_vm.estados[0].fecha_i) +
+                              _vm._s(_vm.estados[0].dia) +
+                              " " +
+                              _vm._s(_vm.estados[0].hora) +
                               "\n                    "
                           )
                         ]
@@ -53556,7 +53597,7 @@ var render = function() {
                   )
                 ]),
                 _vm._v(" "),
-                _vm._m(9)
+                _vm._m(6)
               ])
             ]
           ),
@@ -53719,7 +53760,7 @@ var render = function() {
               ? _c(
                   "div",
                   { staticClass: "d-flex justify-content-center py-3" },
-                  [_vm._m(10)]
+                  [_vm._m(7)]
                 )
               : _vm._e()
           ])
@@ -53786,42 +53827,6 @@ var staticRenderFns = [
         },
         [_vm._v("DATOS DEL MES")]
       )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("td", { staticClass: "text-left font-bold" }, [
-        _vm._v("Meta Asignada")
-      ]),
-      _vm._v(" "),
-      _c("td", { staticClass: "text-right" }, [_vm._v("S/50,000")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("td", { staticClass: "text-left font-bold" }, [
-        _vm._v("Recupero al 15")
-      ]),
-      _vm._v(" "),
-      _c("td", { staticClass: "text-right" }, [_vm._v("S/25,000")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("td", { staticClass: "text-left font-bold" }, [
-        _vm._v("Alcance de Meta")
-      ]),
-      _vm._v(" "),
-      _c("td", { staticClass: "text-right" }, [_vm._v("50%")])
     ])
   },
   function() {

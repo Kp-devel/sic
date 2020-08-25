@@ -45,23 +45,27 @@ class Cliente extends Model
                 $car_id=$q->idcartera;
             }
             $cartera=$car_id;
-            //$fec_actual=date("Y-m-d H:i:00");
+            $fec_actual=date("Y-m-d H:i:00");
             //fecha_i <= '2020-07-25 16:04:18' and fecha_f >= '2020-07-25 16:50:51'
-            $fec_actual='2020-07-25 16:04:18';
+            //$fec_actual='2020-07-25 16:04:18';
         
             $sql_campana = " select clientes,fecha_i,fecha_f from indicadores.campana
                         WHERE id_cartera=$cartera and fecha_i <= '$fec_actual' and fecha_f >= '$fec_actual' 
                         LIMIT 1";
             
             $query_campana=DB::connection('mysql')->select(DB::raw($sql_campana));
-
-            foreach($query_campana as $q){
-                $cadena = $q->clientes;
+            //dd($query_campana);
+            if($query_campana!=[]){
+                foreach($query_campana as $q){
+                    $cadena = $q->clientes;
+                }
+                $cadena_cli=$cadena;
+                $array=explode(',',$cadena_cli);
+                $cantidad_cli=count($array);
+            }else{
+                $cantidad_cli=0;
             }
-            $cadena_cli=$cadena;
-            $array=explode(',',$cadena_cli);
-            $cantidad_cli=count($array);
-            //dd($cadena);
+
         }else{
             $cantidad_cli=0;
         }
@@ -113,8 +117,7 @@ class Cliente extends Model
         if($fec_hasta!= "undefined-undefined-"){
             $sql = $sql." and date_format(ges_cli_com_fec,'%Y-%m-%d') <='$fec_hasta' ";
         }
-        //$cadena_cli!=[""]
-        //dd($cantidad_cli);
+ 
         if( $cantidad_cli>0){
             $sql = $sql." and cli_cod in ($cadena_cli) and emp_tel_id_FK=2531 ";
         }
@@ -135,35 +138,62 @@ class Cliente extends Model
                 $sql = $sql." order by det_cli_deu_mor desc ";
         }
 
-
-        
-
         $query=DB::connection('mysql')->select(DB::raw($sql));
         return $query;
     }
 
     public static function datosMes(Request $rq){
-        $sql_metas="
-            SELECT  meta,  recupero, if((recupero/meta)>0,format((recupero/meta)*100,2),0) as alcance
+
+        $sql_cartera="
+            select car_id_FK as idcartera from cliente where cli_est=0 and cli_pas=0 and emp_tel_id_FK=2531 LIMIT 1
+        ";
+        $query_cartera=DB::connection('mysql')->select(DB::raw($sql_cartera));
+        foreach($query_cartera as $q){
+            $car_id=$q->idcartera;
+        }
+        $cartera=$car_id;
+
+        if($cartera=='34' || $cartera=='88' || $cartera=='2' || $cartera=='89' || $cartera=='88' ||
+        $cartera=='70' || $cartera=='20' || $cartera=='72' || $cartera=='5'){
+            $sql_metas="
+            SELECT  if(meta is null,0,meta) as meta,  recupero, if((recupero/meta)>0,format((recupero/meta)*100,2),0) as alcance, DATE_FORMAT(fecha,'%d') as fecha
             FROM
             (
-                SELECT meta,
-                    (	select 
-                    if(sum(pag_cli_mon)>0,sum(pag_cli_mon),0) as recu
-                    from pago_cliente_2 as p
-                    INNER JOIN 
-                        indicadores.cartera as car on p.car_id_FK=car.cartera_id_fk
-                    inner join 
-                        cliente as c on p.pag_cli_cod=c.cli_cod
-                    where 
-                        p.car_id_FK=72			
-                        and date_format(pag_cli_fec,'%Y-%m') = date_format(now(),'%Y-%m')
-                        and date_format(fecha,'%Y-%m') = date_format(now(),'%Y-%m')
-                    ) as recupero
-                from indicadores.cartera
-                WHERE cartera_id_fk=72 and date_format(fecha,'%Y-%m')= date_format(now(),'%Y-%m')
+                select 
+                  if(sum(pag_cli_mon)>0,sum(pag_cli_mon),0) as recupero,emp_meta as meta, max(pag_cli_fec) as fecha
+                from pago_cliente_2 as p
+                inner join 
+                    cliente as c on p.pag_cli_cod=c.cli_cod
+                inner join 
+                    empleado as e on c.emp_tel_id_FK=e.emp_id
+                where 
+                    cli_est=0 and cli_pas=0
+                    and emp_cod=4090					
+                    and date_format(pag_cli_fec,'%Y-%m') = date_format(now(),'%Y-%m')
             ) a
-        ";
+            ";
+        }else{
+            $sql_metas="
+            SELECT  if(meta is null,0,meta) as meta,  recupero, if((recupero/meta)>0,format((recupero/meta)*100,2),0) as alcance, DATE_FORMAT(fecha,'%d') as fecha
+            FROM
+            (
+                select  
+                    if(sum(ges_cli_conf_can)>0,sum(ges_cli_conf_can),0) as recupero,
+                    emp_meta as meta,max(ges_cli_conf_fec) as fecha
+                from 
+                    gestion_cliente as g
+                INNER JOIN 
+                    cliente as c on g.cli_id_FK=c.cli_id
+                inner join 
+                    empleado as e on c.emp_tel_id_FK=e.emp_id
+                where 
+                    cli_est=0 and cli_pas=0
+                    and emp_cod=4090
+                and date_format(ges_cli_conf_fec,'%Y-%m') = date_format(now(),'%Y-%m')
+                and res_id_fk=2
+            ) a
+            ";
+        }
 
         $sql_datos="
             SELECT 
@@ -294,6 +324,7 @@ class Cliente extends Model
         $sql="
             select 
             id_cartera,nombre_camp,fecha_i,fecha_f,
+            DATE_FORMAT(fecha_i, '%d/%m') as dia,TIME_FORMAT(fecha_i, '%H:%i %p') as hora,
             (case 
                 WHEN fecha_i > '$fec_actual' THEN 'PC'
                 WHEN fecha_i = '$fec_actual' or (fecha_i < '$fec_actual' and fecha_f >= '$fec_actual') THEN 'CE'
