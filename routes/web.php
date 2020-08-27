@@ -9,10 +9,14 @@ Route::get('/', function () {
 //clientes
 Route::get('clientes', function () {return view('gestor.clientes');})->name("clientes");
 Route::get('listClientes', 'ClienteController@listaClientes');
-Route::get('listRespuestas', 'ClienteController@listaRespuestas');
-Route::get('datosEstandar', 'ClienteController@datosEstandar');
+Route::post('datosEstandar', 'ClienteController@datosEstandar');
 Route::get('datosMes', 'ClienteController@datosMes');
-Route::get('estadosCampana', 'ClienteController@estadoCampana');
+
+//campañas
+Route::get('estadosCampana', 'CampanaController@estadosCampana');
+
+//respuestas
+Route::get('listRespuestas', 'RespuestaController@listRespuestas');
 
 // control de llamadas - elastix
 Route::get('panelcontrolllamadas', 'ControlLLamadaController@panelcontrolllamadas')->name('panelcontrolllamadas');
@@ -22,7 +26,6 @@ Route::post('controlLLamadasGestor', 'ControlLLamadaController@controlLLamadasGe
 
 // empleado
 Route::get('agentesElastix/{cartera}', 'EmpleadoController@agentesElastix')->name('agentesElastix');
-
 
 
 

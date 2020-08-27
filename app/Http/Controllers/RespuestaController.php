@@ -7,5 +7,7 @@ use App\Respuesta;
 
 class RespuestaController extends Controller
 {
-    
+    public function listRespuestas(){
+        return Respuesta::listRespuestas();
+    }
 }

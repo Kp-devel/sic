@@ -1,15 +1,12 @@
 <template>
     <div>
-        <div class="panel-top text-center">
-            <a href="" class="btn-up"><i class="fa fa-sort-down fa-lg"></i></a>
-        </div>
         <div class="contenedor-general-2">
             <div class="content-menu-2">
                 <div class="logo d-flex">
                     <img src="img/logo.png" width="45px" height="40px" class="pr-2">
                     <div>
                         <h5 class="mb-0 ">Crédito y Cobranzas S.A.C</h5>
-                        <small>Ingeniería en su cobranza</small>
+                        <p class="mb-0 font-12">Ingeniería en su cobranza</p>
                     </div>
                 </div>
                 <hr class="mx-0 px-0">
@@ -41,7 +38,7 @@
                             <tr class="font-12"> 
                                 <td>Ult. Gest.</td>
                                 <td colspan="3">
-                                    <select class="form-control font-12 form-control-sm " v-model="busqueda.respuesta" @change="listRespuestas()">
+                                    <select class="form-control font-12 form-control-sm " v-model="busqueda.respuesta">
                                         <option value="">Selecionar</option>
                                         <option v-for="(item,index) in respuestas" :key="index" :value="item.res_id">{{item.res_des}}</option>
                                     </select>
@@ -57,6 +54,44 @@
                                 </td>
                                 <td class="text-right pr-1">PDP Hasta</td>
                                 <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.pdp_hasta"></td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>Entidades</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm" >
+                                        <option value="">Seleccionar</option>
+                                        <option value=""></option>
+                                    </select>
+                                </td>
+                                <td class="text-right pr-1">Score</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm" >
+                                        <option value="">Seleccionar</option>
+                                        <option value=""></option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>Rango Sueldo</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm" >
+                                        <option value="">Seleccionar</option>
+                                        <option value="1"><=500</option>
+                                        <option value="2">>500<=1000</option>
+                                        <option value="3">>1000<=3000</option>
+                                        <option value="4">>3000</option>
+                                    </select>
+                                </td>
+                                <td class="text-right pr-1">Rango Deuda</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm" >
+                                        <option value="">Seleccionar</option>
+                                        <option value="1"><=500</option>
+                                        <option value="2">>500<=1000</option>
+                                        <option value="3">>1000<=3000</option>
+                                        <option value="4">>3000</option>
+                                    </select>
+                                </td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>Ordenar</td>
@@ -79,10 +114,10 @@
                             </tr>
                             <tr class="font-12"> 
                                 <td colspan="2" class="pt-3">
-                                    <a href="#" @click="listCLientes()" class="btn btn-outline-blue btn-sm btn-block btn-waves">Buscar</a>
+                                    <a href="" @click.prevent="listCLientes()" class="btn btn-outline-blue btn-sm btn-block btn-waves">Buscar</a>
                                 </td>
                                 <td colspan="2" class="pt-3">
-                                    <a href="#" @click="limpiar()"  class="btn  btn-sm btn-block btn-waves btn-outline-blue">Limpiar</a>
+                                    <a href="" @click.prevent="limpiar()"  class="btn  btn-sm btn-block btn-waves btn-outline-blue">Limpiar</a>
                                 </td>
                             </tr>
                         </table>
@@ -96,37 +131,31 @@
                         <p class=" badge bg-blue text-white py-2 px-2 min-w-125 text-left">DATOS DEL MES</p>
                     </div>
                     <div class="body mb-4 pl-4">
-                        <table class="w-100">
-                           <template v-if="metas.length>0">
-                                <tr>
-                                    <td class="text-left font-bold">Meta Asignada</td>
-                                    <td class="text-right">S/.{{formatoMonto(metas[0].meta)}}</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-left font-bold">Recupero al {{metas[0].fecha}}</td>
-                                    <td class="text-right">S/.{{formatoMonto(metas[0].recupero)}}</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-left font-bold">Alcance de Meta</td>
-                                    <td class="text-right">{{metas[0].alcance}}%</td>
-                                </tr>
-                            </template>
-                            <template v-if="pdps.length>0 && pagos.length>0">
-                                <tr>
-                                    <td class="text-left font-bold">Efectividad sobre PDPS</td>
-                                    <td class="text-right">{{(pagos[0].monto_pago/pdps[0].monto_pdp)>0? Math.round((pagos[0].monto_pago/pdps[0].monto_pdp)*100):'0'}}%</td>
-                                </tr>
-                            </template>
-                            <template v-if="promesas.length>0">
-                                <tr>
-                                    <td class="text-left font-bold">PDP Caídas (S/.)</td>
-                                    <td class="text-right">S/.{{promesas[0].caido? formatoMonto(promesas[0].caido):'0'}}</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-left font-bold">PDP Pendientes (S/.)</td>
-                                    <td class="text-right">S/.{{promesas[0].pendiente? formatoMonto(promesas[0].pendiente):'0.00'}}</td>
-                                </tr>
-                            </template>
+                        <table class="w-100" v-if="dataMes">
+                            <tr>
+                                <td class="text-left font-bold">Meta Asignada</td>
+                                <td class="text-right">S/.{{formatoMonto(dataMes.meta)}}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-bold">Recupero al {{dataMes.fecha_recupero}}</td>
+                                <td class="text-right">S/.{{formatoMonto(dataMes.recupero)}}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-bold">Alcance de Meta</td>
+                                <td class="text-right">{{dataMes.meta!=0?dataMes.alcance:0}}%</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-bold">Efectividad sobre PDPS</td>
+                                <td class="text-right">{{dataMes.efectividad}}%</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-bold">PDP Caídas (S/.)</td>
+                                <td class="text-right">S/.{{formatoMonto(dataMes.pdp_caidas)}}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-bold">PDP Pendientes (S/.)</td>
+                                <td class="text-right">S/.{{formatoMonto(dataMes.pdp_pendiente)}}</td>
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -140,8 +169,8 @@
                     <div class="body mb-4 pl-4">
                         <div class="form-group row">
                             <!-- <label for="">Provincia</label> -->
-                            <input type="text" class="form-control w-5 col-3 ml-3 form-control-sm" v-model="firma" v-on:keyup.enter="datosEstandar()">
-                            <a href="#" @click="datosEstandar()" class="btn btn-outline-blue col-4 btn-sm btn-waves">Consultar</a>
+                            <input type="text" class="form-control w-5 col-3 ml-3 form-control-sm" v-model="firma.firma" v-on:keyup.enter="datosEstandar()">
+                            <a href="" @click.prevent="datosEstandar()" class="btn btn-outline-blue col-4 btn-sm btn-waves">Consultar</a>
                         </div>
                         <div class="d-flex justify-content-center py-3" v-if="loading2">
                             <div class="spinner-border spinner-border-sm text-blue" role="status">
@@ -149,58 +178,66 @@
                             </div>
                         </div>
                         
-                        <table class="w-100">
-                            <template v-if="estandar.length>0 && loading2==false">
-                                <tr>
-                                    <td class="text-left font-bold py-0">Gestiones</td>
-                                    <td class="text-right py-0">{{estandar[0].gestiones}}</td>
-                                </tr>
-                           
-                                <tr>
-                                    <td class="text-left font-bold py-0">Contactos</td>
-                                    <td class="text-right py-0">{{estandar[0].contactos? estandar[0].contactos:'0'}}</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-left font-bold">Contactabilidad</td>
-                                    <td class="text-right">{{estandar[0].contactabilidad? '-'+estandar[0].contactabilidad:'0'}}</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-left font-bold">PDPS</td>
-                                    <td class="text-right">{{estandar[0].pdps? estandar[0].pdps:'0'}}</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-left font-bold">Monto PDPS</td>
-                                    <td class="text-right">S/.{{estandar[0].monto_pdps? formatoMonto(estandar[0].monto_pdps):'0'}}</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-left font-bold">Monto Confirmaciones</td>
-                                    <td class="text-right">S/.{{estandar[0].monto_confs? formatoMonto(estandar[0].monto_confs):'0'}}</td>
-                                </tr>
-                            </template>
+                        <table class="w-100" v-if="estandar.length>0 && loading2==false">
+                            <tr>
+                                <td class="text-left font-bold py-0">Gestiones</td>
+                                <td class="text-right py-0">{{estandar[0].gestiones}}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-bold py-0">Contactos</td>
+                                <td class="text-right py-0">{{estandar[0].contactos? estandar[0].contactos:'0'}}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-bold">Contactabilidad</td>
+                                <td class="text-right">{{estandar[0].contactabilidad? '-'+estandar[0].contactabilidad:'0'}}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-bold">PDPS</td>
+                                <td class="text-right">{{estandar[0].pdps? estandar[0].pdps:'0'}}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-bold">Monto PDPS</td>
+                                <td class="text-right">S/.{{estandar[0].monto_pdps? formatoMonto(estandar[0].monto_pdps):'0'}}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-bold">Monto Confirmaciones</td>
+                                <td class="text-right">S/.{{estandar[0].monto_confs? formatoMonto(estandar[0].monto_confs):'0'}}</td>
+                            </tr>
                        </table>
                     </div>
                 </div>
-                <template v-if="estados.length>0">
-                    <div class="campana pb-3 pl-4" v-if="estados[0].estado=='CE'">
-                        <div class="btn-outline-blue bg-success rounded py-1 px-2 text-center">
-                           <h5> {{estados[0].nombre_camp}}</h5>
-                            <p>Campaña en Ejecución</p>
+                <div v-if="estados.length>0" class="mt-3 ml-4"> 
+                    <div class="btn-outline-green rounded pt-0 pb-1" v-if="estados[0].estado=='CE'">
+                        <div class="d-flex px-3 pb-1 pt-2">
+                            <div class="pr-2">
+                                <i class="fa fa-clock fa-lg"></i>
+                            </div>
+                            <div style="line-height:13px;">
+                                <p class="mb-0 font-bold"> {{estados[0].nombre_camp}}</p>
+                                <small>Campaña en Ejecución</small>
+                            </div>
                         </div>
                     </div>
-                    <div class="campana pb-3 pl-4" v-if="estados[0].estado=='PC'">
+                    
+                    <div class="campana" v-if="estados[0].estado=='PC'">
                         <div class="btn-outline-blue bg-primary rounded py-1 px-2 text-center">
                             Campaña más cercana: {{estados[0].dia}} {{estados[0].hora}}
                         </div>
                     </div>
-                    <div class="campana pb-3 pl-4" v-if="estados[0].estado=='CC'">
-                        <div class="btn-outline-blue bg-danger rounded py-1 px-2 text-center">
-                            <h5> {{estados[0].nombre_camp}}</h5>
-                            <p>Campaña en Detenida o Culminada</p>
+                    <div class="btn-outline-red rounded pt-0 pb-1" v-if="estados[0].estado=='CC'">
+                        <div class="d-flex px-3 pb-1 pt-2">
+                            <div class="pr-2">
+                                <i class="fa fa-clock fa-lg"></i>
+                            </div>
+                            <div style="line-height:13px;">
+                                <p class="mb-0 font-bold"> {{estados[0].nombre_camp}}</p>
+                                <small>Campaña en Detenida o Culminada</small>
+                            </div>
                         </div>
                     </div>
-                </template>
+                </div>
             </div>
-            <div class="content-body-2">
+            <div class="content-body-2" id="contenidoLista">
                 <div class="contenedor-body">
                     <nav class="navbar navbar-expand-lg navbar-transparent pt-3 pb-2 bg-white">
                         <div class="container-fluid px-0">
@@ -218,12 +255,12 @@
                     </nav>
                     <div class="px-3 py-1">
                         <div class="table-responsive">
-                            <paginate name="lista" :list="lista" :per="20" class="px-0">
+                            <paginate ref="paginator" name="lista" :list="lista" :per="20" class="px-0">
                                 <table class="table table-hover">
                                     <thead class="bg-blue text-white">
                                         <tr class="text-center">
                                             <td class="align-middle">CODIGO</td>
-                                            <td style="width:20%;">NOMBRE</td>
+                                            <td class="align-middle">NOMBRE</td>
                                             <td class="align-middle">DNI/RUC</td>
                                             <td class="align-middle">CAPITAL</td>
                                             <td class="align-middle">DEUDA</td>
@@ -231,12 +268,13 @@
                                             <td class="align-middle">MEDIO</td>
                                             <td class="align-middle">PRODUCTO</td>
                                             <td class="align-middle">ULT. RPTA</td>
-                                            <td class="border-0 bg-white rounded-0" style="width:10px;"></td>
+                                            <td class="border-0 bg-white rounded-0" style="min-width:5px;"></td>
+                                            <td class="border-0 bg-white rounded-0" style="min-width:5px;"></td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr class="text-center" v-if="lista=='' && loading==false">
-                                            <td colspan="9" style="border:none;">No hay registros</td>
+                                            <td colspan="9">No hay registros</td>
                                         </tr>
                                         <tr v-for="(item,index) in paginated('lista')" :key="index" v-else-if="loading==false">
                                             <td>{{item.codigo}}</td>
@@ -248,21 +286,21 @@
                                             <td>{{item.telefono}}</td>
                                             <td>{{item.producto}}</td>
                                             <td>{{item.ult_resp}}</td>
-                                            <td class="border-0 bg-white">
-                                                <a href="#" class="btn-phone "><i class="fa fa-phone"></i></a>
+                                            <td class="border-0 bg-white rounded-0 px-0">
+                                                <a href="" class="btn-phone" @click.prevent="detalle(item.id)"><i class="fa fa-phone fa-1x"></i></a>
                                             </td>
+                                            <td class="border-0 bg-white rounded-0 px-0"><i class="fa fa-check text-green" v-if="item.fecha_ges==fecha_hoy"></i></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </paginate>
-                            <template v-if="lista.length>0 && !loading">
-                                <paginate-links  for="lista" 
-                                    :async="true"                     
-                                    :limit="4"
-                                    :classes="{'ul': 'pagination', 'li': 'page-item', 'a': 'page-link'}"
-                                ></paginate-links>
-                            </template>
                         </div>
+                        <paginate-links  for="lista" v-if="lista.length>0 && !loading" 
+                            :async="true"                     
+                            :limit="4"
+                            :classes="{'ul': 'pagination', 'li': 'page-item', 'a': 'page-link'}"
+                        ></paginate-links>
+                            
                         <div class="d-flex justify-content-center py-3" v-if="loading">
                             <div class="spinner-border text-blue" role="status">
                                 <span class="sr-only">Loading...</span>
@@ -290,7 +328,7 @@
                 loading:false,
                 loading2:false,
                 respuestas: [],
-                firma:'',
+                firma:{firma:''},
                 estandar:[],
                 metas:[],
                 promesas:[],
@@ -299,13 +337,15 @@
                 data:[],
                 estados:[],
                 metas:[],
+                fecha_hoy:'',
+                dataMes:{meta:0,recupero:0,alcance:0,efectividad:0,pdp_caidas:0,pdp_pendiente:0,fecha_recupero:''}
             }
         },
         created(){
              this.listRespuestas(); 
              this.datosMes(); 
              this.estadoCampana();   
-                      
+             this.diaActual();
         },
         watch:{
             'busqueda.pdp_desde': function(val){this.busqueda.pdp_desde = this.validarFormatoFecha(val)},
@@ -377,9 +417,9 @@
                             this.lista=res.data;
                             this.loading=false;
                             this.total_clientes=this.lista.length;
-                            //this.clientes=this.listCLientes;
-                            //this.total_clientes=this.clientes.length;
-                            //this.view_carga=false;
+                            if(this.total_clientes>0){
+                                this.inicioPaginacion();
+                            }
                         }
                     })
                 //}
@@ -393,39 +433,34 @@
             },
             datosEstandar(){
                 this.loading2=true;
-                if(this.frima!=""){
-                    const firma = this.firma;
-                    axios.get("datosEstandar?firma="+firma).then(res=>{
+                if(this.firma!=""){
+                    axios.post("datosEstandar",this.firma).then(res=>{
                         if(res.data){
                             this.estandar=res.data;
                             this.loading2=false;
-                            //console.log('=======');
-                            //this.$forceUpdate();
-                            //console.log(this.estandar);
-                            //console.log(this.estandar[0].gestiones);
                         }
                     })
                 }
             },
-
             datosMes(){
                 axios.get("datosMes").then(res=>{
                     if(res.data){
-                        //this.data=res.data;
-                        this.metas=res.data.metas;
-                        this.promesas=res.data.datos;
-                        this.pdps=res.data.pdp;
-                        this.pagos=res.data.pagos;
-                        console.log(this.metas);
+                        const datos=res.data;
+                        console.log(datos);
+                        this.dataMes.meta=datos[0].meta;
+                        this.dataMes.recupero=datos[0].recupero;
+                        this.dataMes.fecha_recupero=datos[0].fecha_recupero;
+                        this.dataMes.alcance=((datos[0].recupero/datos[0].meta)*100).toFixed(2);
+                        this.dataMes.efectividad= Math.round((datos[0].monto_pago/datos[0].monto_pdp)*100);
+                        this.dataMes.pdp_caidas=datos[0].pdp_caidos;
+                        this.dataMes.pdp_pendiente=datos[0].pdp_pendiente;
                     }
                 })
             },
-
             estadoCampana(){
                 axios.get("estadosCampana").then(res=>{
                     if(res.data){
                         this.estados=res.data;
-                        console.log(this.estados);
                     }
                 })
             },
@@ -444,24 +479,17 @@
                 }
                 this.total_clientes=this.clientes.length;
             },
-            btnDetalle(id){
-                $("#modalCarga").modal({backdrop: 'static', keyboard: false});
-                this.idCliente=id;
-                this.view_detalle=false;
-                axios.get("listDetalle/"+id).then(res=>{
-                    if(res.data){
-                        this.detalle=res.data;
-                        this.view_detalle=true;
-                        $("#modalCarga").modal('hide');
+            detalle(id){
+                let datos=[];
+                $('#contenidoLista').toggleClass('pos_fixed');
+                for(let i=0;i<this.lista.length;i++){
+                    if(this.lista[i].id==id){
+                        datos.push(this.lista[i]);
+                        this.$root.$emit('verDetalle',datos);
+                        break;
                     }
-                });
-                axios.get("listTelefonos/"+id).then(res=>{
-                    if(res.data){
-                        this.telefonos=res.data;
-                    }
-                });
+                }
             },
-
             formatoMonto(num){
                 var nStr=parseFloat(num).toFixed(2);
                 nStr += '';
@@ -495,20 +523,24 @@
                 if (key < 48 || key > 57) {
                     e.preventDefault();
                 }
-            },        
+            },     
+            inicioPaginacion() {
+                if (this.$refs.paginator) {
+                    this.$refs.paginator.goToPage(1)
+                }
+            },
+            diaActual(){
+                var n=new Date();
+                var hoy=n.getFullYear()+"-"+this.addZero(n.getMonth()+1)+"-"+this.addZero(n.getDate());
+                this.fecha_hoy=hoy;
+            },
+            addZero(i) {
+                if (i < 10) {
+                    i = '0' + i;
+                }
+                return i;
+            },
         },
-        mounted() {
-            this.$root.$on ('cerrar', () => {
-                this.view_detalle=false;
-            } );
-        },
-
-        /*computed:{
-            buscarClientes(){
-                return this.listCLientes.filter((item) => item.codigo.includes(this.codigo));
-            }
-        },*/
-
         components:{
             // detalleCliente
             vuePaginate
