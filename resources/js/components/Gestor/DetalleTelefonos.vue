@@ -30,8 +30,8 @@
                                     <!-- <tr class="text-center" >
                                         <td >No existen datos</td>
                                     </tr> -->
-                                    <tr class="text-center">
-                                        <td class="align-middle">912135682</td>
+                                    <tr class="text-center" v-for="(item,index) in telefonos" :key="index" v-if="telefonos!=''">
+                                        <td class="align-middle">{{item.telefono}}</td>
                                         <td>
                                             <select class="form-control form-control-sm">
                                                 <option value="">Activo</option>
@@ -53,14 +53,28 @@
 
 <script>
     export default {
+        props:["datos"],
         data() {
             return {
                 datos:{telefono:'',idCLiente:0},
                 mensajeError:'',
+                telefonos:[],
             }
         },
+        created(){
+           this.listaTelefonos();
+        },
         methods:{
-            
+            listaTelefonos(){
+                const id= this.datos[0].id;
+                //console.log(id);
+                axios.get("listaTel?id="+id).then(res=>{
+                    if(res.data){
+                        this.telefonos=res.data;
+                        
+                    }
+                })
+            },
         }
     }
 </script>

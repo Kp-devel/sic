@@ -20,22 +20,22 @@
                             <td class="align-middle font-11">IMP. CANC.</td>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
+                    <tbody class="text-center">
+                        <tr v-for="(item,index) in cuentas" :key="index" v-if="cuentas!=''">
+                            <td>{{item.cuenta}}</td>
+                            <td>{{item.tipo_cuenta}}</td>
+                            <td>{{item.tarjeta}}</td>
+                            <td>{{item.producto}}</td>
+                            <td>{{item.fecha_deuda}}</td>
+                            <td>{{item.dias}}</td>
+                            <td>{{item.tramo}}</td>
+                            <td>{{item.moneda}}</td>
+                            <td>{{item.capital}}</td>
+                            <td>{{item.deuda}}</td>
+                            <td>{{item.dscto}}</td>
                             <td class="border-0 rounded-0">1</td>
-                            <td>1</td>
-                            <td>1</td>
+                            <td>{{item.importe_dscto}}</td>
+                            <td>{{item.importe}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -45,16 +45,26 @@
 
 <script>
     export default {
+        props:["datos"],
         data() {
             return {
-
+                cuentas:[],
             }
         },
         created(){
-           
+           this.infoCuentas();
         },
         methods:{
-            
-        }
+            infoCuentas(){
+                const id= this.datos[0].id;
+                //console.log(id);
+                axios.get("infoDeuda?id="+id).then(res=>{
+                    if(res.data){
+                        this.cuentas=res.data;
+                        console.log(this.cuentas);
+                    }
+                })
+            },
+        },
     }
 </script>

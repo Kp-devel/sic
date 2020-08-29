@@ -1,6 +1,7 @@
 <template>
     <div>
-        <div class="modal fade slideInDown" id="modal-recordatorio" tabindex="-1" role="dialog"  aria-hidden="true">
+        <div class="modal fade slideInDown" id="modal-recordatorio" 
+        tabindex="-1" role="dialog"  aria-hidden="true">
             <div class="modal-dialog modal-dialog-top" role="document">
                 <div class="modal-content " >
                     <div class="modal-body overflow-auto px-3 bg-gray-2 pb-0">

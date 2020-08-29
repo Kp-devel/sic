@@ -19,10 +19,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="text-center">012345678910</td>
-                                <td class="text-center">2020-06-25</td>
-                                <td class="text-right">S/.30345.00</td>
+                            <tr v-for="(item,index) in pagos" :key="index" v-if="pagos!=''">
+                                <td class="text-center">{{item.codigo? item.codigo:'-'}}</td>
+                                <td class="text-center">{{item.fecha? item.fecha:'-'}}</td>
+                                <td class="text-right">S/.{{item.pagos? item.pagos:'-'}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -35,13 +35,26 @@
 
 <script>
     export default {
+        props:["datos"],
         data() {
             return {
-                
+                pagos:[],
             }
         },
+        created(){
+           this.listaPagos();
+        },
         methods:{
-            
+            listaPagos(){
+                const id= this.datos[0].id;
+                //console.log(id);
+                axios.get("listaPagos?id="+id).then(res=>{
+                    if(res.data){
+                        this.pagos=res.data;
+                        
+                    }
+                })
+            },
         }
     }
 </script>

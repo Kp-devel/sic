@@ -407,7 +407,7 @@
                     /*console.log(this.busqueda.pdp_desde);*/
                     //console.log(fec_desde);
                     // this.lista=[];
-                    console.log(camp)
+                    //console.log(camp)
                     axios.get("listClientes?codigo="+ (codigo || null)+"&dni="+(dni || null)+"&nombre="+(nombre || null)
                                 +"&telefono="+(telefono || null)+"&tramo="+(tramo || null)+"&respuesta="+(respuesta || null)
                                 +"&fec_desde="+(fec_desde || null)+"&fec_hasta="+(fec_hasta || null)+"&ordenar="+(ordenar || null)
@@ -446,7 +446,7 @@
                 axios.get("datosMes").then(res=>{
                     if(res.data){
                         const datos=res.data;
-                        console.log(datos);
+                        //console.log(datos);
                         this.dataMes.meta=datos[0].meta;
                         this.dataMes.recupero=datos[0].recupero;
                         this.dataMes.fecha_recupero=datos[0].fecha_recupero;
