@@ -18,7 +18,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('estadosCampana', 'ClienteController@estadoCampana');
     Route::get('infoCliente', 'ClienteController@infoCliente');
     Route::get('historicoGestiones', 'ClienteController@historicoGestiones');
-    Route::get('infoDeuda', 'ClienteController@infoDeuda');
+    Route::get('infoDeuda/{id}', 'ClienteController@infoDeuda');
     
     //telefonos
     Route::get('listaTel', 'TelefonoController@listaTelefonos');

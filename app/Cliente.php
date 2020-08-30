@@ -373,38 +373,58 @@ class Cliente extends Model
         return $query;
     }
 
-    public static function infoDeuda(Request $rq){
-        $id=$rq->id;
-       // $id=121049517;
+    public static function infoDeuda($id){
         $sql="
-           SELECT 
-               cli_cod as cuenta,
-               det_cli_tip_doc as tipo_cuenta,
-               det_cli_num_doc as tarjeta,
-               det_cli_pro as producto,
-               det_cli_fec_deu as fecha_deuda,
-               det_cli_dia_atr as dias,
-               det_cli_tra as tramo,
-               (case 
-                   WHEN det_cli_mon =1 THEN 'SOLES'
-                   WHEN det_cli_mon =2 THEN 'DOLARES'
-               end) as moneda,
-               det_cli_deu_cap as capital,
-               det_cli_deu_mor as deuda,
-               det_cli_dscto as dscto,
-               det_cli_imp_dscto as importe_dscto,
-               det_cli_imp_can as importe
-           FROM 
-               detalle_cliente as d
-           INNER JOIN 
-               cliente as c on d.cli_id_FK=c.cli_id
-           WHERE 
-               cli_id_FK=$id
-               AND det_cli_est = 0
-               AND det_cli_pas = 0
+            SELECT
+                cuenta,
+                tipo_cuenta,
+                tarjeta,
+                producto,
+                fecha_deuda,
+                dias,
+                tramo,
+                moneda,
+                capital,
+                deuda,
+                dscto,
+                importe_dscto,
+                importe,
+                (case 
+                    WHEN dscto_ant IS NULL THEN '-2'
+                    WHEN CAST(dscto AS UNSIGNED)=0 THEN '-3'
+                    WHEN CAST(dscto AS UNSIGNED) > CAST(dscto_ant AS UNSIGNED) THEN '1'
+                    WHEN CAST(dscto AS UNSIGNED) < CAST(dscto_ant AS UNSIGNED) THEN '-1'
+                    WHEN CAST(dscto AS UNSIGNED) = CAST(dscto_ant AS UNSIGNED) THEN '0'
+                END) AS indicador_dscto
+            FROM
+            (SELECT 
+                    det_cli_num_doc as cuenta,
+                    det_cli_tip_doc as tipo_cuenta,
+                    det_cli_num_doc as tarjeta,
+                    det_cli_pro as producto,
+                    det_cli_fec_deu as fecha_deuda,
+                    det_cli_dia_atr as dias,
+                    det_cli_tra as tramo,
+                    (case 
+                            WHEN det_cli_mon =1 THEN 'SOLES'
+                            WHEN det_cli_mon =2 THEN 'DOLARES'
+                    end) as moneda,
+                    det_cli_deu_cap as capital,
+                    det_cli_deu_mor as deuda,
+                    det_cli_dscto as dscto,
+                    det_cli_imp_dscto as importe_dscto,
+                    det_cli_imp_can as importe,
+                    (SELECT det_dsc_dscto FROM detalle_dscto WHERE det_dsc_fec=DATE_FORMAT(DATE_ADD(DATE(NOW()),INTERVAL -1 MONTH),'%Y%m') AND det_dsc_num_doc=det_cli_num_doc and det_dsc_est=0) as dscto_ant
+            FROM 
+                    detalle_cliente
+            WHERE 
+                    cli_id_FK=:id
+                    AND det_cli_est = 0
+                    AND det_cli_pas = 0
+            )t
         ";
 
-        $query=DB::connection('mysql')->select(DB::raw($sql));
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("id"=>$id));
        return $query;
    }
 }

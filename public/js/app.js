@@ -3134,8 +3134,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["datos"],
+  props: ["idCliente"],
   data: function data() {
     return {
       cuentas: []
@@ -3148,14 +3151,43 @@ __webpack_require__.r(__webpack_exports__);
     infoCuentas: function infoCuentas() {
       var _this = this;
 
-      var id = this.datos[0].id; //console.log(id);
-
-      axios.get("infoDeuda?id=" + id).then(function (res) {
+      var id = this.idCliente;
+      axios.get("infoDeuda/" + id).then(function (res) {
         if (res.data) {
           _this.cuentas = res.data;
-          console.log(_this.cuentas);
         }
       });
+    },
+    indicadoresDscto: function indicadoresDscto(indicador) {
+      if (indicador == 1) {
+        return "↑";
+      }
+
+      if (indicador == -1) {
+        return "↓";
+      }
+
+      if (indicador == 0) {
+        return "-";
+      }
+
+      if (indicador == -2) {
+        return "■";
+      }
+    },
+    formatoMonto: function formatoMonto(num) {
+      var nStr = parseFloat(num).toFixed(2);
+      nStr += '';
+      var x = nStr.split('.');
+      var x1 = x[0];
+      var x2 = x.length > 1 ? '.' + x[1] : '';
+      var rgx = /(\d+)(\d{3})/;
+
+      while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+      }
+
+      return x1 + x2;
     }
   }
 });
@@ -42647,42 +42679,64 @@ var render = function() {
         _c(
           "tbody",
           { staticClass: "text-center" },
-          _vm._l(_vm.cuentas, function(item, index) {
-            return _vm.cuentas != ""
-              ? _c("tr", { key: index }, [
-                  _c("td", [_vm._v(_vm._s(item.cuenta))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(item.tipo_cuenta))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(item.tarjeta))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(item.producto))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(item.fecha_deuda))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(item.dias))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(item.tramo))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(item.moneda))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(item.capital))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(item.deuda))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(item.dscto))]),
-                  _vm._v(" "),
-                  _c("td", { staticClass: "border-0 rounded-0" }, [
-                    _vm._v("1")
-                  ]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(item.importe_dscto))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(item.importe))])
+          [
+            _vm.cuentas == ""
+              ? _c("tr", [
+                  _c("td", { attrs: { colspan: "14" } }, [
+                    _vm._v("No existen cuentas asociados al cliente")
+                  ])
                 ])
-              : _vm._e()
-          }),
-          0
+              : _vm._l(_vm.cuentas, function(item, index) {
+                  return _c("tr", { key: index }, [
+                    _c("td", [_vm._v(_vm._s(item.cuenta))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(item.tipo_cuenta))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(item.tarjeta))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(item.producto))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(item.fecha_deuda))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(item.dias))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(item.tramo))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(item.moneda))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(_vm.formatoMonto(item.capital)))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(_vm.formatoMonto(item.deuda)))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(item.dscto))]),
+                    _vm._v(" "),
+                    _c(
+                      "td",
+                      {
+                        staticClass: "border-0 rounded-0",
+                        class: {
+                          "text-danger": item.indicador_dscto == -1,
+                          "text-green": item.indicador_dscto == -2,
+                          "text-green": item.indicador_dscto == 1,
+                          "text-black": item.indicador_dscto == 0
+                        }
+                      },
+                      [
+                        _vm._v(
+                          _vm._s(_vm.indicadoresDscto(item.indicador_dscto))
+                        )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm._v(_vm._s(_vm.formatoMonto(item.importe_dscto)))
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(_vm.formatoMonto(item.importe)))])
+                  ])
+                })
+          ],
+          2
         )
       ])
     ])
@@ -42727,7 +42781,7 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("td", {
           staticClass: "align-middle font-11 bg-white border-0 rounded-0",
-          staticStyle: { width: "5px" }
+          staticStyle: { "max-width": "7px" }
         }),
         _vm._v(" "),
         _c("td", { staticClass: "align-middle font-11" }, [
@@ -43748,7 +43802,7 @@ var render = function() {
                       _vm._m(4),
                       _vm._v(" "),
                       _c("detalleCuentas", {
-                        attrs: { datos: _vm.dataCliente }
+                        attrs: { idCliente: _vm.dataCliente[0].id }
                       })
                     ],
                     1
