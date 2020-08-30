@@ -50,17 +50,20 @@
                                     <input 
                                         type="text" 
                                         class="form-control font-12 form-control-sm"                                        
-                                        v-model="busqueda.pdp_desde">
+                                        v-model="busqueda.pdp_desde" placeholder="dd/mm/aaaa">
                                 </td>
                                 <td class="text-right pr-1">PDP Hasta</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.pdp_hasta"></td>
+                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.pdp_hasta" placeholder="dd/mm/aaaa"></td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>Entidades</td>
                                 <td>
-                                    <select class="form-control font-12 form-control-sm" >
+                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.entidades">
                                         <option value="">Seleccionar</option>
-                                        <option value=""></option>
+                                        <option value="0">BP</option>
+                                        <option value="1">BP + 1</option>
+                                        <option value="2">BP + 2</option>
+                                        <option value="3">BP + 3</option>
                                     </select>
                                 </td>
                                 <td class="text-right pr-1">Score</td>
@@ -74,7 +77,7 @@
                             <tr class="font-12"> 
                                 <td>Rango Sueldo</td>
                                 <td>
-                                    <select class="form-control font-12 form-control-sm" >
+                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.sueldo">
                                         <option value="">Seleccionar</option>
                                         <option value="1"><=500</option>
                                         <option value="2">>500<=1000</option>
@@ -84,7 +87,7 @@
                                 </td>
                                 <td class="text-right pr-1">Rango Deuda</td>
                                 <td>
-                                    <select class="form-control font-12 form-control-sm" >
+                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.deuda">
                                         <option value="">Seleccionar</option>
                                         <option value="1"><=500</option>
                                         <option value="2">>500<=1000</option>
@@ -323,7 +326,7 @@
             return {
                 paginate: ['lista'],
                 lista: [],
-                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:''},
+                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:''},
                 //codigo:'',
                 loading:false,
                 loading2:false,
@@ -381,6 +384,9 @@
                 this.busqueda.pdp_hasta='';
                 this.busqueda.ordenar='';
                 this.busqueda.camp='';
+                this.busqueda.deuda='';
+                this.busqueda.sueldo='';
+                this.busqueda.entidades='';
             },
             listCLientes(){
                 //if(this.busqueda.codigo!="" && this.busqueda.dni!="" && this.busqueda.nombre!=""){
@@ -394,6 +400,9 @@
                     const pdp_hasta = this.busqueda.pdp_hasta;
                     const ordenar = this.busqueda.ordenar;
                     const camp = this.busqueda.camp;
+                    const deuda = this.busqueda.deuda;
+                    const sueldo = this.busqueda.sueldo;
+                    const entidades = this.busqueda.entidades;
                     this.loading=true;
 
                     const fechas_i =  pdp_desde.split('/');                   
@@ -407,11 +416,11 @@
                     /*console.log(this.busqueda.pdp_desde);*/
                     //console.log(fec_desde);
                     // this.lista=[];
-                    //console.log(camp)
+                    console.log(entidades);
                     axios.get("listClientes?codigo="+ (codigo || null)+"&dni="+(dni || null)+"&nombre="+(nombre || null)
                                 +"&telefono="+(telefono || null)+"&tramo="+(tramo || null)+"&respuesta="+(respuesta || null)
                                 +"&fec_desde="+(fec_desde || null)+"&fec_hasta="+(fec_hasta || null)+"&ordenar="+(ordenar || null)
-                                +"&camp="+(camp || null))
+                                +"&camp="+(camp || null)+"&deuda="+(deuda || null)+"&sueldo="+(sueldo || null)+"&entidades="+(entidades || null))
                     .then(res=>{
                         if(res.data){
                             this.lista=res.data;

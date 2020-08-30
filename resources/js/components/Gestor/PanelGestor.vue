@@ -7,7 +7,7 @@
             data-toggle="modal" 
             data-target="#modal-recordatorio"><i class="fa fa-clock fa-lg"></i></a>
         </div>
-        <recordatorio/>
+        <recordatorio :cliente="dataCliente[0]"/>
         <!-- lista de clientes y menu -->
         <clientes/>
         <!-- detalle de cliente -->
@@ -50,8 +50,8 @@
                     </div>
                  </div>
                  <!-- panel de registro de gestion -->
-                 <div>
-                    <formRegistrarGestion/>
+                 <div v-if="dataCliente.length>0">
+                    <formRegistrarGestion :id-cliente="dataCliente[0].id"/>
                  </div>
                  <!-- botones laterales -->
                  <div class="btns-lateral">

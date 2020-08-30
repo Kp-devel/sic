@@ -18,6 +18,11 @@ Route::get('infoDeuda', 'ClienteController@infoDeuda');
 
 //telefonos
 Route::get('listaTel', 'TelefonoController@listaTelefonos');
+Route::post('insertarTel', 'TelefonoController@insertarTelefonos');
+
+//Gestion
+Route::get('listaRespuesta', 'GestionController@listaRespuestas');
+Route::post('insertarGestion', 'GestionController@insertarGestion');
 
 //Pagos
 Route::get('listaPagos', 'PagoController@listaPagos');

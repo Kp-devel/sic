@@ -22,6 +22,9 @@ class Cliente extends Model
         $fec_hasta=$rq->fec_hasta;
         $ordenar=$rq->ordenar;
         $camp=$rq->camp;
+        $deuda=$rq->deuda;
+        $sueldo=$rq->sueldo;
+        $entidades=$rq->entidades;
         //dd($camp);
 
         if($camp!= "null"){
@@ -33,7 +36,7 @@ class Cliente extends Model
                 $car_id=$q->idcartera;
             }
             $cartera=$car_id;
-            $fec_actual=date("Y-m-d H:i:00");
+            $fec_actual=date("Y-m-d H:i:s");
             //fecha_i <= '2020-07-25 16:04:18' and fecha_f >= '2020-07-25 16:50:51'
             //$fec_actual='2020-07-25 16:04:18';
         
@@ -57,7 +60,7 @@ class Cliente extends Model
             $cantidad_cli=0;
         }
 
-        $sql="
+        $filtro="
             SELECT 
                 cli_id as id,
                 cli_cod as codigo,
@@ -76,6 +79,9 @@ class Cliente extends Model
             inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
             left JOIN gestion_cliente g ON c.ges_cli_tel_id_FK=g.ges_cli_id
             left JOIN respuesta as r on r.res_id=g.res_id_FK
+        ";
+            
+        $sql="
             where 
                 cli_est=0 and cli_pas=0 
                 and det_cli_est=0 and det_cli_pas=0
@@ -112,6 +118,44 @@ class Cliente extends Model
             $sql = $sql." and cli_cod in ($cadena_cli) ";
         }
 
+        if( $deuda =='1'){
+            $sql = $sql." and det_cli_deu_mor <= 500 ";
+        }else if($deuda =='2'){
+            $sql = $sql." and det_cli_deu_mor > 500 and det_cli_deu_mor <= 1000 ";
+        }else if($deuda =='3'){
+            $sql = $sql." and det_cli_deu_mor > 1000 and det_cli_deu_mor <= 3000 ";
+        }else if($deuda =='4'){
+            $sql = $sql." and det_cli_deu_mor > 3000 ";
+        }
+
+        if( $sueldo =='1'){
+            $filtro= $filtro." left join cliente_sueldo as s on c.cli_id=s.cli_id_FK";
+            $sql = $sql." and cli_suel_can <= 500 ";
+        }else if($sueldo =='2'){
+            $filtro= $filtro." left join cliente_sueldo as s on c.cli_id=s.cli_id_FK";
+            $sql = $sql." and cli_suel_can > 500 and cli_suel_can <= 1000 ";
+        }else if($sueldo =='3'){
+            $filtro= $filtro." left join cliente_sueldo as s on c.cli_id=s.cli_id_FK";
+            $sql = $sql." and cli_suel_can > 1000 and cli_suel_can <= 3000 ";
+        }else if($sueldo =='4'){
+            $filtro= $filtro." left join cliente_sueldo as s on c.cli_id=s.cli_id_FK";
+            $sql = $sql." and cli_suel_can > 3000 ";
+        }
+
+        if( $entidades =='0'){
+            $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
+            $sql = $sql." and cli_inf_entidades like '%BP' ";
+        }else if($entidades =='1'){
+            $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
+            $sql = $sql." and cli_inf_entidades like '%BP + 1%' ";
+        }else if($entidades =='2'){
+            $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
+            $sql = $sql." and cli_inf_entidades like '%BP + 2%' ";
+        }else if($entidades =='3'){
+            $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
+            $sql = $sql." and cli_inf_entidades like '%BP + 3%' ";
+        }
+
         $sql= $sql." GROUP BY cli_id";
 
         if($ordenar!= "null"){
@@ -128,7 +172,7 @@ class Cliente extends Model
                 $sql = $sql." order by ges_cli_fec asc,det_cli_deu_mor desc";
         }
 
-        $query=DB::connection('mysql')->select(DB::raw($sql));
+        $query=DB::connection('mysql')->select(DB::raw($filtro." ".$sql));
         return $query;
     }
 

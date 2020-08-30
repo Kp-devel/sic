@@ -38,7 +38,7 @@
                             </table>
                         </div>
                         <!-- formulario de registro -->
-                        <formRegistrarGestion/>
+                        <formRegistrarGestion v-if="cliente" :id-cliente="cliente.id"/>
                     </div>
                     <div class="modal-footer text-center py-0">
                         <a href="" class="close btn btn-block" data-dismiss="modal" aria-label="Close">
@@ -54,6 +54,7 @@
 <script>
     import formRegistrarGestion from './FormRegistrarGestion';
     export default {
+        props:{cliente:{type:Object}},
         data() {
             return {
                 datos:{telefono:'',idCLiente:0},
