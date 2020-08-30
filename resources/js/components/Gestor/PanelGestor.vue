@@ -1,11 +1,13 @@
 <template>
-    <div>
+    <div>       
         <!-- btn recordatorios -->
          <div class="panel-top text-center">
              <!-- fa-sort-down -->
-            <a href="" class="btn-up" @click.prevent="verRecordatorios()"><i class="fa fa-clock fa-lg"></i></a>
+            <a href="" class="btn-up" 
+            data-toggle="modal" 
+            data-target="#modal-recordatorio"><i class="fa fa-clock fa-lg"></i></a>
         </div>
-        <recordatorio/>
+        <recordatorio :cliente="dataCliente[0]"/>
         <!-- lista de clientes y menu -->
         <clientes/>
         <!-- detalle de cliente -->
@@ -35,7 +37,7 @@
                         <div class="d-flex">
                             <p class=" badge bg-blue text-white py-2 px-3 min-w-125 text-left">HISTÓRICO GESTIONES</p>
                         </div>
-                         <detalleGestiones/>
+                         <detalleGestiones :datos="dataCliente"/>
                     </div>
                 </div>
                 <!-- panel de informacion deuda-->
@@ -44,23 +46,24 @@
                         <div class="d-flex">
                             <p class=" badge bg-blue text-white py-2 px-3 min-w-125 text-left">INFORMACIÓN DE LA DEUDA</p>
                         </div> 
-                        <detalleCuentas/>
+                        <detalleCuentas :datos="dataCliente"/>
                     </div>
                  </div>
                  <!-- panel de registro de gestion -->
-                 <div>
-                    <formRegistrarGestion/>
+                 <div v-if="dataCliente.length>0">
+                    <formRegistrarGestion :id-cliente="dataCliente[0].id"/>
                  </div>
                  <!-- botones laterales -->
                  <div class="btns-lateral">
-                    <a href="#" class="btn-lateral bg-danger" @click.prevent="verPagos()"><label class="texto-vertical">PAGOS</label></a>
-                    <a href="#" class="btn-lateral" @click.prevent="verTelefonos()"><label class="texto-vertical">TELF</label></a>
+                    <a href="#" class="btn-lateral bg-danger" data-toggle="modal" data-target="#modal-pagos"><label class="texto-vertical">PAGOS</label></a>
+                    <!--acá por ejemplo -->
+                    <a href="#" class="btn-lateral"  data-toggle="modal" data-target="#modal-telefonos"><label class="texto-vertical">TELF</label></a>
                  </div>
 
                  <!-- panel de telefonos -->
-                 <detalleTelefonos/>
+                 <detalleTelefonos :datos="dataCliente"/>
                  <!-- panel de pagos -->
-                 <detallePagos/>
+                 <detallePagos :datos="dataCliente"/>
              </div>
         </div>
     </div>
@@ -84,22 +87,16 @@
             }
         },
         created(){
-           
+            
         },
         methods:{
             cerrarDetalle(){
                 this.viewDetalleCliente=false;
                 $('#contenidoLista').toggleClass('pos_fixed');
-            },
-            verTelefonos(){
-                $('#modal-telefonos').modal();
-            },
-            verPagos(){
+            },            
+            /*verPagos(){
                 $('#modal-pagos').modal();
-            },
-            verRecordatorios(){
-                $('#modal-recordatorio').modal();
-            }
+            },*/
         },
         mounted() {
             this.$root.$on ('verDetalle', (datos) => {

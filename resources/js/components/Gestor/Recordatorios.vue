@@ -1,6 +1,7 @@
 <template>
     <div>
-        <div class="modal fade slideInDown" id="modal-recordatorio" tabindex="-1" role="dialog"  aria-hidden="true">
+        <div class="modal fade slideInDown" id="modal-recordatorio" 
+        tabindex="-1" role="dialog"  aria-hidden="true">
             <div class="modal-dialog modal-dialog-top" role="document">
                 <div class="modal-content " >
                     <div class="modal-body overflow-auto px-3 bg-gray-2 pb-0">
@@ -37,7 +38,7 @@
                             </table>
                         </div>
                         <!-- formulario de registro -->
-                        <formRegistrarGestion/>
+                        <formRegistrarGestion v-if="cliente" :id-cliente="cliente.id"/>
                     </div>
                     <div class="modal-footer text-center py-0">
                         <a href="" class="close btn btn-block" data-dismiss="modal" aria-label="Close">
@@ -53,6 +54,7 @@
 <script>
     import formRegistrarGestion from './FormRegistrarGestion';
     export default {
+        props:{cliente:{type:Object}},
         data() {
             return {
                 datos:{telefono:'',idCLiente:0},

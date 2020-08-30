@@ -11,11 +11,11 @@
                 </div>
                 <div class="modal-body overflow-auto pl-3 pr-4 bg-gray-2">
                     <div>
-                        <form method="POST">
+                        <form method="POST" autocomplete="off" @submit.prevent="registrar">
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Ingresar teléfono</label>
-                                <input type="text" class="form-control form-control-sm" v-model="datos.telefono" maxlength="9">
-                                <small v-if="mensajeError" class="text-danger">{{mensajeError}}</small>
+                                <input type="text" class="form-control form-control-sm" v-model="arreglo.telefono" maxlength="9">
+                                <small v-if="mensaje" class="text-danger">{{mensaje}}</small>
                             </div>
                             <button type="submit" class="btn btn-outline-blue btn-sm mb-4">Agregar</button>
                         </form>
@@ -30,8 +30,8 @@
                                     <!-- <tr class="text-center" >
                                         <td >No existen datos</td>
                                     </tr> -->
-                                    <tr class="text-center">
-                                        <td class="align-middle">912135682</td>
+                                    <tr class="text-center" v-for="(item,index) in telefonos" :key="index" v-if="telefonos!=''">
+                                        <td class="align-middle">{{item.telefono}}</td>
                                         <td>
                                             <select class="form-control form-control-sm">
                                                 <option value="">Activo</option>
@@ -53,14 +53,39 @@
 
 <script>
     export default {
+        props:["datos"],
         data() {
             return {
-                datos:{telefono:'',idCLiente:0},
-                mensajeError:'',
+                arreglo:{telefono:'',id:this.datos[0].id},
+                mensaje:'',
+                telefonos:[],
             }
         },
+        created(){
+           this.listaTelefonos();
+        },
         methods:{
-            
+            listaTelefonos(){
+                const id= this.datos[0].id;
+                //console.log(id);
+                axios.get("listaTel?id="+id).then(res=>{
+                    if(res.data){
+                        this.telefonos=res.data;
+                        
+                    }
+                })
+            },
+            async registrar(){
+               // console.log(this.arreglo);
+                try{
+                    const response = await axios.post('insertarTel',this.arreglo);
+                    //console.log(response);
+                    this.mensaje = " Registro con éxito";
+                }catch(error){
+                    console.error(error)
+                    this.mensaje = " Error al Registrar";
+                }
+            },
         }
     }
 </script>

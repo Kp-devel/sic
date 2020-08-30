@@ -11,6 +11,21 @@ Route::get('clientes', function () {return view('gestor.clientes');})->name("cli
 Route::get('listClientes', 'ClienteController@listaClientes');
 Route::post('datosEstandar', 'ClienteController@datosEstandar');
 Route::get('datosMes', 'ClienteController@datosMes');
+Route::get('estadosCampana', 'ClienteController@estadoCampana');
+Route::get('infoCliente', 'ClienteController@infoCliente');
+Route::get('historicoGestiones', 'ClienteController@historicoGestiones');
+Route::get('infoDeuda', 'ClienteController@infoDeuda');
+
+//telefonos
+Route::get('listaTel', 'TelefonoController@listaTelefonos');
+Route::post('insertarTel', 'TelefonoController@insertarTelefonos');
+
+//Gestion
+Route::get('listaRespuesta', 'GestionController@listaRespuestas');
+Route::post('insertarGestion', 'GestionController@insertarGestion');
+
+//Pagos
+Route::get('listaPagos', 'PagoController@listaPagos');
 
 //campañas
 Route::get('estadosCampana', 'CampanaController@estadosCampana');

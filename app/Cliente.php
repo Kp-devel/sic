@@ -22,6 +22,9 @@ class Cliente extends Model
         $fec_hasta=$rq->fec_hasta;
         $ordenar=$rq->ordenar;
         $camp=$rq->camp;
+        $deuda=$rq->deuda;
+        $sueldo=$rq->sueldo;
+        $entidades=$rq->entidades;
         //dd($camp);
 
         if($camp!= "null"){
@@ -33,7 +36,7 @@ class Cliente extends Model
                 $car_id=$q->idcartera;
             }
             $cartera=$car_id;
-            $fec_actual=date("Y-m-d H:i:00");
+            $fec_actual=date("Y-m-d H:i:s");
             //fecha_i <= '2020-07-25 16:04:18' and fecha_f >= '2020-07-25 16:50:51'
             //$fec_actual='2020-07-25 16:04:18';
         
@@ -57,7 +60,7 @@ class Cliente extends Model
             $cantidad_cli=0;
         }
 
-        $sql="
+        $filtro="
             SELECT 
                 cli_id as id,
                 cli_cod as codigo,
@@ -76,6 +79,9 @@ class Cliente extends Model
             inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
             left JOIN gestion_cliente g ON c.ges_cli_tel_id_FK=g.ges_cli_id
             left JOIN respuesta as r on r.res_id=g.res_id_FK
+        ";
+            
+        $sql="
             where 
                 cli_est=0 and cli_pas=0 
                 and det_cli_est=0 and det_cli_pas=0
@@ -112,6 +118,44 @@ class Cliente extends Model
             $sql = $sql." and cli_cod in ($cadena_cli) ";
         }
 
+        if( $deuda =='1'){
+            $sql = $sql." and det_cli_deu_mor <= 500 ";
+        }else if($deuda =='2'){
+            $sql = $sql." and det_cli_deu_mor > 500 and det_cli_deu_mor <= 1000 ";
+        }else if($deuda =='3'){
+            $sql = $sql." and det_cli_deu_mor > 1000 and det_cli_deu_mor <= 3000 ";
+        }else if($deuda =='4'){
+            $sql = $sql." and det_cli_deu_mor > 3000 ";
+        }
+
+        if( $sueldo =='1'){
+            $filtro= $filtro." left join cliente_sueldo as s on c.cli_id=s.cli_id_FK";
+            $sql = $sql." and cli_suel_can <= 500 ";
+        }else if($sueldo =='2'){
+            $filtro= $filtro." left join cliente_sueldo as s on c.cli_id=s.cli_id_FK";
+            $sql = $sql." and cli_suel_can > 500 and cli_suel_can <= 1000 ";
+        }else if($sueldo =='3'){
+            $filtro= $filtro." left join cliente_sueldo as s on c.cli_id=s.cli_id_FK";
+            $sql = $sql." and cli_suel_can > 1000 and cli_suel_can <= 3000 ";
+        }else if($sueldo =='4'){
+            $filtro= $filtro." left join cliente_sueldo as s on c.cli_id=s.cli_id_FK";
+            $sql = $sql." and cli_suel_can > 3000 ";
+        }
+
+        if( $entidades =='0'){
+            $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
+            $sql = $sql." and cli_inf_entidades like '%BP' ";
+        }else if($entidades =='1'){
+            $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
+            $sql = $sql." and cli_inf_entidades like '%BP + 1%' ";
+        }else if($entidades =='2'){
+            $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
+            $sql = $sql." and cli_inf_entidades like '%BP + 2%' ";
+        }else if($entidades =='3'){
+            $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
+            $sql = $sql." and cli_inf_entidades like '%BP + 3%' ";
+        }
+
         $sql= $sql." GROUP BY cli_id";
 
         if($ordenar!= "null"){
@@ -128,7 +172,7 @@ class Cliente extends Model
                 $sql = $sql." order by ges_cli_fec asc,det_cli_deu_mor desc";
         }
 
-        $query=DB::connection('mysql')->select(DB::raw($sql));
+        $query=DB::connection('mysql')->select(DB::raw($filtro." ".$sql));
         return $query;
     }
 
@@ -226,5 +270,141 @@ class Cliente extends Model
         return $query;
     }
 
+    public static function estadosCampana(Request $rq){
+
+        $sql_cartera="
+                select car_id_FK as idcartera from cliente where cli_est=0 and cli_pas=0 and emp_tel_id_FK=2531 LIMIT 1
+            ";
+        $query_cartera=DB::connection('mysql')->select(DB::raw($sql_cartera));
+        foreach($query_cartera as $q){
+            $car_id=$q->idcartera;
+        }
+        $cartera=$car_id;
+
+        //$fec_actual=date("Y-m-d H:i:00");
+        $fec_actual='2020-07-25 16:04:18';
+
+        $sql="
+            select 
+            id_cartera,nombre_camp,fecha_i,fecha_f,
+            DATE_FORMAT(fecha_i, '%d/%m') as dia,TIME_FORMAT(fecha_i, '%H:%i %p') as hora,
+            (case 
+                WHEN fecha_i > '$fec_actual' THEN 'PC'
+                WHEN fecha_i = '$fec_actual' or (fecha_i < '$fec_actual' and fecha_f >= '$fec_actual') THEN 'CE'
+                WHEN fecha_i < '$fec_actual' or fecha_f < '$fec_actual' THEN 'CC'
+            end) as estado
+            from indicadores.campana 
+            where id_cartera=$cartera
+                and '$fec_actual' BETWEEN fecha_i and fecha_f
+            ORDER BY fecha_i asc
+            limit 1
+        ";
+
+        $query=DB::connection('mysql')->select(DB::raw($sql));
+        return $query;
+    }
+
+
+    public static function infoCliente(Request $rq){
+        $id=$rq->id;
+        //$id=121049517;
+        $sql="
+            select 
+                cli_inf_entidades as entidades,
+                cli_inf_score as score,
+                cli_dir_dir as direccion,
+                cli_dir_dis as distrito,
+                cli_dir_pro as provincia,
+                cli_dir_dep as departamento,
+                cli_suel_emp as laboral,
+                cli_suel_can as sueldo
+        
+            from
+                cliente_infAdic as i
+            left join
+                cliente_direccion_2 as d on i.cli_id_FK=d.cli_id_FK
+            left join 
+                cliente_sueldo as s on i.cli_id_FK=s.cli_id_FK
+            where i.cli_id_FK = $id
+        ";
+        $query=DB::connection('mysql')->select(DB::raw($sql));
+        return $query;
+    }
     
+    public static function historicoGestiones(Request $rq){
+        $id=$rq->id;
+       // $id=121049517;
+        $sql="
+            SELECT
+            emp_id_FK,ges_cli_acc,emp_tip_acc,
+            DATE_FORMAT(ges_cli_fec,'%Y-%m-%d') as fecha,
+	        DATE_FORMAT(ges_cli_fec,'%H:%i:%s') as hora,
+            (CASE
+                WHEN emp_tip_acc =1 THEN 'ADMINISTRADOR'
+                WHEN emp_tip_acc =2 THEN 'G. TELEFONICO'
+                WHEN emp_tip_acc =3 THEN 'G. DOMICILIARIO'
+                WHEN emp_tip_acc =4 THEN 'DIGITADOR'
+                WHEN emp_tip_acc =5 THEN 'SUPERVISOR'
+            end) as perfil,
+            ges_cli_med as medio,
+            (case
+                WHEN res_ubi=0 THEN 'C'
+                WHEN res_ubi=1 THEN 'NC'
+                WHEN res_ubi=2 THEN 'ND'
+            end) as ubic,
+            res_des as respuesta,
+            ges_cli_det as detalle,
+            ges_cli_com_fec as fecha_pdp,
+            ges_cli_com_can as monto_pdp,
+            res_id_FK as res_id
+            FROM 
+                gestion_cliente as gc
+            INNER JOIN 
+                respuesta as r on gc.res_id_FK=r.res_id
+            INNER JOIN
+                empleado as e on gc.emp_id_FK=e.emp_id
+            WHERE 
+                cli_id_FK=$id
+                AND date_format(ges_cli_fec,'%Y-%m') BETWEEN date_format(now()- INTERVAL 12 MONTH, '%Y-%m') and date_format(now(), '%Y-%m')
+            ORDER BY ges_cli_id DESC
+        ";
+
+        $query=DB::connection('mysql')->select(DB::raw($sql));
+        return $query;
+    }
+
+    public static function infoDeuda(Request $rq){
+        $id=$rq->id;
+       // $id=121049517;
+        $sql="
+           SELECT 
+               cli_cod as cuenta,
+               det_cli_tip_doc as tipo_cuenta,
+               det_cli_num_doc as tarjeta,
+               det_cli_pro as producto,
+               det_cli_fec_deu as fecha_deuda,
+               det_cli_dia_atr as dias,
+               det_cli_tra as tramo,
+               (case 
+                   WHEN det_cli_mon =1 THEN 'SOLES'
+                   WHEN det_cli_mon =2 THEN 'DOLARES'
+               end) as moneda,
+               det_cli_deu_cap as capital,
+               det_cli_deu_mor as deuda,
+               det_cli_dscto as dscto,
+               det_cli_imp_dscto as importe_dscto,
+               det_cli_imp_can as importe
+           FROM 
+               detalle_cliente as d
+           INNER JOIN 
+               cliente as c on d.cli_id_FK=c.cli_id
+           WHERE 
+               cli_id_FK=$id
+               AND det_cli_est = 0
+               AND det_cli_pas = 0
+        ";
+
+        $query=DB::connection('mysql')->select(DB::raw($sql));
+       return $query;
+   }
 }
