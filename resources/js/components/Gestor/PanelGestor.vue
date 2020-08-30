@@ -46,7 +46,7 @@
                         <div class="d-flex">
                             <p class=" badge bg-blue text-white py-2 px-3 min-w-125 text-left">INFORMACIÓN DE LA DEUDA</p>
                         </div> 
-                        <detalleCuentas :datos="dataCliente"/>
+                        <detalleCuentas :idCliente="dataCliente[0].id"/>
                     </div>
                  </div>
                  <!-- panel de registro de gestion -->
