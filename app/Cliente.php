@@ -305,9 +305,7 @@ class Cliente extends Model
     }
 
 
-    public static function infoCliente(Request $rq){
-        $id=$rq->id;
-        //$id=121049517;
+    public static function infoCliente($id){
         $sql="
             select 
                 cli_inf_entidades as entidades,
@@ -318,16 +316,15 @@ class Cliente extends Model
                 cli_dir_dep as departamento,
                 cli_suel_emp as laboral,
                 cli_suel_can as sueldo
-        
             from
                 cliente_infAdic as i
             left join
                 cliente_direccion_2 as d on i.cli_id_FK=d.cli_id_FK
             left join 
                 cliente_sueldo as s on i.cli_id_FK=s.cli_id_FK
-            where i.cli_id_FK = $id
+            where i.cli_id_FK = :id
         ";
-        $query=DB::connection('mysql')->select(DB::raw($sql));
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("id"=>$id));
         return $query;
     }
     

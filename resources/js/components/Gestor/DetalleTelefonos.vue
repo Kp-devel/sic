@@ -4,7 +4,7 @@
             <div class="modal-dialog modal-dialog-rigth modal-xl" role="document" style="width:280px;">
                 <div class="modal-content">
                 <div class="modal-header bg-blue pt-3 pl-3 pr-4">
-                    <p class="p-title mb-0 text-white"><i class="fa fa-phone pr-3"></i>TELÉFONOS</p>
+                    <p class="p-title mb-0 text-white"><i class="fa fa-phone pr-3"></i>TELÉFONOS ({{cantidad}})</p>
                     <a href="" class="close " data-dismiss="modal" aria-label="Close">
                         <span class="fa fa-times text-white"></span>
                     </a>
@@ -13,11 +13,14 @@
                     <div>
                         <form method="POST" autocomplete="off" @submit.prevent="registrar">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Ingresar teléfono</label>
-                                <input type="text" class="form-control form-control-sm" v-model="arreglo.telefono" maxlength="9">
-                                <small v-if="mensaje" class="text-danger">{{mensaje}}</small>
+                                <label for="">Ingresar teléfono</label>
+                                <input type="text" class="form-control form-control-sm" v-model="arreglo.telefono" maxlength="9" @keypress="soloNumeros">
+                                <small v-if="mensaje" :class="{'text-danger':mensaje.substr(0, 1)!='R','text-green':mensaje.substr(0, 1)=='R'}">{{mensaje}}</small>
                             </div>
-                            <button type="submit" class="btn btn-outline-blue btn-sm mb-4">Agregar</button>
+                            <button type="submit" class="btn btn-outline-blue btn-sm mb-4">
+                                <span v-if="loadButton" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Agregar
+                            </button>
                         </form>
                         <div class="table-responsive">
                             <table class="table table-hover">
@@ -27,16 +30,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- <tr class="text-center" >
-                                        <td >No existen datos</td>
-                                    </tr> -->
-                                    <tr class="text-center" v-for="(item,index) in telefonos" :key="index" v-if="telefonos!=''">
+                                    <tr class="text-center"  v-if="telefonos==''">
+                                        <td colspan="2">Sin teléfonos</td>
+                                    </tr>
+                                    <tr class="text-center" v-for="(item,index) in telefonos" :key="index" v-else>
                                         <td class="align-middle">{{item.telefono}}</td>
                                         <td>
-                                            <select class="form-control form-control-sm">
-                                                <option value="">Activo</option>
-                                                <option value="">Inactivo</option>
-                                                <option value="">Eliminar</option>
+                                            <select class="form-control form-control-sm" @change.prevent="actualizarEstado(item.estado,item.telefono,item.id)" v-model="item.estado">
+                                                <option value="0">Activo</option>
+                                                <option value="1">Inactivo</option>
+                                                <option value="2">Eliminar</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -53,12 +56,15 @@
 
 <script>
     export default {
-        props:["datos"],
+        props:["idCliente"],
         data() {
             return {
-                arreglo:{telefono:'',id:this.datos[0].id},
+                arreglo:{telefono:'',id:this.idCliente},
                 mensaje:'',
                 telefonos:[],
+                loadButton:false,
+                estado:1,
+                cantidad:0
             }
         },
         created(){
@@ -66,26 +72,59 @@
         },
         methods:{
             listaTelefonos(){
-                const id= this.datos[0].id;
-                //console.log(id);
-                axios.get("listaTel?id="+id).then(res=>{
+                const id= this.idCliente;
+                axios.get("listaTel/"+id).then(res=>{
                     if(res.data){
                         this.telefonos=res.data;
-                        
+                        this.cantidad=this.telefonos.length;
                     }
                 })
             },
             async registrar(){
-               // console.log(this.arreglo);
-                try{
-                    const response = await axios.post('insertarTel',this.arreglo);
-                    //console.log(response);
-                    this.mensaje = " Registro con éxito";
-                }catch(error){
-                    console.error(error)
-                    this.mensaje = " Error al Registrar";
+                this.mensaje="";
+                if(this.arreglo.telefono!=""){
+                    this.loadButton=true;
+                    try{
+                        axios.post('insertarTel',this.arreglo).then(res=>{
+                            if(res.data=="ok"){
+                                this.loadButton=false;
+                                this.mensaje = "Registro con éxito";
+                                this.arreglo.telefono='';
+                                this.listaTelefonos();
+                            }
+                        });
+                    }catch(error){
+                        this.mensaje = "Ha ocurrido un error!";
+                    }
+                }else{
+                    this.mensaje="Completar el campo";
                 }
             },
-        }
+            actualizarEstado(est,tel,id){
+                const datos={estado:est,
+                            telefono:tel,
+                            id:id}
+                axios.put('actualizarEstadoTelefono',datos).then(res=>{
+                    if(res.data=="ok"){
+                        this.listaTelefonos();
+                    }
+                });
+            },
+            soloNumeros(e){
+                var key = window.event ? e.which : e.keyCode;
+                if (key < 48 || key > 57) {
+                    e.preventDefault();
+                }
+            },     
+            limpiar(){
+                this.mensaje='';
+                this.arreglo.telefono='';
+            }
+        },
+        mounted() {
+            this.$root.$on ('limpiarFrmTel',() => {
+                this.limpiar();
+            } );
+        },
     }
 </script>

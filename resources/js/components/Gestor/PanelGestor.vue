@@ -57,13 +57,13 @@
                  <div class="btns-lateral">
                     <a href="#" class="btn-lateral bg-danger" data-toggle="modal" data-target="#modal-pagos"><label class="texto-vertical">PAGOS</label></a>
                     <!--acá por ejemplo -->
-                    <a href="#" class="btn-lateral"  data-toggle="modal" data-target="#modal-telefonos"><label class="texto-vertical">TELF</label></a>
+                    <a href="" class="btn-lateral" @click.prevent="verTelefonos()"><label class="texto-vertical">TELF</label></a>
                  </div>
 
                  <!-- panel de telefonos -->
-                 <detalleTelefonos :datos="dataCliente"/>
+                 <detalleTelefonos :idCliente="idCliente"/>
                  <!-- panel de pagos -->
-                 <detallePagos :datos="dataCliente"/>
+                 <detallePagos :idCliente="idCliente"/>
              </div>
         </div>
     </div>
@@ -94,16 +94,17 @@
             cerrarDetalle(){
                 this.viewDetalleCliente=false;
                 $('#contenidoLista').toggleClass('pos_fixed');
-            },            
-            /*verPagos(){
-                $('#modal-pagos').modal();
-            },*/
+            },       
+            verTelefonos(){
+                this.$root.$emit('limpiarFrmTel');
+                $('#modal-telefonos').modal();
+            }     
         },
         mounted() {
             this.$root.$on ('verDetalle', (datos) => {
-                this.viewDetalleCliente=true;
                 this.dataCliente=datos;
                 this.idCliente=datos[0].id;
+                this.viewDetalleCliente=true;
                 // $('html, body').animate({scrollTop:0}, 'slow');
             } );
         },

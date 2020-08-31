@@ -16,20 +16,21 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('datosEstandar', 'ClienteController@datosEstandar');
     Route::get('datosMes', 'ClienteController@datosMes');
     Route::get('estadosCampana', 'ClienteController@estadoCampana');
-    Route::get('infoCliente', 'ClienteController@infoCliente');
+    Route::get('infoCliente/{id}', 'ClienteController@infoCliente');
     Route::get('historicoGestiones/{id}', 'ClienteController@historicoGestiones');
     Route::get('infoDeuda/{id}', 'ClienteController@infoDeuda');
     
     //telefonos
-    Route::get('listaTel', 'TelefonoController@listaTelefonos');
+    Route::get('listaTel/{id}', 'TelefonoController@listaTelefonos');
     Route::post('insertarTel', 'TelefonoController@insertarTelefonos');
+    Route::put('actualizarEstadoTelefono', 'TelefonoController@actualizarEstadoTelefono');
     
     //Gestion
     Route::get('listaRespuesta', 'GestionController@listaRespuestas');
     Route::post('insertarGestion', 'GestionController@insertarGestion');
     
     //Pagos
-    Route::get('listaPagos', 'PagoController@listaPagos');
+    Route::get('listaPagos/{id}', 'PagoController@listaPagos');
     
     //campañas
     Route::get('estadosCampana', 'CampanaController@estadosCampana');

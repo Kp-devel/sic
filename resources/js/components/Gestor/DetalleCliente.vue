@@ -71,7 +71,7 @@
             infoCLiente(){
                 const id= this.datos[0].id;
                 //console.log(id);
-                axios.get("infoCliente?id="+id).then(res=>{
+                axios.get("infoCliente/"+id).then(res=>{
                     if(res.data){
                         const info=res.data;
                         //console.log(this.info);
