@@ -37,7 +37,7 @@
                         <div class="d-flex">
                             <p class=" badge bg-blue text-white py-2 px-3 min-w-125 text-left">HISTÓRICO GESTIONES</p>
                         </div>
-                         <detalleGestiones :datos="dataCliente"/>
+                         <detalleGestiones :idCliente="idCliente" v-if="dataCliente.length>0"/>
                     </div>
                 </div>
                 <!-- panel de informacion deuda-->
@@ -46,12 +46,12 @@
                         <div class="d-flex">
                             <p class=" badge bg-blue text-white py-2 px-3 min-w-125 text-left">INFORMACIÓN DE LA DEUDA</p>
                         </div> 
-                        <detalleCuentas :idCliente="dataCliente[0].id"/>
+                        <detalleCuentas :idCliente="idCliente" v-if="dataCliente.length>0"/>
                     </div>
                  </div>
                  <!-- panel de registro de gestion -->
                  <div v-if="dataCliente.length>0">
-                    <formRegistrarGestion :id-cliente="dataCliente[0].id"/>
+                    <formRegistrarGestion :id-cliente="idCliente"/>
                  </div>
                  <!-- botones laterales -->
                  <div class="btns-lateral">
@@ -83,7 +83,8 @@
         data() {
             return {
                 viewDetalleCliente:false,
-                dataCliente:0
+                dataCliente:[],
+                idCliente:''
             }
         },
         created(){
@@ -102,13 +103,15 @@
             this.$root.$on ('verDetalle', (datos) => {
                 this.viewDetalleCliente=true;
                 this.dataCliente=datos;
+                this.idCliente=datos[0].id;
                 // $('html, body').animate({scrollTop:0}, 'slow');
             } );
         },
-        updated(){
-            $('[data-toggle="tooltip"]').tooltip();
-            // $('#mensaje').tooltip();
-        },
+        // updated(){
+        //     // this.$nextTick(function(){
+        //         $('[data-toggle="tooltip"]').tooltip();
+        //     // })
+        // },
         components:{
             clientes,
             detalleCliente,

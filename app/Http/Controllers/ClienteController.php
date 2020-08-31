@@ -27,8 +27,8 @@ class ClienteController extends Controller
         return cliente::infoCliente($rq);
     }
 
-    public function historicoGestiones(Request $rq){
-        return cliente::historicoGestiones($rq);
+    public function historicoGestiones($id){
+        return cliente::historicoGestiones($id);
     }
 
     public function infoDeuda($id){
