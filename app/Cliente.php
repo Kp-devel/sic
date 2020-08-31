@@ -54,13 +54,15 @@ class Cliente extends Model
                 $array=explode(',',$cadena_cli);
                 $cantidad_cli=count($array);
             }else{
-                $cantidad_cli=0;
+                $cantidad_cli=-1;
             }
         }else{
-            $cantidad_cli=0;
+            $cantidad_cli= 0;
         }
 
-        $filtro="
+        //dd($cantidad_cli);
+
+        $filtro ="
             SELECT 
                 cli_id as id,
                 cli_cod as codigo,
@@ -113,9 +115,13 @@ class Cliente extends Model
         if($fec_hasta!= "undefined-undefined-"){
             $sql = $sql." and date_format(ges_cli_com_fec,'%Y-%m-%d') <='$fec_hasta' ";
         }
- 
-        if( $cantidad_cli>0){
+        //dd($cantidad_cli);
+        if( $cantidad_cli>0 ){
             $sql = $sql." and cli_cod in ($cadena_cli) ";
+        }else if( $cantidad_cli==0){
+            $sql = $sql." and 1=1 ";
+        }else if( $cantidad_cli== -1 ){
+            $sql = $sql." and cli_cod in (0) ";
         }
 
         if( $deuda =='1'){

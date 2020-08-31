@@ -15,7 +15,11 @@
                                 <td class="pb-2">
                                     <select class="form-control font-12 form-control-sm" v-model="telefono">
                                         <option value="">Seleccionar</option>
-                                        <option v-for="(item,index) in telefonos" :key="index" :value="item.telefono">{{item.telefono}}</option>
+                                        <template v-for="(item,index) in telefonos" >      
+                                            <option v-if="item.ubi>0" style="background-color:#79c753 !important;" :value="item.telefono"  :key="index">{{item.telefono}}</option>
+                                            <option v-else-if="item.frec>0 && item.ubi==0" style="background-color:#ffd600 !important;" :value="item.telefono" :key="index">{{item.telefono}}</option>
+                                            <option v-else style="background-color:#e46764 !important;" :key="index">{{item.telefono}}</option>
+                                        </template>
                                     </select>
                                 </td>
                             </tr>

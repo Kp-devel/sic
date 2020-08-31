@@ -3569,6 +3569,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     idCliente: {
@@ -56693,11 +56697,42 @@ var render = function() {
                       ]),
                       _vm._v(" "),
                       _vm._l(_vm.telefonos, function(item, index) {
-                        return _c(
-                          "option",
-                          { key: index, domProps: { value: item.telefono } },
-                          [_vm._v(_vm._s(item.telefono))]
-                        )
+                        return [
+                          item.ubi > 0
+                            ? _c(
+                                "option",
+                                {
+                                  key: index,
+                                  staticStyle: {
+                                    "background-color": "#79c753 !important"
+                                  },
+                                  domProps: { value: item.telefono }
+                                },
+                                [_vm._v(_vm._s(item.telefono))]
+                              )
+                            : item.frec > 0 && item.ubi == 0
+                            ? _c(
+                                "option",
+                                {
+                                  key: index,
+                                  staticStyle: {
+                                    "background-color": "#ffd600 !important"
+                                  },
+                                  domProps: { value: item.telefono }
+                                },
+                                [_vm._v(_vm._s(item.telefono))]
+                              )
+                            : _c(
+                                "option",
+                                {
+                                  key: index,
+                                  staticStyle: {
+                                    "background-color": "#e46764 !important"
+                                  }
+                                },
+                                [_vm._v(_vm._s(item.telefono))]
+                              )
+                        ]
                       })
                     ],
                     2
