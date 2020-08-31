@@ -2820,11 +2820,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (res.data) {
           _this.lista = res.data;
           _this.loading = false;
-          _this.total_clientes = _this.lista.length;
-
-          if (_this.total_clientes > 0) {
-            _this.inicioPaginacion();
-          }
+          _this.total_clientes = _this.lista.length; // if(this.total_clientes>0){
+          //     this.inicioPaginacion();
+          // }
         }
       }); //}
     },
@@ -2942,11 +2940,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         e.preventDefault();
       }
     },
-    inicioPaginacion: function inicioPaginacion() {
-      if (this.$refs.paginator) {
-        this.$refs.paginator.goToPage(1);
-      }
-    },
+    // inicioPaginacion() {
+    //     if (this.$refs.paginator) {
+    //         this.$refs.paginator.goToPage(1)
+    //     }
+    // },
     diaActual: function diaActual() {
       var n = new Date();
       var hoy = n.getFullYear() + "-" + this.addZero(n.getMonth() + 1) + "-" + this.addZero(n.getDate());
@@ -3238,8 +3236,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["datos"],
+  props: ["idCliente"],
   data: function data() {
     return {
       gestiones: []
@@ -3252,17 +3262,21 @@ __webpack_require__.r(__webpack_exports__);
     infoGestiones: function infoGestiones() {
       var _this = this;
 
-      var id = this.datos[0].id; //console.log(id);
-
-      axios.get("historicoGestiones?id=" + id).then(function (res) {
+      var id = this.idCliente;
+      axios.get("historicoGestiones/" + id).then(function (res) {
         if (res.data) {
-          _this.gestiones = res.data; //console.log(this.gestiones);
+          _this.gestiones = res.data;
+
+          _this.$nextTick(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+          });
         }
       });
     }
   },
-  updated: function updated() {
-    $('[data-toggle="tooltip"]').tooltip();
+  updated: function updated() {// this.$nextTick(function(){
+    // $('[data-toggle="tooltip"]').tooltip();
+    // })
   }
 });
 
@@ -3602,11 +3616,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: {
-    idCliente: {
-      type: String
-    }
-  },
+  props: ["idCliente"],
   data: function data() {
     return {
       respuestas: [],
@@ -3848,7 +3858,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       viewDetalleCliente: false,
-      dataCliente: 0
+      dataCliente: [],
+      idCliente: ''
     };
   },
   created: function created() {},
@@ -3867,12 +3878,15 @@ __webpack_require__.r(__webpack_exports__);
 
     this.$root.$on('verDetalle', function (datos) {
       _this.viewDetalleCliente = true;
-      _this.dataCliente = datos; // $('html, body').animate({scrollTop:0}, 'slow');
+      _this.dataCliente = datos;
+      _this.idCliente = datos[0].id; // $('html, body').animate({scrollTop:0}, 'slow');
     });
   },
-  updated: function updated() {
-    $('[data-toggle="tooltip"]').tooltip(); // $('#mensaje').tooltip();
-  },
+  // updated(){
+  //     // this.$nextTick(function(){
+  //         $('[data-toggle="tooltip"]').tooltip();
+  //     // })
+  // },
   components: {
     clientes: _Clientes__WEBPACK_IMPORTED_MODULE_0__["default"],
     detalleCliente: _DetalleCliente__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -42827,63 +42841,78 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "tbody",
-                _vm._l(_vm.gestiones, function(item, index) {
-                  return _vm.gestiones != ""
-                    ? _c("tr", { key: index }, [
-                        _c("td", { staticClass: "font-11" }, [
-                          _vm._v(_vm._s(item.fecha)),
-                          _c("br"),
-                          _vm._v(_vm._s(item.hora))
-                        ]),
-                        _vm._v(" "),
-                        _vm._m(1, true),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "font-11" }, [
-                          _vm._v(_vm._s(item.medio))
-                        ]),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "text-center font-11" }, [
-                          _vm._v(_vm._s(item.ubic))
-                        ]),
-                        _vm._v(" "),
-                        item.res_id == "1"
-                          ? _c("td", { staticClass: "font-11" }, [
-                              _c(
-                                "a",
-                                {
-                                  staticClass: "text-black",
-                                  attrs: {
-                                    href: "#",
-                                    id: "mensaje",
-                                    "data-toggle": "tooltip",
-                                    "data-placement": "bottom",
-                                    title:
-                                      "Fecha PDP: " +
-                                      item.fecha_pdp +
-                                      " Monto PDP: " +
-                                      item.monto_pdp
-                                  }
-                                },
-                                [_vm._v(_vm._s(item.respuesta))]
-                              )
-                            ])
-                          : item.res_id != "1"
-                          ? _c("td", { staticClass: "font-11" }, [
-                              _vm._v(
-                                "\n                        " +
-                                  _vm._s(item.respuesta) +
-                                  "\n                    "
-                              )
-                            ])
-                          : _vm._e(),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "font-11" }, [
-                          _vm._v(_vm._s(item.detalle))
+                [
+                  _vm.gestiones == ""
+                    ? _c("tr", { staticClass: "text-center" }, [
+                        _c("td", { attrs: { colspan: "6" } }, [
+                          _vm._v("No existen gestiones asociadas al cliente")
                         ])
                       ])
-                    : _vm._e()
-                }),
-                0
+                    : _vm._l(_vm.gestiones, function(item, index) {
+                        return _c("tr", { key: index }, [
+                          _c("td", { staticClass: "font-11" }, [
+                            _vm._v(_vm._s(item.fecha)),
+                            _c("br"),
+                            _vm._v(_vm._s(item.hora))
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-center" }, [
+                            item.tipo == 1 || item.tipo == 5
+                              ? _c("i", {
+                                  staticClass: "fas fa-user-tie fa-lg"
+                                })
+                              : _vm._e(),
+                            _vm._v(" "),
+                            item.tipo == 2
+                              ? _c("i", { staticClass: "fa fa-headset fa-lg" })
+                              : _vm._e()
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "font-11" }, [
+                            _vm._v(_vm._s(item.medio))
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-center font-11" }, [
+                            _vm._v(_vm._s(item.ubic))
+                          ]),
+                          _vm._v(" "),
+                          item.tolltip == 1
+                            ? _c("td", { staticClass: "font-11" }, [
+                                _c(
+                                  "a",
+                                  {
+                                    staticClass: "text-black",
+                                    attrs: {
+                                      href: "#",
+                                      "data-toggle": "tooltip",
+                                      "data-placement": "right",
+                                      title:
+                                        "Fecha: " +
+                                        item.fecha_pdp +
+                                        " Monto: " +
+                                        item.monto_pdp
+                                    }
+                                  },
+                                  [_vm._v(_vm._s(item.respuesta))]
+                                )
+                              ])
+                            : item.tolltip == 0
+                            ? _c("td", { staticClass: "font-11" }, [
+                                _vm._v(
+                                  "\n                        " +
+                                    _vm._s(item.respuesta) +
+                                    "\n                    "
+                                )
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "font-11" }, [
+                            _vm._v(_vm._s(item.detalle))
+                          ])
+                        ])
+                      })
+                ],
+                2
               )
             ])
           : _vm._e()
@@ -42898,28 +42927,53 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("thead", { staticClass: "bg-gray" }, [
       _c("tr", { staticClass: "text-center" }, [
-        _c("td", { staticClass: "align-middle font-11" }, [_vm._v("FECHA")]),
+        _c(
+          "td",
+          {
+            staticClass: "align-middle font-11",
+            staticStyle: { width: "80px" }
+          },
+          [_vm._v("FECHA")]
+        ),
         _vm._v(" "),
-        _c("td", { staticClass: "align-middle font-11" }, [_vm._v("PERFIL")]),
+        _c(
+          "td",
+          {
+            staticClass: "align-middle font-11",
+            staticStyle: { width: "20px" }
+          },
+          [_vm._v("PERFIL")]
+        ),
         _vm._v(" "),
-        _c("td", { staticClass: "align-middle font-11" }, [_vm._v("MEDIO")]),
+        _c(
+          "td",
+          {
+            staticClass: "align-middle font-11",
+            staticStyle: { width: "90px" }
+          },
+          [_vm._v("MEDIO")]
+        ),
         _vm._v(" "),
-        _c("td", { staticClass: "align-middle font-11" }, [_vm._v("UBIC.")]),
+        _c(
+          "td",
+          {
+            staticClass: "align-middle font-11",
+            staticStyle: { width: "20px" }
+          },
+          [_vm._v("UBIC.")]
+        ),
         _vm._v(" "),
-        _c("td", { staticClass: "align-middle font-11" }, [
-          _vm._v("RESPUESTA")
-        ]),
+        _c(
+          "td",
+          {
+            staticClass: "align-middle font-11",
+            staticStyle: { width: "170px" }
+          },
+          [_vm._v("RESPUESTA")]
+        ),
         _vm._v(" "),
         _c("td", { staticClass: "align-middle font-11" }, [_vm._v("DETALLE")])
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", { staticClass: "text-center" }, [
-      _c("i", { staticClass: "fa fa-user-circle fa-lg" })
     ])
   }
 ]
@@ -43786,9 +43840,11 @@ var render = function() {
                     [
                       _vm._m(3),
                       _vm._v(" "),
-                      _c("detalleGestiones", {
-                        attrs: { datos: _vm.dataCliente }
-                      })
+                      _vm.dataCliente.length > 0
+                        ? _c("detalleGestiones", {
+                            attrs: { idCliente: _vm.idCliente }
+                          })
+                        : _vm._e()
                     ],
                     1
                   )
@@ -43801,9 +43857,11 @@ var render = function() {
                     [
                       _vm._m(4),
                       _vm._v(" "),
-                      _c("detalleCuentas", {
-                        attrs: { idCliente: _vm.dataCliente[0].id }
-                      })
+                      _vm.dataCliente.length > 0
+                        ? _c("detalleCuentas", {
+                            attrs: { idCliente: _vm.idCliente }
+                          })
+                        : _vm._e()
                     ],
                     1
                   )
@@ -43814,7 +43872,7 @@ var render = function() {
                       "div",
                       [
                         _c("formRegistrarGestion", {
-                          attrs: { "id-cliente": _vm.dataCliente[0].id }
+                          attrs: { "id-cliente": _vm.idCliente }
                         })
                       ],
                       1

@@ -331,32 +331,36 @@ class Cliente extends Model
         return $query;
     }
     
-    public static function historicoGestiones(Request $rq){
-        $id=$rq->id;
-       // $id=121049517;
+    public static function historicoGestiones($id){
         $sql="
             SELECT
-            emp_id_FK,ges_cli_acc,emp_tip_acc,
-            DATE_FORMAT(ges_cli_fec,'%Y-%m-%d') as fecha,
-	        DATE_FORMAT(ges_cli_fec,'%H:%i:%s') as hora,
-            (CASE
-                WHEN emp_tip_acc =1 THEN 'ADMINISTRADOR'
-                WHEN emp_tip_acc =2 THEN 'G. TELEFONICO'
-                WHEN emp_tip_acc =3 THEN 'G. DOMICILIARIO'
-                WHEN emp_tip_acc =4 THEN 'DIGITADOR'
-                WHEN emp_tip_acc =5 THEN 'SUPERVISOR'
-            end) as perfil,
-            ges_cli_med as medio,
-            (case
-                WHEN res_ubi=0 THEN 'C'
-                WHEN res_ubi=1 THEN 'NC'
-                WHEN res_ubi=2 THEN 'ND'
-            end) as ubic,
-            res_des as respuesta,
-            ges_cli_det as detalle,
-            ges_cli_com_fec as fecha_pdp,
-            ges_cli_com_can as monto_pdp,
-            res_id_FK as res_id
+                emp_id_FK,
+                ges_cli_acc,
+                emp_tip_acc as tipo,
+                DATE_FORMAT(ges_cli_fec,'%Y-%m-%d') as fecha,
+                DATE_FORMAT(ges_cli_fec,'%H:%i:%s') as hora,
+                (CASE
+                    WHEN emp_tip_acc =1 THEN 'ADMINISTRADOR'
+                    WHEN emp_tip_acc =2 THEN 'G. TELEFONICO'
+                    WHEN emp_tip_acc =3 THEN 'G. DOMICILIARIO'
+                    WHEN emp_tip_acc =4 THEN 'DIGITADOR'
+                    WHEN emp_tip_acc =5 THEN 'SUPERVISOR'
+                end) as perfil,
+                ges_cli_med as medio,
+                (case
+                    WHEN res_ubi=0 THEN 'C'
+                    WHEN res_ubi=1 THEN 'NC'
+                    WHEN res_ubi=2 THEN 'ND'
+                end) as ubic,
+                res_des as respuesta,
+                ges_cli_det as detalle,
+                (case when res_id_FK in (1,43) then ges_cli_com_fec
+                      when res_id_FK in (2) then ges_cli_conf_fec
+                 end)as fecha_pdp,
+                 (case when res_id_FK in (1,43) then ges_cli_com_can
+                      when res_id_FK in (2) then ges_cli_conf_can
+                 end)as monto_pdp,
+                if(res_id_FK in (1,43,2),1,0) as tolltip
             FROM 
                 gestion_cliente as gc
             INNER JOIN 
@@ -364,12 +368,14 @@ class Cliente extends Model
             INNER JOIN
                 empleado as e on gc.emp_id_FK=e.emp_id
             WHERE 
-                cli_id_FK=$id
+                cli_id_FK=:id
                 AND date_format(ges_cli_fec,'%Y-%m') BETWEEN date_format(now()- INTERVAL 12 MONTH, '%Y-%m') and date_format(now(), '%Y-%m')
-            ORDER BY ges_cli_id DESC
+                and ges_cli_est=0
+                and ges_cli_acc in (1,2)
+            ORDER BY ges_cli_fec DESC
         ";
 
-        $query=DB::connection('mysql')->select(DB::raw($sql));
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("id"=>$id));
         return $query;
     }
 

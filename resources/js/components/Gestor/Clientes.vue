@@ -426,9 +426,9 @@
                             this.lista=res.data;
                             this.loading=false;
                             this.total_clientes=this.lista.length;
-                            if(this.total_clientes>0){
-                                this.inicioPaginacion();
-                            }
+                            // if(this.total_clientes>0){
+                            //     this.inicioPaginacion();
+                            // }
                         }
                     })
                 //}
@@ -533,11 +533,11 @@
                     e.preventDefault();
                 }
             },     
-            inicioPaginacion() {
-                if (this.$refs.paginator) {
-                    this.$refs.paginator.goToPage(1)
-                }
-            },
+            // inicioPaginacion() {
+            //     if (this.$refs.paginator) {
+            //         this.$refs.paginator.goToPage(1)
+            //     }
+            // },
             diaActual(){
                 var n=new Date();
                 var hoy=n.getFullYear()+"-"+this.addZero(n.getMonth()+1)+"-"+this.addZero(n.getDate());

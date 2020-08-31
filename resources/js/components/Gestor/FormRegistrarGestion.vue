@@ -109,7 +109,7 @@
 
 <script>
     export default {
-        props:{idCliente:{type:String}},
+        props:["idCliente"],
         data() {
             return {
                 respuestas:[],
