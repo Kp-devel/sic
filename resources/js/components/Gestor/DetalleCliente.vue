@@ -1,5 +1,12 @@
 <template>
     <div>
+        <div class="panel-carga bg-white" v-if="loadCarga">
+            <div class="d-flex justify-content-center pt-5">
+                <div class="spinner-border text-blue" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
         <div class="table-responsive">
             <table width="100%" v-if="infoCliente">
                 <tr class="font-12"> 
@@ -60,7 +67,7 @@
         props:["datos"],
         data() {
             return {
-                //codigo:'',
+                loadCarga:true,
                 infoCliente:{direccion:'',distrito:'',provincia:'',departamento:'',laboral:'',sueldo:'',entidades:'',score:''}
             }
         },
@@ -83,6 +90,7 @@
                         this.infoCliente.sueldo=info[0].sueldo;
                         this.infoCliente.entidades=info[0].entidades;
                         this.infoCliente.score=info[0].score;
+                        this.loadCarga=false;
                     }
                 })
             },

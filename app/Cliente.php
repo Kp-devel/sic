@@ -26,6 +26,7 @@ class Cliente extends Model
         $sueldo=$rq->sueldo;
         $entidades=$rq->entidades;
         //dd($camp);
+        $idEmpleado=auth()->user()->emp_id;
 
         if($camp!= "null"){
             $sql_cartera="
@@ -85,7 +86,7 @@ class Cliente extends Model
             where 
                 cli_est=0 and cli_pas=0 
                 and det_cli_est=0 and det_cli_pas=0
-                and emp_tel_id_FK=2531
+                and emp_tel_id_FK=$idEmpleado
                 and det_cli_deu_mor = (SELECT MAX(det_cli_deu_mor) FROM detalle_cliente WHERE det_cli_est = 0 AND det_cli_pas = 0 AND cli_id_FK = c.cli_id)
                     
         ";
@@ -177,6 +178,8 @@ class Cliente extends Model
     }
 
     public static function datosMes(){
+        $idEmpleado=auth()->user()->emp_id;
+        $cartera=session()->get('datos')->idcartera;
         $sql="SELECT
                     cli_id,
                     if(emp_meta is null,0,emp_meta) as meta,
@@ -230,7 +233,7 @@ class Cliente extends Model
             and emp_tel_id_FK=:emp
             -- GROUP BY cli_id
         ";
-        $datos=DB::connection('mysql')->select(DB::raw($sql),array("emp"=>2531,"car"=>72));
+        $datos=DB::connection('mysql')->select(DB::raw($sql),array("emp"=>$idEmpleado,"car"=>$cartera));
         return $datos;
         // return response()->json(['metas' => $metas, 'datos' => $datos, 'pdp' => $pdp , 'pagos' => $pagos]);
         //return $query;

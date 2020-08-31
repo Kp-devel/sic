@@ -10,6 +10,7 @@ class Campana extends Model
     protected $connection = 'mysql';
 
     public static function estadosCampana(){
+        $cartera=session()->get('datos')->idcartera;
         $sql="
             select 
             id_cartera,nombre_camp,fecha_i,fecha_f,
@@ -26,7 +27,7 @@ class Campana extends Model
             limit 1
         ";
 
-        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>72));
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
         return $query;
     }    
 }
