@@ -15,7 +15,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('listClientes', 'ClienteController@listaClientes');
     Route::post('datosEstandar', 'ClienteController@datosEstandar');
     Route::get('datosMes', 'ClienteController@datosMes');
-    Route::get('estadosCampana', 'ClienteController@estadoCampana');
+    // Route::get('estadosCampana', 'ClienteController@estadoCampana');
     Route::get('infoCliente/{id}', 'ClienteController@infoCliente');
     Route::get('historicoGestiones/{id}', 'ClienteController@historicoGestiones');
     Route::get('infoDeuda/{id}', 'ClienteController@infoDeuda');

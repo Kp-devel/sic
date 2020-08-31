@@ -3032,11 +3032,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["datos"],
   data: function data() {
     return {
-      //codigo:'',
+      loadCarga: true,
       infoCliente: {
         direccion: '',
         distrito: '',
@@ -3070,6 +3077,7 @@ __webpack_require__.r(__webpack_exports__);
           _this.infoCliente.sueldo = info[0].sueldo;
           _this.infoCliente.entidades = info[0].entidades;
           _this.infoCliente.score = info[0].score;
+          _this.loadCarga = false;
         }
       });
     }
@@ -42440,6 +42448,10 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
+    _vm.loadCarga
+      ? _c("div", { staticClass: "panel-carga bg-white" }, [_vm._m(0)])
+      : _vm._e(),
+    _vm._v(" "),
     _c("div", { staticClass: "table-responsive" }, [
       _vm.infoCliente
         ? _c("table", { attrs: { width: "100%" } }, [
@@ -42572,7 +42584,7 @@ var render = function() {
                 _vm._v("Prioridad")
               ]),
               _vm._v(" "),
-              _vm._m(0)
+              _vm._m(1)
             ]),
             _vm._v(" "),
             _c("tr", { staticClass: "font-12" }, [
@@ -42693,6 +42705,18 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "d-flex justify-content-center pt-5" }, [
+      _c(
+        "div",
+        { staticClass: "spinner-border text-blue", attrs: { role: "status" } },
+        [_c("span", { staticClass: "sr-only" }, [_vm._v("Loading...")])]
+      )
+    ])
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
