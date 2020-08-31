@@ -51,7 +51,7 @@
                  </div>
                  <!-- panel de registro de gestion -->
                  <div v-if="dataCliente.length>0">
-                    <formRegistrarGestion :id-cliente="idCliente"/>
+                    <formRegistrarGestion :id-cliente="idCliente" :tipo="1"/>
                  </div>
                  <!-- botones laterales -->
                  <div class="btns-lateral">
