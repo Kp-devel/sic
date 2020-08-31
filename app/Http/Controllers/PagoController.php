@@ -7,7 +7,7 @@ use App\Pago;
 
 class PagoController extends Controller
 {
-    public function listaPagos(Request $rq){
-        return Pago::infoPagos($rq);
+    public function listaPagos($id){
+        return Pago::infoPagos($id);
     }
 }

@@ -7,11 +7,18 @@ use App\Telefono;
 
 class TelefonoController extends Controller
 {
-    public function listaTelefonos(Request $rq){
-        return Telefono::infoTelefonos($rq);
+    public function listaTelefonos($id){
+        return Telefono::infoTelefonos($id);
     }
 
     public function insertarTelefonos(Request $rq){
-        return Telefono::insertarTelefonos($rq);
+        if($rq->telefono!=""){
+            return Telefono::insertarTelefonos($rq);
+        }
     }
+
+    public function actualizarEstadoTelefono(Request $rq){
+        return Telefono::actualizarEstadoTelefono($rq);
+    }
+    
 }

@@ -23,8 +23,8 @@ class ClienteController extends Controller
         return cliente::estadosCampana($rq);
     }
 
-    public function infoCliente(Request $rq){
-        return cliente::infoCliente($rq);
+    public function infoCliente($id){
+        return cliente::infoCliente($id);
     }
 
     public function historicoGestiones($id){

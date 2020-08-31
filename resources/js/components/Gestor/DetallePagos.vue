@@ -19,10 +19,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item,index) in pagos" :key="index" v-if="pagos!=''">
-                                <td class="text-center">{{item.codigo? item.codigo:'-'}}</td>
+                            <tr v-if="pagos==''" class="text-center">
+                                <td colspan="3">Sin historial de pagos</td>
+                            </tr>
+                            <tr v-for="(item,index) in pagos" :key="index" v-else>
+                                <td class="text-center">{{item.cuenta? item.cuenta:'-'}}</td>
                                 <td class="text-center">{{item.fecha? item.fecha:'-'}}</td>
-                                <td class="text-right">S/.{{item.pagos? item.pagos:'-'}}</td>
+                                <td class="text-right">{{item.pagos? 'S/.'+item.pagos:'-'}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -35,7 +38,7 @@
 
 <script>
     export default {
-        props:["datos"],
+        props:["idCliente"],
         data() {
             return {
                 pagos:[],
@@ -46,12 +49,10 @@
         },
         methods:{
             listaPagos(){
-                const id= this.datos[0].id;
-                //console.log(id);
-                axios.get("listaPagos?id="+id).then(res=>{
+                const id= this.idCliente;
+                axios.get("listaPagos/"+id).then(res=>{
                     if(res.data){
-                        this.pagos=res.data;
-                        
+                        this.pagos=res.data;                        
                     }
                 })
             },

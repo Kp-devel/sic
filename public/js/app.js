@@ -3058,7 +3058,7 @@ __webpack_require__.r(__webpack_exports__);
 
       var id = this.datos[0].id; //console.log(id);
 
-      axios.get("infoCliente?id=" + id).then(function (res) {
+      axios.get("infoCliente/" + id).then(function (res) {
         if (res.data) {
           var info = res.data; //console.log(this.info);
 
@@ -3326,8 +3326,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["datos"],
+  props: ["idCliente"],
   data: function data() {
     return {
       pagos: []
@@ -3340,9 +3343,8 @@ __webpack_require__.r(__webpack_exports__);
     listaPagos: function listaPagos() {
       var _this = this;
 
-      var id = this.datos[0].id; //console.log(id);
-
-      axios.get("listaPagos?id=" + id).then(function (res) {
+      var id = this.idCliente;
+      axios.get("listaPagos/" + id).then(function (res) {
         if (res.data) {
           _this.pagos = res.data;
         }
@@ -3423,16 +3425,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["datos"],
+  props: ["idCliente"],
   data: function data() {
     return {
       arreglo: {
         telefono: '',
-        id: this.datos[0].id
+        id: this.idCliente
       },
       mensaje: '',
-      telefonos: []
+      telefonos: [],
+      loadButton: false,
+      estado: 1,
+      cantidad: 0
     };
   },
   created: function created() {
@@ -3442,11 +3450,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     listaTelefonos: function listaTelefonos() {
       var _this = this;
 
-      var id = this.datos[0].id; //console.log(id);
-
-      axios.get("listaTel?id=" + id).then(function (res) {
+      var id = this.idCliente;
+      axios.get("listaTel/" + id).then(function (res) {
         if (res.data) {
           _this.telefonos = res.data;
+          _this.cantidad = _this.telefonos.length;
         }
       });
     },
@@ -3454,36 +3462,72 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this2 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.prev = 0;
-                _context.next = 3;
-                return axios.post('insertarTel', _this2.arreglo);
+                _this2.mensaje = "";
 
-              case 3:
-                response = _context.sent;
-                //console.log(response);
-                _this2.mensaje = " Registro con éxito";
-                _context.next = 11;
-                break;
+                if (_this2.arreglo.telefono != "") {
+                  _this2.loadButton = true;
 
-              case 7:
-                _context.prev = 7;
-                _context.t0 = _context["catch"](0);
-                console.error(_context.t0);
-                _this2.mensaje = " Error al Registrar";
+                  try {
+                    axios.post('insertarTel', _this2.arreglo).then(function (res) {
+                      if (res.data == "ok") {
+                        _this2.loadButton = false;
+                        _this2.mensaje = "Registro con éxito";
+                        _this2.arreglo.telefono = '';
 
-              case 11:
+                        _this2.listaTelefonos();
+                      }
+                    });
+                  } catch (error) {
+                    _this2.mensaje = "Ha ocurrido un error!";
+                  }
+                } else {
+                  _this2.mensaje = "Completar el campo";
+                }
+
+              case 2:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[0, 7]]);
+        }, _callee);
       }))();
+    },
+    actualizarEstado: function actualizarEstado(est, tel, id) {
+      var _this3 = this;
+
+      var datos = {
+        estado: est,
+        telefono: tel,
+        id: id
+      };
+      axios.put('actualizarEstadoTelefono', datos).then(function (res) {
+        if (res.data == "ok") {
+          _this3.listaTelefonos();
+        }
+      });
+    },
+    soloNumeros: function soloNumeros(e) {
+      var key = window.event ? e.which : e.keyCode;
+
+      if (key < 48 || key > 57) {
+        e.preventDefault();
+      }
+    },
+    limpiar: function limpiar() {
+      this.mensaje = '';
+      this.arreglo.telefono = '';
     }
+  },
+  mounted: function mounted() {
+    var _this4 = this;
+
+    this.$root.$on('limpiarFrmTel', function () {
+      _this4.limpiar();
+    });
   }
 });
 
@@ -3867,19 +3911,19 @@ __webpack_require__.r(__webpack_exports__);
     cerrarDetalle: function cerrarDetalle() {
       this.viewDetalleCliente = false;
       $('#contenidoLista').toggleClass('pos_fixed');
+    },
+    verTelefonos: function verTelefonos() {
+      this.$root.$emit('limpiarFrmTel');
+      $('#modal-telefonos').modal();
     }
-    /*verPagos(){
-        $('#modal-pagos').modal();
-    },*/
-
   },
   mounted: function mounted() {
     var _this = this;
 
     this.$root.$on('verDetalle', function (datos) {
-      _this.viewDetalleCliente = true;
       _this.dataCliente = datos;
-      _this.idCliente = datos[0].id; // $('html, body').animate({scrollTop:0}, 'slow');
+      _this.idCliente = datos[0].id;
+      _this.viewDetalleCliente = true; // $('html, body').animate({scrollTop:0}, 'slow');
     });
   },
   // updated(){
@@ -43031,26 +43075,36 @@ var render = function() {
                     _vm._v(" "),
                     _c(
                       "tbody",
-                      _vm._l(_vm.pagos, function(item, index) {
-                        return _vm.pagos != ""
-                          ? _c("tr", { key: index }, [
-                              _c("td", { staticClass: "text-center" }, [
-                                _vm._v(_vm._s(item.codigo ? item.codigo : "-"))
-                              ]),
-                              _vm._v(" "),
-                              _c("td", { staticClass: "text-center" }, [
-                                _vm._v(_vm._s(item.fecha ? item.fecha : "-"))
-                              ]),
-                              _vm._v(" "),
-                              _c("td", { staticClass: "text-right" }, [
-                                _vm._v(
-                                  "S/." + _vm._s(item.pagos ? item.pagos : "-")
-                                )
+                      [
+                        _vm.pagos == ""
+                          ? _c("tr", { staticClass: "text-center" }, [
+                              _c("td", { attrs: { colspan: "3" } }, [
+                                _vm._v("Sin historial de pagos")
                               ])
                             ])
-                          : _vm._e()
-                      }),
-                      0
+                          : _vm._l(_vm.pagos, function(item, index) {
+                              return _c("tr", { key: index }, [
+                                _c("td", { staticClass: "text-center" }, [
+                                  _vm._v(
+                                    _vm._s(item.cuenta ? item.cuenta : "-")
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "text-center" }, [
+                                  _vm._v(_vm._s(item.fecha ? item.fecha : "-"))
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "text-right" }, [
+                                  _vm._v(
+                                    _vm._s(
+                                      item.pagos ? "S/." + item.pagos : "-"
+                                    )
+                                  )
+                                ])
+                              ])
+                            })
+                      ],
+                      2
                     )
                   ])
                 ]
@@ -43141,7 +43195,18 @@ var render = function() {
           },
           [
             _c("div", { staticClass: "modal-content" }, [
-              _vm._m(0),
+              _c(
+                "div",
+                { staticClass: "modal-header bg-blue pt-3 pl-3 pr-4" },
+                [
+                  _c("p", { staticClass: "p-title mb-0 text-white" }, [
+                    _c("i", { staticClass: "fa fa-phone pr-3" }),
+                    _vm._v("TELÉFONOS (" + _vm._s(_vm.cantidad) + ")")
+                  ]),
+                  _vm._v(" "),
+                  _vm._m(0)
+                ]
+              ),
               _vm._v(" "),
               _c(
                 "div",
@@ -43161,11 +43226,9 @@ var render = function() {
                       },
                       [
                         _c("div", { staticClass: "form-group" }, [
-                          _c(
-                            "label",
-                            { attrs: { for: "exampleInputEmail1" } },
-                            [_vm._v("Ingresar teléfono")]
-                          ),
+                          _c("label", { attrs: { for: "" } }, [
+                            _vm._v("Ingresar teléfono")
+                          ]),
                           _vm._v(" "),
                           _c("input", {
                             directives: [
@@ -43180,6 +43243,7 @@ var render = function() {
                             attrs: { type: "text", maxlength: "9" },
                             domProps: { value: _vm.arreglo.telefono },
                             on: {
+                              keypress: _vm.soloNumeros,
                               input: function($event) {
                                 if ($event.target.composing) {
                                   return
@@ -43194,9 +43258,18 @@ var render = function() {
                           }),
                           _vm._v(" "),
                           _vm.mensaje
-                            ? _c("small", { staticClass: "text-danger" }, [
-                                _vm._v(_vm._s(_vm.mensaje))
-                              ])
+                            ? _c(
+                                "small",
+                                {
+                                  class: {
+                                    "text-danger":
+                                      _vm.mensaje.substr(0, 1) != "R",
+                                    "text-green":
+                                      _vm.mensaje.substr(0, 1) == "R"
+                                  }
+                                },
+                                [_vm._v(_vm._s(_vm.mensaje))]
+                              )
                             : _vm._e()
                         ]),
                         _vm._v(" "),
@@ -43206,7 +43279,21 @@ var render = function() {
                             staticClass: "btn btn-outline-blue btn-sm mb-4",
                             attrs: { type: "submit" }
                           },
-                          [_vm._v("Agregar")]
+                          [
+                            _vm.loadButton
+                              ? _c("span", {
+                                  staticClass:
+                                    "spinner-border spinner-border-sm",
+                                  attrs: {
+                                    role: "status",
+                                    "aria-hidden": "true"
+                                  }
+                                })
+                              : _vm._e(),
+                            _vm._v(
+                              "\n                            Agregar\n                        "
+                            )
+                          ]
                         )
                       ]
                     ),
@@ -43217,22 +43304,100 @@ var render = function() {
                         _vm._v(" "),
                         _c(
                           "tbody",
-                          _vm._l(_vm.telefonos, function(item, index) {
-                            return _vm.telefonos != ""
-                              ? _c(
-                                  "tr",
-                                  { key: index, staticClass: "text-center" },
-                                  [
-                                    _c("td", { staticClass: "align-middle" }, [
-                                      _vm._v(_vm._s(item.telefono))
-                                    ]),
-                                    _vm._v(" "),
-                                    _vm._m(2, true)
-                                  ]
-                                )
-                              : _vm._e()
-                          }),
-                          0
+                          [
+                            _vm.telefonos == ""
+                              ? _c("tr", { staticClass: "text-center" }, [
+                                  _c("td", { attrs: { colspan: "2" } }, [
+                                    _vm._v("Sin teléfonos")
+                                  ])
+                                ])
+                              : _vm._l(_vm.telefonos, function(item, index) {
+                                  return _c(
+                                    "tr",
+                                    { key: index, staticClass: "text-center" },
+                                    [
+                                      _c(
+                                        "td",
+                                        { staticClass: "align-middle" },
+                                        [_vm._v(_vm._s(item.telefono))]
+                                      ),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _c(
+                                          "select",
+                                          {
+                                            directives: [
+                                              {
+                                                name: "model",
+                                                rawName: "v-model",
+                                                value: item.estado,
+                                                expression: "item.estado"
+                                              }
+                                            ],
+                                            staticClass:
+                                              "form-control form-control-sm",
+                                            on: {
+                                              change: [
+                                                function($event) {
+                                                  var $$selectedVal = Array.prototype.filter
+                                                    .call(
+                                                      $event.target.options,
+                                                      function(o) {
+                                                        return o.selected
+                                                      }
+                                                    )
+                                                    .map(function(o) {
+                                                      var val =
+                                                        "_value" in o
+                                                          ? o._value
+                                                          : o.value
+                                                      return val
+                                                    })
+                                                  _vm.$set(
+                                                    item,
+                                                    "estado",
+                                                    $event.target.multiple
+                                                      ? $$selectedVal
+                                                      : $$selectedVal[0]
+                                                  )
+                                                },
+                                                function($event) {
+                                                  $event.preventDefault()
+                                                  return _vm.actualizarEstado(
+                                                    item.estado,
+                                                    item.telefono,
+                                                    item.id
+                                                  )
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "option",
+                                              { attrs: { value: "0" } },
+                                              [_vm._v("Activo")]
+                                            ),
+                                            _vm._v(" "),
+                                            _c(
+                                              "option",
+                                              { attrs: { value: "1" } },
+                                              [_vm._v("Inactivo")]
+                                            ),
+                                            _vm._v(" "),
+                                            _c(
+                                              "option",
+                                              { attrs: { value: "2" } },
+                                              [_vm._v("Eliminar")]
+                                            )
+                                          ]
+                                        )
+                                      ])
+                                    ]
+                                  )
+                                })
+                          ],
+                          2
                         )
                       ])
                     ])
@@ -43251,21 +43416,14 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header bg-blue pt-3 pl-3 pr-4" }, [
-      _c("p", { staticClass: "p-title mb-0 text-white" }, [
-        _c("i", { staticClass: "fa fa-phone pr-3" }),
-        _vm._v("TELÉFONOS")
-      ]),
-      _vm._v(" "),
-      _c(
-        "a",
-        {
-          staticClass: "close ",
-          attrs: { href: "", "data-dismiss": "modal", "aria-label": "Close" }
-        },
-        [_c("span", { staticClass: "fa fa-times text-white" })]
-      )
-    ])
+    return _c(
+      "a",
+      {
+        staticClass: "close ",
+        attrs: { href: "", "data-dismiss": "modal", "aria-label": "Close" }
+      },
+      [_c("span", { staticClass: "fa fa-times text-white" })]
+    )
   },
   function() {
     var _vm = this
@@ -43274,20 +43432,6 @@ var staticRenderFns = [
     return _c("thead", { staticClass: "bg-blue text-white text-center" }, [
       _c("tr", [
         _c("td", { attrs: { colspan: "2" } }, [_vm._v("Número de Contacto")])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", [
-      _c("select", { staticClass: "form-control form-control-sm" }, [
-        _c("option", { attrs: { value: "" } }, [_vm._v("Activo")]),
-        _vm._v(" "),
-        _c("option", { attrs: { value: "" } }, [_vm._v("Inactivo")]),
-        _vm._v(" "),
-        _c("option", { attrs: { value: "" } }, [_vm._v("Eliminar")])
       ])
     ])
   }
@@ -43879,11 +44023,32 @@ var render = function() {
                     )
                   : _vm._e(),
                 _vm._v(" "),
-                _vm._m(5),
+                _c("div", { staticClass: "btns-lateral" }, [
+                  _vm._m(5),
+                  _vm._v(" "),
+                  _c(
+                    "a",
+                    {
+                      staticClass: "btn-lateral",
+                      attrs: { href: "" },
+                      on: {
+                        click: function($event) {
+                          $event.preventDefault()
+                          return _vm.verTelefonos()
+                        }
+                      }
+                    },
+                    [
+                      _c("label", { staticClass: "texto-vertical" }, [
+                        _vm._v("TELF")
+                      ])
+                    ]
+                  )
+                ]),
                 _vm._v(" "),
-                _c("detalleTelefonos", { attrs: { datos: _vm.dataCliente } }),
+                _c("detalleTelefonos", { attrs: { idCliente: _vm.idCliente } }),
                 _vm._v(" "),
-                _c("detallePagos", { attrs: { datos: _vm.dataCliente } })
+                _c("detallePagos", { attrs: { idCliente: _vm.idCliente } })
               ],
               1
             )
@@ -43969,33 +44134,18 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "btns-lateral" }, [
-      _c(
-        "a",
-        {
-          staticClass: "btn-lateral bg-danger",
-          attrs: {
-            href: "#",
-            "data-toggle": "modal",
-            "data-target": "#modal-pagos"
-          }
-        },
-        [_c("label", { staticClass: "texto-vertical" }, [_vm._v("PAGOS")])]
-      ),
-      _vm._v(" "),
-      _c(
-        "a",
-        {
-          staticClass: "btn-lateral",
-          attrs: {
-            href: "#",
-            "data-toggle": "modal",
-            "data-target": "#modal-telefonos"
-          }
-        },
-        [_c("label", { staticClass: "texto-vertical" }, [_vm._v("TELF")])]
-      )
-    ])
+    return _c(
+      "a",
+      {
+        staticClass: "btn-lateral bg-danger",
+        attrs: {
+          href: "#",
+          "data-toggle": "modal",
+          "data-target": "#modal-pagos"
+        }
+      },
+      [_c("label", { staticClass: "texto-vertical" }, [_vm._v("PAGOS")])]
+    )
   }
 ]
 render._withStripped = true
