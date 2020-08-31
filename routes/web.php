@@ -26,9 +26,11 @@ Route::group(['middleware' => ['auth']], function(){
     Route::put('actualizarEstadoTelefono', 'TelefonoController@actualizarEstadoTelefono');
     
     //Gestion
-    Route::get('listaRespuesta', 'GestionController@listaRespuestas');
     Route::post('insertarGestion', 'GestionController@insertarGestion');
     
+    //Recordatorio
+    Route::post('insertarRecordatorio', 'RecordatorioController@insertarRecordatorio');
+
     //Pagos
     Route::get('listaPagos/{id}', 'PagoController@listaPagos');
     
@@ -37,6 +39,7 @@ Route::group(['middleware' => ['auth']], function(){
     
     //respuestas
     Route::get('listRespuestas', 'RespuestaController@listRespuestas');
+    Route::get('listaRespuesta/{ubi}', 'RespuestaController@listaRespuestaUbicabilidad');
     
     // control de llamadas - elastix
     Route::get('panelcontrolllamadas', 'ControlLLamadaController@panelcontrolllamadas')->name('panelcontrolllamadas');

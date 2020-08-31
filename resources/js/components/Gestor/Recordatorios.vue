@@ -18,7 +18,6 @@
                                         <td class="align-middle">MEDIO</td>
                                         <td class="align-middle">PRODUCTO</td>
                                         <td class="align-middle">ULT. RPTA</td>
-                                        <td class="border-0 rounded-0 bg-gray-2 px-0"></td>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -32,13 +31,12 @@
                                         <td>1</td>
                                         <td>1</td>
                                         <td>1</td>
-                                        <td class="border-0 rounded-0 bg-gray-2 px-0 mx-0"><a class="btn btn-sm btn-blue text-white"><i class="fa fa-clock pr-1"></i>Reprogramar</a></td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                         <!-- formulario de registro -->
-                        <formRegistrarGestion v-if="cliente" :id-cliente="cliente.id"/>
+                        <formRegistrarGestion :idCliente="datos.idCLiente" :tipo="2"/>
                     </div>
                     <div class="modal-footer text-center py-0">
                         <a href="" class="close btn btn-block" data-dismiss="modal" aria-label="Close">
@@ -54,7 +52,6 @@
 <script>
     import formRegistrarGestion from './FormRegistrarGestion';
     export default {
-        props:{cliente:{type:Object}},
         data() {
             return {
                 datos:{telefono:'',idCLiente:0},
