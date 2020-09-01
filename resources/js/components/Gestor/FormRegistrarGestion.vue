@@ -15,7 +15,7 @@
                                 <td class="pb-2">
                                     <select class="form-control font-12 form-control-sm" v-model="datos.telefono">
                                         <option value="">Seleccionar</option>
-                                        <option v-for="(item,index) in telefonos" :key="index" :value="item.telefono">{{item.telefono}}</option>
+                                        <option v-for="(item,index) in telefonos" :key="index" :class="{'bg-success text-white':item.contacto>0,'bg-warning':item.gestion>0 && item.contacto==0,'bg-danger text-white':item.gestion==0 && item.contacto==0}"  :value="item.telefono">{{item.telefono}}</option>
                                     </select>
                                 </td>
                             </tr>
@@ -33,7 +33,7 @@
                             <tr class="font-12"> 
                                 <td class="text-right pr-1">Respuesta</td>
                                 <td class="pb-2">
-                                    <select class="form-control font-12 form-control-sm" :disabled="ubicabilidad=='' || respuestas==''" v-model="datos.respuesta" @change="fechaCalendario(datos.respuesta)">
+                                    <select class="form-control font-12 form-control-sm" :disabled="ubicabilidad=='' || respuestas==''" v-model="datos.respuesta" @change="validarRespuestas(datos.respuesta)">
                                         <option value="">Seleccionar</option>
                                         <option v-for="(item,index) in respuestas" :key="index" :value="item.id">{{item.respuesta}}</option>
                                     </select>
@@ -108,6 +108,12 @@
                             <i class="fa fa-clock pr-1" v-else></i>Reprogramar
                         </a>
                     </div>
+                    <div class="col-md-7"></div>
+                    <div class="col-md-5 text-center mt-3">
+                        <div class="alert w-5 fadeInRight" :class="{'alert-success':(mensaje).substr(0,1)=='R','alert-danger':(mensaje).substr(0,1)=='E',}" v-if="mensaje">
+                            <p class="mb-0"><i class="fa pr-2" :class="{'fa-check ':(mensaje).substr(0,1)=='R','fa-times':(mensaje).substr(0,1)=='E',}"></i>{{mensaje}}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-12">
@@ -117,10 +123,13 @@
                 </div>
             </div>
         </div>
+
+        <panelMensaje/>
     </div>            
 </template>
 
 <script>
+    import panelMensaje from '../MensajeSistema/PanelMensaje';
     export default {
         props:["idCliente","tipo"],
         data() {
@@ -131,14 +140,18 @@
                 fechaMax:null,
                 telefonos:[],
                 errorsDatos:[],
+                pdps:[],
                 mensaje:'',
                 datos:{detalle:'',montoPDP:'',fechaPDP:null,moneda:1,telefono:'',respuesta:'',rec:'',fechaRec:'',horaRec:'',id:this.idCliente},
                 loadButton:false,
                 loadButton2:false,
+                cant_contacto:0
             }
         },
         async created(){
             this.listaTelefonos();
+            this.gestionesContacto();
+            this.pdp();
         },
         methods:{
             obtenerRespuestas(){
@@ -218,6 +231,7 @@
             },
             registrar(){
                 try{
+                    this.mensaje="";
                     this.errorsDatos=[];
                     this.validacion();
                     if(this.errorsDatos.length==0){
@@ -226,11 +240,21 @@
                             if(res.data=="ok"){
                                 this.loadButton=false;
                                 this.mensaje = "Registro con éxito";
+                                this.$root.$emit('listarGestiones');
+                                this.limpiar();
+                                this.gestionesContacto();
+                                this.pdps();
+                                setTimeout(() => {
+                                    this.mensaje="";
+                                }, 5000);
                             }
                         });
                     }   
                 }catch(error){
-                    this.mensaje = " Error al Registrar";
+                    this.mensaje = "Error al Registrar";
+                    setTimeout(() => {
+                        this.mensaje="";
+                    }, 5000);
                 }
             },
             reprogramar(){
@@ -246,7 +270,65 @@
                 }else{
                     this.errorsDatos.push("Selecciona una fecha y/o hora de recordatorio");
                 }
+            },
+            gestionesContacto(){
+                axios.get("validarContacto/"+this.idCliente).then(res=>{
+                    if(res.data){
+                        const cant=res.data;
+                        this.cant_contacto=cant[0].cant_contacto;
+                    }
+                });
+            },
+            pdp(){
+                axios.get("validarPDP/"+this.idCliente).then(res=>{
+                    if(res.data){
+                        this.pdps=res.data;
+                    }
+                });
+            },
+            validarRespuestas(res){
+                this.fechaCalendario(res);
+                //no ingresar paleta no contacto cuando existe contacto previo
+                if(res==44 || res==45){
+                    if(this.cant_contacto>0){
+                        this.datos.respuesta='';
+                        alert("No se puede seleccionar la respuesta asignada, el cliente tiene un contacto previo");
+                        // $("#panel-mensaje").modal();
+                    }
+                }
+                //verificar si ya hay compromisos
+                if(res==1){
+                    if(this.pdps.length>0){
+                        const fecha_ges=this.pdps[0].fecha_ges;
+                        const fecha_pago=this.pdps[0].fecha_pag;
+                        const monto=this.pdps[0].monto;
+                        const usuario=this.pdps[0].usuario;
+                        const mon=this.pdps[0].moneda;
+                        let moneda='';
+                        if(mon==1){moneda="S/.";}else{moneda="$/.";};
+                        if(new Date(this.fechaActual).getTime()<=new Date(fecha_pago).getTime()){
+                            this.datos.respuesta='';
+                            alert('Ya existe un compromiso de pago.\nFecha de Gestión: '+fecha_ges+'.\nUsuario: '+usuario+'.\nFecha de Pago: '+fecha_pago+'.\nCantidad: '+moneda+""+monto);
+                            // alert('El compromiso de pago aún no se vence.\nFecha de Gestión: '+fecha_ges+'.\nUsuario: '+usuario+'.\nFecha de Pago: '+fecha_pago+'.\nCantidad: '+moneda+""+monto);
+                        }
+                    }
+                }
+            },
+            limpiar(){
+                this.datos.detalle='';
+                this.datos.montoPDP='';
+                this.datos.fechaPDP=null;
+                this.datos.moneda=1;
+                this.datos.telefono='';
+                this.datos.respuesta='';
+                this.datos.rec=false;
+                this.datos.fechaRec='';
+                this.datos.horaRec='';
+                this.ubicabilidad='';                
             }
+        },
+        components:{
+            panelMensaje
         }
     }
 </script>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Telefono;
+use Carbon\Carbon;
 
 class TelefonoController extends Controller
 {
@@ -13,7 +14,10 @@ class TelefonoController extends Controller
 
     public function insertarTelefonos(Request $rq){
         if($rq->telefono!=""){
-            return Telefono::insertarTelefonos($rq);
+            $fecha=Carbon::now();
+            Telefono::insertarTelefonos($rq,$fecha);
+            Telefono::insertarBitacoraTelefonos($rq,$fecha);
+            return "ok";
         }
     }
 

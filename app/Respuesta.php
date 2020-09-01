@@ -41,4 +41,35 @@ class Respuesta extends Model
         $query=DB::connection('mysql')->select(DB::raw($sql),array("ubi"=>$ubic));
         return $query;
     }
+
+    public static function listaEntidades(){
+        $cartera=session()->get('datos')->idcartera;
+        $sql="
+            SELECT
+                tag_valor as valor
+            FROM
+                creditoy_lotesms.tag_condicion
+            WHERE 
+                car_id_FK=:car
+            and tag_tipo='entidades'
+        ";
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
+        return $query;
+    }
+
+    public static function listaScore(){
+        $cartera=session()->get('datos')->idcartera;
+        $sql="
+            SELECT
+                tag_valor as valor
+            FROM
+                creditoy_lotesms.tag_condicion
+            WHERE 
+                car_id_FK=:car
+            and tag_tipo='score'
+        ";
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
+        return $query;
+    }
+    
 }

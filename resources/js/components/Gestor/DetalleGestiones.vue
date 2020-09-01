@@ -50,8 +50,7 @@
         props:["idCliente"],
         data() {
             return {
-                gestiones:[],
-                
+                gestiones:[],                
             }
         },
         created(){
@@ -74,6 +73,11 @@
             // this.$nextTick(function(){
                 // $('[data-toggle="tooltip"]').tooltip();
             // })
-        }
+        },
+        mounted() {
+            this.$root.$on ('listarGestiones',() => {
+                this.infoGestiones();
+            } );
+        },
     }
 </script>

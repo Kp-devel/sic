@@ -64,7 +64,7 @@ class Gestion extends Model
 
     public static function selectIdGestion($fechaGestion,$id,$tel){
         $idEmpleado=auth()->user()->emp_id;
-        return DB::select(DB::raw("
+        return DB::connection('mysql')->select(DB::raw("
             select ges_cli_id as id
             from gestion_cliente
             where ges_cli_fec=:fec
@@ -75,11 +75,44 @@ class Gestion extends Model
     }
 
     public static function updateUltGestion($id,$idGestion){
-        DB::update("
+        DB::connection('mysql')->update("
             update cliente
             set ges_cli_tel_id_FK=:idGes
             where cli_id=:id
         ",array("id"=>$id,"idGes"=>$idGestion));
         return "ok";
+    }
+
+    public static function validarContacto($id){
+        $sql="
+              SELECT count(*) AS cant_contacto
+              FROM  gestion_cliente g
+              INNER JOIN respuesta r ON g.res_id_fk=r.res_id
+              WHERE  cli_id_fk = :id
+                AND res_ubi = 0
+                AND ( Date(ges_cli_fec) BETWEEN Date(Date_add(Date_add( Last_day(Now()), INTERVAL -2 MONTH), INTERVAL 1 DAY )) AND Date(Now()) )
+                AND ges_cli_acc IN (1,2)
+            ";
+        return DB::connection('mysql')->select(DB::raw($sql),array("id"=>$id));
+    }
+
+    public static function validarPDP($id){
+        $sql="
+            SELECT 
+                com_cli_fec as fecha_ges,
+                com_cli_fec_pag as fecha_pag,
+                com_cli_can as monto,
+                com_cli_mon as moneda,
+                emp_nom as usuario
+            FROM compromiso_cliente cc 
+            INNER JOIN empleado e ON cc.emp_id_FK = e.emp_id 
+            WHERE cli_id_FK =:id
+            AND com_cli_est<>1 
+            AND com_cli_pas<>1 
+            AND date_format(com_cli_fec_pag,'%Y%m')=date_format(now(),'%Y%m')
+            ORDER BY com_cli_id DESC 
+            LIMIT 1 
+        ";
+        return DB::connection('mysql')->select(DB::raw($sql),array("id"=>$id));
     }
 }

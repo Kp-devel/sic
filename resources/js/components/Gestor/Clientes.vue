@@ -58,19 +58,16 @@
                             <tr class="font-12"> 
                                 <td>Entidades</td>
                                 <td>
-                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.entidades">
+                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.entidades" :disabled="entidades==''">
                                         <option value="">Seleccionar</option>
-                                        <option value="0">BP</option>
-                                        <option value="1">BP + 1</option>
-                                        <option value="2">BP + 2</option>
-                                        <option value="3">BP + 3</option>
+                                        <option v-for="(item,index) in entidades" :key="index" :value="item.valor">{{item.valor}}</option>
                                     </select>
                                 </td>
                                 <td class="text-right pr-1">Score</td>
                                 <td>
-                                    <select class="form-control font-12 form-control-sm" >
+                                    <select class="form-control font-12 form-control-sm" :disabled="score==''" v-model="busqueda.score">
                                         <option value="">Seleccionar</option>
-                                        <option value=""></option>
+                                        <option v-for="(item,index) in score" :key="index" :value="item.valor">{{item.valor}}</option>
                                     </select>
                                 </td>
                             </tr>
@@ -326,11 +323,13 @@
             return {
                 paginate: ['lista'],
                 lista: [],
-                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:''},
+                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:''},
                 //codigo:'',
                 loading:false,
                 loading2:false,
                 respuestas: [],
+                entidades: [],
+                score: [],
                 firma:{firma:''},
                 estandar:[],
                 metas:[],
@@ -349,6 +348,8 @@
              this.datosMes(); 
              this.estadoCampana();   
              this.diaActual();
+             this.listEntidades();
+             this.listScore();
         },
         watch:{
             'busqueda.pdp_desde': function(val){this.busqueda.pdp_desde = this.validarFormatoFecha(val)},
@@ -387,6 +388,7 @@
                 this.busqueda.deuda='';
                 this.busqueda.sueldo='';
                 this.busqueda.entidades='';
+                this.busqueda.score='';
             },
             listCLientes(){
                 //if(this.busqueda.codigo!="" && this.busqueda.dni!="" && this.busqueda.nombre!=""){
@@ -437,6 +439,20 @@
                 axios.get("listRespuestas").then(res=>{
                     if(res.data){
                         this.respuestas=res.data;
+                    }
+                })
+            },
+            listEntidades(){
+                axios.get("listaEntidades").then(res=>{
+                    if(res.data){
+                        this.entidades=res.data;
+                    }
+                })
+            },
+            listScore(){
+                axios.get("listaScore").then(res=>{
+                    if(res.data){
+                        this.score=res.data;
                     }
                 })
             },
