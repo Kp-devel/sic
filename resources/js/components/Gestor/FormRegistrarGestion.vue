@@ -87,19 +87,19 @@
                     <div class="col-md-2">
                         <div class="d-flex py-2">
                             <label class="font-12 pr-1 text-right">Recordatorio</label>
-                            <input type="checkbox" class="">
+                            <input type="checkbox" class="" v-model="recordatorio">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="d-flex px-1">
                             <label class="font-12 pr-1 py-2">Fecha</label>
-                            <input type="date" class="form-control font-12 form-control-sm" disabled>
+                            <input type="date" class="form-control font-12 form-control-sm" :disabled="recordatorio==''" v-model="fechaRec">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="d-flex px-1">
                             <label class="font-12 pr-1 py-2">Hora</label>
-                            <input type="time" class="form-control font-11 form-control-sm" disabled>
+                            <input type="time" class="form-control font-11 form-control-sm" :disabled="recordatorio==''" v-model="horaRec">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -127,6 +127,9 @@
                 telefonos:[],
                 telefono:'',
                 mensaje:'',
+                recordatorio:'',
+                fechaRec:null,
+                horaRec:null,
             }
         },
         async created(){
@@ -168,6 +171,7 @@
             async registrar(){
                 
                 try{
+
                     const data = {
                         id:this.idCliente,
                         resId:this.respuesta,
@@ -176,6 +180,9 @@
                         fechaPDP:this.fechaPDP,
                         montoPDP:this.montoPDP,
                         moneda:this.moneda,
+                        recordatorio:this.recordatorio,
+                        fechaRec:this.fechaRec,
+                        horaRec:this.horaRec,
                     };
                     console.log(data);
                     const response= await axios.post("insertarGestion",data);

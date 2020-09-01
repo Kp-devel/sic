@@ -24,6 +24,11 @@ Route::post('insertarTel', 'TelefonoController@insertarTelefonos');
 Route::get('listaRespuesta', 'GestionController@listaRespuestas');
 Route::post('insertarGestion', 'GestionController@insertarGestion');
 
+//Recordatorio
+Route::get('listaRec', 'RecordatorioController@listarRecordatorio');
+//Route::post('insertarRec', 'RecordatorioController@insertarRecordatorio');
+
+
 //Pagos
 Route::get('listaPagos', 'PagoController@listaPagos');
 

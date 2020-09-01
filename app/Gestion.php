@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Types\True_;
 
 class Gestion extends Model
 {
@@ -45,12 +46,15 @@ class Gestion extends Model
         $telefono=$rq->telefono;
         $detalle=$rq->detalle;
         $moneda=$rq->moneda;
+        $recordatorio=$rq->recordatorio;
+        $fechaRec=$rq->fechaRec;
+        $horaRec=$rq->horaRec;
 
         $fechaGestion=date("Y-m-d H:i:s");
         $id=$rq->id;
-        //$id=121049517;
         $emp_id_FK=4090;
-        $insertado = DB::connection('mysql')->insert("
+
+        $insertadoGes = DB::connection('mysql')->insert("
             insert into gestion_cliente (cli_id_FK,emp_id_FK,ges_cli_acc,res_id_FK,
             ges_cli_fec,ges_cli_med,ges_cli_det,ges_cli_com_fec,ges_cli_com_can,
             ges_cli_com_mon,ges_cli_ret,ges_cli_est,ges_cli_pas,ges_cli_conf_can,
@@ -58,6 +62,22 @@ class Gestion extends Model
             values ($id,$emp_id_FK,2,$resId,'$fechaGestion','$telefono','$detalle',
             '$fechaPDP',$montoPDP,$moneda,0,0,0,$montoConf,$fechaConf,'')
         ");
+
+        if($recordatorio=='true' && $fechaRec!='null' && $horaRec!='null' && $insertadoGes=='true'){
+            // date_format($date,"Y-m-d");
+            $fechaRecordatorio="$fechaRec"." "."$horaRec".":00";
+            $insertadoRec = DB::connection('mysql')->insert("
+            insert into gestion_recordatorio (cli_id_FK,ges_tel_id_FK,ges_rec_fec_hor,ges_rec_est,ges_rec_pas)
+            values ($id,'$telefono','$fechaRecordatorio',0,0)");
+        }else{
+            $insertadoRec=true;
+        }
+
+        if($insertadoGes==true &&  $insertadoRec==true){
+            $insertado=true;
+        }else{
+            $insertado=false;
+        }
 
         return response()->json ($insertado);
     }

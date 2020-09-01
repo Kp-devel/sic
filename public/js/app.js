@@ -3591,7 +3591,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       fechaActual: null,
       telefonos: [],
       telefono: '',
-      mensaje: ''
+      mensaje: '',
+      recordatorio: '',
+      fechaRec: null,
+      horaRec: null
     };
   },
   created: function created() {
@@ -3688,7 +3691,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   detalle: _this4.detalle,
                   fechaPDP: _this4.fechaPDP,
                   montoPDP: _this4.montoPDP,
-                  moneda: _this4.moneda
+                  moneda: _this4.moneda,
+                  recordatorio: _this4.recordatorio,
+                  fechaRec: _this4.fechaRec,
+                  horaRec: _this4.horaRec
                 };
                 console.log(data);
                 _context3.next = 5;
@@ -57015,11 +57021,111 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "row px-0 mx-0 pt-2 pb-5" }, [
-          _vm._m(2),
+          _c("div", { staticClass: "col-md-2" }, [
+            _c("div", { staticClass: "d-flex py-2" }, [
+              _c("label", { staticClass: "font-12 pr-1 text-right" }, [
+                _vm._v("Recordatorio")
+              ]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.recordatorio,
+                    expression: "recordatorio"
+                  }
+                ],
+                attrs: { type: "checkbox" },
+                domProps: {
+                  checked: Array.isArray(_vm.recordatorio)
+                    ? _vm._i(_vm.recordatorio, null) > -1
+                    : _vm.recordatorio
+                },
+                on: {
+                  change: function($event) {
+                    var $$a = _vm.recordatorio,
+                      $$el = $event.target,
+                      $$c = $$el.checked ? true : false
+                    if (Array.isArray($$a)) {
+                      var $$v = null,
+                        $$i = _vm._i($$a, $$v)
+                      if ($$el.checked) {
+                        $$i < 0 && (_vm.recordatorio = $$a.concat([$$v]))
+                      } else {
+                        $$i > -1 &&
+                          (_vm.recordatorio = $$a
+                            .slice(0, $$i)
+                            .concat($$a.slice($$i + 1)))
+                      }
+                    } else {
+                      _vm.recordatorio = $$c
+                    }
+                  }
+                }
+              })
+            ])
+          ]),
           _vm._v(" "),
-          _vm._m(3),
+          _c("div", { staticClass: "col-md-4" }, [
+            _c("div", { staticClass: "d-flex px-1" }, [
+              _c("label", { staticClass: "font-12 pr-1 py-2" }, [
+                _vm._v("Fecha")
+              ]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.fechaRec,
+                    expression: "fechaRec"
+                  }
+                ],
+                staticClass: "form-control font-12 form-control-sm",
+                attrs: { type: "date", disabled: _vm.recordatorio == "" },
+                domProps: { value: _vm.fechaRec },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.fechaRec = $event.target.value
+                  }
+                }
+              })
+            ])
+          ]),
           _vm._v(" "),
-          _vm._m(4),
+          _c("div", { staticClass: "col-md-3" }, [
+            _c("div", { staticClass: "d-flex px-1" }, [
+              _c("label", { staticClass: "font-12 pr-1 py-2" }, [
+                _vm._v("Hora")
+              ]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.horaRec,
+                    expression: "horaRec"
+                  }
+                ],
+                staticClass: "form-control font-11 form-control-sm",
+                attrs: { type: "time", disabled: _vm.recordatorio == "" },
+                domProps: { value: _vm.horaRec },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.horaRec = $event.target.value
+                  }
+                }
+              })
+            ])
+          ]),
           _vm._v(" "),
           _c("div", { staticClass: "col-md-3" }, [
             _c(
@@ -57067,50 +57173,6 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-md-2 text-right" }, [
       _c("label", { staticClass: "font-12 pt-2" }, [
         _vm._v("Detalle de Gestión")
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-2" }, [
-      _c("div", { staticClass: "d-flex py-2" }, [
-        _c("label", { staticClass: "font-12 pr-1 text-right" }, [
-          _vm._v("Recordatorio")
-        ]),
-        _vm._v(" "),
-        _c("input", { attrs: { type: "checkbox" } })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-4" }, [
-      _c("div", { staticClass: "d-flex px-1" }, [
-        _c("label", { staticClass: "font-12 pr-1 py-2" }, [_vm._v("Fecha")]),
-        _vm._v(" "),
-        _c("input", {
-          staticClass: "form-control font-12 form-control-sm",
-          attrs: { type: "date", disabled: "" }
-        })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-3" }, [
-      _c("div", { staticClass: "d-flex px-1" }, [
-        _c("label", { staticClass: "font-12 pr-1 py-2" }, [_vm._v("Hora")]),
-        _vm._v(" "),
-        _c("input", {
-          staticClass: "form-control font-11 form-control-sm",
-          attrs: { type: "time", disabled: "" }
-        })
       ])
     ])
   }
