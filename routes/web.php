@@ -29,9 +29,11 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('insertarGestion', 'GestionController@insertarGestion');
     Route::get('validarContacto/{id}', 'GestionController@validarContacto');
     Route::get('validarPDP/{id}', 'GestionController@validarPDP');
+    Route::post('validarDetalleIdentico', 'GestionController@validarDetalleIdentico');
     
     //Recordatorio
     Route::post('insertarRecordatorio', 'RecordatorioController@insertarRecordatorio');
+    Route::get('listarRecordatorio', 'RecordatorioController@listarRecordatorio');
 
     //Pagos
     Route::get('listaPagos/{id}', 'PagoController@listaPagos');

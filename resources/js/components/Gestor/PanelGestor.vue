@@ -3,13 +3,11 @@
         <!-- btn recordatorios -->
          <div class="panel-top text-center">
              <!-- fa-sort-down -->
-            <a href="" class="btn-up" 
-            data-toggle="modal" 
-            data-target="#modal-recordatorio"><i class="fa fa-clock fa-lg"></i></a>
+            <a href="" class="btn-up" @click.prevent="verRecordatorios()"><i class="fa fa-clock fa-lg"></i></a>
         </div>
         <recordatorio :cliente="dataCliente[0]"/>
         <!-- lista de clientes y menu -->
-        <clientes/>
+        <clientes :userlogeado="userlogeado"/>
         <!-- detalle de cliente -->
         <div v-if="viewDetalleCliente==true" class="bg-white">
              <div class="panelEstandar">
@@ -80,6 +78,7 @@
     import recordatorio from './Recordatorios';
     
     export default {
+        props:["userlogeado"],
         data() {
             return {
                 viewDetalleCliente:false,
@@ -98,7 +97,11 @@
             verTelefonos(){
                 this.$root.$emit('limpiarFrmTel');
                 $('#modal-telefonos').modal();
-            }     
+            },
+            verRecordatorios(){
+                this.$root.$emit('listarRecordatorios');
+                $('#modal-recordatorio').modal();
+            }
         },
         mounted() {
             this.$root.$on ('verDetalle', (datos) => {

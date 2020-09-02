@@ -138,7 +138,7 @@
                             </tr>
                             <tr>
                                 <td class="text-left font-bold">Recupero al {{dataMes.fecha_recupero}}</td>
-                                <td class="text-right">S/.{{formatoMonto(dataMes.recupero)}}</td>
+                                <td class="text-right">S/.{{dataMes.recupero!=null?formatoMonto(dataMes.recupero):'0.00'}}</td>
                             </tr>
                             <tr>
                                 <td class="text-left font-bold">Alcance de Meta</td>
@@ -146,15 +146,15 @@
                             </tr>
                             <tr>
                                 <td class="text-left font-bold">Efectividad sobre PDPS</td>
-                                <td class="text-right">{{dataMes.efectividad}}%</td>
+                                <td class="text-right">{{dataMes.efectividad!=null?dataMes.efectividad:0}}%</td>
                             </tr>
                             <tr>
                                 <td class="text-left font-bold">PDP Caídas (S/.)</td>
-                                <td class="text-right">S/.{{formatoMonto(dataMes.pdp_caidas)}}</td>
+                                <td class="text-right">S/.{{dataMes.pdp_caidas!=null?formatoMonto(dataMes.pdp_caidas):'0.00'}}</td>
                             </tr>
                             <tr>
                                 <td class="text-left font-bold">PDP Pendientes (S/.)</td>
-                                <td class="text-right">S/.{{formatoMonto(dataMes.pdp_pendiente)}}</td>
+                                <td class="text-right">S/.{{dataMes.pdp_pendiente!=null?formatoMonto(dataMes.pdp_pendiente):'0.00'}}</td>
                             </tr>
                         </table>
                     </div>
@@ -244,12 +244,28 @@
                             <div class="navbar-wrapper d-flex">
                                 <a href="" class="icono-bars waves-effect" @click.prevent="menu()"><i class="fa fa-bars fa-lg"></i></a>
                             </div>
-                            <div class="justify-content-end" id="navigation">
-                                <ul class="navbar-nav">
-                                    <li class="nav-item pt-1">
-                                        <img src="img/center.jpeg" alt="" width="35px" height="35px" class=" rounded-circle border">
-                                    </li>
-                                </ul>
+                            <button class="navbar-toggler p-0" type="button" data-toggle="collapse" data-target="#navigation"  aria-expanded="false" aria-label="Toggle navigation">
+                                 <img src="img/center.jpeg" alt="" width="35px" height="35px" class=" rounded-circle border">
+                            </button>
+                            <div class="collapse navbar-collapse justify-content-end" id="navigation">
+                                    <ul class="navbar-nav">
+                                        <li class="nav-item pt-1 px-2 text-right">
+                                            <p class="font-12 mb-0"><b>{{userlogeado}}</b><br>Call Center</p>
+                                        </li>
+                                        <li class="nav-item dropdown">
+                                            <a href="#" class="nav-link dropdown-toggle px-0" id="dropdown-user" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <img src="img/center.jpeg" alt="" width="35px" height="35px" class=" rounded-circle border">
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right mt-1" aria-labelledby="dropdown-user">
+                                                <a href="" class="dropdown-item" @click.prevent="cerrarsession()">
+                                                    Cerrar Sessión
+                                                </a>
+                                                <form id="logout-form" action="logout" method="POST" style="display: none;">
+                                                    <input type="hidden" name="_token" :value="csrf">
+                                                </form>
+                                            </div>
+                                        </li>
+                                    </ul>
                             </div>
                         </div>
                     </nav>
@@ -318,9 +334,10 @@
     //import detalleCliente from './detalleCliente';
 
     export default {
-        // props:["vrol"],
+        props:["userlogeado"],
         data() {
             return {
+                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 paginate: ['lista'],
                 lista: [],
                 busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:''},
@@ -476,7 +493,9 @@
                         this.dataMes.recupero=datos[0].recupero;
                         this.dataMes.fecha_recupero=datos[0].fecha_recupero;
                         this.dataMes.alcance=((datos[0].recupero/datos[0].meta)*100).toFixed(2);
-                        this.dataMes.efectividad= Math.round((datos[0].monto_pago/datos[0].monto_pdp)*100);
+                        const pago=datos[0].monto_pago!=null?datos[0].monto_pago:0;
+                        const pdp=datos[0].monto_pdp!=null?datos[0].monto_pdp:1;
+                        this.dataMes.efectividad= Math.round((pago/pdp)*100);
                         this.dataMes.pdp_caidas=datos[0].pdp_caidos;
                         this.dataMes.pdp_pendiente=datos[0].pdp_pendiente;
                     }
@@ -565,9 +584,11 @@
                 }
                 return i;
             },
+            cerrarsession(){
+                $('#logout-form').submit();
+            }
         },
         components:{
-            // detalleCliente
             vuePaginate
         }
     }

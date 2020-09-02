@@ -131,7 +131,7 @@
 <script>
     import panelMensaje from '../MensajeSistema/PanelMensaje';
     export default {
-        props:["idCliente","tipo"],
+        props:["idCliente","tipo","telrecordatorio"],
         data() {
             return {
                 respuestas:[],
@@ -142,7 +142,7 @@
                 errorsDatos:[],
                 pdps:[],
                 mensaje:'',
-                datos:{detalle:'',montoPDP:'',fechaPDP:null,moneda:1,telefono:'',respuesta:'',rec:'',fechaRec:'',horaRec:'',id:this.idCliente},
+                datos:{detalle:'',montoPDP:'',fechaPDP:null,moneda:1,telefono:'',respuesta:'',rec:'',fechaRec:'',horaRec:'',id:this.idCliente,tel_rec:''},
                 loadButton:false,
                 loadButton2:false,
                 cant_contacto:0
@@ -249,6 +249,15 @@
                                 }, 5000);
                             }
                         });
+                        // evaluar detalle identicos
+                        axios.post("validarDetalleIdentico",this.datos).then(res=>{
+                            if(res.data){
+                                const cantDetalle=res.data;
+                                if(cantDetalle[0].cant>0){
+                                    alert("Tener en cuenta! \nSe está repitiendo el detalle de gestión");
+                                }
+                            }
+                        });
                     }   
                 }catch(error){
                     this.mensaje = "Error al Registrar";
@@ -259,14 +268,18 @@
             },
             reprogramar(){
                 this.errorsDatos=[];
-                if(this.datos.fechaRec!="" && this.datos.horaRec!=""){
+                this.datos.tel_rec=this.telrecordatorio;
+                if(this.datos.tel_rec!="" && this.datos.fechaRec!="" && this.datos.horaRec!=""){
                     this.loadButton2=true;
-                    // axios.post("insertarRecordatorio",this.datos).then(res=>{
-                    //     if(res.data=="ok"){
-                    //         this.loadButton2=false;
-                    //         this.mensaje = "Registro con éxito";
-                    //     }
-                    // });
+                    axios.post("insertarRecordatorio",this.datos).then(res=>{
+                        if(res.data=="ok"){
+                            this.loadButton2=false;
+                            this.mensaje = "Registro con éxito";
+                            setTimeout(() => {
+                                this.mensaje="";
+                            }, 5000);
+                        }
+                    });
                 }else{
                     this.errorsDatos.push("Selecciona una fecha y/o hora de recordatorio");
                 }
@@ -287,12 +300,21 @@
                 });
             },
             validarRespuestas(res){
+                //respuesta 1,43 y 2--limitacion de calendario
                 this.fechaCalendario(res);
                 //no ingresar paleta no contacto cuando existe contacto previo
                 if(res==44 || res==45){
                     if(this.cant_contacto>0){
                         this.datos.respuesta='';
                         alert("No se puede seleccionar la respuesta asignada, el cliente tiene un contacto previo");
+                        // $("#panel-mensaje").modal();
+                    }
+                }
+                //no ingresar paleta contacto cuando no existe contacto previo
+                if(res==32){
+                    if(this.cant_contacto==0){
+                        this.datos.respuesta='';
+                        alert("No se puede seleccionar la respuesta asignada, el cliente no tiene un contacto previo");
                         // $("#panel-mensaje").modal();
                     }
                 }
@@ -309,7 +331,6 @@
                         if(new Date(this.fechaActual).getTime()<=new Date(fecha_pago).getTime()){
                             this.datos.respuesta='';
                             alert('Ya existe un compromiso de pago.\nFecha de Gestión: '+fecha_ges+'.\nUsuario: '+usuario+'.\nFecha de Pago: '+fecha_pago+'.\nCantidad: '+moneda+""+monto);
-                            // alert('El compromiso de pago aún no se vence.\nFecha de Gestión: '+fecha_ges+'.\nUsuario: '+usuario+'.\nFecha de Pago: '+fecha_pago+'.\nCantidad: '+moneda+""+monto);
                         }
                     }
                 }

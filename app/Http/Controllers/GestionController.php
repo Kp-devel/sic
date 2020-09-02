@@ -28,17 +28,28 @@ class GestionController extends Controller
                     Gestion::insertarGestion($rq,$fechaGestion);
                     $idGestion=Gestion::selectIdGestion($fechaGestion,$id,$tel);
                     if($resp==1 || $resp==43){
+                        // inserta en la tabla compromiso_cliente
                         Gestion::insertarPDP($rq,$fechaGestion,$idGestion[0]->id);
+                        $idcomp=Gestion::selectIdCompromiso($id,$idGestion[0]->id,$fechaGestion);
+                        // actualizar en la tabla cliente 
+                        Gestion::updateUltCompromiso($id,$idcomp[0]->id);
                     }
+                    if($resp==2){
+                        //cambia el estado del compromiso
+                        Gestion::updateCompromisoEstado($id);
+                    }
+                    // actualizar en la tabla cliente
                     Gestion::updateUltGestion($id,$idGestion[0]->id);
                 }
             }else{
                 Gestion::insertarGestion($rq,$fechaGestion);
                 $idGestion=Gestion::selectIdGestion($fechaGestion,$id,$tel);
+                // actualizar en la tabla cliente
                 Gestion::updateUltGestion($id,$idGestion[0]->id);   
             }
                     
             if($rec==true && $fechaRec!="" && $horaRec!=""){
+                Recordatorio::updateEstadoRecordatorio($id); 
                 Recordatorio::insertRecordatorio($rq);
             }
             return "ok";
@@ -51,5 +62,9 @@ class GestionController extends Controller
 
     public function validarPDP($id){
         return Gestion::validarPDP($id);
+    }
+
+    public function validarDetalleIdentico(Request $rq){
+        return Gestion::validarDetalleIdentico($rq);
     }
 }

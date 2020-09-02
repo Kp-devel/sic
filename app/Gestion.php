@@ -115,4 +115,42 @@ class Gestion extends Model
         ";
         return DB::connection('mysql')->select(DB::raw($sql),array("id"=>$id));
     }
+
+    public static function updateCompromisoEstado($id){
+        DB::connection('mysql')->update("
+            UPDATE compromiso_cliente SET com_cli_est=1 WHERE cli_id_FK=:id
+        ",array("id"=>$id));
+        return "ok";
+    }
+
+    public static function updateUltCompromiso($id,$idcomp){
+        DB::connection('mysql')->update("
+            UPDATE cliente SET com_cli_id_FK=:idcomp WHERE cli_id=:id 
+        ",array("idcomp"=>$idcomp,"id"=>$id));
+        return "ok";
+    }
+
+    public static function selectIdCompromiso($id,$idGestion,$fechaGestion){
+        return DB::connection('mysql')->select(DB::raw("
+            select com_cli_id as id
+            from compromiso_cliente
+            where 
+            cli_id_FK=:id
+            and com_cli_fec=:fec
+            and ges_cli_id_FK=:idGes
+        "),array("id"=>$id,"fec"=>$fechaGestion,"idGes"=>$idGestion));
+    }
+    
+    public static function validarDetalleIdentico(Request $rq){
+        $idEmpleado=auth()->user()->emp_id;
+        $detalle=$rq->detalle;
+        return DB::connection('mysql')->select(DB::raw("
+            select count(*) as cant
+            from gestion_cliente
+            where 
+                date_format(ges_cli_fec,'%Y%m')=date_format(now(),'%Y%m')
+            and emp_id_FK=:idEmp
+            and ges_cli_det=:det
+        "),array("idEmp"=>$idEmpleado,"det"=>$detalle));
+    }
 }

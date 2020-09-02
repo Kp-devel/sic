@@ -2682,14 +2682,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
  //import detalleCliente from './detalleCliente';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  // props:["vrol"],
+  props: ["userlogeado"],
   data: function data() {
     var _ref;
 
     return _ref = {
+      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
       paginate: ['lista'],
       lista: [],
       busqueda: {
@@ -2881,7 +2898,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           _this6.dataMes.recupero = datos[0].recupero;
           _this6.dataMes.fecha_recupero = datos[0].fecha_recupero;
           _this6.dataMes.alcance = (datos[0].recupero / datos[0].meta * 100).toFixed(2);
-          _this6.dataMes.efectividad = Math.round(datos[0].monto_pago / datos[0].monto_pdp * 100);
+          var pago = datos[0].monto_pago != null ? datos[0].monto_pago : 0;
+          var pdp = datos[0].monto_pdp != null ? datos[0].monto_pdp : 1;
+          _this6.dataMes.efectividad = Math.round(pago / pdp * 100);
           _this6.dataMes.pdp_caidas = datos[0].pdp_caidos;
           _this6.dataMes.pdp_pendiente = datos[0].pdp_pendiente;
         }
@@ -2977,10 +2996,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       return i;
+    },
+    cerrarsession: function cerrarsession() {
+      $('#logout-form').submit();
     }
   },
   components: {
-    // detalleCliente
     vuePaginate: _node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0___default.a
   }
 });
@@ -3719,7 +3740,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["idCliente", "tipo"],
+  props: ["idCliente", "tipo", "telrecordatorio"],
   data: function data() {
     return {
       respuestas: [],
@@ -3740,7 +3761,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         rec: '',
         fechaRec: '',
         horaRec: '',
-        id: this.idCliente
+        id: this.idCliente,
+        tel_rec: ''
       },
       loadButton: false,
       loadButton2: false,
@@ -3882,6 +3904,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 _this4.mensaje = "";
               }, 5000);
             }
+          }); // evaluar detalle identicos
+
+          axios.post("validarDetalleIdentico", this.datos).then(function (res) {
+            if (res.data) {
+              var cantDetalle = res.data;
+
+              if (cantDetalle[0].cant > 0) {
+                alert("Tener en cuenta! \nSe está repitiendo el detalle de gestión");
+              }
+            }
           });
         }
       } catch (error) {
@@ -3892,45 +3924,61 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
     },
     reprogramar: function reprogramar() {
-      this.errorsDatos = [];
+      var _this5 = this;
 
-      if (this.datos.fechaRec != "" && this.datos.horaRec != "") {
-        this.loadButton2 = true; // axios.post("insertarRecordatorio",this.datos).then(res=>{
-        //     if(res.data=="ok"){
-        //         this.loadButton2=false;
-        //         this.mensaje = "Registro con éxito";
-        //     }
-        // });
+      this.errorsDatos = [];
+      this.datos.tel_rec = this.telrecordatorio;
+
+      if (this.datos.tel_rec != "" && this.datos.fechaRec != "" && this.datos.horaRec != "") {
+        this.loadButton2 = true;
+        axios.post("insertarRecordatorio", this.datos).then(function (res) {
+          if (res.data == "ok") {
+            _this5.loadButton2 = false;
+            _this5.mensaje = "Registro con éxito";
+            setTimeout(function () {
+              _this5.mensaje = "";
+            }, 5000);
+          }
+        });
       } else {
         this.errorsDatos.push("Selecciona una fecha y/o hora de recordatorio");
       }
     },
     gestionesContacto: function gestionesContacto() {
-      var _this5 = this;
+      var _this6 = this;
 
       axios.get("validarContacto/" + this.idCliente).then(function (res) {
         if (res.data) {
           var cant = res.data;
-          _this5.cant_contacto = cant[0].cant_contacto;
+          _this6.cant_contacto = cant[0].cant_contacto;
         }
       });
     },
     pdp: function pdp() {
-      var _this6 = this;
+      var _this7 = this;
 
       axios.get("validarPDP/" + this.idCliente).then(function (res) {
         if (res.data) {
-          _this6.pdps = res.data;
+          _this7.pdps = res.data;
         }
       });
     },
     validarRespuestas: function validarRespuestas(res) {
+      //respuesta 1,43 y 2--limitacion de calendario
       this.fechaCalendario(res); //no ingresar paleta no contacto cuando existe contacto previo
 
       if (res == 44 || res == 45) {
         if (this.cant_contacto > 0) {
           this.datos.respuesta = '';
           alert("No se puede seleccionar la respuesta asignada, el cliente tiene un contacto previo"); // $("#panel-mensaje").modal();
+        }
+      } //no ingresar paleta contacto cuando no existe contacto previo
+
+
+      if (res == 32) {
+        if (this.cant_contacto == 0) {
+          this.datos.respuesta = '';
+          alert("No se puede seleccionar la respuesta asignada, el cliente no tiene un contacto previo"); // $("#panel-mensaje").modal();
         }
       } //verificar si ya hay compromisos
 
@@ -3954,7 +4002,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
           if (new Date(this.fechaActual).getTime() <= new Date(fecha_pago).getTime()) {
             this.datos.respuesta = '';
-            alert('Ya existe un compromiso de pago.\nFecha de Gestión: ' + fecha_ges + '.\nUsuario: ' + usuario + '.\nFecha de Pago: ' + fecha_pago + '.\nCantidad: ' + moneda + "" + monto); // alert('El compromiso de pago aún no se vence.\nFecha de Gestión: '+fecha_ges+'.\nUsuario: '+usuario+'.\nFecha de Pago: '+fecha_pago+'.\nCantidad: '+moneda+""+monto);
+            alert('Ya existe un compromiso de pago.\nFecha de Gestión: ' + fecha_ges + '.\nUsuario: ' + usuario + '.\nFecha de Pago: ' + fecha_pago + '.\nCantidad: ' + moneda + "" + monto);
           }
         }
       }
@@ -4065,8 +4113,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 
 
 
@@ -4076,6 +4122,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ["userlogeado"],
   data: function data() {
     return {
       viewDetalleCliente: false,
@@ -4092,6 +4139,10 @@ __webpack_require__.r(__webpack_exports__);
     verTelefonos: function verTelefonos() {
       this.$root.$emit('limpiarFrmTel');
       $('#modal-telefonos').modal();
+    },
+    verRecordatorios: function verRecordatorios() {
+      this.$root.$emit('listarRecordatorios');
+      $('#modal-recordatorio').modal();
     }
   },
   mounted: function mounted() {
@@ -4183,18 +4234,66 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      datos: {
-        telefono: '',
-        idCLiente: 0
-      },
-      mensajeError: ''
+      datos: [],
+      recordatorio: {
+        id: '',
+        codigo: '',
+        nombre: '',
+        dni: '',
+        capital: '',
+        deuda: '',
+        ic: '',
+        medio: '',
+        producto: '',
+        ultres: '',
+        tel_rec: ''
+      }
     };
   },
-  methods: {},
+  created: function created() {
+    this.listaRecordatorios();
+  },
+  methods: {
+    listaRecordatorios: function listaRecordatorios() {
+      var _this = this;
+
+      axios.get("listarRecordatorio").then(function (res) {
+        if (res.data) {
+          _this.datos = res.data;
+          _this.recordatorio.codigo = _this.datos[0].codigo;
+          _this.recordatorio.nombre = _this.datos[0].nombre;
+          _this.recordatorio.dni = _this.datos[0].dni;
+          _this.recordatorio.capital = _this.datos[0].capital;
+          _this.recordatorio.deuda = _this.datos[0].deuda;
+          _this.recordatorio.ic = _this.datos[0].importe;
+          _this.recordatorio.producto = _this.datos[0].producto;
+          _this.recordatorio.medio = _this.datos[0].telefono;
+          _this.recordatorio.ultres = _this.datos[0].ult_resp;
+          _this.recordatorio.id = _this.datos[0].id;
+          _this.recordatorio.tel_rec = _this.datos[0].tel_prog;
+        }
+      });
+    }
+  },
+  mounted: function mounted() {
+    var _this2 = this;
+
+    this.$root.$on('listarRecordatorios', function () {
+      _this2.listaRecordatorios();
+    });
+  },
   components: {
     formRegistrarGestion: _FormRegistrarGestion__WEBPACK_IMPORTED_MODULE_0__["default"]
   }
@@ -42111,7 +42210,12 @@ var render = function() {
                     _vm._v(" "),
                     _c("td", { staticClass: "text-right" }, [
                       _vm._v(
-                        "S/." + _vm._s(_vm.formatoMonto(_vm.dataMes.recupero))
+                        "S/." +
+                          _vm._s(
+                            _vm.dataMes.recupero != null
+                              ? _vm.formatoMonto(_vm.dataMes.recupero)
+                              : "0.00"
+                          )
                       )
                     ])
                   ]),
@@ -42136,7 +42240,13 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("td", { staticClass: "text-right" }, [
-                      _vm._v(_vm._s(_vm.dataMes.efectividad) + "%")
+                      _vm._v(
+                        _vm._s(
+                          _vm.dataMes.efectividad != null
+                            ? _vm.dataMes.efectividad
+                            : 0
+                        ) + "%"
+                      )
                     ])
                   ]),
                   _vm._v(" "),
@@ -42147,7 +42257,12 @@ var render = function() {
                     _vm._v(" "),
                     _c("td", { staticClass: "text-right" }, [
                       _vm._v(
-                        "S/." + _vm._s(_vm.formatoMonto(_vm.dataMes.pdp_caidas))
+                        "S/." +
+                          _vm._s(
+                            _vm.dataMes.pdp_caidas != null
+                              ? _vm.formatoMonto(_vm.dataMes.pdp_caidas)
+                              : "0.00"
+                          )
                       )
                     ])
                   ]),
@@ -42160,7 +42275,11 @@ var render = function() {
                     _c("td", { staticClass: "text-right" }, [
                       _vm._v(
                         "S/." +
-                          _vm._s(_vm.formatoMonto(_vm.dataMes.pdp_pendiente))
+                          _vm._s(
+                            _vm.dataMes.pdp_pendiente != null
+                              ? _vm.formatoMonto(_vm.dataMes.pdp_pendiente)
+                              : "0.00"
+                          )
                       )
                     ])
                   ])
@@ -42423,7 +42542,82 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _vm._m(7)
+                  _vm._m(7),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "collapse navbar-collapse justify-content-end",
+                      attrs: { id: "navigation" }
+                    },
+                    [
+                      _c("ul", { staticClass: "navbar-nav" }, [
+                        _c(
+                          "li",
+                          { staticClass: "nav-item pt-1 px-2 text-right" },
+                          [
+                            _c("p", { staticClass: "font-12 mb-0" }, [
+                              _c("b", [_vm._v(_vm._s(_vm.userlogeado))]),
+                              _c("br"),
+                              _vm._v("Call Center")
+                            ])
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c("li", { staticClass: "nav-item dropdown" }, [
+                          _vm._m(8),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            {
+                              staticClass:
+                                "dropdown-menu dropdown-menu-right mt-1",
+                              attrs: { "aria-labelledby": "dropdown-user" }
+                            },
+                            [
+                              _c(
+                                "a",
+                                {
+                                  staticClass: "dropdown-item",
+                                  attrs: { href: "" },
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      return _vm.cerrarsession()
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "\n                                                Cerrar Sessión\n                                            "
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "form",
+                                {
+                                  staticStyle: { display: "none" },
+                                  attrs: {
+                                    id: "logout-form",
+                                    action: "logout",
+                                    method: "POST"
+                                  }
+                                },
+                                [
+                                  _c("input", {
+                                    attrs: { type: "hidden", name: "_token" },
+                                    domProps: { value: _vm.csrf }
+                                  })
+                                ]
+                              )
+                            ]
+                          )
+                        ])
+                      ])
+                    ]
+                  )
                 ])
               ]
             ),
@@ -42615,7 +42809,7 @@ var render = function() {
                   ? _c(
                       "div",
                       { staticClass: "d-flex justify-content-center py-3" },
-                      [_vm._m(8)]
+                      [_vm._m(9)]
                     )
                   : _vm._e()
               ],
@@ -42733,22 +42927,56 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c(
-      "div",
-      { staticClass: "justify-content-end", attrs: { id: "navigation" } },
+      "button",
+      {
+        staticClass: "navbar-toggler p-0",
+        attrs: {
+          type: "button",
+          "data-toggle": "collapse",
+          "data-target": "#navigation",
+          "aria-expanded": "false",
+          "aria-label": "Toggle navigation"
+        }
+      },
       [
-        _c("ul", { staticClass: "navbar-nav" }, [
-          _c("li", { staticClass: "nav-item pt-1" }, [
-            _c("img", {
-              staticClass: " rounded-circle border",
-              attrs: {
-                src: "img/center.jpeg",
-                alt: "",
-                width: "35px",
-                height: "35px"
-              }
-            })
-          ])
-        ])
+        _c("img", {
+          staticClass: " rounded-circle border",
+          attrs: {
+            src: "img/center.jpeg",
+            alt: "",
+            width: "35px",
+            height: "35px"
+          }
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      {
+        staticClass: "nav-link dropdown-toggle px-0",
+        attrs: {
+          href: "#",
+          id: "dropdown-user",
+          "data-toggle": "dropdown",
+          "aria-haspopup": "true",
+          "aria-expanded": "false"
+        }
+      },
+      [
+        _c("img", {
+          staticClass: " rounded-circle border",
+          attrs: {
+            src: "img/center.jpeg",
+            alt: "",
+            width: "35px",
+            height: "35px"
+          }
+        })
       ]
     )
   },
@@ -44468,11 +44696,26 @@ var render = function() {
   return _c(
     "div",
     [
-      _vm._m(0),
+      _c("div", { staticClass: "panel-top text-center" }, [
+        _c(
+          "a",
+          {
+            staticClass: "btn-up",
+            attrs: { href: "" },
+            on: {
+              click: function($event) {
+                $event.preventDefault()
+                return _vm.verRecordatorios()
+              }
+            }
+          },
+          [_c("i", { staticClass: "fa fa-clock fa-lg" })]
+        )
+      ]),
       _vm._v(" "),
       _c("recordatorio", { attrs: { cliente: _vm.dataCliente[0] } }),
       _vm._v(" "),
-      _c("clientes"),
+      _c("clientes", { attrs: { userlogeado: _vm.userlogeado } }),
       _vm._v(" "),
       _vm.viewDetalleCliente == true
         ? _c("div", { staticClass: "bg-white" }, [
@@ -44485,7 +44728,7 @@ var render = function() {
                   { staticClass: "d-flex mx-3 justify-content-between" },
                   [
                     _c("div", { staticClass: "d-flex" }, [
-                      _vm._m(1),
+                      _vm._m(0),
                       _vm._v(" "),
                       _c("p", { staticClass: "font-18 font-bold" }, [
                         _vm._v(_vm._s(_vm.dataCliente[0].nombre))
@@ -44516,7 +44759,7 @@ var render = function() {
                     "div",
                     { staticClass: "col-md-4" },
                     [
-                      _vm._m(2),
+                      _vm._m(1),
                       _vm._v(" "),
                       _c("detalleCliente", {
                         attrs: { datos: _vm.dataCliente }
@@ -44529,7 +44772,7 @@ var render = function() {
                     "div",
                     { staticClass: "col-md-8" },
                     [
-                      _vm._m(3),
+                      _vm._m(2),
                       _vm._v(" "),
                       _vm.dataCliente.length > 0
                         ? _c("detalleGestiones", {
@@ -44546,7 +44789,7 @@ var render = function() {
                     "div",
                     { staticClass: "col-md-12" },
                     [
-                      _vm._m(4),
+                      _vm._m(3),
                       _vm._v(" "),
                       _vm.dataCliente.length > 0
                         ? _c("detalleCuentas", {
@@ -44571,7 +44814,7 @@ var render = function() {
                   : _vm._e(),
                 _vm._v(" "),
                 _c("div", { staticClass: "btns-lateral" }, [
-                  _vm._m(5),
+                  _vm._m(4),
                   _vm._v(" "),
                   _c(
                     "a",
@@ -44606,25 +44849,6 @@ var render = function() {
   )
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "panel-top text-center" }, [
-      _c(
-        "a",
-        {
-          staticClass: "btn-up",
-          attrs: {
-            href: "",
-            "data-toggle": "modal",
-            "data-target": "#modal-recordatorio"
-          }
-        },
-        [_c("i", { staticClass: "fa fa-clock fa-lg" })]
-      )
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -44737,20 +44961,80 @@ var render = function() {
           },
           [
             _c("div", { staticClass: "modal-content " }, [
-              _c(
-                "div",
-                { staticClass: "modal-body overflow-auto px-3 bg-gray-2 pb-0" },
-                [
-                  _vm._m(0),
-                  _vm._v(" "),
-                  _c("formRegistrarGestion", {
-                    attrs: { idCliente: _vm.datos.idCLiente, tipo: 2 }
-                  })
-                ],
-                1
-              ),
+              _vm.datos == ""
+                ? _c("div", { staticClass: "modal-body px-3 bg-gray-2 pb-0" }, [
+                    _vm._m(0)
+                  ])
+                : _c(
+                    "div",
+                    {
+                      staticClass:
+                        "modal-body overflow-auto px-3 bg-gray-2 pb-0"
+                    },
+                    [
+                      _c(
+                        "div",
+                        {
+                          staticClass: "table-responsive",
+                          attrs: { id: "table-recordatorios" }
+                        },
+                        [
+                          _c("table", { staticClass: "table table-hover" }, [
+                            _vm._m(1),
+                            _vm._v(" "),
+                            _c("tbody", [
+                              _c("tr", { staticClass: "text-center" }, [
+                                _c("td", [
+                                  _vm._v(_vm._s(_vm.recordatorio.codigo))
+                                ]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(_vm._s(_vm.recordatorio.nombre))
+                                ]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(_vm._s(_vm.recordatorio.dni))
+                                ]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(_vm._s(_vm.recordatorio.capital))
+                                ]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(_vm._s(_vm.recordatorio.deuda))
+                                ]),
+                                _vm._v(" "),
+                                _c("td", [_vm._v(_vm._s(_vm.recordatorio.ic))]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(_vm._s(_vm.recordatorio.medio))
+                                ]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(_vm._s(_vm.recordatorio.producto))
+                                ]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(_vm._s(_vm.recordatorio.ultres))
+                                ])
+                              ])
+                            ])
+                          ])
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c("formRegistrarGestion", {
+                        attrs: {
+                          idCliente: _vm.recordatorio.id,
+                          tipo: 2,
+                          telrecordatorio: _vm.recordatorio.tel_rec
+                        }
+                      })
+                    ],
+                    1
+                  ),
               _vm._v(" "),
-              _vm._m(1)
+              _vm._m(2)
             ])
           ]
         )
@@ -44763,57 +45047,42 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "table-responsive", attrs: { id: "table-recordatorios" } },
-      [
-        _c("table", { staticClass: "table table-hover" }, [
-          _c("thead", { staticClass: "bg-blue text-white text-center" }, [
-            _c("tr", [
-              _c("td", { staticClass: "align-middle" }, [_vm._v("CODIGO")]),
-              _vm._v(" "),
-              _c("td", { staticClass: "align-middle" }, [_vm._v("NOMBRE")]),
-              _vm._v(" "),
-              _c("td", { staticClass: "align-middle" }, [_vm._v("DNI/RUC")]),
-              _vm._v(" "),
-              _c("td", { staticClass: "align-middle" }, [_vm._v("CAPITAL")]),
-              _vm._v(" "),
-              _c("td", { staticClass: "align-middle" }, [_vm._v("DEUDA")]),
-              _vm._v(" "),
-              _c("td", { staticClass: "align-middle" }, [_vm._v("IC")]),
-              _vm._v(" "),
-              _c("td", { staticClass: "align-middle" }, [_vm._v("MEDIO")]),
-              _vm._v(" "),
-              _c("td", { staticClass: "align-middle" }, [_vm._v("PRODUCTO")]),
-              _vm._v(" "),
-              _c("td", { staticClass: "align-middle" }, [_vm._v("ULT. RPTA")])
-            ])
-          ]),
-          _vm._v(" "),
-          _c("tbody", [
-            _c("tr", { staticClass: "text-center" }, [
-              _c("td", [_vm._v("1")]),
-              _vm._v(" "),
-              _c("td", [_vm._v("1")]),
-              _vm._v(" "),
-              _c("td", [_vm._v("1")]),
-              _vm._v(" "),
-              _c("td", [_vm._v("1")]),
-              _vm._v(" "),
-              _c("td", [_vm._v("1")]),
-              _vm._v(" "),
-              _c("td", [_vm._v("1")]),
-              _vm._v(" "),
-              _c("td", [_vm._v("1")]),
-              _vm._v(" "),
-              _c("td", [_vm._v("1")]),
-              _vm._v(" "),
-              _c("td", [_vm._v("1")])
-            ])
-          ])
+    return _c("div", { staticClass: "d-flex justify-content-center py-5" }, [
+      _c("div", { staticClass: "text-center" }, [
+        _c("i", { staticClass: "fa fa-clock fa-2x text-blue" }),
+        _c("br"),
+        _vm._v(" "),
+        _c("p", { staticClass: "font-15 pt-1" }, [
+          _vm._v("No tiene recordatorios pendientes")
         ])
-      ]
-    )
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", { staticClass: "bg-blue text-white text-center" }, [
+      _c("tr", [
+        _c("td", { staticClass: "align-middle" }, [_vm._v("CODIGO")]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [_vm._v("NOMBRE")]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [_vm._v("DNI/RUC")]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [_vm._v("CAPITAL")]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [_vm._v("DEUDA")]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [_vm._v("IC")]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [_vm._v("MEDIO")]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [_vm._v("PRODUCTO")]),
+        _vm._v(" "),
+        _c("td", { staticClass: "align-middle" }, [_vm._v("ULT. RPTA")])
+      ])
+    ])
   },
   function() {
     var _vm = this
@@ -58526,14 +58795,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************************************************!*\
   !*** ./resources/js/components/Gestor/Recordatorios.vue ***!
   \**********************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Recordatorios_vue_vue_type_template_id_3c000064___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Recordatorios.vue?vue&type=template&id=3c000064& */ "./resources/js/components/Gestor/Recordatorios.vue?vue&type=template&id=3c000064&");
 /* harmony import */ var _Recordatorios_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Recordatorios.vue?vue&type=script&lang=js& */ "./resources/js/components/Gestor/Recordatorios.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Recordatorios_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Recordatorios_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -58563,7 +58833,7 @@ component.options.__file = "resources/js/components/Gestor/Recordatorios.vue"
 /*!***********************************************************************************!*\
   !*** ./resources/js/components/Gestor/Recordatorios.vue?vue&type=script&lang=js& ***!
   \***********************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
