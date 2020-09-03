@@ -3360,10 +3360,9 @@ __webpack_require__.r(__webpack_exports__);
       axios.get("historicoGestiones/" + id).then(function (res) {
         if (res.data) {
           _this.gestiones = res.data;
-
-          _this.$nextTick(function () {
-            $('[data-toggle="tooltip"]').tooltip();
-          });
+          /*this.$nextTick(function(){
+              $('[data-toggle="tooltip"]').tooltip();
+          })*/
         }
       });
     }
@@ -4157,6 +4156,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 
 
@@ -4181,12 +4181,10 @@ __webpack_require__.r(__webpack_exports__);
       $('#contenidoLista').toggleClass('pos_fixed');
     },
     verTelefonos: function verTelefonos() {
-      this.$root.$emit('limpiarFrmTel');
-      $('#modal-telefonos').modal();
+      this.$root.$emit('limpiarFrmTel'); //$('#modal-telefonos').modal();
     },
     verRecordatorios: function verRecordatorios() {
-      this.$root.$emit('listarRecordatorios');
-      $('#modal-recordatorio').modal();
+      this.$root.$emit('listarRecordatorios'); //$('#modal-recordatorio').modal();
     }
   },
   mounted: function mounted() {
@@ -56715,7 +56713,6 @@ var render = function() {
             ]),
             _vm._v(" "),
             _c("tr", { staticClass: "font-12" }, [
-              _vm._v(" C. Laboral\n                "),
               _c("td", { staticClass: "text-right pr-1" }, [
                 _vm._v("C. Laboral")
               ]),
@@ -58244,7 +58241,11 @@ var render = function() {
           "a",
           {
             staticClass: "btn-up",
-            attrs: { href: "" },
+            attrs: {
+              href: "",
+              "data-toggle": "modal",
+              "data-target": "#modal-recordatorio"
+            },
             on: {
               click: function($event) {
                 $event.preventDefault()
@@ -58363,7 +58364,11 @@ var render = function() {
                     "a",
                     {
                       staticClass: "btn-lateral",
-                      attrs: { href: "" },
+                      attrs: {
+                        href: "",
+                        "data-toggle": "modal",
+                        "data-target": "#modal-telefonos"
+                      },
                       on: {
                         click: function($event) {
                           $event.preventDefault()

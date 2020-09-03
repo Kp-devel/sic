@@ -3,7 +3,8 @@
         <!-- btn recordatorios -->
          <div class="panel-top text-center">
              <!-- fa-sort-down -->
-            <a href="" class="btn-up" @click.prevent="verRecordatorios()"><i class="fa fa-clock fa-lg"></i></a>
+            <a href="" class="btn-up" data-toggle="modal" 
+            data-target="#modal-recordatorio" @click.prevent="verRecordatorios()"><i class="fa fa-clock fa-lg"></i></a>
         </div>
         <recordatorio :cliente="dataCliente[0]"/>
         <!-- lista de clientes y menu -->
@@ -55,7 +56,7 @@
                  <div class="btns-lateral">
                     <a href="#" class="btn-lateral bg-danger" data-toggle="modal" data-target="#modal-pagos"><label class="texto-vertical">PAGOS</label></a>
                     <!--acá por ejemplo -->
-                    <a href="" class="btn-lateral" @click.prevent="verTelefonos()"><label class="texto-vertical">TELF</label></a>
+                    <a href="" data-toggle="modal" data-target="#modal-telefonos" class="btn-lateral" @click.prevent="verTelefonos()"><label class="texto-vertical">TELF</label></a>
                  </div>
 
                  <!-- panel de telefonos -->
@@ -96,11 +97,11 @@
             },       
             verTelefonos(){
                 this.$root.$emit('limpiarFrmTel');
-                $('#modal-telefonos').modal();
+                //$('#modal-telefonos').modal();
             },
             verRecordatorios(){
                 this.$root.$emit('listarRecordatorios');
-                $('#modal-recordatorio').modal();
+                //$('#modal-recordatorio').modal();
             }
         },
         mounted() {

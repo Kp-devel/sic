@@ -62,9 +62,9 @@
                 axios.get("historicoGestiones/"+id).then(res=>{
                     if(res.data){
                         this.gestiones=res.data;
-                        this.$nextTick(function(){
+                        /*this.$nextTick(function(){
                             $('[data-toggle="tooltip"]').tooltip();
-                        })
+                        })*/
                     }
                 })
             },

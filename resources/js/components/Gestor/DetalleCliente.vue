@@ -31,7 +31,7 @@
                     <td class="text-right pr-1">Prioridad</td>
                     <td><label class="form-control font-12 form-control-sm mb-1 w-100 h-100">-</label></td>
                 </tr>
-                <tr class="font-12"> C. Laboral
+                <tr class="font-12">
                     <td class="text-right pr-1">C. Laboral</td>
                     <td colspan="3"><label class="form-control font-12 form-control-sm mb-1 w-100 h-100">{{infoClientes.laboral}}</label></td>
                 </tr>
