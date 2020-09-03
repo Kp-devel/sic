@@ -25,18 +25,12 @@ class Cliente extends Model
         $deuda=$rq->deuda;
         $sueldo=$rq->sueldo;
         $entidades=$rq->entidades;
+        $score=$rq->score;
         //dd($camp);
         $idEmpleado=auth()->user()->emp_id;
+        $cartera=session()->get('datos')->idcartera;
 
-        if($camp!= "null"){
-            $sql_cartera="
-                select car_id_FK as idcartera from cliente where cli_est=0 and cli_pas=0 and emp_tel_id_FK=2531 LIMIT 1
-            ";
-            $query_cartera=DB::connection('mysql')->select(DB::raw($sql_cartera));
-            foreach($query_cartera as $q){
-                $car_id=$q->idcartera;
-            }
-            $cartera=$car_id;
+        if($camp!= null){
             $fec_actual=date("Y-m-d H:i:s");
             //fecha_i <= '2020-07-25 16:04:18' and fecha_f >= '2020-07-25 16:50:51'
             //$fec_actual='2020-07-25 16:04:18';
@@ -90,22 +84,22 @@ class Cliente extends Model
                 and det_cli_deu_mor = (SELECT MAX(det_cli_deu_mor) FROM detalle_cliente WHERE det_cli_est = 0 AND det_cli_pas = 0 AND cli_id_FK = c.cli_id)
                     
         ";
-        if($codigo!= "null"){
+        if($codigo!= null){
             $sql = $sql." and cli_cod=$codigo ";
         }
-        if($dni!= "null"){
+        if($dni!= null){
             $sql = $sql." and cli_num_doc=$dni ";
         }
-        if($nombre!= "null"){
+        if($nombre!= null){
             $sql = $sql." and cli_nom like '%$nombre%' ";
         }
-        if($telefono!= "null"){
+        if($telefono!= null){
             $sql = $sql." and cli_tel_tel=$telefono ";
         }
-        if($tramo!= "null"){
+        if($tramo!= null){
             $sql = $sql." and det_cli_tra like '%$tramo%' ";
         }
-        if($respuesta!= "null"){
+        if($respuesta!= null){
             $sql = $sql." and res_id_FK=$respuesta ";
         }
         if($fec_desde!= "undefined-undefined-"){
@@ -147,23 +141,19 @@ class Cliente extends Model
             $sql = $sql." and cli_suel_can > 3000 ";
         }
 
-        if( $entidades =='0'){
+        if( $entidades !=null || $score !=null){
             $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
-            $sql = $sql." and cli_inf_entidades like '%BP' ";
-        }else if($entidades =='1'){
-            $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
-            $sql = $sql." and cli_inf_entidades like '%BP + 1%' ";
-        }else if($entidades =='2'){
-            $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
-            $sql = $sql." and cli_inf_entidades like '%BP + 2%' ";
-        }else if($entidades =='3'){
-            $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
-            $sql = $sql." and cli_inf_entidades like '%BP + 3%' ";
+            if($entidades !=null){
+                $sql = $sql." and cli_inf_entidades = '$entidades' ";
+            }
+            if( $score !=null){
+                $sql = $sql." and cli_inf_score = '$score' ";
+            }          
         }
 
         $sql= $sql." GROUP BY cli_id";
 
-        if($ordenar!= "null"){
+        if($ordenar!= null){
             if($ordenar=='1'){
                 $sql = $sql." order by ges_cli_fec asc,det_cli_deu_cap desc ";
             }
@@ -332,6 +322,7 @@ class Cliente extends Model
             where i.cli_id_FK = :id
         ";
         $query=DB::connection('mysql')->select(DB::raw($sql),array("id"=>$id));
+ 
         return $query;
     }
     

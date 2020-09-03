@@ -12,7 +12,7 @@ Route::group(['middleware' => ['auth']], function(){
     
     //clientes
     //Route::get('clientes', function () {return view('gestor.clientes');})->name("clientes");
-    Route::get('listClientes', 'ClienteController@listaClientes');
+    Route::post('listClientes', 'ClienteController@listaClientes');
     Route::post('datosEstandar', 'ClienteController@datosEstandar');
     Route::get('datosMes', 'ClienteController@datosMes');
     // Route::get('estadosCampana', 'ClienteController@estadoCampana');

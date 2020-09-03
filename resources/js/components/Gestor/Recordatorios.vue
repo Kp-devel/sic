@@ -70,10 +70,12 @@
             this.listaRecordatorios();
         },
         methods:{
-            listaRecordatorios(){
-                axios.get("listarRecordatorio").then(res=>{
-                    if(res.data){
+            async listaRecordatorios(){
+                try{
+                    let res = await axios.get("listarRecordatorio")
+                    if(res.data && res.data.length>0){
                         this.datos=res.data;
+                        console.log(this.datos);
                         this.recordatorio.codigo=this.datos[0].codigo;
                         this.recordatorio.nombre=this.datos[0].nombre;
                         this.recordatorio.dni=this.datos[0].dni;
@@ -86,7 +88,7 @@
                         this.recordatorio.id=this.datos[0].id;
                         this.recordatorio.tel_rec=this.datos[0].tel_prog;
                     }
-                })
+                }catch(err) { console.error(err); }
             }
         },
         mounted() {

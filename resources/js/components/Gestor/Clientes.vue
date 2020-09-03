@@ -189,7 +189,7 @@
                             </tr>
                             <tr>
                                 <td class="text-left font-bold">Contactabilidad</td>
-                                <td class="text-right">{{estandar[0].contactabilidad? '-'+estandar[0].contactabilidad:'0'}}</td>
+                                <td class="text-right">{{estandar[0].contactabilidad? estandar[0].contactabilidad:'0'}}%</td>
                             </tr>
                             <tr>
                                 <td class="text-left font-bold">PDPS</td>
@@ -409,38 +409,35 @@
             },
             listCLientes(){
                 //if(this.busqueda.codigo!="" && this.busqueda.dni!="" && this.busqueda.nombre!=""){
-                    const codigo = this.busqueda.codigo;
-                    const dni = this.busqueda.dni;
-                    const nombre = this.busqueda.nombre;
-                    const telefono = this.busqueda.telefono;
-                    const tramo = this.busqueda.tramo;
-                    const respuesta = this.busqueda.respuesta;
-                    const pdp_desde = this.busqueda.pdp_desde;
-                    const pdp_hasta = this.busqueda.pdp_hasta;
-                    const ordenar = this.busqueda.ordenar;
-                    const camp = this.busqueda.camp;
-                    const deuda = this.busqueda.deuda;
-                    const sueldo = this.busqueda.sueldo;
-                    const entidades = this.busqueda.entidades;
-                    this.loading=true;
-
-                    const fechas_i =  pdp_desde.split('/');                   
+                    const fechas_i =  this.busqueda.pdp_desde.split('/');                   
                     const nuevaFecha_i = `${fechas_i[2]}-${fechas_i[1]}-${fechas_i[0]}`
                     const fec_desde= nuevaFecha_i.split(' ').join('');
 
-                    const fechas_f =  pdp_hasta.split('/');                   
+                    const fechas_f =  this.busqueda.pdp_hasta.split('/');                   
                     const nuevaFecha_f = `${fechas_f[2]}-${fechas_f[1]}-${fechas_f[0]}`
                     const fec_hasta= nuevaFecha_f.split(' ').join('');
 
+                    const dataBusqueda = {
+                        codigo : this.busqueda.codigo,
+                        dni : this.busqueda.dni,
+                        nombre : this.busqueda.nombre,
+                        telefono : this.busqueda.telefono,
+                        tramo : this.busqueda.tramo,
+                        respuesta : this.busqueda.respuesta,
+                        fec_desde : fec_desde,
+                        fec_hasta : fec_hasta,
+                        ordenar : this.busqueda.ordenar,
+                        camp : this.busqueda.camp,
+                        deuda : this.busqueda.deuda,
+                        sueldo : this.busqueda.sueldo,
+                        entidades : this.busqueda.entidades,
+                        score : this.busqueda.score,
+                    };
+                    this.loading=true;
                     /*console.log(this.busqueda.pdp_desde);*/
-                    //console.log(fec_desde);
                     // this.lista=[];
-                    console.log(entidades);
-                    axios.get("listClientes?codigo="+ (codigo || null)+"&dni="+(dni || null)+"&nombre="+(nombre || null)
-                                +"&telefono="+(telefono || null)+"&tramo="+(tramo || null)+"&respuesta="+(respuesta || null)
-                                +"&fec_desde="+(fec_desde || null)+"&fec_hasta="+(fec_hasta || null)+"&ordenar="+(ordenar || null)
-                                +"&camp="+(camp || null)+"&deuda="+(deuda || null)+"&sueldo="+(sueldo || null)+"&entidades="+(entidades || null))
-                    .then(res=>{
+                    //console.log(dataBusqueda);
+                    axios.post("listClientes",dataBusqueda).then(res=>{
                         if(res.data){
                             this.lista=res.data;
                             this.loading=false;
