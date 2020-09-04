@@ -18,12 +18,11 @@ class Gestion extends Model
         $resp=$rq->respuesta;
         $id=$rq->id;
         $idEmpleado=auth()->user()->emp_id;
-
         $fechaPDP='0000-00-00';
         $montoPDP=0;
         $fechaConf='0000-00-00';
         $montoConf=0;
-
+        $motivo='';
         if($resp==1 || $resp==43 ){
             $fechaPDP=$fechapc;
             $montoPDP=$monto;
@@ -33,6 +32,10 @@ class Gestion extends Model
             $montoConf=$monto;
         }
         
+        if($resp==33){
+            $motivo=$rq->motivoNoPago;
+        }
+
         DB::connection('mysql')->insert("
             insert into gestion_cliente (
                 cli_id_FK,emp_id_FK,ges_cli_acc,res_id_FK,ges_cli_fec,ges_cli_med,

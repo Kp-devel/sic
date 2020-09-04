@@ -11,6 +11,10 @@ class RespuestaController extends Controller
         return Respuesta::listRespuestas();
     }
 
+    public function listaMotivosNoPago(){
+        return Respuesta::listaMotivosNoPago();
+    }
+
     public function listaRespuestaUbicabilidad($ubic){
         return Respuesta::listaRespuestaUbicabilidad($ubic);
     }

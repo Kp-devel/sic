@@ -17,7 +17,7 @@ class Respuesta extends Model
                 respuesta
             WHERE 
                 res_est=0 and res_pas=0
-                and res_id not in (46)
+                and res_id not in (46,39,10,8,7)
                 and res_acc like('%2%')
             order by res_des 
             "));
@@ -33,13 +33,25 @@ class Respuesta extends Model
                 res_ubi=:ubi
                 and res_est=0 
                 and res_pas=0
-                and res_id not in (46)
+                and res_id not in (46,39,10,8,7)
                 and res_acc like('%2%')
             order by res_des 
         ";
 
         $query=DB::connection('mysql')->select(DB::raw($sql),array("ubi"=>$ubic));
         return $query;
+    }
+
+    public static function listaMotivosNoPago(){
+        return DB::connection('mysql')->select(DB::raw("
+            SELECT 
+                mot_id as id,
+                mot_res as motivo
+            from 
+                motivo_nopago
+            WHERE 
+                mot_est=0
+            "));
     }
 
     public static function listaEntidades(){

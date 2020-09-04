@@ -39,6 +39,15 @@
                                     </select>
                                 </td>
                             </tr>
+                            <tr class="font-12" v-if="viewMotivo"> 
+                                <td class="text-right pr-1">Motivo de No Pago</td>
+                                <td class="pb-2">
+                                    <select class="form-control font-12 form-control-sm" v-model="datos.motivoNoPago">
+                                        <option value="">Seleccionar</option>
+                                        <option v-for="(item,index) in motivos" :key="index" :value="item.id">{{item.motivo}}</option>
+                                    </select>
+                                </td>
+                            </tr>
                         </table>
                     </div>
                     <div class="col-md-6">
@@ -142,16 +151,19 @@
                 errorsDatos:[],
                 pdps:[],
                 mensaje:'',
-                datos:{detalle:'',montoPDP:'',fechaPDP:null,moneda:1,telefono:'',respuesta:'',rec:'',fechaRec:'',horaRec:'',id:this.idCliente,tel_rec:''},
+                datos:{detalle:'',montoPDP:'',fechaPDP:null,moneda:1,telefono:'',respuesta:'',rec:'',fechaRec:'',horaRec:'',id:this.idCliente,tel_rec:'',motivoNoPago:''},
                 loadButton:false,
                 loadButton2:false,
-                cant_contacto:0
+                cant_contacto:0,
+                motivos:[],
+                viewMotivo:false
             }
         },
         async created(){
             this.listaTelefonos();
             this.gestionesContacto();
             this.pdp();
+            this.listarMotivos();
         },
         methods:{
             obtenerRespuestas(){
@@ -165,12 +177,19 @@
                     }
                 })
             },
-
+            listarMotivos(){
+                axios.get("listaMotivosNoPago").then(res=>{
+                    if(res.data){
+                        this.motivos=res.data;
+                    }
+                })
+            },
             listaTelefonos(){
                 const id= this.idCliente;
                 axios.get("listaTel/"+id).then(res=>{
                     if(res.data){
                         this.telefonos=res.data;                           
+                        this.$root.$emit('dtListarTelefonos',this.telefonos);
                     }
                 })
             },
@@ -219,6 +238,11 @@
                         this.errorsDatos.push("Selecciona una fecha y/o monto");
                     }
                 }
+                if(this.datos.respuesta==33){
+                    if(!this.datos.motivoNoPago){
+                        this.errorsDatos.push("Selecciona un motivo de no pago");
+                    }
+                }
                 if(!this.datos.detalle){
                     this.errorsDatos.push("Ingresa un detalle de gestión");
                 }
@@ -227,7 +251,6 @@
                         this.errorsDatos.push("Selecciona una fecha y/o hora de recordatorio");
                     }
                 }
-
             },
             registrar(){
                 try{
@@ -334,6 +357,14 @@
                         }
                     }
                 }
+                //visualizar el motivo de no pago - contatcto con titular
+                if(res==33){
+                    this.datos.motivoNoPago='';
+                    this.viewMotivo=true;
+                }else{
+                    this.datos.motivoNoPago='';
+                    this.viewMotivo=false;
+                }
             },
             limpiar(){
                 this.datos.detalle='';
@@ -345,8 +376,14 @@
                 this.datos.rec=false;
                 this.datos.fechaRec='';
                 this.datos.horaRec='';
+                this.datos.motivoNoPago='';
                 this.ubicabilidad='';                
             }
+        },
+        mounted() {
+            this.$root.$on ('frglistarTelefonos',() => {
+                this.listaTelefonos();
+            } );
         },
         components:{
             panelMensaje

@@ -68,18 +68,18 @@
             }
         },
         created(){
-           this.listaTelefonos();
+        //    this.listaTelefonos();
         },
         methods:{
-            listaTelefonos(){
-                const id= this.idCliente;
-                axios.get("listaTel/"+id).then(res=>{
-                    if(res.data){
-                        this.telefonos=res.data;
-                        this.cantidad=this.telefonos.length;
-                    }
-                })
-            },
+            // listaTelefonos(){
+            //     const id= this.idCliente;
+            //     axios.get("listaTel/"+id).then(res=>{
+            //         if(res.data){
+            //             this.telefonos=res.data;
+            //             this.cantidad=this.telefonos.length;
+            //         }
+            //     })
+            // },
             async registrar(){
                 this.mensaje="";
                 if(this.arreglo.telefono!=""){
@@ -90,7 +90,8 @@
                                 this.loadButton=false;
                                 this.mensaje = "Registro con éxito";
                                 this.arreglo.telefono='';
-                                this.listaTelefonos();
+                                // this.listaTelefonos();
+                                this.$root.$emit('frglistarTelefonos');
                             }
                         });
                     }catch(error){
@@ -106,7 +107,7 @@
                             id:id}
                 axios.put('actualizarEstadoTelefono',datos).then(res=>{
                     if(res.data=="ok"){
-                        this.listaTelefonos();
+                        this.$root.$emit('frglistarTelefonos');
                     }
                 });
             },
@@ -124,6 +125,10 @@
         mounted() {
             this.$root.$on ('limpiarFrmTel',() => {
                 this.limpiar();
+            } );
+            this.$root.$on ('dtListarTelefonos',(datos) => {
+                this.telefonos=datos;
+                this.cantidad=this.telefonos.length;
             } );
         },
     }
