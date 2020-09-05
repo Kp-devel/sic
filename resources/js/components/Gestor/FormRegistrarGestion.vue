@@ -377,7 +377,8 @@
                 this.datos.fechaRec='';
                 this.datos.horaRec='';
                 this.datos.motivoNoPago='';
-                this.ubicabilidad='';                
+                this.ubicabilidad='';  
+                this.viewMotivo=false;              
             }
         },
         mounted() {

@@ -4103,6 +4103,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.datos.horaRec = '';
       this.datos.motivoNoPago = '';
       this.ubicabilidad = '';
+      this.viewMotivo = false;
     }
   },
   mounted: function mounted() {

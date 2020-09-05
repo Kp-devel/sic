@@ -22,7 +22,7 @@ class Gestion extends Model
         $montoPDP=0;
         $fechaConf='0000-00-00';
         $montoConf=0;
-        $motivo='';
+        $motivo=0;
         if($resp==1 || $resp==43 ){
             $fechaPDP=$fechapc;
             $montoPDP=$monto;
@@ -40,10 +40,10 @@ class Gestion extends Model
             insert into gestion_cliente (
                 cli_id_FK,emp_id_FK,ges_cli_acc,res_id_FK,ges_cli_fec,ges_cli_med,
                 ges_cli_det,ges_cli_com_fec,ges_cli_com_can,ges_cli_com_mon,ges_cli_ret,
-                ges_cli_est,ges_cli_pas,ges_cli_conf_can,ges_cli_conf_fec,ges_cli_fec_visit)
-            values (:id,:idEmp,2,:res,:fecGes,:tel,:det,:fecpdp,:monpdp,:monedapdp,0,0,0,:monconf,:fecconf,'0000-00-00')
+                ges_cli_est,ges_cli_pas,ges_cli_conf_can,ges_cli_conf_fec,ges_cli_fec_visit,mot_id_FK)
+            values (:id,:idEmp,2,:res,:fecGes,:tel,:det,:fecpdp,:monpdp,:monedapdp,0,0,0,:monconf,:fecconf,'0000-00-00',:motivo)
         ",array("id"=>$id,"idEmp"=>$idEmpleado,"res"=>$resp,"fecGes"=>$fechaGestion,"tel"=>$tel,
-                "det"=>$detalle,"fecpdp"=>$fechaPDP,"monpdp"=>$montoPDP,"monedapdp"=>$moneda,"monconf"=>$montoConf,"fecconf"=>$fechaConf));
+                "det"=>$detalle,"fecpdp"=>$fechaPDP,"monpdp"=>$montoPDP,"monedapdp"=>$moneda,"monconf"=>$montoConf,"fecconf"=>$fechaConf,"motivo"=>$motivo));
 
         return "ok";
     }
