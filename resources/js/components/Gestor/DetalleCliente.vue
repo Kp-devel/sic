@@ -55,7 +55,7 @@
                 </tr>
                 <tr class="font-12"> 
                     <td class="text-right pr-1">Email</td>
-                    <td colspan="3"><label class="form-control font-12 form-control-sm mb-1 w-100 h-100">{{datos[0].email? datos[0].email:'-'}}</label></td>
+                    <td colspan="3"><label class="form-control font-12 form-control-sm mb-1 pb-4 w-100 h-100">{{datos[0].email!=' '? datos[0].email:'-'}}</label></td>
                 </tr>
             </table>
         </div>
@@ -78,7 +78,8 @@
             async infoCLiente(){
                 this.loadCarga = true;
                 const id= this.datos[0].id;
-                //console.log(id);
+                const da= this.datos[0];
+                console.log(da);
                 try{
                     let res = await axios.get("infoCliente/"+id)
                     if(res.data && res.data.length>0){

@@ -68,8 +68,8 @@
                                 <td class="text-right pr-1">Moneda</td>
                                 <td class="pb-2">
                                     <select class="form-control font-12 form-control-sm" :disabled="![1,2,43].includes(datos.respuesta)" v-model="datos.moneda">
-                                        <option value="1">SOLES</option>
-                                        <option value="2">DOLARES</option>
+                                        <option value="0">SOLES</option>
+                                        <option value="1">DOLARES</option>
                                     </select>
                                 </td>
                             </tr>
