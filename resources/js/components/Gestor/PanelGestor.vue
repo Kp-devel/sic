@@ -25,7 +25,7 @@
                 </div>
                 <div class="row p-0 mx-0">
                     <!-- panel de informacion de clientes -->
-                    <div class="col-md-4">
+                    <div class="col-md-4 border-blue">
                         <div class="d-flex">
                             <p class=" badge bg-blue text-white py-2 px-3 min-w-125 text-left">INFORMACIÓN DEL CLIENTE</p>
                         </div>
@@ -38,7 +38,7 @@
                         </div>
                          <detalleGestiones :idCliente="idCliente" v-if="dataCliente.length>0"/>
                     </div>
-                </div>
+                </div><br>
                 <!-- panel de informacion deuda-->
                  <div class="row p-0 mx-0 my-2">
                     <div class="col-md-12">

@@ -754,3 +754,7 @@ legend{
     max-height:100%;
     z-index:999999;
   }
+
+  .border-blue{
+    border-right: 0.5px solid rgb(3,42,81);
+  }

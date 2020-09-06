@@ -38,9 +38,18 @@
                             <tr class="font-12"> 
                                 <td>Ult. Gest.</td>
                                 <td colspan="3">
-                                    <select class="form-control font-12 form-control-sm " v-model="busqueda.respuesta">
+                                    <select class="form-control font-12 form-control-sm " v-model="busqueda.respuesta" @change="busqueda.motivo=''">
                                         <option value="">Selecionar</option>
                                         <option v-for="(item,index) in respuestas" :key="index" :value="item.res_id">{{item.res_des}}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="font-12" v-if="busqueda.respuesta==33"> 
+                                <td>Motivo No Pago</td>
+                                <td colspan="3">
+                                    <select class="form-control font-12 form-control-sm " v-model="busqueda.motivo">
+                                        <option value="">Selecionar</option>
+                                        <option v-for="(item,index) in motivosnopago" :key="index" :value="item.id">{{item.motivo}}</option>
                                     </select>
                                 </td>
                             </tr>
@@ -340,7 +349,7 @@
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 paginate: ['lista'],
                 lista: [],
-                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:''},
+                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:''},
                 //codigo:'',
                 loading:false,
                 loading2:false,
@@ -357,11 +366,13 @@
                 estados:[],
                 metas:[],
                 fecha_hoy:'',
-                dataMes:{meta:0,recupero:0,alcance:0,efectividad:0,pdp_caidas:0,pdp_pendiente:0,fecha_recupero:''}
+                dataMes:{meta:0,recupero:0,alcance:0,efectividad:0,pdp_caidas:0,pdp_pendiente:0,fecha_recupero:''},
+                motivosnopago:[]
             }
         },
         created(){
              this.listRespuestas(); 
+             this.listMotivosnopago();
              this.datosMes(); 
              this.estadoCampana();   
              this.diaActual();
@@ -453,6 +464,13 @@
                 axios.get("listRespuestas").then(res=>{
                     if(res.data){
                         this.respuestas=res.data;
+                    }
+                })
+            },
+            listMotivosnopago(){
+                axios.get("listaMotivosNoPago").then(res=>{
+                    if(res.data){
+                        this.motivosnopago=res.data;
                     }
                 })
             },

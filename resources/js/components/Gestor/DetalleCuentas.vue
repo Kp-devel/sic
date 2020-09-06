@@ -2,7 +2,7 @@
     <div>
         <div class="table-responsive">
             <table class="table table-hover">
-                    <thead class="bg-gray">
+                    <thead class="bg-blue text-white">
                         <tr class="text-center">
                             <td class="align-middle font-11">Nº CUENTA</td>
                             <td class="align-middle font-11">TIPO CUENTA</td>
