@@ -417,6 +417,7 @@
                 this.busqueda.sueldo='';
                 this.busqueda.entidades='';
                 this.busqueda.score='';
+                this.busqueda.motivo='';
             },
             listCLientes(){
                 //if(this.busqueda.codigo!="" && this.busqueda.dni!="" && this.busqueda.nombre!=""){
@@ -443,6 +444,7 @@
                         sueldo : this.busqueda.sueldo,
                         entidades : this.busqueda.entidades,
                         score : this.busqueda.score,
+                        motivo : this.busqueda.motivo,
                     };
                     this.loading=true;
                     /*console.log(this.busqueda.pdp_desde);*/
