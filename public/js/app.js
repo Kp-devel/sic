@@ -44068,7 +44068,7 @@ var render = function() {
                                       _c(
                                         "td",
                                         { staticClass: "align-middle" },
-                                        [_vm._v(_vm._s(item.telefono))]
+                                        [_vm._v(_vm._s(item.tel))]
                                       ),
                                       _vm._v(" "),
                                       _c("td", [
@@ -44278,7 +44278,7 @@ var render = function() {
                               },
                               domProps: { value: item.telefono }
                             },
-                            [_vm._v(_vm._s(item.telefono))]
+                            [_vm._v(_vm._s(item.tel))]
                           )
                         })
                       ],

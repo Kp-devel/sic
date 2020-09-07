@@ -15,7 +15,7 @@
                                 <td class="pb-2">
                                     <select class="form-control font-12 form-control-sm" v-model="datos.telefono">
                                         <option value="">Seleccionar</option>
-                                        <option v-for="(item,index) in telefonos" :key="index" :class="{'bg-success text-white':item.contacto>0,'bg-warning':item.gestion>0 && item.contacto==0,'bg-danger text-white':item.gestion==0 && item.contacto==0}"  :value="item.telefono">{{item.telefono}}</option>
+                                        <option v-for="(item,index) in telefonos" :key="index" :class="{'bg-success text-white':item.contacto>0,'bg-warning':item.gestion>0 && item.contacto==0,'bg-danger text-white':item.gestion==0 && item.contacto==0}"  :value="item.telefono">{{item.tel}}</option>
                                     </select>
                                 </td>
                             </tr>

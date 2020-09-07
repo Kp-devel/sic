@@ -18,7 +18,8 @@ class Telefono extends Model
                         WHEN bit_tel_tipo='Gestor' THEN CONCAT(cli_tel_tel,' - Call')
                         WHEN bit_tel_tipo='Admin' THEN CONCAT(cli_tel_tel,' - Supervisor')
                         ELSE cli_tel_tel
-                END AS telefono,
+                END AS tel,
+                cli_tel_tel as telefono,
                 cli_tel_est as estado
             FROM
                     cliente_telefono ct
@@ -81,7 +82,8 @@ class Telefono extends Model
             $est=0;
             $pas=1;
         }
-        $insertado = DB::connection('mysql')->update("
+        
+        DB::connection('mysql')->update("
             update cliente_telefono 
             set cli_tel_est=:est,
                 cli_tel_pas=:pas

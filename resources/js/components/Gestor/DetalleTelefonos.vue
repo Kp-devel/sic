@@ -34,7 +34,7 @@
                                         <td colspan="2">Sin teléfonos</td>
                                     </tr>
                                     <tr class="text-center" v-for="(item,index) in telefonos" :key="index" v-else>
-                                        <td class="align-middle">{{item.telefono}}</td>
+                                        <td class="align-middle">{{item.tel}}</td>
                                         <td>
                                             <select class="form-control form-control-sm" @change.prevent="actualizarEstado(item.estado,item.telefono,item.id)" v-model="item.estado">
                                                 <option value="0">Activo</option>

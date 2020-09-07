@@ -153,7 +153,7 @@ class Gestion extends Model
             where 
                 date_format(ges_cli_fec,'%Y%m')=date_format(now(),'%Y%m')
             and emp_id_FK=:idEmp
-            and ges_cli_det=:det
-        "),array("idEmp"=>$idEmpleado,"det"=>$detalle));
+            and ges_cli_det in ('$detalle')
+        "),array("idEmp"=>$idEmpleado));
     }
 }
