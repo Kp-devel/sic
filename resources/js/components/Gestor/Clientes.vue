@@ -605,6 +605,11 @@
                 $('#logout-form').submit();
             }
         },
+        mounted(){
+            this.$root.$on ('verListaClientes',() => {
+                this.listCLientes();
+            } );
+        },
         components:{
             vuePaginate
         }

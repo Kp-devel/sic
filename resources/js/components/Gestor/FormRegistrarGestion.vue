@@ -264,9 +264,10 @@
                                 this.loadButton=false;
                                 this.mensaje = "Registro con éxito";
                                 this.$root.$emit('listarGestiones');
+                                this.$root.$emit('verListaClientes');
                                 this.limpiar();
                                 this.gestionesContacto();
-                                this.pdps();
+                                this.pdp();
                                 setTimeout(() => {
                                     this.mensaje="";
                                 }, 5000);
