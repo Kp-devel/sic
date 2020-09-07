@@ -26,6 +26,7 @@ class Cliente extends Model
         $sueldo=$rq->sueldo;
         $entidades=$rq->entidades;
         $score=$rq->score;
+        $motivo=$rq->motivo;
         //dd($camp);
         $idEmpleado=auth()->user()->emp_id;
         $cartera=session()->get('datos')->idcartera;
@@ -139,6 +140,10 @@ class Cliente extends Model
         }else if($sueldo =='4'){
             $filtro= $filtro." left join cliente_sueldo as s on c.cli_id=s.cli_id_FK";
             $sql = $sql." and cli_suel_can > 3000 ";
+        }
+
+        if($motivo!=null){
+            $sql = $sql." and mot_id_FK=$motivo ";
         }
 
         if( $entidades !=null || $score !=null){
