@@ -9,7 +9,9 @@ use Carbon\Carbon;
 class TelefonoController extends Controller
 {
     public function listaTelefonos($id){
-        return Telefono::infoTelefonos($id);
+        if($id!='undefined'){
+            return Telefono::infoTelefonos($id);
+        }
     }
 
     public function insertarTelefonos(Request $rq){

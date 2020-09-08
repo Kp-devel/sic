@@ -23,15 +23,27 @@ class ClienteController extends Controller
         return cliente::estadosCampana($rq);
     }
 
-    public function infoCliente($id){
-        return cliente::infoCliente($id);
-    }
+    // public function infoCliente($id){
+    //     return cliente::infoCliente($id);
+    // }
 
     public function historicoGestiones($id){
         return cliente::historicoGestiones($id);
     }
 
-    public function infoDeuda($id){
-        return cliente::infoDeuda($id);
+    // public function infoDeuda($id){
+    //     return cliente::infoDeuda($id);
+    // }
+
+    public function detalleCliente($id){
+        $infoCliente=cliente::infoCliente($id);
+        $infoCuenta=cliente::infoDeuda($id);
+        $historicoGestiones=cliente::historicoGestiones($id);
+
+        $datosgenerales=['infoCliente'=>$infoCliente,
+                         'cuentas'=>$infoCuenta,
+                         'gestiones'=>$historicoGestiones
+                        ];
+        return $datosgenerales;                        
     }
 }

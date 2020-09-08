@@ -27,12 +27,6 @@
                         
                         <td class="font-11" v-if="item.tolltip==1">
                             <a href="#" class="text-black" data-toggle="tooltip"  data-placement="right" :title="'Fecha: '+item.fecha_pdp +' Monto: '+item.monto_pdp">{{item.respuesta}}</a>
-                            <!-- <div class="tooltip bs-tooltip-top" role="tooltip">
-                                <div class="arrow"></div>
-                                <div class="tooltip-inner">
-                                    Some tooltip text!
-                                </div>
-                            </div> -->
                         </td>
                         <td class="font-11" v-else-if="item.tolltip==0">
                             {{item.respuesta}}
@@ -47,14 +41,11 @@
 
 <script>
     export default {
-        props:["idCliente"],
+        props:["idCliente","historico"],
         data() {
             return {
-                gestiones:[],                
+                gestiones:this.historico,                
             }
-        },
-        created(){
-           this.infoGestiones();
         },
         methods:{
             infoGestiones(){
@@ -62,17 +53,9 @@
                 axios.get("historicoGestiones/"+id).then(res=>{
                     if(res.data){
                         this.gestiones=res.data;
-                        /*this.$nextTick(function(){
-                            $('[data-toggle="tooltip"]').tooltip();
-                        })*/
                     }
                 })
             },
-        },
-        updated(){
-            // this.$nextTick(function(){
-                // $('[data-toggle="tooltip"]').tooltip();
-            // })
         },
         mounted() {
             this.$root.$on ('listarGestiones',() => {

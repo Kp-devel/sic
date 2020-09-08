@@ -67,19 +67,8 @@
                 cantidad:0
             }
         },
-        created(){
-        //    this.listaTelefonos();
-        },
+        
         methods:{
-            // listaTelefonos(){
-            //     const id= this.idCliente;
-            //     axios.get("listaTel/"+id).then(res=>{
-            //         if(res.data){
-            //             this.telefonos=res.data;
-            //             this.cantidad=this.telefonos.length;
-            //         }
-            //     })
-            // },
             async registrar(){
                 this.mensaje="";
                 if(this.arreglo.telefono!=""){

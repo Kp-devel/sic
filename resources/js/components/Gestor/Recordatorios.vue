@@ -71,11 +71,12 @@
         },
         methods:{
             async listaRecordatorios(){
+                this.datos=[];
                 try{
                     let res = await axios.get("listarRecordatorio")
                     if(res.data && res.data.length>0){
                         this.datos=res.data;
-                        console.log(this.datos);
+                        // console.log(this.datos);
                         this.recordatorio.codigo=this.datos[0].codigo;
                         this.recordatorio.nombre=this.datos[0].nombre;
                         this.recordatorio.dni=this.datos[0].dni;

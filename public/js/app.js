@@ -3048,21 +3048,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -3121,81 +3106,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["datos"],
+  props: ["datos", "info"],
   data: function data() {
-    return {
-      loadCarga: true,
-      infoClientes: {
-        direccion: '-',
-        distrito: '-',
-        provincia: '-',
-        departamento: '-',
-        laboral: '-',
-        sueldo: '-',
-        entidades: '-',
-        score: '-'
-      }
-    };
-  },
-  created: function created() {
-    this.infoCLiente();
+    return {};
   },
   methods: {
-    infoCLiente: function infoCLiente() {
-      var _this = this;
-
-      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var id, da, res, info;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _this.loadCarga = true;
-                id = _this.datos[0].id;
-                da = _this.datos[0];
-                console.log(da);
-                _context.prev = 4;
-                _context.next = 7;
-                return axios.get("infoCliente/" + id);
-
-              case 7:
-                res = _context.sent;
-
-                if (res.data && res.data.length > 0) {
-                  info = res.data; //console.log({res});
-                  //console.log(res.data);
-
-                  _this.infoClientes.direccion = info[0].direccion ? info[0].direccion : '-'; //console.log(this.infoClientes.direccion);
-
-                  _this.infoClientes.distrito = info[0].distrito ? info[0].distrito : '-';
-                  _this.infoClientes.provincia = info[0].provincia ? info[0].provincia : '-';
-                  _this.infoClientes.departamento = info[0].departamento ? info[0].departamento : '-';
-                  _this.infoClientes.laboral = info[0].laboral ? info[0].laboral : '-';
-                  _this.infoClientes.sueldo = info[0].sueldo ? info[0].sueldo : '-';
-                  _this.infoClientes.entidades = info[0].entidades ? info[0].entidades : '-';
-                  _this.infoClientes.score = info[0].score ? info[0].score : '-';
-                }
-
-                _context.next = 14;
-                break;
-
-              case 11:
-                _context.prev = 11;
-                _context.t0 = _context["catch"](4);
-                console.error(_context.t0);
-
-              case 14:
-                _context.prev = 14;
-                _this.loadCarga = false;
-                return _context.finish(14);
-
-              case 17:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, null, [[4, 11, 14, 17]]);
-      }))();
+    formatoVacio: function formatoVacio(item) {
+      if (item == '' || item == 'null' || item == ' ' || item == null) {
+        return '-';
+      } else {
+        return item;
+      }
     }
   }
 });
@@ -3260,26 +3181,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["idCliente"],
+  props: ["cuentas"],
   data: function data() {
-    return {
-      cuentas: []
+    return {// cuentas:[],
     };
   },
-  created: function created() {
-    this.infoCuentas();
-  },
   methods: {
-    infoCuentas: function infoCuentas() {
-      var _this = this;
-
-      var id = this.idCliente;
-      axios.get("infoDeuda/" + id).then(function (res) {
-        if (res.data) {
-          _this.cuentas = res.data;
-        }
-      });
-    },
     indicadoresDscto: function indicadoresDscto(indicador) {
       if (indicador == 1) {
         return "↑";
@@ -3366,21 +3273,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["idCliente"],
+  props: ["idCliente", "historico"],
   data: function data() {
     return {
-      gestiones: []
+      gestiones: this.historico
     };
-  },
-  created: function created() {
-    this.infoGestiones();
   },
   methods: {
     infoGestiones: function infoGestiones() {
@@ -3390,16 +3288,9 @@ __webpack_require__.r(__webpack_exports__);
       axios.get("historicoGestiones/" + id).then(function (res) {
         if (res.data) {
           _this.gestiones = res.data;
-          /*this.$nextTick(function(){
-              $('[data-toggle="tooltip"]').tooltip();
-          })*/
         }
       });
     }
-  },
-  updated: function updated() {// this.$nextTick(function(){
-    // $('[data-toggle="tooltip"]').tooltip();
-    // })
   },
   mounted: function mounted() {
     var _this2 = this;
@@ -3473,6 +3364,7 @@ __webpack_require__.r(__webpack_exports__);
     listaPagos: function listaPagos() {
       var _this = this;
 
+      this.pagos = [];
       var id = this.idCliente;
       axios.get("listaPagos/" + id).then(function (res) {
         if (res.data) {
@@ -3573,18 +3465,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       cantidad: 0
     };
   },
-  created: function created() {//    this.listaTelefonos();
-  },
   methods: {
-    // listaTelefonos(){
-    //     const id= this.idCliente;
-    //     axios.get("listaTel/"+id).then(res=>{
-    //         if(res.data){
-    //             this.telefonos=res.data;
-    //             this.cantidad=this.telefonos.length;
-    //         }
-    //     })
-    // },
     registrar: function registrar() {
       var _this = this;
 
@@ -3838,7 +3719,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         detalle: '',
         montoPDP: '',
         fechaPDP: null,
-        moneda: 1,
+        moneda: 0,
         telefono: '',
         respuesta: '',
         rec: '',
@@ -3869,9 +3750,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               _this.pdp();
 
-              _this.listarMotivos();
-
-            case 4:
+            case 3:
             case "end":
               return _context.stop();
           }
@@ -3899,12 +3778,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       axios.get("listaMotivosNoPago").then(function (res) {
         if (res.data) {
           _this3.motivos = res.data;
+          _this3.viewMotivo = true;
         }
       });
     },
     listaTelefonos: function listaTelefonos() {
       var _this4 = this;
 
+      this.datos.telefono = '';
+      this.telefonos = [];
       var id = this.idCliente;
       axios.get("listaTel/" + id).then(function (res) {
         if (res.data) {
@@ -4117,7 +3999,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       if (res == 33) {
         this.datos.motivoNoPago = '';
-        this.viewMotivo = true;
+        this.listarMotivos();
       } else {
         this.datos.motivoNoPago = '';
         this.viewMotivo = false;
@@ -4127,7 +4009,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.datos.detalle = '';
       this.datos.montoPDP = '';
       this.datos.fechaPDP = null;
-      this.datos.moneda = 1;
+      this.datos.moneda = 0;
       this.datos.telefono = '';
       this.datos.respuesta = '';
       this.datos.rec = false;
@@ -4239,6 +4121,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -4253,7 +4146,9 @@ __webpack_require__.r(__webpack_exports__);
     return {
       viewDetalleCliente: false,
       dataCliente: [],
-      idCliente: ''
+      detalleGeneral: [],
+      idCliente: '',
+      loadCarga: false
     };
   },
   created: function created() {},
@@ -4267,22 +4162,32 @@ __webpack_require__.r(__webpack_exports__);
     },
     verRecordatorios: function verRecordatorios() {
       this.$root.$emit('listarRecordatorios'); //$('#modal-recordatorio').modal();
+    },
+    datosgenerales: function datosgenerales(id) {
+      var _this = this;
+
+      this.loadCarga = true;
+      this.detalleGeneral = [];
+      axios.get("detalleCliente/" + id).then(function (res) {
+        if (res.data) {
+          _this.detalleGeneral = res.data;
+          _this.loadCarga = false;
+        }
+      });
     }
   },
   mounted: function mounted() {
-    var _this = this;
+    var _this2 = this;
 
     this.$root.$on('verDetalle', function (datos) {
-      _this.dataCliente = datos;
-      _this.idCliente = datos[0].id;
-      _this.viewDetalleCliente = true; // $('html, body').animate({scrollTop:0}, 'slow');
+      _this2.dataCliente = datos;
+      _this2.idCliente = datos[0].id;
+      _this2.viewDetalleCliente = true;
+
+      _this2.datosgenerales(_this2.idCliente); // $('html, body').animate({scrollTop:0}, 'slow');
+
     });
   },
-  // updated(){
-  //     // this.$nextTick(function(){
-  //         $('[data-toggle="tooltip"]').tooltip();
-  //     // })
-  // },
   components: {
     clientes: _Clientes__WEBPACK_IMPORTED_MODULE_0__["default"],
     detalleCliente: _DetalleCliente__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -4407,16 +4312,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.prev = 0;
-                _context.next = 3;
+                _this.datos = [];
+                _context.prev = 1;
+                _context.next = 4;
                 return axios.get("listarRecordatorio");
 
-              case 3:
+              case 4:
                 res = _context.sent;
 
                 if (res.data && res.data.length > 0) {
-                  _this.datos = res.data;
-                  console.log(_this.datos);
+                  _this.datos = res.data; // console.log(this.datos);
+
                   _this.recordatorio.codigo = _this.datos[0].codigo;
                   _this.recordatorio.nombre = _this.datos[0].nombre;
                   _this.recordatorio.dni = _this.datos[0].dni;
@@ -4430,20 +4336,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   _this.recordatorio.tel_rec = _this.datos[0].tel_prog;
                 }
 
-                _context.next = 10;
+                _context.next = 11;
                 break;
 
-              case 7:
-                _context.prev = 7;
-                _context.t0 = _context["catch"](0);
+              case 8:
+                _context.prev = 8;
+                _context.t0 = _context["catch"](1);
                 console.error(_context.t0);
 
-              case 10:
+              case 11:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[0, 7]]);
+        }, _callee, null, [[1, 8]]);
       }))();
     }
   },
@@ -43234,225 +43140,192 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _vm.loadCarga
-      ? _c("div", { staticClass: "panel-carga bg-white" }, [_vm._m(0)])
-      : _vm._e(),
-    _vm._v(" "),
-    _c("div", { staticClass: "table-responsive" }, [
-      _vm.infoClientes
-        ? _c("table", { attrs: { width: "100%" } }, [
-            _c("tr", { staticClass: "font-12" }, [
-              _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Código")]),
-              _vm._v(" "),
-              _c("td", {}, [
-                _c(
-                  "label",
-                  {
-                    staticClass:
-                      "form-control font-12 form-control-sm mb-1 w-100 h-100"
-                  },
-                  [
-                    _vm._v(
-                      _vm._s(_vm.datos[0].codigo ? _vm.datos[0].codigo : "-")
-                    )
-                  ]
-                )
-              ]),
-              _vm._v(" "),
-              _c("td", { staticClass: "font-11 pr-1 text-right" }, [
-                _vm._v("DNI/RUC")
-              ]),
-              _vm._v(" "),
-              _c("td", [
-                _c(
-                  "label",
-                  {
-                    staticClass:
-                      "form-control font-12 form-control-sm mb-1 w-100 h-100"
-                  },
-                  [_vm._v(_vm._s(_vm.datos[0].dni ? _vm.datos[0].dni : "-"))]
-                )
-              ])
+    _c(
+      "div",
+      { staticClass: "table-responsive" },
+      _vm._l(_vm.info, function(item, index) {
+        return _c("table", { key: index, attrs: { width: "100%" } }, [
+          _c("tr", { staticClass: "font-12" }, [
+            _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Código")]),
+            _vm._v(" "),
+            _c("td", {}, [
+              _c(
+                "label",
+                {
+                  staticClass:
+                    "form-control font-12 form-control-sm mb-1 w-100 h-100"
+                },
+                [
+                  _vm._v(
+                    _vm._s(_vm.datos[0].codigo ? _vm.datos[0].codigo : "-")
+                  )
+                ]
+              )
             ]),
             _vm._v(" "),
-            _c("tr", { staticClass: "font-12" }, [
-              _c("td", { staticClass: "text-right pr-1" }, [
-                _vm._v("Dirección")
-              ]),
-              _vm._v(" "),
-              _c("td", { attrs: { colspan: "3" } }, [
-                _c(
-                  "label",
-                  {
-                    staticClass:
-                      "form-control font-12 form-control-sm mb-1 w-100 h-100"
-                  },
-                  [_vm._v(_vm._s(_vm.infoClientes.direccion))]
-                )
-              ])
+            _c("td", { staticClass: "font-11 pr-1 text-right" }, [
+              _vm._v("DNI/RUC")
             ]),
             _vm._v(" "),
-            _c("tr", { staticClass: "font-12" }, [
-              _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Dist.")]),
-              _vm._v(" "),
-              _c("td", [
-                _c(
-                  "label",
-                  {
-                    staticClass:
-                      "form-control font-12 form-control-sm mb-1 w-100 h-100"
-                  },
-                  [_vm._v(_vm._s(_vm.infoClientes.distrito))]
-                )
-              ]),
-              _vm._v(" "),
-              _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Prov.")]),
-              _vm._v(" "),
-              _c("td", [
-                _c(
-                  "label",
-                  {
-                    staticClass:
-                      "form-control font-12 form-control-sm mb-1 w-100 h-100"
-                  },
-                  [_vm._v(_vm._s(_vm.infoClientes.provincia))]
-                )
-              ])
+            _c("td", [
+              _c(
+                "label",
+                {
+                  staticClass:
+                    "form-control font-12 form-control-sm mb-1 w-100 h-100"
+                },
+                [_vm._v(_vm._s(_vm.formatoVacio(_vm.datos[0].dni)))]
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("tr", { staticClass: "font-12" }, [
+            _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Dirección")]),
+            _vm._v(" "),
+            _c("td", { attrs: { colspan: "3" } }, [
+              _c(
+                "label",
+                {
+                  staticClass:
+                    "form-control font-12 form-control-sm mb-1 w-100 h-100"
+                },
+                [_vm._v(_vm._s(_vm.formatoVacio(item.direccion)))]
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("tr", { staticClass: "font-12" }, [
+            _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Dist.")]),
+            _vm._v(" "),
+            _c("td", [
+              _c(
+                "label",
+                {
+                  staticClass:
+                    "form-control font-12 form-control-sm mb-1 w-100 h-100"
+                },
+                [_vm._v(_vm._s(_vm.formatoVacio(item.distrito)))]
+              )
             ]),
             _vm._v(" "),
-            _c("tr", { staticClass: "font-12" }, [
-              _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Depto.")]),
-              _vm._v(" "),
-              _c("td", [
-                _c(
-                  "label",
-                  {
-                    staticClass:
-                      "form-control font-12 form-control-sm mb-1 w-100 h-100"
-                  },
-                  [_vm._v(_vm._s(_vm.infoClientes.departamento))]
-                )
-              ]),
-              _vm._v(" "),
-              _c("td", { staticClass: "text-right pr-1" }, [
-                _vm._v("Prioridad")
-              ]),
-              _vm._v(" "),
-              _vm._m(1)
+            _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Prov.")]),
+            _vm._v(" "),
+            _c("td", [
+              _c(
+                "label",
+                {
+                  staticClass:
+                    "form-control font-12 form-control-sm mb-1 w-100 h-100"
+                },
+                [_vm._v(_vm._s(_vm.formatoVacio(item.provincia)))]
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("tr", { staticClass: "font-12" }, [
+            _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Depto.")]),
+            _vm._v(" "),
+            _c("td", [
+              _c(
+                "label",
+                {
+                  staticClass:
+                    "form-control font-12 form-control-sm mb-1 w-100 h-100"
+                },
+                [_vm._v(_vm._s(_vm.formatoVacio(item.departamento)))]
+              )
             ]),
             _vm._v(" "),
-            _c("tr", { staticClass: "font-12" }, [
-              _c("td", { staticClass: "text-right pr-1" }, [
-                _vm._v("C. Laboral")
-              ]),
-              _vm._v(" "),
-              _c("td", { attrs: { colspan: "3" } }, [
-                _c(
-                  "label",
-                  {
-                    staticClass:
-                      "form-control font-12 form-control-sm mb-1 w-100 h-100"
-                  },
-                  [_vm._v(_vm._s(_vm.infoClientes.laboral))]
-                )
-              ])
+            _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Prioridad")]),
+            _vm._v(" "),
+            _vm._m(0, true)
+          ]),
+          _vm._v(" "),
+          _c("tr", { staticClass: "font-12" }, [
+            _c("td", { staticClass: "text-right pr-1" }, [
+              _vm._v("C. Laboral")
             ]),
             _vm._v(" "),
-            _c("tr", { staticClass: "font-12" }, [
-              _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Sueldo")]),
-              _vm._v(" "),
-              _c("td", { attrs: { colspan: "3" } }, [
-                _c("div", { staticClass: "d-flex justify-content-between" }, [
-                  _c("div", { staticClass: "d-flex" }, [
-                    _c(
-                      "label",
-                      {
-                        staticClass:
-                          "form-control font-12 form-control-sm mb-1 w-100 h-100"
-                      },
-                      [
-                        _vm._v(
-                          _vm._s(
-                            _vm.infoClientes.sueldo != "-"
-                              ? "S/." + _vm.infoClientes.sueldo
-                              : "-"
-                          )
-                        )
-                      ]
-                    )
+            _c("td", { attrs: { colspan: "3" } }, [
+              _c(
+                "label",
+                {
+                  staticClass:
+                    "form-control font-12 form-control-sm mb-1 w-100 h-100"
+                },
+                [_vm._v(_vm._s(_vm.formatoVacio(item.laboral)))]
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("tr", { staticClass: "font-12" }, [
+            _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Sueldo")]),
+            _vm._v(" "),
+            _c("td", { attrs: { colspan: "3" } }, [
+              _c("div", { staticClass: "d-flex justify-content-between" }, [
+                _c("div", { staticClass: "d-flex" }, [
+                  _c(
+                    "label",
+                    {
+                      staticClass:
+                        "form-control font-12 form-control-sm mb-1 w-100 h-100"
+                    },
+                    [_vm._v("S/." + _vm._s(_vm.formatoVacio(item.sueldo)))]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "d-flex" }, [
+                  _c("label", { staticClass: "px-1 pt-2" }, [
+                    _vm._v("Entidades")
                   ]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "d-flex" }, [
-                    _c("label", { staticClass: "px-1 pt-2" }, [
-                      _vm._v("Entidades")
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass:
-                          "form-control font-12 form-control-sm mb-1 w-100 h-100"
-                      },
-                      [_vm._v(_vm._s(_vm.infoClientes.entidades))]
-                    )
-                  ]),
+                  _c(
+                    "label",
+                    {
+                      staticClass:
+                        "form-control font-12 form-control-sm mb-1 w-100 h-100"
+                    },
+                    [_vm._v(_vm._s(_vm.formatoVacio(item.entidades)))]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "d-flex" }, [
+                  _c("label", { staticClass: "px-1 pt-2" }, [_vm._v("Score")]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "d-flex" }, [
-                    _c("label", { staticClass: "px-1 pt-2" }, [
-                      _vm._v("Score")
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass:
-                          "form-control font-12 form-control-sm mb-1 w-100 h-100"
-                      },
-                      [_vm._v(_vm._s(_vm.infoClientes.score))]
-                    )
-                  ])
+                  _c(
+                    "label",
+                    {
+                      staticClass:
+                        "form-control font-12 form-control-sm mb-1 w-100 h-100"
+                    },
+                    [_vm._v(_vm._s(_vm.formatoVacio(item.score)))]
+                  )
                 ])
               ])
-            ]),
+            ])
+          ]),
+          _vm._v(" "),
+          _c("tr", { staticClass: "font-12" }, [
+            _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Email")]),
             _vm._v(" "),
-            _c("tr", { staticClass: "font-12" }, [
-              _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Email")]),
-              _vm._v(" "),
-              _c("td", { attrs: { colspan: "3" } }, [
-                _c(
-                  "label",
-                  {
-                    staticClass:
-                      "form-control font-12 form-control-sm mb-1 pb-1 w-100 h-100"
-                  },
-                  [
-                    _vm._v(
-                      _vm._s(
-                        _vm.datos[0].email != " " ? _vm.datos[0].email : "-"
-                      )
-                    )
-                  ]
-                )
-              ])
+            _c("td", { attrs: { colspan: "3" } }, [
+              _c(
+                "label",
+                {
+                  staticClass:
+                    "form-control font-12 form-control-sm mb-1 w-100 h-100"
+                },
+                [_vm._v(_vm._s(_vm.formatoVacio(_vm.datos[0].email)))]
+              )
             ])
           ])
-        : _vm._e()
-    ])
+        ])
+      }),
+      0
+    )
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "d-flex justify-content-center pt-5" }, [
-      _c(
-        "div",
-        { staticClass: "spinner-border text-blue", attrs: { role: "status" } },
-        [_c("span", { staticClass: "sr-only" }, [_vm._v("Loading...")])]
-      )
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -44510,6 +44383,10 @@ var render = function() {
                       },
                       domProps: { value: _vm.datos.fechaPDP },
                       on: {
+                        "!keydown": function($event) {
+                          $event.preventDefault()
+                          $event.stopPropagation()
+                        },
                         input: function($event) {
                           if ($event.target.composing) {
                             return
@@ -44952,134 +44829,153 @@ var render = function() {
       _vm._v(" "),
       _vm.viewDetalleCliente == true
         ? _c("div", { staticClass: "bg-white" }, [
-            _c(
-              "div",
-              { staticClass: "panelEstandar" },
-              [
-                _c(
-                  "div",
-                  { staticClass: "d-flex mx-3 justify-content-between" },
-                  [
-                    _c("div", { staticClass: "d-flex" }, [
-                      _vm._m(0),
-                      _vm._v(" "),
-                      _c("p", { staticClass: "font-18 font-bold" }, [
-                        _vm._v(_vm._s(_vm.dataCliente[0].nombre))
-                      ])
-                    ]),
+            _c("div", { staticClass: "panelEstandar" }, [
+              _c(
+                "div",
+                { staticClass: "d-flex mx-3 justify-content-between" },
+                [
+                  _c("div", { staticClass: "d-flex" }, [
+                    _vm._m(0),
                     _vm._v(" "),
-                    _c("div", [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "icono-bars waves-effect pb-2",
-                          attrs: { href: "" },
-                          on: {
-                            click: function($event) {
-                              $event.preventDefault()
-                              return _vm.cerrarDetalle()
-                            }
-                          }
-                        },
-                        [_c("i", { staticClass: "fa fa-times" })]
-                      )
+                    _c("p", { staticClass: "font-18 font-bold" }, [
+                      _vm._v(_vm._s(_vm.dataCliente[0].nombre))
                     ])
-                  ]
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "row p-0 mx-0" }, [
-                  _c(
+                  ]),
+                  _vm._v(" "),
+                  _c("div", [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "icono-bars waves-effect pb-2",
+                        attrs: { href: "" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.cerrarDetalle()
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "fa fa-times" })]
+                    )
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _vm.loadCarga
+                ? _c("div", { staticClass: "panel-carga bg-white" }, [
+                    _vm._m(1)
+                  ])
+                : _c(
                     "div",
-                    { staticClass: "col-md-4 border-blue" },
                     [
-                      _vm._m(1),
+                      _c("div", { staticClass: "row p-0 mx-0" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col-md-4 border-blue" },
+                          [
+                            _vm._m(2),
+                            _vm._v(" "),
+                            _vm.dataCliente.length > 0
+                              ? _c("detalleCliente", {
+                                  attrs: {
+                                    datos: _vm.dataCliente,
+                                    info: _vm.detalleGeneral["infoCliente"]
+                                  }
+                                })
+                              : _vm._e()
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "col-md-8" },
+                          [
+                            _vm._m(3),
+                            _vm._v(" "),
+                            _vm.dataCliente.length > 0
+                              ? _c("detalleGestiones", {
+                                  attrs: {
+                                    idCliente: _vm.idCliente,
+                                    historico: _vm.detalleGeneral["gestiones"]
+                                  }
+                                })
+                              : _vm._e()
+                          ],
+                          1
+                        )
+                      ]),
+                      _c("br"),
                       _vm._v(" "),
-                      _c("detalleCliente", {
-                        attrs: { datos: _vm.dataCliente }
+                      _c("div", { staticClass: "row p-0 mx-0 my-2" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col-md-12" },
+                          [
+                            _vm._m(4),
+                            _vm._v(" "),
+                            _vm.dataCliente.length > 0
+                              ? _c("detalleCuentas", {
+                                  attrs: {
+                                    cuentas: _vm.detalleGeneral["cuentas"]
+                                  }
+                                })
+                              : _vm._e()
+                          ],
+                          1
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _vm.dataCliente.length > 0
+                        ? _c(
+                            "div",
+                            [
+                              _c("formRegistrarGestion", {
+                                attrs: { "id-cliente": _vm.idCliente, tipo: 1 }
+                              })
+                            ],
+                            1
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "btns-lateral" }, [
+                        _vm._m(5),
+                        _vm._v(" "),
+                        _c(
+                          "a",
+                          {
+                            staticClass: "btn-lateral",
+                            attrs: {
+                              href: "",
+                              "data-toggle": "modal",
+                              "data-target": "#modal-telefonos"
+                            },
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                return _vm.verTelefonos()
+                              }
+                            }
+                          },
+                          [
+                            _c("label", { staticClass: "texto-vertical" }, [
+                              _vm._v("TELF")
+                            ])
+                          ]
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("detalleTelefonos", {
+                        attrs: { idCliente: _vm.idCliente }
+                      }),
+                      _vm._v(" "),
+                      _c("detallePagos", {
+                        attrs: { idCliente: _vm.idCliente }
                       })
                     ],
                     1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    { staticClass: "col-md-8" },
-                    [
-                      _vm._m(2),
-                      _vm._v(" "),
-                      _vm.dataCliente.length > 0
-                        ? _c("detalleGestiones", {
-                            attrs: { idCliente: _vm.idCliente }
-                          })
-                        : _vm._e()
-                    ],
-                    1
                   )
-                ]),
-                _c("br"),
-                _vm._v(" "),
-                _c("div", { staticClass: "row p-0 mx-0 my-2" }, [
-                  _c(
-                    "div",
-                    { staticClass: "col-md-12" },
-                    [
-                      _vm._m(3),
-                      _vm._v(" "),
-                      _vm.dataCliente.length > 0
-                        ? _c("detalleCuentas", {
-                            attrs: { idCliente: _vm.idCliente }
-                          })
-                        : _vm._e()
-                    ],
-                    1
-                  )
-                ]),
-                _vm._v(" "),
-                _vm.dataCliente.length > 0
-                  ? _c(
-                      "div",
-                      [
-                        _c("formRegistrarGestion", {
-                          attrs: { "id-cliente": _vm.idCliente, tipo: 1 }
-                        })
-                      ],
-                      1
-                    )
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("div", { staticClass: "btns-lateral" }, [
-                  _vm._m(4),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "btn-lateral",
-                      attrs: {
-                        href: "",
-                        "data-toggle": "modal",
-                        "data-target": "#modal-telefonos"
-                      },
-                      on: {
-                        click: function($event) {
-                          $event.preventDefault()
-                          return _vm.verTelefonos()
-                        }
-                      }
-                    },
-                    [
-                      _c("label", { staticClass: "texto-vertical" }, [
-                        _vm._v("TELF")
-                      ])
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("detalleTelefonos", { attrs: { idCliente: _vm.idCliente } }),
-                _vm._v(" "),
-                _c("detallePagos", { attrs: { idCliente: _vm.idCliente } })
-              ],
-              1
-            )
+            ])
           ])
         : _vm._e()
     ],
@@ -45095,6 +44991,18 @@ var staticRenderFns = [
       _c("i", {
         staticClass: "rounded-circle fa fa-user bg-blue text-white p-1"
       })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "d-flex justify-content-center pt-5" }, [
+      _c(
+        "div",
+        { staticClass: "spinner-border text-blue", attrs: { role: "status" } },
+        [_c("span", { staticClass: "sr-only" }, [_vm._v("Loading...")])]
+      )
     ])
   },
   function() {

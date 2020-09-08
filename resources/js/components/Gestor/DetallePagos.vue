@@ -49,6 +49,7 @@
         },
         methods:{
             listaPagos(){
+                this.pagos=[];
                 const id= this.idCliente;
                 axios.get("listaPagos/"+id).then(res=>{
                     if(res.data){

@@ -55,7 +55,7 @@
                             <tr class="font-12"> 
                                 <td class="text-right pr-1">Fecha</td>
                                 <td class="pb-2">
-                                    <input type="date" :min="fechaActual" :max="fechaMax" class="form-control font-12 form-control-sm" :disabled="![1,2,43].includes(datos.respuesta)" v-model="datos.fechaPDP">
+                                    <input type="date" :min="fechaActual" :max="fechaMax" v-on:keydown.capture.prevent.stop class="form-control font-12 form-control-sm" :disabled="![1,2,43].includes(datos.respuesta)" v-model="datos.fechaPDP">
                                 </td>
                             </tr>
                             <tr class="font-12"> 
@@ -151,7 +151,7 @@
                 errorsDatos:[],
                 pdps:[],
                 mensaje:'',
-                datos:{detalle:'',montoPDP:'',fechaPDP:null,moneda:1,telefono:'',respuesta:'',rec:'',fechaRec:'',horaRec:'',id:this.idCliente,tel_rec:'',motivoNoPago:''},
+                datos:{detalle:'',montoPDP:'',fechaPDP:null,moneda:0,telefono:'',respuesta:'',rec:'',fechaRec:'',horaRec:'',id:this.idCliente,tel_rec:'',motivoNoPago:''},
                 loadButton:false,
                 loadButton2:false,
                 cant_contacto:0,
@@ -163,7 +163,6 @@
             this.listaTelefonos();
             this.gestionesContacto();
             this.pdp();
-            this.listarMotivos();
         },
         methods:{
             obtenerRespuestas(){
@@ -181,10 +180,13 @@
                 axios.get("listaMotivosNoPago").then(res=>{
                     if(res.data){
                         this.motivos=res.data;
+                        this.viewMotivo=true;
                     }
                 })
             },
             listaTelefonos(){
+                this.datos.telefono='';
+                this.telefonos=[];
                 const id= this.idCliente;
                 axios.get("listaTel/"+id).then(res=>{
                     if(res.data){
@@ -361,7 +363,7 @@
                 //visualizar el motivo de no pago - contatcto con titular
                 if(res==33){
                     this.datos.motivoNoPago='';
-                    this.viewMotivo=true;
+                    this.listarMotivos();
                 }else{
                     this.datos.motivoNoPago='';
                     this.viewMotivo=false;
@@ -371,7 +373,7 @@
                 this.datos.detalle='';
                 this.datos.montoPDP='';
                 this.datos.fechaPDP=null;
-                this.datos.moneda=1;
+                this.datos.moneda=0;
                 this.datos.telefono='';
                 this.datos.respuesta='';
                 this.datos.rec=false;

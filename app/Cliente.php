@@ -325,6 +325,7 @@ class Cliente extends Model
             left join 
                 cliente_sueldo as s on i.cli_id_FK=s.cli_id_FK
             where i.cli_id_FK = :id
+            limit 1
         ";
         $query=DB::connection('mysql')->select(DB::raw($sql),array("id"=>$id));
  
@@ -406,7 +407,7 @@ class Cliente extends Model
             (SELECT 
                     det_cli_num_doc as cuenta,
                     det_cli_tip_doc as tipo_cuenta,
-                    det_cli_num_doc as tarjeta,
+                    det_cli_cyber_mn as tarjeta,
                     det_cli_pro as producto,
                     det_cli_fec_deu as fecha_deuda,
                     det_cli_dia_atr as dias,

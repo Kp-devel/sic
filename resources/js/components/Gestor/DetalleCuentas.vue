@@ -48,24 +48,13 @@
 
 <script>
     export default {
-        props:["idCliente"],
+        props:["cuentas"],
         data() {
             return {
-                cuentas:[],
+                // cuentas:[],
             }
         },
-        created(){
-           this.infoCuentas();
-        },
         methods:{
-            infoCuentas(){
-                const id= this.idCliente;
-                axios.get("infoDeuda/"+id).then(res=>{
-                    if(res.data){
-                        this.cuentas=res.data;
-                    }
-                })
-            },
             indicadoresDscto(indicador){
                 if(indicador==1){
                     return "↑"
