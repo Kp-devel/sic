@@ -94,8 +94,11 @@ class Cliente extends Model
         if($nombre!= null){
             $sql = $sql." and cli_nom like '%$nombre%' ";
         }
+        // if($telefono!= null){
+        //     $sql = $sql." and cli_tel_tel=$telefono ";
+        // }
         if($telefono!= null){
-            $sql = $sql." and cli_tel_tel=$telefono ";
+            $sql = $sql." and cli_id in (select cli_id_FK from cliente_telefono where cli_tel_est=0 and cli_tel_pas=0 and cli_tel_tel=$telefono) ";
         }
         if($tramo!= null){
             $sql = $sql." and det_cli_tra like '%$tramo%' ";
