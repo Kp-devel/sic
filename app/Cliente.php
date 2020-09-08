@@ -103,12 +103,12 @@ class Cliente extends Model
         if($respuesta!= null){
             $sql = $sql." and res_id_FK=$respuesta ";
         }
-        if($fec_desde!= "undefined-undefined-"){
-            $sql = $sql." and date_format(ges_cli_com_fec,'%Y-%m-%d') >='$fec_desde' ";
+        if($fec_desde!= "undefined-undefined-" && $fec_hasta!= "undefined-undefined-"){
+            $sql = $sql." and cli_id in (select cli_id_FK as id from compromiso_cliente where date_format(com_cli_fec_pag,'%Y-%m-%d') between '$fec_desde' and '$fec_hasta')";
         }
-        if($fec_hasta!= "undefined-undefined-"){
-            $sql = $sql." and date_format(ges_cli_com_fec,'%Y-%m-%d') <='$fec_hasta' ";
-        }
+        // if($fec_hasta!= "undefined-undefined-"){
+        //     $sql = $sql." and date_format(ges_cli_com_fec,'%Y-%m-%d') <='$fec_hasta' ";
+        // }
  
         if( $cantidad_cli>0){
             $sql = $sql." and cli_cod in ($cadena_cli) ";
