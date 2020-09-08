@@ -3386,14 +3386,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 //
 //
 //
@@ -3451,7 +3443,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["idCliente"],
+  props: ["idCliente", "telefonosgenerales"],
   data: function data() {
     return {
       arreglo: {
@@ -3459,50 +3451,44 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         id: this.idCliente
       },
       mensaje: '',
-      telefonos: [],
+      telefonos: this.telefonosgenerales,
       loadButton: false,
       estado: 1,
       cantidad: 0
     };
   },
+  created: function created() {
+    this.cantidad = this.telefonos.length;
+  },
   methods: {
+    listaTelefonos: function listaTelefonos() {
+      // this.telefonos=datos;
+      this.cantidad = this.telefonos.length;
+    },
     registrar: function registrar() {
       var _this = this;
 
-      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _this.mensaje = "";
+      this.mensaje = "";
 
-                if (_this.arreglo.telefono != "") {
-                  _this.loadButton = true;
+      if (this.arreglo.telefono != "") {
+        this.loadButton = true;
 
-                  try {
-                    axios.post('insertarTel', _this.arreglo).then(function (res) {
-                      if (res.data == "ok") {
-                        _this.loadButton = false;
-                        _this.mensaje = "Registro con éxito";
-                        _this.arreglo.telefono = ''; // this.listaTelefonos();
+        try {
+          axios.post('insertarTel', this.arreglo).then(function (res) {
+            if (res.data == "ok") {
+              _this.loadButton = false;
+              _this.mensaje = "Registro con éxito";
+              _this.arreglo.telefono = ''; // this.listaTelefonos();
 
-                        _this.$root.$emit('frglistarTelefonos');
-                      }
-                    });
-                  } catch (error) {
-                    _this.mensaje = "Ha ocurrido un error!";
-                  }
-                } else {
-                  _this.mensaje = "Completar el campo";
-                }
-
-              case 2:
-              case "end":
-                return _context.stop();
+              _this.$root.$emit('frglistarTelefonos');
             }
-          }
-        }, _callee);
-      }))();
+          });
+        } catch (error) {
+          this.mensaje = "Ha ocurrido un error!";
+        }
+      } else {
+        this.mensaje = "Completar el campo";
+      }
     },
     actualizarEstado: function actualizarEstado(est, tel, id) {
       var _this2 = this;
@@ -3704,14 +3690,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["idCliente", "tipo", "telrecordatorio"],
+  props: ["idCliente", "tipo", "telrecordatorio", "telefonosgenerales"],
   data: function data() {
     return {
       respuestas: [],
       ubicabilidad: '',
       fechaActual: null,
       fechaMax: null,
-      telefonos: [],
+      telefonos: this.telefonosgenerales,
       errorsDatos: [],
       pdps: [],
       mensaje: '',
@@ -3744,13 +3730,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              _this.listaTelefonos();
-
               _this.gestionesContacto();
 
               _this.pdp();
 
-            case 3:
+            case 2:
             case "end":
               return _context.stop();
           }
@@ -4018,6 +4002,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.datos.motivoNoPago = '';
       this.ubicabilidad = '';
       this.viewMotivo = false;
+    },
+    inactivarUbicabilidad: function inactivarUbicabilidad() {
+      if (this.datos.telefono == '') {
+        this.ubicabilidad = '';
+        this.datos.respuesta = '';
+      }
     }
   },
   mounted: function mounted() {
@@ -44124,23 +44114,28 @@ var render = function() {
                         ],
                         staticClass: "form-control font-12 form-control-sm",
                         on: {
-                          change: function($event) {
-                            var $$selectedVal = Array.prototype.filter
-                              .call($event.target.options, function(o) {
-                                return o.selected
-                              })
-                              .map(function(o) {
-                                var val = "_value" in o ? o._value : o.value
-                                return val
-                              })
-                            _vm.$set(
-                              _vm.datos,
-                              "telefono",
-                              $event.target.multiple
-                                ? $$selectedVal
-                                : $$selectedVal[0]
-                            )
-                          }
+                          change: [
+                            function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.datos,
+                                "telefono",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            },
+                            function($event) {
+                              return _vm.inactivarUbicabilidad()
+                            }
+                          ]
                         }
                       },
                       [
@@ -44931,7 +44926,12 @@ var render = function() {
                             "div",
                             [
                               _c("formRegistrarGestion", {
-                                attrs: { "id-cliente": _vm.idCliente, tipo: 1 }
+                                attrs: {
+                                  "id-cliente": _vm.idCliente,
+                                  tipo: 1,
+                                  telefonosgenerales:
+                                    _vm.detalleGeneral["telefonos"]
+                                }
                               })
                             ],
                             1
@@ -44966,7 +44966,10 @@ var render = function() {
                       ]),
                       _vm._v(" "),
                       _c("detalleTelefonos", {
-                        attrs: { idCliente: _vm.idCliente }
+                        attrs: {
+                          idCliente: _vm.idCliente,
+                          telefonosgenerales: _vm.detalleGeneral["telefonos"]
+                        }
                       }),
                       _vm._v(" "),
                       _c("detallePagos", {

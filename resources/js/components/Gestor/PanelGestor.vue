@@ -60,7 +60,7 @@
                     </div>
                     <!-- panel de registro de gestion -->
                     <div v-if="dataCliente.length>0">
-                        <formRegistrarGestion :id-cliente="idCliente" :tipo="1"/>
+                        <formRegistrarGestion :id-cliente="idCliente" :tipo="1" :telefonosgenerales="detalleGeneral['telefonos']" />
                     </div>
                     <!-- botones laterales -->
                     <div class="btns-lateral">
@@ -70,7 +70,7 @@
                     </div>
 
                     <!-- panel de telefonos -->
-                    <detalleTelefonos :idCliente="idCliente"/>
+                    <detalleTelefonos :idCliente="idCliente" :telefonosgenerales="detalleGeneral['telefonos']"/>
                     <!-- panel de pagos -->
                     <detallePagos :idCliente="idCliente"/>
                 </div>

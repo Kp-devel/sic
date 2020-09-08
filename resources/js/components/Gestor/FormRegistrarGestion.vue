@@ -13,7 +13,7 @@
                             <tr class="font-12"> 
                                 <td class="text-right pr-1" style="width:18px">Teléfono</td>
                                 <td class="pb-2">
-                                    <select class="form-control font-12 form-control-sm" v-model="datos.telefono">
+                                    <select class="form-control font-12 form-control-sm" v-model="datos.telefono" @change="inactivarUbicabilidad()">
                                         <option value="">Seleccionar</option>
                                         <option v-for="(item,index) in telefonos" :key="index" :class="{'bg-success text-white':item.contacto>0,'bg-warning':item.gestion>0 && item.contacto==0,'bg-danger text-white':item.gestion==0 && item.contacto==0}"  :value="item.telefono">{{item.tel}}</option>
                                     </select>
@@ -140,14 +140,14 @@
 <script>
     import panelMensaje from '../MensajeSistema/PanelMensaje';
     export default {
-        props:["idCliente","tipo","telrecordatorio"],
+        props:["idCliente","tipo","telrecordatorio","telefonosgenerales"],
         data() {
             return {
                 respuestas:[],
                 ubicabilidad:'',
                 fechaActual:null,
                 fechaMax:null,
-                telefonos:[],
+                telefonos:this.telefonosgenerales,
                 errorsDatos:[],
                 pdps:[],
                 mensaje:'',
@@ -160,7 +160,6 @@
             }
         },
         async created(){
-            this.listaTelefonos();
             this.gestionesContacto();
             this.pdp();
         },
@@ -382,6 +381,12 @@
                 this.datos.motivoNoPago='';
                 this.ubicabilidad='';  
                 this.viewMotivo=false;              
+            },
+            inactivarUbicabilidad(){
+                if(this.datos.telefono==''){
+                    this.ubicabilidad='';
+                    this.datos.respuesta='';
+                }
             }
         },
         mounted() {

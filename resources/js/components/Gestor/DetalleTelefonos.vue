@@ -56,20 +56,26 @@
 
 <script>
     export default {
-        props:["idCliente"],
+        props:["idCliente","telefonosgenerales"],
         data() {
             return {
                 arreglo:{telefono:'',id:this.idCliente},
                 mensaje:'',
-                telefonos:[],
+                telefonos:this.telefonosgenerales,
                 loadButton:false,
                 estado:1,
                 cantidad:0
             }
         },
-        
+        created(){
+            this.cantidad=this.telefonos.length;
+        },
         methods:{
-            async registrar(){
+            listaTelefonos(){
+                // this.telefonos=datos;
+                this.cantidad=this.telefonos.length;
+            },
+            registrar(){
                 this.mensaje="";
                 if(this.arreglo.telefono!=""){
                     this.loadButton=true;

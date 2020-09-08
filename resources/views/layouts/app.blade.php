@@ -28,7 +28,7 @@
         @endguest
     </div>
 
-    <script src="{{ asset('js/app.js?07091') }}" ></script>
+    <script src="{{ asset('js/app.js?07093') }}" ></script>
     <script src="{{ asset('js/waves.js') }}" ></script>
     @yield('scripts')
     <!-- <script src="{{ asset('js/bootstrap-select.min.js') }}" ></script> -->

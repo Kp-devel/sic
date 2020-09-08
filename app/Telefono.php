@@ -31,7 +31,6 @@ class Telefono extends Model
                     AND cli_tel_est=0
                     AND cli_tel_pas=0
             GROUP BY cli_tel_id
-            ORDER BY contacto desc,gestion desc
         ";
         $query=DB::connection('mysql')->select(DB::raw($sql),array("id"=>$id));
         return $query;
