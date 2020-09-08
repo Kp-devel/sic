@@ -190,7 +190,6 @@
                 axios.get("listaTel/"+id).then(res=>{
                     if(res.data){
                         this.telefonos=res.data;                           
-                        this.$root.$emit('dtListarTelefonos',this.telefonos);
                     }
                 })
             },

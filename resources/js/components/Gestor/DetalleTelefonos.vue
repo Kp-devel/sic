@@ -72,8 +72,14 @@
         },
         methods:{
             listaTelefonos(){
-                // this.telefonos=datos;
-                this.cantidad=this.telefonos.length;
+                this.telefonos=[];
+                const id= this.idCliente;
+                axios.get("listaTel/"+id).then(res=>{
+                    if(res.data){
+                        this.telefonos=res.data;                           
+                        this.cantidad=this.telefonos.length;
+                    }
+                })
             },
             registrar(){
                 this.mensaje="";
@@ -85,7 +91,7 @@
                                 this.loadButton=false;
                                 this.mensaje = "Registro con éxito";
                                 this.arreglo.telefono='';
-                                // this.listaTelefonos();
+                                this.listaTelefonos();
                                 this.$root.$emit('frglistarTelefonos');
                             }
                         });
@@ -102,6 +108,7 @@
                             id:id}
                 axios.put('actualizarEstadoTelefono',datos).then(res=>{
                     if(res.data=="ok"){
+                        this.listaTelefonos();
                         this.$root.$emit('frglistarTelefonos');
                     }
                 });
@@ -120,10 +127,6 @@
         mounted() {
             this.$root.$on ('limpiarFrmTel',() => {
                 this.limpiar();
-            } );
-            this.$root.$on ('dtListarTelefonos',(datos) => {
-                this.telefonos=datos;
-                this.cantidad=this.telefonos.length;
             } );
         },
     }
