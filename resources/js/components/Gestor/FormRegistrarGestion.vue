@@ -1,6 +1,6 @@
-<template>
-    <div>
-        <div class="row px-0 mx-0 my-3 bg-gray-2 rounded">
+<template >
+    <div >
+        <div class="row px-0 mx-0 my-3 bg-gray-2 rounded" >
             <div class="col-md-12">
                 <div class="d-flex">
                     <p class=" badge bg-blue text-white py-2 px-3 min-w-125 text-left">REGISTRO DE GESTIÓN</p>
@@ -133,14 +133,13 @@
             </div>
         </div>
 
-        <panelMensaje/>
     </div>            
 </template>
 
 <script>
-    import panelMensaje from '../MensajeSistema/PanelMensaje';
+
     export default {
-        props:["idCliente","tipo","telrecordatorio","telefonosgenerales"],
+        props:["idCliente","tipo","telrecordatorio","telefonosgenerales","valcontacto","datospdp"],
         data() {
             return {
                 respuestas:[],
@@ -149,19 +148,15 @@
                 fechaMax:null,
                 telefonos:this.telefonosgenerales,
                 errorsDatos:[],
-                pdps:[],
+                pdps:this.datospdp,
                 mensaje:'',
                 datos:{detalle:'',montoPDP:'',fechaPDP:null,moneda:0,telefono:'',respuesta:'',rec:'',fechaRec:'',horaRec:'',id:this.idCliente,tel_rec:'',motivoNoPago:''},
                 loadButton:false,
                 loadButton2:false,
-                cant_contacto:0,
+                cant_contacto:this.valcontacto,
                 motivos:[],
                 viewMotivo:false
             }
-        },
-        async created(){
-            this.gestionesContacto();
-            this.pdp();
         },
         methods:{
             obtenerRespuestas(){
@@ -185,11 +180,12 @@
             },
             listaTelefonos(){
                 this.datos.telefono='';
-                this.telefonos=[];
                 const id= this.idCliente;
                 axios.get("listaTel/"+id).then(res=>{
                     if(res.data){
-                        this.telefonos=res.data;                           
+                        this.telefonos=res.data['telefonos'];                           
+                        this.cant_contacto=res.data['validar_contacto'];
+                        this.pdps=res.data['pdps'];
                     }
                 })
             },
@@ -266,8 +262,7 @@
                                 this.$root.$emit('listarGestiones');
                                 this.$root.$emit('verListaClientes');
                                 this.limpiar();
-                                this.gestionesContacto();
-                                this.pdp();
+                                this.listaTelefonos();
                                 setTimeout(() => {
                                     this.mensaje="";
                                 }, 5000);
@@ -308,38 +303,27 @@
                     this.errorsDatos.push("Selecciona una fecha y/o hora de recordatorio");
                 }
             },
-            gestionesContacto(){
-                axios.get("validarContacto/"+this.idCliente).then(res=>{
-                    if(res.data){
-                        const cant=res.data;
-                        this.cant_contacto=cant[0].cant_contacto;
-                    }
-                });
-            },
-            pdp(){
-                axios.get("validarPDP/"+this.idCliente).then(res=>{
-                    if(res.data){
-                        this.pdps=res.data;
-                    }
-                });
-            },
             validarRespuestas(res){
                 //respuesta 1,43 y 2--limitacion de calendario
                 this.fechaCalendario(res);
                 //no ingresar paleta no contacto cuando existe contacto previo
                 if(res==44 || res==45){
-                    if(this.cant_contacto>0){
-                        this.datos.respuesta='';
-                        alert("No se puede seleccionar la respuesta asignada, el cliente tiene un contacto previo");
-                        // $("#panel-mensaje").modal();
+                    if(this.cant_contacto.length>0){
+                        if(this.cant_contacto[0].cant_contacto>0){
+                            this.datos.respuesta='';
+                            alert("No se puede seleccionar la respuesta asignada, el cliente tiene un contacto previo");
+                            // $("#panel-mensaje").modal();
+                        }
                     }
                 }
                 //no ingresar paleta contacto cuando no existe contacto previo
                 if(res==32){
-                    if(this.cant_contacto==0){
-                        this.datos.respuesta='';
-                        alert("No se puede seleccionar la respuesta asignada, el cliente no tiene un contacto previo");
-                        // $("#panel-mensaje").modal();
+                    if(this.cant_contacto.length>0){
+                        if(this.cant_contacto[0].cant_contacto==0){
+                            this.datos.respuesta='';
+                            alert("No se puede seleccionar la respuesta asignada, el cliente no tiene un contacto previo");
+                            // $("#panel-mensaje").modal();
+                        }
                     }
                 }
                 //verificar si ya hay compromisos
@@ -389,12 +373,20 @@
             }
         },
         mounted() {
-            this.$root.$on ('frglistarTelefonos',() => {
+            this.$root.$on('frglistarTelefonos',() => {
                 this.listaTelefonos();
             } );
+            this.$root.$on('telefonosRecordatorio',(datos) => {
+                if(this.tipo==2){
+                    this.telefonos=datos['telefonos'];
+                    this.cant_contacto=datos['validar_contacto'];
+                    this.pdps=datos['pdps'];
+                }
+            } );
+            
         },
-        components:{
-            panelMensaje
-        }
+        // computed(){
+        //     this.datos={detalle:'',montoPDP:'',fechaPDP:null,moneda:0,telefono:'',respuesta:'',rec:'',fechaRec:'',horaRec:'',id:this.idCliente,tel_rec:'',motivoNoPago:''};
+        // }
     }
 </script>

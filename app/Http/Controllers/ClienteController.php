@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Cliente;
 use App\Telefono;
+use App\Gestion;
 
 class ClienteController extends Controller
 {
@@ -41,11 +42,15 @@ class ClienteController extends Controller
         $infoCuenta=cliente::infoDeuda($id);
         $historicoGestiones=cliente::historicoGestiones($id);
         $telefonos=Telefono::infoTelefonos($id);
+        $validacion_contacto=Gestion::validarContacto($id);
+        $validacion_pdp=Gestion::validarPDP($id);
 
         $datosgenerales=['infoCliente'=>$infoCliente,
                          'cuentas'=>$infoCuenta,
                          'gestiones'=>$historicoGestiones,
-                         'telefonos'=>$telefonos
+                         'telefonos'=>$telefonos,
+                         'validar_contacto'=>$validacion_contacto,
+                         'pdps'=>$validacion_pdp
                         ];
         return $datosgenerales;                        
     }

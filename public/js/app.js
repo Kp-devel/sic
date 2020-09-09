@@ -2707,6 +2707,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
  //import detalleCliente from './detalleCliente';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -3443,7 +3445,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["idCliente", "telefonosgenerales"],
+  props: ["idCliente", "telefonospanel"],
   data: function data() {
     return {
       arreglo: {
@@ -3451,7 +3453,7 @@ __webpack_require__.r(__webpack_exports__);
         id: this.idCliente
       },
       mensaje: '',
-      telefonos: this.telefonosgenerales,
+      telefonos: this.telefonospanel,
       loadButton: false,
       estado: 1,
       cantidad: 0
@@ -3462,11 +3464,19 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     listaTelefonos: function listaTelefonos() {
-      // this.telefonos=datos;
-      this.cantidad = this.telefonos.length;
+      var _this = this;
+
+      // this.telefonos=[];
+      var id = this.idCliente;
+      axios.get("listaTel/" + id).then(function (res) {
+        if (res.data) {
+          _this.telefonos = res.data['telefonos'];
+          _this.cantidad = _this.telefonos.length;
+        }
+      });
     },
     registrar: function registrar() {
-      var _this = this;
+      var _this2 = this;
 
       this.mensaje = "";
 
@@ -3476,11 +3486,13 @@ __webpack_require__.r(__webpack_exports__);
         try {
           axios.post('insertarTel', this.arreglo).then(function (res) {
             if (res.data == "ok") {
-              _this.loadButton = false;
-              _this.mensaje = "Registro con éxito";
-              _this.arreglo.telefono = ''; // this.listaTelefonos();
+              _this2.loadButton = false;
+              _this2.mensaje = "Registro con éxito";
+              _this2.arreglo.telefono = '';
 
-              _this.$root.$emit('frglistarTelefonos');
+              _this2.listaTelefonos();
+
+              _this2.$root.$emit('frglistarTelefonos');
             }
           });
         } catch (error) {
@@ -3491,7 +3503,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     actualizarEstado: function actualizarEstado(est, tel, id) {
-      var _this2 = this;
+      var _this3 = this;
 
       var datos = {
         estado: est,
@@ -3500,7 +3512,9 @@ __webpack_require__.r(__webpack_exports__);
       };
       axios.put('actualizarEstadoTelefono', datos).then(function (res) {
         if (res.data == "ok") {
-          _this2.$root.$emit('frglistarTelefonos');
+          _this3.listaTelefonos();
+
+          _this3.$root.$emit('frglistarTelefonos');
         }
       });
     },
@@ -3517,14 +3531,10 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    var _this3 = this;
+    var _this4 = this;
 
     this.$root.$on('limpiarFrmTel', function () {
-      _this3.limpiar();
-    });
-    this.$root.$on('dtListarTelefonos', function (datos) {
-      _this3.telefonos = datos;
-      _this3.cantidad = _this3.telefonos.length;
+      _this4.limpiar();
     });
   }
 });
@@ -3540,15 +3550,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _MensajeSistema_PanelMensaje__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../MensajeSistema/PanelMensaje */ "./resources/js/components/MensajeSistema/PanelMensaje.vue");
-
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 //
 //
 //
@@ -3687,10 +3688,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["idCliente", "tipo", "telrecordatorio", "telefonosgenerales"],
+  props: ["idCliente", "tipo", "telrecordatorio", "telefonosgenerales", "valcontacto", "datospdp"],
   data: function data() {
     return {
       respuestas: [],
@@ -3699,7 +3698,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       fechaMax: null,
       telefonos: this.telefonosgenerales,
       errorsDatos: [],
-      pdps: [],
+      pdps: this.datospdp,
       mensaje: '',
       datos: {
         detalle: '',
@@ -3717,34 +3716,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       },
       loadButton: false,
       loadButton2: false,
-      cant_contacto: 0,
+      cant_contacto: this.valcontacto,
       motivos: [],
       viewMotivo: false
     };
   },
-  created: function created() {
-    var _this = this;
-
-    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              _this.gestionesContacto();
-
-              _this.pdp();
-
-            case 2:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee);
-    }))();
-  },
   methods: {
     obtenerRespuestas: function obtenerRespuestas() {
-      var _this2 = this;
+      var _this = this;
 
       this.datos.respuesta = "";
       if (this.ubicabilidad == "") return;
@@ -3752,31 +3731,30 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var idUbi = this.ubicabilidad;
       axios.get("listaRespuesta/" + idUbi).then(function (res) {
         if (res.data) {
-          _this2.respuestas = res.data;
+          _this.respuestas = res.data;
         }
       });
     },
     listarMotivos: function listarMotivos() {
-      var _this3 = this;
+      var _this2 = this;
 
       axios.get("listaMotivosNoPago").then(function (res) {
         if (res.data) {
-          _this3.motivos = res.data;
-          _this3.viewMotivo = true;
+          _this2.motivos = res.data;
+          _this2.viewMotivo = true;
         }
       });
     },
     listaTelefonos: function listaTelefonos() {
-      var _this4 = this;
+      var _this3 = this;
 
       this.datos.telefono = '';
-      this.telefonos = [];
       var id = this.idCliente;
       axios.get("listaTel/" + id).then(function (res) {
         if (res.data) {
-          _this4.telefonos = res.data;
-
-          _this4.$root.$emit('dtListarTelefonos', _this4.telefonos);
+          _this3.telefonos = res.data['telefonos'];
+          _this3.cant_contacto = res.data['validar_contacto'];
+          _this3.pdps = res.data['pdps'];
         }
       });
     },
@@ -3849,7 +3827,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
     },
     registrar: function registrar() {
-      var _this5 = this;
+      var _this4 = this;
 
       try {
         this.mensaje = "";
@@ -3860,21 +3838,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           this.loadButton = true;
           axios.post("insertarGestion", this.datos).then(function (res) {
             if (res.data == "ok") {
-              _this5.loadButton = false;
-              _this5.mensaje = "Registro con éxito";
+              _this4.loadButton = false;
+              _this4.mensaje = "Registro con éxito";
 
-              _this5.$root.$emit('listarGestiones');
+              _this4.$root.$emit('listarGestiones');
 
-              _this5.$root.$emit('verListaClientes');
+              _this4.$root.$emit('verListaClientes');
 
-              _this5.limpiar();
+              _this4.limpiar();
 
-              _this5.gestionesContacto();
-
-              _this5.pdp();
+              _this4.listaTelefonos();
 
               setTimeout(function () {
-                _this5.mensaje = "";
+                _this4.mensaje = "";
               }, 5000);
             }
           }); // evaluar detalle identicos
@@ -3892,12 +3868,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       } catch (error) {
         this.mensaje = "Error al Registrar";
         setTimeout(function () {
-          _this5.mensaje = "";
+          _this4.mensaje = "";
         }, 5000);
       }
     },
     reprogramar: function reprogramar() {
-      var _this6 = this;
+      var _this5 = this;
 
       this.errorsDatos = [];
       this.datos.tel_rec = this.telrecordatorio;
@@ -3906,10 +3882,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         this.loadButton2 = true;
         axios.post("insertarRecordatorio", this.datos).then(function (res) {
           if (res.data == "ok") {
-            _this6.loadButton2 = false;
-            _this6.mensaje = "Registro con éxito";
+            _this5.loadButton2 = false;
+            _this5.mensaje = "Registro con éxito";
             setTimeout(function () {
-              _this6.mensaje = "";
+              _this5.mensaje = "";
             }, 5000);
           }
         });
@@ -3917,41 +3893,26 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         this.errorsDatos.push("Selecciona una fecha y/o hora de recordatorio");
       }
     },
-    gestionesContacto: function gestionesContacto() {
-      var _this7 = this;
-
-      axios.get("validarContacto/" + this.idCliente).then(function (res) {
-        if (res.data) {
-          var cant = res.data;
-          _this7.cant_contacto = cant[0].cant_contacto;
-        }
-      });
-    },
-    pdp: function pdp() {
-      var _this8 = this;
-
-      axios.get("validarPDP/" + this.idCliente).then(function (res) {
-        if (res.data) {
-          _this8.pdps = res.data;
-        }
-      });
-    },
     validarRespuestas: function validarRespuestas(res) {
       //respuesta 1,43 y 2--limitacion de calendario
       this.fechaCalendario(res); //no ingresar paleta no contacto cuando existe contacto previo
 
       if (res == 44 || res == 45) {
-        if (this.cant_contacto > 0) {
-          this.datos.respuesta = '';
-          alert("No se puede seleccionar la respuesta asignada, el cliente tiene un contacto previo"); // $("#panel-mensaje").modal();
+        if (this.cant_contacto.length > 0) {
+          if (this.cant_contacto[0].cant_contacto > 0) {
+            this.datos.respuesta = '';
+            alert("No se puede seleccionar la respuesta asignada, el cliente tiene un contacto previo"); // $("#panel-mensaje").modal();
+          }
         }
       } //no ingresar paleta contacto cuando no existe contacto previo
 
 
       if (res == 32) {
-        if (this.cant_contacto == 0) {
-          this.datos.respuesta = '';
-          alert("No se puede seleccionar la respuesta asignada, el cliente no tiene un contacto previo"); // $("#panel-mensaje").modal();
+        if (this.cant_contacto.length > 0) {
+          if (this.cant_contacto[0].cant_contacto == 0) {
+            this.datos.respuesta = '';
+            alert("No se puede seleccionar la respuesta asignada, el cliente no tiene un contacto previo"); // $("#panel-mensaje").modal();
+          }
         }
       } //verificar si ya hay compromisos
 
@@ -4011,15 +3972,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   mounted: function mounted() {
-    var _this9 = this;
+    var _this6 = this;
 
     this.$root.$on('frglistarTelefonos', function () {
-      _this9.listaTelefonos();
+      _this6.listaTelefonos();
     });
-  },
-  components: {
-    panelMensaje: _MensajeSistema_PanelMensaje__WEBPACK_IMPORTED_MODULE_1__["default"]
-  }
+    this.$root.$on('telefonosRecordatorio', function (datos) {
+      if (_this6.tipo == 2) {
+        _this6.telefonos = datos['telefonos'];
+        _this6.cant_contacto = datos['validar_contacto'];
+        _this6.pdps = datos['pdps'];
+      }
+    });
+  } // computed(){
+  //     this.datos={detalle:'',montoPDP:'',fechaPDP:null,moneda:0,telefono:'',respuesta:'',rec:'',fechaRec:'',horaRec:'',id:this.idCliente,tel_rec:'',motivoNoPago:''};
+  // }
+
 });
 
 /***/ }),
@@ -4041,7 +4009,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DetalleTelefonos__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./DetalleTelefonos */ "./resources/js/components/Gestor/DetalleTelefonos.vue");
 /* harmony import */ var _DetallePagos__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./DetallePagos */ "./resources/js/components/Gestor/DetallePagos.vue");
 /* harmony import */ var _Recordatorios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Recordatorios */ "./resources/js/components/Gestor/Recordatorios.vue");
-//
 //
 //
 //
@@ -4145,10 +4112,11 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     cerrarDetalle: function cerrarDetalle() {
       this.viewDetalleCliente = false;
+      this.detalleGeneral = [];
       $('#contenidoLista').toggleClass('pos_fixed');
     },
     verTelefonos: function verTelefonos() {
-      this.$root.$emit('limpiarFrmTel'); //$('#modal-telefonos').modal();
+      this.$root.$emit('limpiarFrmTel');
     },
     verRecordatorios: function verRecordatorios() {
       this.$root.$emit('listarRecordatorios'); //$('#modal-recordatorio').modal();
@@ -4269,11 +4237,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      datos: [],
+      viewFormRegistro: false,
+      datosRecordatorio: [],
       recordatorio: {
         id: '',
         codigo: '',
@@ -4286,172 +4256,45 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         producto: '',
         ultres: '',
         tel_rec: ''
-      }
+      },
+      telef: []
     };
-  },
-  created: function created() {
-    this.listaRecordatorios();
   },
   methods: {
     listaRecordatorios: function listaRecordatorios() {
       var _this = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var res;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _this.datos = [];
-                _context.prev = 1;
-                _context.next = 4;
-                return axios.get("listarRecordatorio");
+                _this.datosRecordatorio = [];
 
-              case 4:
-                res = _context.sent;
+                try {
+                  axios.get("listarRecordatorio").then(function (res) {
+                    if (res.data) {
+                      _this.datosRecordatorio = res.data;
 
-                if (res.data && res.data.length > 0) {
-                  _this.datos = res.data; // console.log(this.datos);
+                      if (_this.datosRecordatorio.length > 0) {
+                        _this.recordatorio.codigo = _this.datosRecordatorio[0].codigo;
+                        _this.recordatorio.nombre = _this.datosRecordatorio[0].nombre;
+                        _this.recordatorio.dni = _this.datosRecordatorio[0].dni;
+                        _this.recordatorio.capital = _this.datosRecordatorio[0].capital;
+                        _this.recordatorio.deuda = _this.datosRecordatorio[0].deuda;
+                        _this.recordatorio.ic = _this.datosRecordatorio[0].importe;
+                        _this.recordatorio.producto = _this.datosRecordatorio[0].producto;
+                        _this.recordatorio.medio = _this.datosRecordatorio[0].telefono;
+                        _this.recordatorio.ultres = _this.datosRecordatorio[0].ult_resp;
+                        _this.recordatorio.id = _this.datosRecordatorio[0].id;
+                        _this.recordatorio.tel_rec = _this.datosRecordatorio[0].tel_prog;
 
-                  _this.recordatorio.codigo = _this.datos[0].codigo;
-                  _this.recordatorio.nombre = _this.datos[0].nombre;
-                  _this.recordatorio.dni = _this.datos[0].dni;
-                  _this.recordatorio.capital = _this.datos[0].capital;
-                  _this.recordatorio.deuda = _this.datos[0].deuda;
-                  _this.recordatorio.ic = _this.datos[0].importe;
-                  _this.recordatorio.producto = _this.datos[0].producto;
-                  _this.recordatorio.medio = _this.datos[0].telefono;
-                  _this.recordatorio.ultres = _this.datos[0].ult_resp;
-                  _this.recordatorio.id = _this.datos[0].id;
-                  _this.recordatorio.tel_rec = _this.datos[0].tel_prog;
-                }
-
-                _context.next = 11;
-                break;
-
-              case 8:
-                _context.prev = 8;
-                _context.t0 = _context["catch"](1);
-                console.error(_context.t0);
-
-              case 11:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, null, [[1, 8]]);
-      }))();
-    }
-  },
-  mounted: function mounted() {
-    var _this2 = this;
-
-    this.$root.$on('listarRecordatorios', function () {
-      _this2.listaRecordatorios();
-    });
-  },
-  components: {
-    formRegistrarGestion: _FormRegistrarGestion__WEBPACK_IMPORTED_MODULE_1__["default"]
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MensajeSistema/PanelMensaje.vue?vue&type=script&lang=js&":
-/*!**************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/MensajeSistema/PanelMensaje.vue?vue&type=script&lang=js& ***!
-  \**************************************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["idCliente"],
-  data: function data() {
-    return {
-      arreglo: {
-        telefono: '',
-        id: this.idCliente
-      },
-      mensaje: '',
-      telefonos: [],
-      loadButton: false,
-      estado: 1,
-      cantidad: 0
-    };
-  },
-  created: function created() {
-    this.listaTelefonos();
-  },
-  methods: {
-    listaTelefonos: function listaTelefonos() {
-      var _this = this;
-
-      var id = this.idCliente;
-      axios.get("listaTel/" + id).then(function (res) {
-        if (res.data) {
-          _this.telefonos = res.data;
-          _this.cantidad = _this.telefonos.length;
-        }
-      });
-    },
-    registrar: function registrar() {
-      var _this2 = this;
-
-      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _this2.mensaje = "";
-
-                if (_this2.arreglo.telefono != "") {
-                  _this2.loadButton = true;
-
-                  try {
-                    axios.post('insertarTel', _this2.arreglo).then(function (res) {
-                      if (res.data == "ok") {
-                        _this2.loadButton = false;
-                        _this2.mensaje = "Registro con éxito";
-                        _this2.arreglo.telefono = '';
-
-                        _this2.listaTelefonos();
+                        _this.listarTelf(_this.recordatorio.id);
                       }
-                    });
-                  } catch (error) {
-                    _this2.mensaje = "Ha ocurrido un error!";
-                  }
-                } else {
-                  _this2.mensaje = "Completar el campo";
+                    }
+                  });
+                } catch (err) {
+                  console.error(err);
                 }
 
               case 2:
@@ -4462,38 +4305,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee);
       }))();
     },
-    actualizarEstado: function actualizarEstado(est, tel, id) {
-      var _this3 = this;
+    listarTelf: function listarTelf(id) {
+      var _this2 = this;
 
-      var datos = {
-        estado: est,
-        telefono: tel,
-        id: id
-      };
-      axios.put('actualizarEstadoTelefono', datos).then(function (res) {
-        if (res.data == "ok") {
-          _this3.listaTelefonos();
+      this.telef = [];
+      axios.get("listaTel/" + id).then(function (res) {
+        if (res.data) {
+          _this2.telef = res.data;
+
+          _this2.$root.$emit('telefonosRecordatorio', _this2.telef);
         }
       });
-    },
-    soloNumeros: function soloNumeros(e) {
-      var key = window.event ? e.which : e.keyCode;
-
-      if (key < 48 || key > 57) {
-        e.preventDefault();
-      }
-    },
-    limpiar: function limpiar() {
-      this.mensaje = '';
-      this.arreglo.telefono = '';
     }
   },
   mounted: function mounted() {
-    var _this4 = this;
+    var _this3 = this;
 
-    this.$root.$on('limpiarFrmTel', function () {
-      _this4.limpiar();
+    this.$root.$on('listarRecordatorios', function () {
+      _this3.listaRecordatorios();
     });
+  },
+  components: {
+    formRegistrarGestion: _FormRegistrarGestion__WEBPACK_IMPORTED_MODULE_1__["default"]
   }
 });
 
@@ -41800,6 +41633,14 @@ var render = function() {
                         _vm._v("Selecionar")
                       ]),
                       _vm._v(" "),
+                      _c("option", { attrs: { value: "0" } }, [
+                        _vm._v("Clientes nuevos sin gestión")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "-1" } }, [
+                        _vm._v("Clientes sin gestión en el mes")
+                      ]),
+                      _vm._v(" "),
                       _vm._l(_vm.respuestas, function(item, index) {
                         return _c(
                           "option",
@@ -44080,375 +43921,40 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [
-      _c("div", { staticClass: "row px-0 mx-0 my-3 bg-gray-2 rounded" }, [
-        _vm._m(0),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-6" }, [
-          _c("div", { staticClass: "row px-0 mx-0 pb-2 pt-2" }, [
-            _c("div", { staticClass: "col-md-6" }, [
-              _c("table", { staticStyle: { width: "100%" } }, [
-                _c("tr", { staticClass: "font-12" }, [
+  return _c("div", [
+    _c("div", { staticClass: "row px-0 mx-0 my-3 bg-gray-2 rounded" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-6" }, [
+        _c("div", { staticClass: "row px-0 mx-0 pb-2 pt-2" }, [
+          _c("div", { staticClass: "col-md-6" }, [
+            _c("table", { staticStyle: { width: "100%" } }, [
+              _c("tr", { staticClass: "font-12" }, [
+                _c(
+                  "td",
+                  {
+                    staticClass: "text-right pr-1",
+                    staticStyle: { width: "18px" }
+                  },
+                  [_vm._v("Teléfono")]
+                ),
+                _vm._v(" "),
+                _c("td", { staticClass: "pb-2" }, [
                   _c(
-                    "td",
+                    "select",
                     {
-                      staticClass: "text-right pr-1",
-                      staticStyle: { width: "18px" }
-                    },
-                    [_vm._v("Teléfono")]
-                  ),
-                  _vm._v(" "),
-                  _c("td", { staticClass: "pb-2" }, [
-                    _c(
-                      "select",
-                      {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.datos.telefono,
-                            expression: "datos.telefono"
-                          }
-                        ],
-                        staticClass: "form-control font-12 form-control-sm",
-                        on: {
-                          change: [
-                            function($event) {
-                              var $$selectedVal = Array.prototype.filter
-                                .call($event.target.options, function(o) {
-                                  return o.selected
-                                })
-                                .map(function(o) {
-                                  var val = "_value" in o ? o._value : o.value
-                                  return val
-                                })
-                              _vm.$set(
-                                _vm.datos,
-                                "telefono",
-                                $event.target.multiple
-                                  ? $$selectedVal
-                                  : $$selectedVal[0]
-                              )
-                            },
-                            function($event) {
-                              return _vm.inactivarUbicabilidad()
-                            }
-                          ]
-                        }
-                      },
-                      [
-                        _c("option", { attrs: { value: "" } }, [
-                          _vm._v("Seleccionar")
-                        ]),
-                        _vm._v(" "),
-                        _vm._l(_vm.telefonos, function(item, index) {
-                          return _c(
-                            "option",
-                            {
-                              key: index,
-                              class: {
-                                "bg-success text-white": item.contacto > 0,
-                                "bg-warning":
-                                  item.gestion > 0 && item.contacto == 0,
-                                "bg-danger text-white":
-                                  item.gestion == 0 && item.contacto == 0
-                              },
-                              domProps: { value: item.telefono }
-                            },
-                            [_vm._v(_vm._s(item.tel))]
-                          )
-                        })
-                      ],
-                      2
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("tr", { staticClass: "font-12" }, [
-                  _c("td", { staticClass: "text-right pr-1" }, [
-                    _vm._v("Ubicabilidad")
-                  ]),
-                  _vm._v(" "),
-                  _c("td", { staticClass: "pb-2" }, [
-                    _c(
-                      "select",
-                      {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.ubicabilidad,
-                            expression: "ubicabilidad"
-                          }
-                        ],
-                        staticClass: "form-control font-12 form-control-sm",
-                        attrs: { disabled: _vm.datos.telefono == "" },
-                        on: {
-                          change: [
-                            function($event) {
-                              var $$selectedVal = Array.prototype.filter
-                                .call($event.target.options, function(o) {
-                                  return o.selected
-                                })
-                                .map(function(o) {
-                                  var val = "_value" in o ? o._value : o.value
-                                  return val
-                                })
-                              _vm.ubicabilidad = $event.target.multiple
-                                ? $$selectedVal
-                                : $$selectedVal[0]
-                            },
-                            function($event) {
-                              return _vm.obtenerRespuestas()
-                            }
-                          ]
-                        }
-                      },
-                      [
-                        _c("option", { attrs: { value: "" } }, [
-                          _vm._v("Seleccionar")
-                        ]),
-                        _vm._v(" "),
-                        _c("option", { attrs: { value: "0" } }, [
-                          _vm._v("Contacto")
-                        ]),
-                        _vm._v(" "),
-                        _c("option", { attrs: { value: "1" } }, [
-                          _vm._v("No Contacto")
-                        ]),
-                        _vm._v(" "),
-                        _c("option", { attrs: { value: "2" } }, [
-                          _vm._v("No Disponible")
-                        ])
-                      ]
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("tr", { staticClass: "font-12" }, [
-                  _c("td", { staticClass: "text-right pr-1" }, [
-                    _vm._v("Respuesta")
-                  ]),
-                  _vm._v(" "),
-                  _c("td", { staticClass: "pb-2" }, [
-                    _c(
-                      "select",
-                      {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.datos.respuesta,
-                            expression: "datos.respuesta"
-                          }
-                        ],
-                        staticClass: "form-control font-12 form-control-sm",
-                        attrs: {
-                          disabled:
-                            _vm.ubicabilidad == "" || _vm.respuestas == ""
-                        },
-                        on: {
-                          change: [
-                            function($event) {
-                              var $$selectedVal = Array.prototype.filter
-                                .call($event.target.options, function(o) {
-                                  return o.selected
-                                })
-                                .map(function(o) {
-                                  var val = "_value" in o ? o._value : o.value
-                                  return val
-                                })
-                              _vm.$set(
-                                _vm.datos,
-                                "respuesta",
-                                $event.target.multiple
-                                  ? $$selectedVal
-                                  : $$selectedVal[0]
-                              )
-                            },
-                            function($event) {
-                              return _vm.validarRespuestas(_vm.datos.respuesta)
-                            }
-                          ]
-                        }
-                      },
-                      [
-                        _c("option", { attrs: { value: "" } }, [
-                          _vm._v("Seleccionar")
-                        ]),
-                        _vm._v(" "),
-                        _vm._l(_vm.respuestas, function(item, index) {
-                          return _c(
-                            "option",
-                            { key: index, domProps: { value: item.id } },
-                            [_vm._v(_vm._s(item.respuesta))]
-                          )
-                        })
-                      ],
-                      2
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _vm.viewMotivo
-                  ? _c("tr", { staticClass: "font-12" }, [
-                      _c("td", { staticClass: "text-right pr-1" }, [
-                        _vm._v("Motivo de No Pago")
-                      ]),
-                      _vm._v(" "),
-                      _c("td", { staticClass: "pb-2" }, [
-                        _c(
-                          "select",
-                          {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.datos.motivoNoPago,
-                                expression: "datos.motivoNoPago"
-                              }
-                            ],
-                            staticClass: "form-control font-12 form-control-sm",
-                            on: {
-                              change: function($event) {
-                                var $$selectedVal = Array.prototype.filter
-                                  .call($event.target.options, function(o) {
-                                    return o.selected
-                                  })
-                                  .map(function(o) {
-                                    var val = "_value" in o ? o._value : o.value
-                                    return val
-                                  })
-                                _vm.$set(
-                                  _vm.datos,
-                                  "motivoNoPago",
-                                  $event.target.multiple
-                                    ? $$selectedVal
-                                    : $$selectedVal[0]
-                                )
-                              }
-                            }
-                          },
-                          [
-                            _c("option", { attrs: { value: "" } }, [
-                              _vm._v("Seleccionar")
-                            ]),
-                            _vm._v(" "),
-                            _vm._l(_vm.motivos, function(item, index) {
-                              return _c(
-                                "option",
-                                { key: index, domProps: { value: item.id } },
-                                [_vm._v(_vm._s(item.motivo))]
-                              )
-                            })
-                          ],
-                          2
-                        )
-                      ])
-                    ])
-                  : _vm._e()
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-md-6" }, [
-              _c("table", { staticStyle: { width: "100%" } }, [
-                _c("tr", { staticClass: "font-12" }, [
-                  _c("td", { staticClass: "text-right pr-1" }, [
-                    _vm._v("Fecha")
-                  ]),
-                  _vm._v(" "),
-                  _c("td", { staticClass: "pb-2" }, [
-                    _c("input", {
                       directives: [
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.datos.fechaPDP,
-                          expression: "datos.fechaPDP"
+                          value: _vm.datos.telefono,
+                          expression: "datos.telefono"
                         }
                       ],
                       staticClass: "form-control font-12 form-control-sm",
-                      attrs: {
-                        type: "date",
-                        min: _vm.fechaActual,
-                        max: _vm.fechaMax,
-                        disabled: ![1, 2, 43].includes(_vm.datos.respuesta)
-                      },
-                      domProps: { value: _vm.datos.fechaPDP },
                       on: {
-                        "!keydown": function($event) {
-                          $event.preventDefault()
-                          $event.stopPropagation()
-                        },
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(_vm.datos, "fechaPDP", $event.target.value)
-                        }
-                      }
-                    })
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("tr", { staticClass: "font-12" }, [
-                  _c("td", { staticClass: "text-right pr-1" }, [
-                    _vm._v("Monto")
-                  ]),
-                  _vm._v(" "),
-                  _c("td", { staticClass: "pb-2" }, [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.datos.montoPDP,
-                          expression: "datos.montoPDP"
-                        }
-                      ],
-                      staticClass: "form-control font-12 form-control-sm",
-                      attrs: {
-                        type: "number",
-                        disabled: ![1, 2, 43].includes(_vm.datos.respuesta)
-                      },
-                      domProps: { value: _vm.datos.montoPDP },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(_vm.datos, "montoPDP", $event.target.value)
-                        }
-                      }
-                    })
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("tr", { staticClass: "font-12" }, [
-                  _c("td", { staticClass: "text-right pr-1" }, [
-                    _vm._v("Moneda")
-                  ]),
-                  _vm._v(" "),
-                  _c("td", { staticClass: "pb-2" }, [
-                    _c(
-                      "select",
-                      {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.datos.moneda,
-                            expression: "datos.moneda"
-                          }
-                        ],
-                        staticClass: "form-control font-12 form-control-sm",
-                        attrs: {
-                          disabled: ![1, 2, 43].includes(_vm.datos.respuesta)
-                        },
-                        on: {
-                          change: function($event) {
+                        change: [
+                          function($event) {
                             var $$selectedVal = Array.prototype.filter
                               .call($event.target.options, function(o) {
                                 return o.selected
@@ -44459,290 +43965,612 @@ var render = function() {
                               })
                             _vm.$set(
                               _vm.datos,
-                              "moneda",
+                              "telefono",
                               $event.target.multiple
                                 ? $$selectedVal
                                 : $$selectedVal[0]
                             )
+                          },
+                          function($event) {
+                            return _vm.inactivarUbicabilidad()
                           }
+                        ]
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "" } }, [
+                        _vm._v("Seleccionar")
+                      ]),
+                      _vm._v(" "),
+                      _vm._l(_vm.telefonos, function(item, index) {
+                        return _c(
+                          "option",
+                          {
+                            key: index,
+                            class: {
+                              "bg-success text-white": item.contacto > 0,
+                              "bg-warning":
+                                item.gestion > 0 && item.contacto == 0,
+                              "bg-danger text-white":
+                                item.gestion == 0 && item.contacto == 0
+                            },
+                            domProps: { value: item.telefono }
+                          },
+                          [_vm._v(_vm._s(item.tel))]
+                        )
+                      })
+                    ],
+                    2
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", { staticClass: "font-12" }, [
+                _c("td", { staticClass: "text-right pr-1" }, [
+                  _vm._v("Ubicabilidad")
+                ]),
+                _vm._v(" "),
+                _c("td", { staticClass: "pb-2" }, [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.ubicabilidad,
+                          expression: "ubicabilidad"
                         }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm",
+                      attrs: { disabled: _vm.datos.telefono == "" },
+                      on: {
+                        change: [
+                          function($event) {
+                            var $$selectedVal = Array.prototype.filter
+                              .call($event.target.options, function(o) {
+                                return o.selected
+                              })
+                              .map(function(o) {
+                                var val = "_value" in o ? o._value : o.value
+                                return val
+                              })
+                            _vm.ubicabilidad = $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          },
+                          function($event) {
+                            return _vm.obtenerRespuestas()
+                          }
+                        ]
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "" } }, [
+                        _vm._v("Seleccionar")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "0" } }, [
+                        _vm._v("Contacto")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "1" } }, [
+                        _vm._v("No Contacto")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "2" } }, [
+                        _vm._v("No Disponible")
+                      ])
+                    ]
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", { staticClass: "font-12" }, [
+                _c("td", { staticClass: "text-right pr-1" }, [
+                  _vm._v("Respuesta")
+                ]),
+                _vm._v(" "),
+                _c("td", { staticClass: "pb-2" }, [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.datos.respuesta,
+                          expression: "datos.respuesta"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm",
+                      attrs: {
+                        disabled: _vm.ubicabilidad == "" || _vm.respuestas == ""
                       },
-                      [
-                        _c("option", { attrs: { value: "0" } }, [
-                          _vm._v("SOLES")
-                        ]),
-                        _vm._v(" "),
-                        _c("option", { attrs: { value: "1" } }, [
-                          _vm._v("DOLARES")
-                        ])
-                      ]
-                    )
+                      on: {
+                        change: [
+                          function($event) {
+                            var $$selectedVal = Array.prototype.filter
+                              .call($event.target.options, function(o) {
+                                return o.selected
+                              })
+                              .map(function(o) {
+                                var val = "_value" in o ? o._value : o.value
+                                return val
+                              })
+                            _vm.$set(
+                              _vm.datos,
+                              "respuesta",
+                              $event.target.multiple
+                                ? $$selectedVal
+                                : $$selectedVal[0]
+                            )
+                          },
+                          function($event) {
+                            return _vm.validarRespuestas(_vm.datos.respuesta)
+                          }
+                        ]
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "" } }, [
+                        _vm._v("Seleccionar")
+                      ]),
+                      _vm._v(" "),
+                      _vm._l(_vm.respuestas, function(item, index) {
+                        return _c(
+                          "option",
+                          { key: index, domProps: { value: item.id } },
+                          [_vm._v(_vm._s(item.respuesta))]
+                        )
+                      })
+                    ],
+                    2
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _vm.viewMotivo
+                ? _c("tr", { staticClass: "font-12" }, [
+                    _c("td", { staticClass: "text-right pr-1" }, [
+                      _vm._v("Motivo de No Pago")
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "pb-2" }, [
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.datos.motivoNoPago,
+                              expression: "datos.motivoNoPago"
+                            }
+                          ],
+                          staticClass: "form-control font-12 form-control-sm",
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.datos,
+                                "motivoNoPago",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        [
+                          _c("option", { attrs: { value: "" } }, [
+                            _vm._v("Seleccionar")
+                          ]),
+                          _vm._v(" "),
+                          _vm._l(_vm.motivos, function(item, index) {
+                            return _c(
+                              "option",
+                              { key: index, domProps: { value: item.id } },
+                              [_vm._v(_vm._s(item.motivo))]
+                            )
+                          })
+                        ],
+                        2
+                      )
+                    ])
                   ])
+                : _vm._e()
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-6" }, [
+            _c("table", { staticStyle: { width: "100%" } }, [
+              _c("tr", { staticClass: "font-12" }, [
+                _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Fecha")]),
+                _vm._v(" "),
+                _c("td", { staticClass: "pb-2" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.datos.fechaPDP,
+                        expression: "datos.fechaPDP"
+                      }
+                    ],
+                    staticClass: "form-control font-12 form-control-sm",
+                    attrs: {
+                      type: "date",
+                      min: _vm.fechaActual,
+                      max: _vm.fechaMax,
+                      disabled: ![1, 2, 43].includes(_vm.datos.respuesta)
+                    },
+                    domProps: { value: _vm.datos.fechaPDP },
+                    on: {
+                      "!keydown": function($event) {
+                        $event.preventDefault()
+                        $event.stopPropagation()
+                      },
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.datos, "fechaPDP", $event.target.value)
+                      }
+                    }
+                  })
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", { staticClass: "font-12" }, [
+                _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Monto")]),
+                _vm._v(" "),
+                _c("td", { staticClass: "pb-2" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.datos.montoPDP,
+                        expression: "datos.montoPDP"
+                      }
+                    ],
+                    staticClass: "form-control font-12 form-control-sm",
+                    attrs: {
+                      type: "number",
+                      disabled: ![1, 2, 43].includes(_vm.datos.respuesta)
+                    },
+                    domProps: { value: _vm.datos.montoPDP },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.datos, "montoPDP", $event.target.value)
+                      }
+                    }
+                  })
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", { staticClass: "font-12" }, [
+                _c("td", { staticClass: "text-right pr-1" }, [
+                  _vm._v("Moneda")
+                ]),
+                _vm._v(" "),
+                _c("td", { staticClass: "pb-2" }, [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.datos.moneda,
+                          expression: "datos.moneda"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm",
+                      attrs: {
+                        disabled: ![1, 2, 43].includes(_vm.datos.respuesta)
+                      },
+                      on: {
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.$set(
+                            _vm.datos,
+                            "moneda",
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          )
+                        }
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "0" } }, [
+                        _vm._v("SOLES")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "1" } }, [
+                        _vm._v("DOLARES")
+                      ])
+                    ]
+                  )
                 ])
               ])
             ])
           ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-6" }, [
+        _c("div", { staticClass: "row px-0 mx-0" }, [
+          _vm._m(1),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-10" }, [
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.datos.detalle,
+                  expression: "datos.detalle"
+                }
+              ],
+              staticClass: "form-control w-100",
+              attrs: {
+                rows: "3",
+                disabled: _vm.datos.respuesta == "",
+                maxlength: "255",
+                oncopy: "return false",
+                onpaste: "return false"
+              },
+              domProps: { value: _vm.datos.detalle },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.datos, "detalle", $event.target.value)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("small", { staticStyle: { "font-size": "10px" } }, [
+              _vm._v("Max. 255 caractéres")
+            ])
+          ])
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "col-md-6" }, [
-          _c("div", { staticClass: "row px-0 mx-0" }, [
-            _vm._m(1),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-md-10" }, [
-              _c("textarea", {
+        _c("div", { staticClass: "row px-0 mx-0 pt-2 pb-5" }, [
+          _c("div", { staticClass: "col-md-2" }),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-2" }, [
+            _c("div", { staticClass: "d-flex py-2" }, [
+              _c("label", { staticClass: "font-12 pr-1 text-right" }, [
+                _vm._v("Recordatorio")
+              ]),
+              _vm._v(" "),
+              _c("input", {
                 directives: [
                   {
                     name: "model",
                     rawName: "v-model",
-                    value: _vm.datos.detalle,
-                    expression: "datos.detalle"
+                    value: _vm.datos.rec,
+                    expression: "datos.rec"
                   }
                 ],
-                staticClass: "form-control w-100",
-                attrs: {
-                  rows: "3",
-                  disabled: _vm.datos.respuesta == "",
-                  maxlength: "255",
-                  oncopy: "return false",
-                  onpaste: "return false"
+                attrs: { type: "checkbox" },
+                domProps: {
+                  checked: Array.isArray(_vm.datos.rec)
+                    ? _vm._i(_vm.datos.rec, null) > -1
+                    : _vm.datos.rec
                 },
-                domProps: { value: _vm.datos.detalle },
+                on: {
+                  change: function($event) {
+                    var $$a = _vm.datos.rec,
+                      $$el = $event.target,
+                      $$c = $$el.checked ? true : false
+                    if (Array.isArray($$a)) {
+                      var $$v = null,
+                        $$i = _vm._i($$a, $$v)
+                      if ($$el.checked) {
+                        $$i < 0 && _vm.$set(_vm.datos, "rec", $$a.concat([$$v]))
+                      } else {
+                        $$i > -1 &&
+                          _vm.$set(
+                            _vm.datos,
+                            "rec",
+                            $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                          )
+                      }
+                    } else {
+                      _vm.$set(_vm.datos, "rec", $$c)
+                    }
+                  }
+                }
+              })
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-4" }, [
+            _c("div", { staticClass: "d-flex px-1" }, [
+              _c("label", { staticClass: "font-12 pr-1 py-2" }, [
+                _vm._v("Fecha")
+              ]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.datos.fechaRec,
+                    expression: "datos.fechaRec"
+                  }
+                ],
+                staticClass: "form-control font-12 form-control-sm",
+                attrs: { type: "date", disabled: _vm.datos.rec == false },
+                domProps: { value: _vm.datos.fechaRec },
                 on: {
                   input: function($event) {
                     if ($event.target.composing) {
                       return
                     }
-                    _vm.$set(_vm.datos, "detalle", $event.target.value)
+                    _vm.$set(_vm.datos, "fechaRec", $event.target.value)
                   }
                 }
-              }),
-              _vm._v(" "),
-              _c("small", { staticStyle: { "font-size": "10px" } }, [
-                _vm._v("Max. 255 caractéres")
-              ])
+              })
             ])
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "row px-0 mx-0 pt-2 pb-5" }, [
-            _c("div", { staticClass: "col-md-2" }),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-md-2" }, [
-              _c("div", { staticClass: "d-flex py-2" }, [
-                _c("label", { staticClass: "font-12 pr-1 text-right" }, [
-                  _vm._v("Recordatorio")
-                ]),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.datos.rec,
-                      expression: "datos.rec"
-                    }
-                  ],
-                  attrs: { type: "checkbox" },
-                  domProps: {
-                    checked: Array.isArray(_vm.datos.rec)
-                      ? _vm._i(_vm.datos.rec, null) > -1
-                      : _vm.datos.rec
-                  },
-                  on: {
-                    change: function($event) {
-                      var $$a = _vm.datos.rec,
-                        $$el = $event.target,
-                        $$c = $$el.checked ? true : false
-                      if (Array.isArray($$a)) {
-                        var $$v = null,
-                          $$i = _vm._i($$a, $$v)
-                        if ($$el.checked) {
-                          $$i < 0 &&
-                            _vm.$set(_vm.datos, "rec", $$a.concat([$$v]))
-                        } else {
-                          $$i > -1 &&
-                            _vm.$set(
-                              _vm.datos,
-                              "rec",
-                              $$a.slice(0, $$i).concat($$a.slice($$i + 1))
-                            )
-                        }
-                      } else {
-                        _vm.$set(_vm.datos, "rec", $$c)
-                      }
-                    }
-                  }
-                })
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-md-4" }, [
-              _c("div", { staticClass: "d-flex px-1" }, [
-                _c("label", { staticClass: "font-12 pr-1 py-2" }, [
-                  _vm._v("Fecha")
-                ]),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.datos.fechaRec,
-                      expression: "datos.fechaRec"
-                    }
-                  ],
-                  staticClass: "form-control font-12 form-control-sm",
-                  attrs: { type: "date", disabled: _vm.datos.rec == false },
-                  domProps: { value: _vm.datos.fechaRec },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(_vm.datos, "fechaRec", $event.target.value)
-                    }
-                  }
-                })
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-md-4" }, [
-              _c("div", { staticClass: "d-flex px-1" }, [
-                _c("label", { staticClass: "font-12 pr-1 py-2" }, [
-                  _vm._v("Hora")
-                ]),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.datos.horaRec,
-                      expression: "datos.horaRec"
-                    }
-                  ],
-                  staticClass: "form-control font-11 form-control-sm",
-                  attrs: { type: "time", disabled: _vm.datos.rec == false },
-                  domProps: { value: _vm.datos.horaRec },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(_vm.datos, "horaRec", $event.target.value)
-                    }
-                  }
-                })
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-md-12 text-right" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "btn btn-blue btn-sm px-5",
-                  attrs: { href: "" },
-                  on: {
-                    click: function($event) {
-                      $event.preventDefault()
-                      return _vm.registrar()
-                    }
-                  }
-                },
-                [
-                  _vm.loadButton
-                    ? _c("span", {
-                        staticClass: "spinner-border spinner-border-sm",
-                        attrs: { role: "status", "aria-hidden": "true" }
-                      })
-                    : _vm._e(),
-                  _vm._v(
-                    "\n                        Registrar\n                    "
-                  )
-                ]
-              ),
+          _c("div", { staticClass: "col-md-4" }, [
+            _c("div", { staticClass: "d-flex px-1" }, [
+              _c("label", { staticClass: "font-12 pr-1 py-2" }, [
+                _vm._v("Hora")
+              ]),
               _vm._v(" "),
-              _vm.tipo == 2
-                ? _c(
-                    "a",
-                    {
-                      staticClass: "btn btn-blue btn-sm ml-2 px-4",
-                      attrs: { href: "" },
-                      on: {
-                        click: function($event) {
-                          $event.preventDefault()
-                          return _vm.reprogramar()
-                        }
-                      }
-                    },
-                    [
-                      _vm.loadButton2
-                        ? _c("span", {
-                            staticClass:
-                              "spinner-border spinner-border-sm pr-2",
-                            attrs: { role: "status", "aria-hidden": "true" }
-                          })
-                        : _c("i", { staticClass: "fa fa-clock pr-1" }),
-                      _vm._v("Reprogramar\n                    ")
-                    ]
-                  )
-                : _vm._e()
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-md-7" }),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-md-5 text-center mt-3" }, [
-              _vm.mensaje
-                ? _c(
-                    "div",
-                    {
-                      staticClass: "alert w-5 fadeInRight",
-                      class: {
-                        "alert-success": _vm.mensaje.substr(0, 1) == "R",
-                        "alert-danger": _vm.mensaje.substr(0, 1) == "E"
-                      }
-                    },
-                    [
-                      _c("p", { staticClass: "mb-0" }, [
-                        _c("i", {
-                          staticClass: "fa pr-2",
-                          class: {
-                            "fa-check ": _vm.mensaje.substr(0, 1) == "R",
-                            "fa-times": _vm.mensaje.substr(0, 1) == "E"
-                          }
-                        }),
-                        _vm._v(_vm._s(_vm.mensaje))
-                      ])
-                    ]
-                  )
-                : _vm._e()
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.datos.horaRec,
+                    expression: "datos.horaRec"
+                  }
+                ],
+                staticClass: "form-control font-11 form-control-sm",
+                attrs: { type: "time", disabled: _vm.datos.rec == false },
+                domProps: { value: _vm.datos.horaRec },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.datos, "horaRec", $event.target.value)
+                  }
+                }
+              })
             ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-12" }, [
-          _vm.errorsDatos != ""
-            ? _c("div", { staticClass: "alert alert-warning" }, [
-                _c("p", { staticClass: "mb-0" }, [
-                  _vm._v("Corriga el(los) siguiente(s) error(es):")
-                ]),
-                _vm._v(" "),
-                _c(
-                  "ul",
-                  { staticClass: "text-left" },
-                  _vm._l(_vm.errorsDatos, function(error, index) {
-                    return _c("li", { key: index }, [_vm._v(_vm._s(error))])
-                  }),
-                  0
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-12 text-right" }, [
+            _c(
+              "a",
+              {
+                staticClass: "btn btn-blue btn-sm px-5",
+                attrs: { href: "" },
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    return _vm.registrar()
+                  }
+                }
+              },
+              [
+                _vm.loadButton
+                  ? _c("span", {
+                      staticClass: "spinner-border spinner-border-sm",
+                      attrs: { role: "status", "aria-hidden": "true" }
+                    })
+                  : _vm._e(),
+                _vm._v(
+                  "\n                        Registrar\n                    "
                 )
-              ])
-            : _vm._e()
+              ]
+            ),
+            _vm._v(" "),
+            _vm.tipo == 2
+              ? _c(
+                  "a",
+                  {
+                    staticClass: "btn btn-blue btn-sm ml-2 px-4",
+                    attrs: { href: "" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.reprogramar()
+                      }
+                    }
+                  },
+                  [
+                    _vm.loadButton2
+                      ? _c("span", {
+                          staticClass: "spinner-border spinner-border-sm pr-2",
+                          attrs: { role: "status", "aria-hidden": "true" }
+                        })
+                      : _c("i", { staticClass: "fa fa-clock pr-1" }),
+                    _vm._v("Reprogramar\n                    ")
+                  ]
+                )
+              : _vm._e()
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-7" }),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-5 text-center mt-3" }, [
+            _vm.mensaje
+              ? _c(
+                  "div",
+                  {
+                    staticClass: "alert w-5 fadeInRight",
+                    class: {
+                      "alert-success": _vm.mensaje.substr(0, 1) == "R",
+                      "alert-danger": _vm.mensaje.substr(0, 1) == "E"
+                    }
+                  },
+                  [
+                    _c("p", { staticClass: "mb-0" }, [
+                      _c("i", {
+                        staticClass: "fa pr-2",
+                        class: {
+                          "fa-check ": _vm.mensaje.substr(0, 1) == "R",
+                          "fa-times": _vm.mensaje.substr(0, 1) == "E"
+                        }
+                      }),
+                      _vm._v(_vm._s(_vm.mensaje))
+                    ])
+                  ]
+                )
+              : _vm._e()
+          ])
         ])
       ]),
       _vm._v(" "),
-      _c("panelMensaje")
-    ],
-    1
-  )
+      _c("div", { staticClass: "col-md-12" }, [
+        _vm.errorsDatos != ""
+          ? _c("div", { staticClass: "alert alert-warning" }, [
+              _c("p", { staticClass: "mb-0" }, [
+                _vm._v("Corriga el(los) siguiente(s) error(es):")
+              ]),
+              _vm._v(" "),
+              _c(
+                "ul",
+                { staticClass: "text-left" },
+                _vm._l(_vm.errorsDatos, function(error, index) {
+                  return _c("li", { key: index }, [_vm._v(_vm._s(error))])
+                }),
+                0
+              )
+            ])
+          : _vm._e()
+      ])
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
@@ -44818,7 +44646,7 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _c("recordatorio", { attrs: { cliente: _vm.dataCliente[0] } }),
+      _c("recordatorio"),
       _vm._v(" "),
       _c("clientes", { attrs: { userlogeado: _vm.userlogeado } }),
       _vm._v(" "),
@@ -44921,22 +44749,15 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _vm.dataCliente.length > 0
-                        ? _c(
-                            "div",
-                            [
-                              _c("formRegistrarGestion", {
-                                attrs: {
-                                  "id-cliente": _vm.idCliente,
-                                  tipo: 1,
-                                  telefonosgenerales:
-                                    _vm.detalleGeneral["telefonos"]
-                                }
-                              })
-                            ],
-                            1
-                          )
-                        : _vm._e(),
+                      _c("formRegistrarGestion", {
+                        attrs: {
+                          "id-cliente": _vm.idCliente,
+                          tipo: 1,
+                          telefonosgenerales: _vm.detalleGeneral["telefonos"],
+                          valcontacto: _vm.detalleGeneral["validar_contacto"],
+                          datospdp: _vm.detalleGeneral["pdps"]
+                        }
+                      }),
                       _vm._v(" "),
                       _c("div", { staticClass: "btns-lateral" }, [
                         _vm._m(5),
@@ -44968,7 +44789,7 @@ var render = function() {
                       _c("detalleTelefonos", {
                         attrs: {
                           idCliente: _vm.idCliente,
-                          telefonosgenerales: _vm.detalleGeneral["telefonos"]
+                          telefonospanel: this.detalleGeneral["telefonos"]
                         }
                       }),
                       _vm._v(" "),
@@ -45110,7 +44931,7 @@ var render = function() {
           },
           [
             _c("div", { staticClass: "modal-content " }, [
-              _vm.datos == ""
+              _vm.datosRecordatorio == "" && _vm.telef == ""
                 ? _c("div", { staticClass: "modal-body px-3 bg-gray-2 pb-0" }, [
                     _vm._m(0)
                   ])
@@ -45245,100 +45066,6 @@ var staticRenderFns = [
           attrs: { href: "", "data-dismiss": "modal", "aria-label": "Close" }
         },
         [_c("span", { staticClass: "fa fa-chevron-up" })]
-      )
-    ])
-  }
-]
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MensajeSistema/PanelMensaje.vue?vue&type=template&id=c77903e8&":
-/*!******************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/MensajeSistema/PanelMensaje.vue?vue&type=template&id=c77903e8& ***!
-  \******************************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", [
-      _c(
-        "div",
-        {
-          staticClass: "modal fade",
-          staticStyle: { "z-index": "9999999" },
-          attrs: {
-            id: "panel-mensaje",
-            tabindex: "-1",
-            role: "dialog",
-            "aria-hidden": "true"
-          }
-        },
-        [
-          _c(
-            "div",
-            {
-              staticClass: "modal-dialog modal-dialog-rigth",
-              staticStyle: { width: "280px" },
-              attrs: { role: "document" }
-            },
-            [
-              _c("div", { staticClass: "modal-content" }, [
-                _c(
-                  "div",
-                  { staticClass: "modal-header bg-blue pt-3 pl-3 pr-4" },
-                  [
-                    _c("p", { staticClass: "p-title mb-0 text-white" }, [
-                      _c("i", { staticClass: "fa fa-phone pr-3" }),
-                      _vm._v("Mensaje del Sistema")
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "a",
-                      {
-                        staticClass: "close ",
-                        attrs: {
-                          href: "",
-                          "data-dismiss": "modal",
-                          "aria-label": "Close"
-                        }
-                      },
-                      [_c("span", { staticClass: "fa fa-times text-white" })]
-                    )
-                  ]
-                ),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  {
-                    staticClass: "modal-body overflow-auto pl-3 pr-4 bg-gray-2"
-                  },
-                  [
-                    _vm._v(
-                      "\n                    NO se cniccijcicjci\n                "
-                    )
-                  ]
-                )
-              ])
-            ]
-          )
-        ]
       )
     ])
   }
@@ -59004,75 +58731,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Recordatorios_vue_vue_type_template_id_3c000064___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Recordatorios_vue_vue_type_template_id_3c000064___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
-/***/ "./resources/js/components/MensajeSistema/PanelMensaje.vue":
-/*!*****************************************************************!*\
-  !*** ./resources/js/components/MensajeSistema/PanelMensaje.vue ***!
-  \*****************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _PanelMensaje_vue_vue_type_template_id_c77903e8___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PanelMensaje.vue?vue&type=template&id=c77903e8& */ "./resources/js/components/MensajeSistema/PanelMensaje.vue?vue&type=template&id=c77903e8&");
-/* harmony import */ var _PanelMensaje_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PanelMensaje.vue?vue&type=script&lang=js& */ "./resources/js/components/MensajeSistema/PanelMensaje.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _PanelMensaje_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _PanelMensaje_vue_vue_type_template_id_c77903e8___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _PanelMensaje_vue_vue_type_template_id_c77903e8___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  null,
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/MensajeSistema/PanelMensaje.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/js/components/MensajeSistema/PanelMensaje.vue?vue&type=script&lang=js&":
-/*!******************************************************************************************!*\
-  !*** ./resources/js/components/MensajeSistema/PanelMensaje.vue?vue&type=script&lang=js& ***!
-  \******************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_PanelMensaje_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./PanelMensaje.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MensajeSistema/PanelMensaje.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_PanelMensaje_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/MensajeSistema/PanelMensaje.vue?vue&type=template&id=c77903e8&":
-/*!************************************************************************************************!*\
-  !*** ./resources/js/components/MensajeSistema/PanelMensaje.vue?vue&type=template&id=c77903e8& ***!
-  \************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PanelMensaje_vue_vue_type_template_id_c77903e8___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./PanelMensaje.vue?vue&type=template&id=c77903e8& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MensajeSistema/PanelMensaje.vue?vue&type=template&id=c77903e8&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PanelMensaje_vue_vue_type_template_id_c77903e8___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PanelMensaje_vue_vue_type_template_id_c77903e8___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

@@ -56,12 +56,12 @@
 
 <script>
     export default {
-        props:["idCliente","telefonosgenerales"],
+        props:["idCliente","telefonospanel"],
         data() {
             return {
                 arreglo:{telefono:'',id:this.idCliente},
                 mensaje:'',
-                telefonos:this.telefonosgenerales,
+                telefonos:this.telefonospanel,
                 loadButton:false,
                 estado:1,
                 cantidad:0
@@ -72,11 +72,11 @@
         },
         methods:{
             listaTelefonos(){
-                this.telefonos=[];
+                // this.telefonos=[];
                 const id= this.idCliente;
                 axios.get("listaTel/"+id).then(res=>{
                     if(res.data){
-                        this.telefonos=res.data;                           
+                        this.telefonos=res.data['telefonos'];                           
                         this.cantidad=this.telefonos.length;
                     }
                 })

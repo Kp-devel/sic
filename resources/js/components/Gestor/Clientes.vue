@@ -40,6 +40,8 @@
                                 <td colspan="3">
                                     <select class="form-control font-12 form-control-sm " v-model="busqueda.respuesta" @change="busqueda.motivo=''">
                                         <option value="">Selecionar</option>
+                                        <option value="0">Clientes nuevos sin gestión</option>
+                                        <option value="-1">Clientes sin gestión en el mes</option>
                                         <option v-for="(item,index) in respuestas" :key="index" :value="item.res_id">{{item.res_des}}</option>
                                     </select>
                                 </td>

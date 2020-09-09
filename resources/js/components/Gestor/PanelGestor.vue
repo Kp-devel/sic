@@ -3,10 +3,9 @@
         <!-- btn recordatorios -->
          <div class="panel-top text-center">
              <!-- fa-sort-down -->
-            <a href="" class="btn-up" data-toggle="modal" 
-            data-target="#modal-recordatorio" @click.prevent="verRecordatorios()"><i class="fa fa-clock fa-lg"></i></a>
+            <a href="" class="btn-up" data-toggle="modal" data-target="#modal-recordatorio" @click.prevent="verRecordatorios()"><i class="fa fa-clock fa-lg"></i></a>
         </div>
-        <recordatorio :cliente="dataCliente[0]"/>
+        <recordatorio />
         <!-- lista de clientes y menu -->
         <clientes :userlogeado="userlogeado"/>
         <!-- detalle de cliente -->
@@ -59,9 +58,9 @@
                         </div>
                     </div>
                     <!-- panel de registro de gestion -->
-                    <div v-if="dataCliente.length>0">
-                        <formRegistrarGestion :id-cliente="idCliente" :tipo="1" :telefonosgenerales="detalleGeneral['telefonos']" />
-                    </div>
+                    
+                    <formRegistrarGestion :id-cliente="idCliente" :tipo="1" :telefonosgenerales="detalleGeneral['telefonos']" :valcontacto="detalleGeneral['validar_contacto']"  :datospdp="detalleGeneral['pdps']" />
+                    
                     <!-- botones laterales -->
                     <div class="btns-lateral">
                         <a href="#" class="btn-lateral bg-danger" data-toggle="modal" data-target="#modal-pagos"><label class="texto-vertical">PAGOS</label></a>
@@ -70,7 +69,7 @@
                     </div>
 
                     <!-- panel de telefonos -->
-                    <detalleTelefonos :idCliente="idCliente" :telefonosgenerales="detalleGeneral['telefonos']"/>
+                    <detalleTelefonos :idCliente="idCliente" :telefonospanel="this.detalleGeneral['telefonos']"/>
                     <!-- panel de pagos -->
                     <detallePagos :idCliente="idCliente"/>
                 </div>
@@ -106,11 +105,11 @@
         methods:{
             cerrarDetalle(){
                 this.viewDetalleCliente=false;
+                this.detalleGeneral=[];
                 $('#contenidoLista').toggleClass('pos_fixed');
             },       
             verTelefonos(){
                 this.$root.$emit('limpiarFrmTel');
-                //$('#modal-telefonos').modal();
             },
             verRecordatorios(){
                 this.$root.$emit('listarRecordatorios');

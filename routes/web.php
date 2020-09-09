@@ -32,8 +32,8 @@ Route::group(['middleware' => ['auth']], function(){
     
     //Gestion
     Route::post('insertarGestion', 'GestionController@insertarGestion');
-    Route::get('validarContacto/{id}', 'GestionController@validarContacto');
-    Route::get('validarPDP/{id}', 'GestionController@validarPDP');
+    // Route::get('validarContacto/{id}', 'GestionController@validarContacto');
+    // Route::get('validarPDP/{id}', 'GestionController@validarPDP');
     Route::post('validarDetalleIdentico', 'GestionController@validarDetalleIdentico');
     
     //Recordatorio

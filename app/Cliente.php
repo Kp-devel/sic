@@ -104,7 +104,15 @@ class Cliente extends Model
             $sql = $sql." and det_cli_tra like '%$tramo%' ";
         }
         if($respuesta!= null){
-            $sql = $sql." and res_id_FK=$respuesta ";
+            if($respuesta==0){
+                $sql = $sql." and res_id_FK IS NULL ";
+            }
+            if($respuesta==-1){
+                $sql = $sql." and (res_id_FK is null or date_format(ges_cli_fec,'%Y%m')<date_format(now(),'%Y%m'))";
+            }
+            if($respuesta<>0 && $respuesta<>-1){
+                $sql = $sql." and res_id_FK=$respuesta ";
+            }
         }
         if($fec_desde!= "undefined-undefined-" && $fec_hasta!= "undefined-undefined-"){
             $sql = $sql." and cli_id in (select cli_id_FK as id from compromiso_cliente where date_format(com_cli_fec_pag,'%Y-%m-%d') between '$fec_desde' and '$fec_hasta')";
@@ -313,21 +321,21 @@ class Cliente extends Model
     public static function infoCliente($id){
         $sql="
             select 
-                cli_inf_entidades as entidades,
-                cli_inf_score as score,
-                cli_dir_dir as direccion,
-                cli_dir_dis as distrito,
-                cli_dir_pro as provincia,
-                cli_dir_dep as departamento,
-                cli_suel_emp as laboral,
-                cli_suel_can as sueldo
+                    cli_cod,
+                    cli_inf_entidades as entidades,
+                    cli_inf_score as score,
+                    cli_dir_dir as direccion,
+                    cli_dir_dis as distrito,
+                    cli_dir_pro as provincia,
+                    cli_dir_dep as departamento,
+                    cli_suel_emp as laboral,
+                    cli_suel_can as sueldo
             from
-                cliente_infAdic as i
-            left join
-                cliente_direccion_2 as d on i.cli_id_FK=d.cli_id_FK
-            left join 
-                cliente_sueldo as s on i.cli_id_FK=s.cli_id_FK
-            where i.cli_id_FK = :id
+                    cliente c
+            left join cliente_infAdic i on c.cli_id=i.cli_id_FK
+            left join cliente_direccion_2 d on c.cli_id=d.cli_id_FK
+            left join cliente_sueldo s on c.cli_id=s.cli_id_FK
+            where c.cli_id = :id
             limit 1
         ";
         $query=DB::connection('mysql')->select(DB::raw($sql),array("id"=>$id));
