@@ -83,7 +83,7 @@
                         <label class="font-12 pt-2">Detalle de Gestión</label>
                     </div>
                     <div class="col-md-10">
-                        <textarea class="form-control w-100" rows="3" :disabled="datos.respuesta==''" v-model="datos.detalle" maxlength="255"  oncopy="return false" onpaste="return false"></textarea>
+                        <textarea class="form-control w-100" rows="3"  v-model="datos.detalle" maxlength="255"  oncopy="return false" onpaste="return false"></textarea>
                         <small style="font-size:10px;">Max. 255 caractéres</small>
                     </div>
                 </div>

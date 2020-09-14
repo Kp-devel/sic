@@ -44628,7 +44628,6 @@ var render = function() {
               staticClass: "form-control w-100",
               attrs: {
                 rows: "3",
-                disabled: _vm.datos.respuesta == "",
                 maxlength: "255",
                 oncopy: "return false",
                 onpaste: "return false"
