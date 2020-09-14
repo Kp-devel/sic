@@ -23,10 +23,13 @@ class Cliente extends Model
         $ordenar=$rq->ordenar;
         $camp=$rq->camp;
         $deuda=$rq->deuda;
+        $capital=$rq->capital;
+        $importe=$rq->importe;
         $sueldo=$rq->sueldo;
         $entidades=$rq->entidades;
         $score=$rq->score;
         $motivo=$rq->motivo;
+        $oficina=$rq->oficina;
         //dd($camp);
         $idEmpleado=auth()->user()->emp_id;
         $cartera=session()->get('datos')->idcartera;
@@ -139,6 +142,27 @@ class Cliente extends Model
             $sql = $sql." and det_cli_deu_mor > 3000 ";
         }
 
+        
+        if( $capital =='1'){
+            $sql = $sql." and det_cli_deu_cap <= 500 ";
+        }else if($capital =='2'){
+            $sql = $sql." and det_cli_deu_cap > 500 and det_cli_deu_cap <= 1000 ";
+        }else if($capital =='3'){
+            $sql = $sql." and det_cli_deu_cap > 1000 and det_cli_deu_cap <= 3000 ";
+        }else if($capital =='4'){
+            $sql = $sql." and det_cli_deu_cap > 3000 ";
+        }
+
+        if( $importe =='1'){
+            $sql = $sql." and det_cli_imp_can <= 500 ";
+        }else if($importe =='2'){
+            $sql = $sql." and det_cli_imp_can > 500 and det_cli_imp_can <= 1000 ";
+        }else if($importe =='3'){
+            $sql = $sql." and det_cli_imp_can > 1000 and det_cli_imp_can <= 3000 ";
+        }else if($importe =='4'){
+            $sql = $sql." and det_cli_imp_can > 3000 ";
+        }
+
         if( $sueldo =='1'){
             $filtro= $filtro." left join cliente_sueldo as s on c.cli_id=s.cli_id_FK";
             $sql = $sql." and cli_suel_can <= 500 ";
@@ -167,20 +191,24 @@ class Cliente extends Model
             }          
         }
 
+        if($oficina!= null){
+            $sql = $sql." and loc_id_FK = $oficina ";
+        }
+
         $sql= $sql." GROUP BY cli_id";
 
         if($ordenar!= null){
             if($ordenar=='1'){
-                $sql = $sql." order by ges_cli_fec asc,det_cli_deu_cap desc ";
+                $sql = $sql." order by det_cli_deu_cap desc,ges_cli_fec asc ";
             }
             if($ordenar=='2'){
-                $sql = $sql." order by ges_cli_fec asc,det_cli_deu_mor desc ";
+                $sql = $sql." order by det_cli_deu_mor desc,ges_cli_fec asc ";
             }
             if($ordenar=='3'){
-                $sql = $sql." order by ges_cli_fec asc,det_cli_imp_can desc ";
+                $sql = $sql." order by det_cli_imp_can desc,ges_cli_fec asc";
             }
         }else{
-                $sql = $sql." order by ges_cli_fec asc,det_cli_deu_mor desc";
+            $sql = $sql." order by ges_cli_fec asc,det_cli_deu_mor desc";
         }
 
         $query=DB::connection('mysql')->select(DB::raw($filtro." ".$sql));
@@ -202,7 +230,8 @@ class Cliente extends Model
                     sum(monto_pdp) as monto_pdp,
                     sum(pendiente) as pdp_pendiente,
                     sum(caidos) as pdp_caidos,
-                    sum(cumplido) as pdp_cumplido
+                    sum(cumplido) as pdp_cumplido,
+                    format((sum(cumplido)/sum(cumplido)+sum(pendiente))*100,0) as efectividad
             FROM
                     cliente c
             LEFT JOIN (
@@ -329,7 +358,8 @@ class Cliente extends Model
                     cli_dir_pro as provincia,
                     cli_dir_dep as departamento,
                     cli_suel_emp as laboral,
-                    cli_suel_can as sueldo
+                    cli_suel_can as sueldo,
+                    cli_ema as email
             from
                     cliente c
             left join cliente_infAdic i on c.cli_id=i.cli_id_FK
@@ -444,5 +474,17 @@ class Cliente extends Model
 
         $query=DB::connection('mysql')->select(DB::raw($sql),array("id"=>$id));
        return $query;
+   }
+
+   public static function updateEmail(Request $rq){
+        $email=$rq->email;
+        $cliente=$rq->idcliente;
+        $sql="
+            update cliente 
+            set cli_ema=:email
+            where cli_id=:idcli
+        ";
+        DB::connection('mysql')->update($sql,array("email"=>$email,"idcli"=>$cliente));
+        return "ok";
    }
 }

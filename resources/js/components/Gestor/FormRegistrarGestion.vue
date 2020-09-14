@@ -88,21 +88,21 @@
                     </div>
                 </div>
                 <div class="row px-0 mx-0 pt-2 pb-5">
-                    <div class="col-md-2"></div>
-                    <div class="col-md-2">
-                        <div class="d-flex py-2">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-3" style="z-index:999;">
+                        <div class="d-flex py-2" >
                             <label class="font-12 pr-1 text-right">Recordatorio</label>
                             <input type="checkbox" class="" v-model="datos.rec">
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="d-flex px-1">
+                        <div class="d-flex mx-1">
                             <label class="font-12 pr-1 py-2">Fecha</label>
                             <input type="date" class="form-control font-12 form-control-sm" :disabled="datos.rec==false" v-model="datos.fechaRec">
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="d-flex px-1">
+                        <div class="d-flex mx-1">
                             <label class="font-12 pr-1 py-2">Hora</label>
                             <input type="time" class="form-control font-11 form-control-sm" :disabled="datos.rec==false" v-model="datos.horaRec">
                         </div>
@@ -171,6 +171,7 @@
                 })
             },
             listarMotivos(){
+                this.motivos=[];
                 axios.get("listaMotivosNoPago").then(res=>{
                     if(res.data){
                         this.motivos=res.data;
@@ -179,6 +180,7 @@
                 })
             },
             listaTelefonos(){
+                this.telefonos=[];
                 this.datos.telefono='';
                 const id= this.idCliente;
                 axios.get("listaTel/"+id).then(res=>{
@@ -199,7 +201,7 @@
                     const fecha=new Date();
                     let mes=fecha.getMonth()+1;
                     let dia=fecha.getDate();
-                    const anio=fecha.getFullYear();
+                    let anio=fecha.getFullYear();
                     let diaMax=dia+7;
                     let ultDia=new Date(anio, mes, 0);
                     mes=mes<10? '0'+mes:mes;
@@ -255,6 +257,17 @@
                     this.validacion();
                     if(this.errorsDatos.length==0){
                         this.loadButton=true;
+                        // evaluar detalle identicos
+                        let cantDetalle=[];
+                        axios.post("validarDetalleIdentico",this.datos).then(res=>{
+                            if(res.data){
+                                cantDetalle=res.data;
+                                if(cantDetalle[0].cant>0){
+                                    alert("Tener en cuenta! \nSe está repitiendo el detalle de gestión");
+                                }
+                            }
+                        });
+                        // registrar gestion
                         axios.post("insertarGestion",this.datos).then(res=>{
                             if(res.data=="ok"){
                                 this.loadButton=false;
@@ -266,15 +279,6 @@
                                 setTimeout(() => {
                                     this.mensaje="";
                                 }, 5000);
-                            }
-                        });
-                        // evaluar detalle identicos
-                        axios.post("validarDetalleIdentico",this.datos).then(res=>{
-                            if(res.data){
-                                const cantDetalle=res.data;
-                                if(cantDetalle[0].cant>0){
-                                    alert("Tener en cuenta! \nSe está repitiendo el detalle de gestión");
-                                }
                             }
                         });
                     }   

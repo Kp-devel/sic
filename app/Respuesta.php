@@ -83,5 +83,19 @@ class Respuesta extends Model
         $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
         return $query;
     }
-    
+
+    public static function listaOficinas(){
+        $sql="
+            SELECT 
+                loc_id as idoficina,
+                concat(loc_cod,'-',loc_nom)  as local
+            FROM local 
+            WHERE 
+                loc_pas<>1 
+            AND loc_est<>1 
+            ORDER BY loc_nom ASC 
+        ";
+        $query=DB::connection('mysql')->select(DB::raw($sql));
+        return $query;
+    }
 }

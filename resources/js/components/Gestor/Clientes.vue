@@ -93,7 +93,19 @@
                                         <option value="4">>3000</option>
                                     </select>
                                 </td>
-                                <td class="text-right pr-1">Rango Deuda</td>
+                                <td class="text-right pr-1">Rango Capital</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.capital">
+                                        <option value="">Seleccionar</option>
+                                        <option value="1"><=500</option>
+                                        <option value="2">>500<=1000</option>
+                                        <option value="3">>1000<=3000</option>
+                                        <option value="4">>3000</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>Rango Deuda</td>
                                 <td>
                                     <select class="form-control font-12 form-control-sm" v-model="busqueda.deuda">
                                         <option value="">Seleccionar</option>
@@ -101,6 +113,25 @@
                                         <option value="2">>500<=1000</option>
                                         <option value="3">>1000<=3000</option>
                                         <option value="4">>3000</option>
+                                    </select>
+                                </td>
+                                <td class="text-right pr-1">Rango IC</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.importe">
+                                        <option value="">Seleccionar</option>
+                                        <option value="1"><=500</option>
+                                        <option value="2">>500<=1000</option>
+                                        <option value="3">>1000<=3000</option>
+                                        <option value="4">>3000</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>Oficina</td>
+                                <td colspan="3">
+                                    <select class="form-control font-12 form-control-sm mb-1" v-model="busqueda.oficina">
+                                        <option value="">Selecionar</option>
+                                        <option v-for="(item,index) in oficinas" :key="index" :value="item.idoficina">{{item.local}}</option>
                                     </select>
                                 </td>
                             </tr>
@@ -351,7 +382,7 @@
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 paginate: ['lista'],
                 lista: [],
-                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:''},
+                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:'',capital:'',importe:'',oficina:''},
                 //codigo:'',
                 loading:false,
                 loading2:false,
@@ -360,13 +391,8 @@
                 score: [],
                 firma:{firma:''},
                 estandar:[],
-                metas:[],
-                promesas:[],
-                pdps:[],
-                pagos:[],
-                data:[],
                 estados:[],
-                metas:[],
+                oficinas:[],
                 fecha_hoy:'',
                 dataMes:{meta:0,recupero:0,alcance:0,efectividad:0,pdp_caidas:0,pdp_pendiente:0,fecha_recupero:''},
                 motivosnopago:[]
@@ -380,6 +406,7 @@
              this.diaActual();
              this.listEntidades();
              this.listScore();
+             this.listOficinas();
         },
         watch:{
             'busqueda.pdp_desde': function(val){this.busqueda.pdp_desde = this.validarFormatoFecha(val)},
@@ -420,6 +447,9 @@
                 this.busqueda.entidades='';
                 this.busqueda.score='';
                 this.busqueda.motivo='';
+                this.busqueda.capital='';
+                this.busqueda.importe='';
+                this.busqueda.oficina='';
             },
             listCLientes(){
                 //if(this.busqueda.codigo!="" && this.busqueda.dni!="" && this.busqueda.nombre!=""){
@@ -430,7 +460,7 @@
                     const fechas_f =  this.busqueda.pdp_hasta.split('/');                   
                     const nuevaFecha_f = `${fechas_f[2]}-${fechas_f[1]}-${fechas_f[0]}`
                     const fec_hasta= nuevaFecha_f.split(' ').join('');
-
+                    
                     const dataBusqueda = {
                         codigo : this.busqueda.codigo,
                         dni : this.busqueda.dni,
@@ -447,24 +477,23 @@
                         entidades : this.busqueda.entidades,
                         score : this.busqueda.score,
                         motivo : this.busqueda.motivo,
+                        capital: this.busqueda.capital,
+                        importe: this.busqueda.importe,
+                        oficina: this.busqueda.oficina
                     };
                     this.loading=true;
-                    /*console.log(this.busqueda.pdp_desde);*/
-                    // this.lista=[];
-                    //console.log(dataBusqueda);
+                    
                     axios.post("listClientes",dataBusqueda).then(res=>{
                         if(res.data){
                             this.lista=res.data;
                             this.loading=false;
                             this.total_clientes=this.lista.length;
-                            // if(this.total_clientes>0){
-                            //     this.inicioPaginacion();
-                            // }
                         }
                     })
                 //}
             },
             listRespuestas(){    
+                this.respuestas=[];
                 axios.get("listRespuestas").then(res=>{
                     if(res.data){
                         this.respuestas=res.data;
@@ -472,6 +501,7 @@
                 })
             },
             listMotivosnopago(){
+                this.motivosnopago=[];
                 axios.get("listaMotivosNoPago").then(res=>{
                     if(res.data){
                         this.motivosnopago=res.data;
@@ -479,6 +509,7 @@
                 })
             },
             listEntidades(){
+                this.entidades=[];
                 axios.get("listaEntidades").then(res=>{
                     if(res.data){
                         this.entidades=res.data;
@@ -486,14 +517,24 @@
                 })
             },
             listScore(){
+                this.score=[];
                 axios.get("listaScore").then(res=>{
                     if(res.data){
                         this.score=res.data;
                     }
                 })
             },
+            listOficinas(){
+                this.oficinas=[];
+                axios.get("listaOficinas").then(res=>{
+                    if(res.data){
+                        this.oficinas=res.data;
+                    }
+                })
+            },
             datosEstandar(){
                 this.loading2=true;
+                this.estandar=[];
                 if(this.firma!=""){
                     axios.post("datosEstandar",this.firma).then(res=>{
                         if(res.data){
@@ -504,23 +545,23 @@
                 }
             },
             datosMes(){
+                let datos=[];
                 axios.get("datosMes").then(res=>{
                     if(res.data){
-                        const datos=res.data;
-                        //console.log(datos);
+                        datos=res.data;
+                        
                         this.dataMes.meta=datos[0].meta;
                         this.dataMes.recupero=datos[0].recupero;
                         this.dataMes.fecha_recupero=datos[0].fecha_recupero;
                         this.dataMes.alcance=((datos[0].recupero/datos[0].meta)*100).toFixed(2);
-                        const pago=datos[0].monto_pago!=null?datos[0].monto_pago:0;
-                        const pdp=datos[0].monto_pdp!=null?datos[0].monto_pdp:1;
-                        this.dataMes.efectividad= Math.round((pago/pdp)*100);
+                        this.dataMes.efectividad= datos[0].efectividad!=null?datos[0].efectividad:0;
                         this.dataMes.pdp_caidas=datos[0].pdp_caidos;
                         this.dataMes.pdp_pendiente=datos[0].pdp_pendiente;
                     }
                 })
             },
             estadoCampana(){
+                this.estados=[];
                 axios.get("estadosCampana").then(res=>{
                     if(res.data){
                         this.estados=res.data;
@@ -528,20 +569,19 @@
                 })
             },
 
-            buscar(codigo){
-                if(codigo!=""){
-                    this.clientes=[];
-                    for(var i=0;i<this.temp.length;i++){
-                        if((this.temp[i].codigo).indexOf(codigo)!==-1){
-                            this.clientes.push(this.temp[i]);
-                        }
-                    }
-                }else{
-                    this.clientes=this.temp;
-                    
-                }
-                this.total_clientes=this.clientes.length;
-            },
+            // buscar(codigo){
+            //     if(codigo!=""){
+            //         this.clientes=[];
+            //         for(var i=0;i<this.temp.length;i++){
+            //             if((this.temp[i].codigo).indexOf(codigo)!==-1){
+            //                 this.clientes.push(this.temp[i]);
+            //             }
+            //         }
+            //     }else{
+            //         this.clientes=this.temp;
+            //     }
+            //     this.total_clientes=this.clientes.length;
+            // },
             detalle(id){
                 let datos=[];
                 $('#contenidoLista').toggleClass('pos_fixed');

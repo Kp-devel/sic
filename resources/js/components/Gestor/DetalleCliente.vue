@@ -48,10 +48,20 @@
                 </tr>
                 <tr class="font-12"> 
                     <td class="text-right pr-1">Email</td>
-                    <td colspan="3"><label class="form-control font-12 form-control-sm mb-1 w-100 h-100">{{formatoVacio(datos[0].email)}}</label></td>
+                    <td colspan="3">
+                        <div class="input-group mt-1">
+                            <input type="text" class="form-control font-12 " id="inlineFormInputGroupUsername"  v-model="dataEmail.email">
+                            <div class="input-group-prepend">
+                                <a href="" @click.prevent="actualizarEmail()" class="">
+                                    <div class="input-group-text"><i class="fa fa-sync"></i></div>
+                                </a>
+                            </div>
+                        </div>
+                        <small v-if="msjEmail" class="text-green">{{msjEmail}}</small>
+                    </td>
                 </tr>
             </table>
-        </div>
+        </div><br>
     </div>
 </template>
 
@@ -60,10 +70,19 @@
         props:["datos","info"],
         data() {
             return {
-                
+                dataEmail:{email:this.formatoVacio(this.info[0].email),idcliente:this.datos[0].id}, 
+                msjEmail:''               
             }
         },
         methods:{
+            actualizarEmail(){
+                this.msjEmail='';
+                axios.put("updateEmail",this.dataEmail).then(res=>{
+                    if(res.data=="ok"){
+                        this.msjEmail='Registro Actualizado!';
+                    }
+                });
+            },
             formatoVacio(item){
                 if(item=='' || item=='null' || item==' ' || item==null){
                     return '-';

@@ -20,7 +20,8 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('datosMes', 'ClienteController@datosMes');
     // Route::get('estadosCampana', 'ClienteController@estadoCampana');
     Route::get('detalleCliente/{id}', 'ClienteController@detalleCliente');
-
+    Route::put('updateEmail', 'ClienteController@updateEmail');
+    
     // Route::get('infoCliente/{id}', 'ClienteController@infoCliente');
     Route::get('historicoGestiones/{id}', 'ClienteController@historicoGestiones');
     // Route::get('infoDeuda/{id}', 'ClienteController@infoDeuda');
@@ -52,6 +53,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('listaRespuesta/{ubi}', 'RespuestaController@listaRespuestaUbicabilidad');
     Route::get('listaEntidades', 'RespuestaController@listaEntidades');
     Route::get('listaScore', 'RespuestaController@listaScore');
+    Route::get('listaOficinas', 'RespuestaController@listaOficinas');
     
     // control de llamadas - elastix
     Route::get('panelcontrolllamadas', 'ControlLLamadaController@panelcontrolllamadas')->name('panelcontrolllamadas');

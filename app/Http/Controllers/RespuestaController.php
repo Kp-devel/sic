@@ -27,4 +27,7 @@ class RespuestaController extends Controller
         return Respuesta::listaScore();
     }
 
+    public function listaOficinas(){
+        return Respuesta::listaOficinas();
+    }
 }

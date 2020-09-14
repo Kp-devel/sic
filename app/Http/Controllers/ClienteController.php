@@ -54,4 +54,8 @@ class ClienteController extends Controller
                         ];
         return $datosgenerales;                        
     }
+
+    public function updateEmail(Request $rq){
+        return cliente::updateEmail($rq);
+    }
 }

@@ -2365,8 +2365,37 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/vue-paginate */ "./node_modules/vue-paginate/dist/vue-paginate.js");
 /* harmony import */ var _node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0__);
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2714,9 +2743,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["userlogeado"],
   data: function data() {
-    var _ref;
-
-    return _ref = {
+    return {
       csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
       paginate: ['lista'],
       lista: [],
@@ -2735,7 +2762,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         sueldo: '',
         entidades: '',
         score: '',
-        motivo: ''
+        motivo: '',
+        capital: '',
+        importe: '',
+        oficina: ''
       },
       //codigo:'',
       loading: false,
@@ -2747,21 +2777,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         firma: ''
       },
       estandar: [],
-      metas: [],
-      promesas: [],
-      pdps: [],
-      pagos: [],
-      data: [],
-      estados: []
-    }, _defineProperty(_ref, "metas", []), _defineProperty(_ref, "fecha_hoy", ''), _defineProperty(_ref, "dataMes", {
-      meta: 0,
-      recupero: 0,
-      alcance: 0,
-      efectividad: 0,
-      pdp_caidas: 0,
-      pdp_pendiente: 0,
-      fecha_recupero: ''
-    }), _defineProperty(_ref, "motivosnopago", []), _ref;
+      estados: [],
+      oficinas: [],
+      fecha_hoy: '',
+      dataMes: {
+        meta: 0,
+        recupero: 0,
+        alcance: 0,
+        efectividad: 0,
+        pdp_caidas: 0,
+        pdp_pendiente: 0,
+        fecha_recupero: ''
+      },
+      motivosnopago: []
+    };
   },
   created: function created() {
     this.listRespuestas();
@@ -2771,6 +2800,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.diaActual();
     this.listEntidades();
     this.listScore();
+    this.listOficinas();
   },
   watch: {
     'busqueda.pdp_desde': function busquedaPdp_desde(val) {
@@ -2820,6 +2850,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.busqueda.entidades = '';
       this.busqueda.score = '';
       this.busqueda.motivo = '';
+      this.busqueda.capital = '';
+      this.busqueda.importe = '';
+      this.busqueda.oficina = '';
     },
     listCLientes: function listCLientes() {
       var _this = this;
@@ -2846,26 +2879,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         sueldo: this.busqueda.sueldo,
         entidades: this.busqueda.entidades,
         score: this.busqueda.score,
-        motivo: this.busqueda.motivo
+        motivo: this.busqueda.motivo,
+        capital: this.busqueda.capital,
+        importe: this.busqueda.importe,
+        oficina: this.busqueda.oficina
       };
       this.loading = true;
-      /*console.log(this.busqueda.pdp_desde);*/
-      // this.lista=[];
-      //console.log(dataBusqueda);
-
       axios.post("listClientes", dataBusqueda).then(function (res) {
         if (res.data) {
           _this.lista = res.data;
           _this.loading = false;
-          _this.total_clientes = _this.lista.length; // if(this.total_clientes>0){
-          //     this.inicioPaginacion();
-          // }
+          _this.total_clientes = _this.lista.length;
         }
       }); //}
     },
     listRespuestas: function listRespuestas() {
       var _this2 = this;
 
+      this.respuestas = [];
       axios.get("listRespuestas").then(function (res) {
         if (res.data) {
           _this2.respuestas = res.data;
@@ -2875,6 +2906,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     listMotivosnopago: function listMotivosnopago() {
       var _this3 = this;
 
+      this.motivosnopago = [];
       axios.get("listaMotivosNoPago").then(function (res) {
         if (res.data) {
           _this3.motivosnopago = res.data;
@@ -2884,6 +2916,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     listEntidades: function listEntidades() {
       var _this4 = this;
 
+      this.entidades = [];
       axios.get("listaEntidades").then(function (res) {
         if (res.data) {
           _this4.entidades = res.data;
@@ -2893,69 +2926,78 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     listScore: function listScore() {
       var _this5 = this;
 
+      this.score = [];
       axios.get("listaScore").then(function (res) {
         if (res.data) {
           _this5.score = res.data;
         }
       });
     },
-    datosEstandar: function datosEstandar() {
+    listOficinas: function listOficinas() {
       var _this6 = this;
 
+      this.oficinas = [];
+      axios.get("listaOficinas").then(function (res) {
+        if (res.data) {
+          _this6.oficinas = res.data;
+        }
+      });
+    },
+    datosEstandar: function datosEstandar() {
+      var _this7 = this;
+
       this.loading2 = true;
+      this.estandar = [];
 
       if (this.firma != "") {
         axios.post("datosEstandar", this.firma).then(function (res) {
           if (res.data) {
-            _this6.estandar = res.data;
-            _this6.loading2 = false;
+            _this7.estandar = res.data;
+            _this7.loading2 = false;
           }
         });
       }
     },
     datosMes: function datosMes() {
-      var _this7 = this;
+      var _this8 = this;
 
+      var datos = [];
       axios.get("datosMes").then(function (res) {
         if (res.data) {
-          var datos = res.data; //console.log(datos);
-
-          _this7.dataMes.meta = datos[0].meta;
-          _this7.dataMes.recupero = datos[0].recupero;
-          _this7.dataMes.fecha_recupero = datos[0].fecha_recupero;
-          _this7.dataMes.alcance = (datos[0].recupero / datos[0].meta * 100).toFixed(2);
-          var pago = datos[0].monto_pago != null ? datos[0].monto_pago : 0;
-          var pdp = datos[0].monto_pdp != null ? datos[0].monto_pdp : 1;
-          _this7.dataMes.efectividad = Math.round(pago / pdp * 100);
-          _this7.dataMes.pdp_caidas = datos[0].pdp_caidos;
-          _this7.dataMes.pdp_pendiente = datos[0].pdp_pendiente;
+          datos = res.data;
+          _this8.dataMes.meta = datos[0].meta;
+          _this8.dataMes.recupero = datos[0].recupero;
+          _this8.dataMes.fecha_recupero = datos[0].fecha_recupero;
+          _this8.dataMes.alcance = (datos[0].recupero / datos[0].meta * 100).toFixed(2);
+          _this8.dataMes.efectividad = datos[0].efectividad != null ? datos[0].efectividad : 0;
+          _this8.dataMes.pdp_caidas = datos[0].pdp_caidos;
+          _this8.dataMes.pdp_pendiente = datos[0].pdp_pendiente;
         }
       });
     },
     estadoCampana: function estadoCampana() {
-      var _this8 = this;
+      var _this9 = this;
 
+      this.estados = [];
       axios.get("estadosCampana").then(function (res) {
         if (res.data) {
-          _this8.estados = res.data;
+          _this9.estados = res.data;
         }
       });
     },
-    buscar: function buscar(codigo) {
-      if (codigo != "") {
-        this.clientes = [];
-
-        for (var i = 0; i < this.temp.length; i++) {
-          if (this.temp[i].codigo.indexOf(codigo) !== -1) {
-            this.clientes.push(this.temp[i]);
-          }
-        }
-      } else {
-        this.clientes = this.temp;
-      }
-
-      this.total_clientes = this.clientes.length;
-    },
+    // buscar(codigo){
+    //     if(codigo!=""){
+    //         this.clientes=[];
+    //         for(var i=0;i<this.temp.length;i++){
+    //             if((this.temp[i].codigo).indexOf(codigo)!==-1){
+    //                 this.clientes.push(this.temp[i]);
+    //             }
+    //         }
+    //     }else{
+    //         this.clientes=this.temp;
+    //     }
+    //     this.total_clientes=this.clientes.length;
+    // },
     detalle: function detalle(id) {
       var datos = [];
       $('#contenidoLista').toggleClass('pos_fixed');
@@ -3028,10 +3070,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   mounted: function mounted() {
-    var _this9 = this;
+    var _this10 = this;
 
     this.$root.$on('verListaClientes', function () {
-      _this9.listCLientes();
+      _this10.listCLientes();
     });
   },
   components: {
@@ -3107,12 +3149,38 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["datos", "info"],
   data: function data() {
-    return {};
+    return {
+      dataEmail: {
+        email: this.formatoVacio(this.info[0].email),
+        idcliente: this.datos[0].id
+      },
+      msjEmail: ''
+    };
   },
   methods: {
+    actualizarEmail: function actualizarEmail() {
+      var _this = this;
+
+      this.msjEmail = '';
+      axios.put("updateEmail", this.dataEmail).then(function (res) {
+        if (res.data == "ok") {
+          _this.msjEmail = 'Registro Actualizado!';
+        }
+      });
+    },
     formatoVacio: function formatoVacio(item) {
       if (item == '' || item == 'null' || item == ' ' || item == null) {
         return '-';
@@ -3738,6 +3806,7 @@ __webpack_require__.r(__webpack_exports__);
     listarMotivos: function listarMotivos() {
       var _this2 = this;
 
+      this.motivos = [];
       axios.get("listaMotivosNoPago").then(function (res) {
         if (res.data) {
           _this2.motivos = res.data;
@@ -3748,6 +3817,7 @@ __webpack_require__.r(__webpack_exports__);
     listaTelefonos: function listaTelefonos() {
       var _this3 = this;
 
+      this.telefonos = [];
       this.datos.telefono = '';
       var id = this.idCliente;
       axios.get("listaTel/" + id).then(function (res) {
@@ -3835,7 +3905,19 @@ __webpack_require__.r(__webpack_exports__);
         this.validacion();
 
         if (this.errorsDatos.length == 0) {
-          this.loadButton = true;
+          this.loadButton = true; // evaluar detalle identicos
+
+          var cantDetalle = [];
+          axios.post("validarDetalleIdentico", this.datos).then(function (res) {
+            if (res.data) {
+              cantDetalle = res.data;
+
+              if (cantDetalle[0].cant > 0) {
+                alert("Tener en cuenta! \nSe está repitiendo el detalle de gestión");
+              }
+            }
+          }); // registrar gestion
+
           axios.post("insertarGestion", this.datos).then(function (res) {
             if (res.data == "ok") {
               _this4.loadButton = false;
@@ -3852,16 +3934,6 @@ __webpack_require__.r(__webpack_exports__);
               setTimeout(function () {
                 _this4.mensaje = "";
               }, 5000);
-            }
-          }); // evaluar detalle identicos
-
-          axios.post("validarDetalleIdentico", this.datos).then(function (res) {
-            if (res.data) {
-              var cantDetalle = res.data;
-
-              if (cantDetalle[0].cant > 0) {
-                alert("Tener en cuenta! \nSe está repitiendo el detalle de gestión");
-              }
             }
           });
         }
@@ -4102,6 +4174,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       viewDetalleCliente: false,
+      viewTelefonos: false,
+      viewPagos: false,
       dataCliente: [],
       detalleGeneral: [],
       idCliente: '',
@@ -4116,6 +4190,7 @@ __webpack_require__.r(__webpack_exports__);
       $('#contenidoLista').toggleClass('pos_fixed');
     },
     verTelefonos: function verTelefonos() {
+      this.viewTelefonos = true;
       this.$root.$emit('limpiarFrmTel');
     },
     verRecordatorios: function verRecordatorios() {
@@ -41933,8 +42008,67 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _c("td", { staticClass: "text-right pr-1" }, [
-                  _vm._v("Rango Deuda")
+                  _vm._v("Rango Capital")
                 ]),
+                _vm._v(" "),
+                _c("td", [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.busqueda.capital,
+                          expression: "busqueda.capital"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm",
+                      on: {
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.$set(
+                            _vm.busqueda,
+                            "capital",
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          )
+                        }
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "" } }, [
+                        _vm._v("Seleccionar")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "1" } }, [
+                        _vm._v("<=500")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "2" } }, [
+                        _vm._v(">500<=1000")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "3" } }, [
+                        _vm._v(">1000<=3000")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "4" } }, [_vm._v(">3000")])
+                    ]
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", { staticClass: "font-12" }, [
+                _c("td", [_vm._v("Rango Deuda")]),
                 _vm._v(" "),
                 _c("td", [
                   _c(
@@ -41988,6 +42122,119 @@ var render = function() {
                       _vm._v(" "),
                       _c("option", { attrs: { value: "4" } }, [_vm._v(">3000")])
                     ]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("td", { staticClass: "text-right pr-1" }, [
+                  _vm._v("Rango IC")
+                ]),
+                _vm._v(" "),
+                _c("td", [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.busqueda.importe,
+                          expression: "busqueda.importe"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm",
+                      on: {
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.$set(
+                            _vm.busqueda,
+                            "importe",
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          )
+                        }
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "" } }, [
+                        _vm._v("Seleccionar")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "1" } }, [
+                        _vm._v("<=500")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "2" } }, [
+                        _vm._v(">500<=1000")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "3" } }, [
+                        _vm._v(">1000<=3000")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "4" } }, [_vm._v(">3000")])
+                    ]
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", { staticClass: "font-12" }, [
+                _c("td", [_vm._v("Oficina")]),
+                _vm._v(" "),
+                _c("td", { attrs: { colspan: "3" } }, [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.busqueda.oficina,
+                          expression: "busqueda.oficina"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm mb-1",
+                      on: {
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.$set(
+                            _vm.busqueda,
+                            "oficina",
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          )
+                        }
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "" } }, [
+                        _vm._v("Selecionar")
+                      ]),
+                      _vm._v(" "),
+                      _vm._l(_vm.oficinas, function(item, index) {
+                        return _c(
+                          "option",
+                          { key: index, domProps: { value: item.idoficina } },
+                          [_vm._v(_vm._s(item.local))]
+                        )
+                      })
+                    ],
+                    2
                   )
                 ])
               ]),
@@ -43140,20 +43387,58 @@ var render = function() {
             _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Email")]),
             _vm._v(" "),
             _c("td", { attrs: { colspan: "3" } }, [
-              _c(
-                "label",
-                {
-                  staticClass:
-                    "form-control font-12 form-control-sm mb-1 w-100 h-100"
-                },
-                [_vm._v(_vm._s(_vm.formatoVacio(_vm.datos[0].email)))]
-              )
+              _c("div", { staticClass: "input-group mt-1" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.dataEmail.email,
+                      expression: "dataEmail.email"
+                    }
+                  ],
+                  staticClass: "form-control font-12 ",
+                  attrs: { type: "text", id: "inlineFormInputGroupUsername" },
+                  domProps: { value: _vm.dataEmail.email },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.dataEmail, "email", $event.target.value)
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("div", { staticClass: "input-group-prepend" }, [
+                  _c(
+                    "a",
+                    {
+                      attrs: { href: "" },
+                      on: {
+                        click: function($event) {
+                          $event.preventDefault()
+                          return _vm.actualizarEmail()
+                        }
+                      }
+                    },
+                    [_vm._m(1, true)]
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _vm.msjEmail
+                ? _c("small", { staticClass: "text-green" }, [
+                    _vm._v(_vm._s(_vm.msjEmail))
+                  ])
+                : _vm._e()
             ])
           ])
         ])
       }),
       0
-    )
+    ),
+    _c("br")
   ])
 }
 var staticRenderFns = [
@@ -43169,6 +43454,14 @@ var staticRenderFns = [
         },
         [_vm._v("-")]
       )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-text" }, [
+      _c("i", { staticClass: "fa fa-sync" })
     ])
   }
 ]
@@ -44358,58 +44651,63 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "row px-0 mx-0 pt-2 pb-5" }, [
-          _c("div", { staticClass: "col-md-2" }),
+          _c("div", { staticClass: "col-md-1" }),
           _vm._v(" "),
-          _c("div", { staticClass: "col-md-2" }, [
-            _c("div", { staticClass: "d-flex py-2" }, [
-              _c("label", { staticClass: "font-12 pr-1 text-right" }, [
-                _vm._v("Recordatorio")
-              ]),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.datos.rec,
-                    expression: "datos.rec"
-                  }
-                ],
-                attrs: { type: "checkbox" },
-                domProps: {
-                  checked: Array.isArray(_vm.datos.rec)
-                    ? _vm._i(_vm.datos.rec, null) > -1
-                    : _vm.datos.rec
-                },
-                on: {
-                  change: function($event) {
-                    var $$a = _vm.datos.rec,
-                      $$el = $event.target,
-                      $$c = $$el.checked ? true : false
-                    if (Array.isArray($$a)) {
-                      var $$v = null,
-                        $$i = _vm._i($$a, $$v)
-                      if ($$el.checked) {
-                        $$i < 0 && _vm.$set(_vm.datos, "rec", $$a.concat([$$v]))
+          _c(
+            "div",
+            { staticClass: "col-md-3", staticStyle: { "z-index": "999" } },
+            [
+              _c("div", { staticClass: "d-flex py-2" }, [
+                _c("label", { staticClass: "font-12 pr-1 text-right" }, [
+                  _vm._v("Recordatorio")
+                ]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.datos.rec,
+                      expression: "datos.rec"
+                    }
+                  ],
+                  attrs: { type: "checkbox" },
+                  domProps: {
+                    checked: Array.isArray(_vm.datos.rec)
+                      ? _vm._i(_vm.datos.rec, null) > -1
+                      : _vm.datos.rec
+                  },
+                  on: {
+                    change: function($event) {
+                      var $$a = _vm.datos.rec,
+                        $$el = $event.target,
+                        $$c = $$el.checked ? true : false
+                      if (Array.isArray($$a)) {
+                        var $$v = null,
+                          $$i = _vm._i($$a, $$v)
+                        if ($$el.checked) {
+                          $$i < 0 &&
+                            _vm.$set(_vm.datos, "rec", $$a.concat([$$v]))
+                        } else {
+                          $$i > -1 &&
+                            _vm.$set(
+                              _vm.datos,
+                              "rec",
+                              $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                            )
+                        }
                       } else {
-                        $$i > -1 &&
-                          _vm.$set(
-                            _vm.datos,
-                            "rec",
-                            $$a.slice(0, $$i).concat($$a.slice($$i + 1))
-                          )
+                        _vm.$set(_vm.datos, "rec", $$c)
                       }
-                    } else {
-                      _vm.$set(_vm.datos, "rec", $$c)
                     }
                   }
-                }
-              })
-            ])
-          ]),
+                })
+              ])
+            ]
+          ),
           _vm._v(" "),
           _c("div", { staticClass: "col-md-4" }, [
-            _c("div", { staticClass: "d-flex px-1" }, [
+            _c("div", { staticClass: "d-flex mx-1" }, [
               _c("label", { staticClass: "font-12 pr-1 py-2" }, [
                 _vm._v("Fecha")
               ]),
@@ -44439,7 +44737,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "col-md-4" }, [
-            _c("div", { staticClass: "d-flex px-1" }, [
+            _c("div", { staticClass: "d-flex mx-1" }, [
               _c("label", { staticClass: "font-12 pr-1 py-2" }, [
                 _vm._v("Hora")
               ]),
@@ -44760,7 +45058,28 @@ var render = function() {
                       }),
                       _vm._v(" "),
                       _c("div", { staticClass: "btns-lateral" }, [
-                        _vm._m(5),
+                        _c(
+                          "a",
+                          {
+                            staticClass: "btn-lateral bg-danger",
+                            attrs: {
+                              href: "#",
+                              "data-toggle": "modal",
+                              "data-target": "#modal-pagos"
+                            },
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                _vm.viewPagos = true
+                              }
+                            }
+                          },
+                          [
+                            _c("label", { staticClass: "texto-vertical" }, [
+                              _vm._v("PAGOS")
+                            ])
+                          ]
+                        ),
                         _vm._v(" "),
                         _c(
                           "a",
@@ -44786,16 +45105,20 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _c("detalleTelefonos", {
-                        attrs: {
-                          idCliente: _vm.idCliente,
-                          telefonospanel: this.detalleGeneral["telefonos"]
-                        }
-                      }),
+                      _vm.viewTelefonos
+                        ? _c("detalleTelefonos", {
+                            attrs: {
+                              idCliente: _vm.idCliente,
+                              telefonospanel: this.detalleGeneral["telefonos"]
+                            }
+                          })
+                        : _vm._e(),
                       _vm._v(" "),
-                      _c("detallePagos", {
-                        attrs: { idCliente: _vm.idCliente }
-                      })
+                      _vm.viewPagos
+                        ? _c("detallePagos", {
+                            attrs: { idCliente: _vm.idCliente }
+                          })
+                        : _vm._e()
                     ],
                     1
                   )
@@ -44870,23 +45193,6 @@ var staticRenderFns = [
         [_vm._v("INFORMACIÓN DE LA DEUDA")]
       )
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "a",
-      {
-        staticClass: "btn-lateral bg-danger",
-        attrs: {
-          href: "#",
-          "data-toggle": "modal",
-          "data-target": "#modal-pagos"
-        }
-      },
-      [_c("label", { staticClass: "texto-vertical" }, [_vm._v("PAGOS")])]
-    )
   }
 ]
 render._withStripped = true

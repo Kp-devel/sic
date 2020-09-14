@@ -63,15 +63,15 @@
                     
                     <!-- botones laterales -->
                     <div class="btns-lateral">
-                        <a href="#" class="btn-lateral bg-danger" data-toggle="modal" data-target="#modal-pagos"><label class="texto-vertical">PAGOS</label></a>
+                        <a href="#" class="btn-lateral bg-danger" data-toggle="modal" data-target="#modal-pagos"  @click.prevent="viewPagos=true"><label class="texto-vertical">PAGOS</label></a>
                         <!--acá por ejemplo -->
                         <a href="" data-toggle="modal" data-target="#modal-telefonos" class="btn-lateral" @click.prevent="verTelefonos()"><label class="texto-vertical">TELF</label></a>
                     </div>
 
                     <!-- panel de telefonos -->
-                    <detalleTelefonos :idCliente="idCliente" :telefonospanel="this.detalleGeneral['telefonos']"/>
+                    <detalleTelefonos v-if="viewTelefonos" :idCliente="idCliente" :telefonospanel="this.detalleGeneral['telefonos']"/>
                     <!-- panel de pagos -->
-                    <detallePagos :idCliente="idCliente"/>
+                    <detallePagos v-if="viewPagos" :idCliente="idCliente"/>
                 </div>
              </div>
         </div>
@@ -93,6 +93,8 @@
         data() {
             return {
                 viewDetalleCliente:false,
+                viewTelefonos:false,
+                viewPagos:false,
                 dataCliente:[],
                 detalleGeneral:[],
                 idCliente:'',
@@ -109,6 +111,7 @@
                 $('#contenidoLista').toggleClass('pos_fixed');
             },       
             verTelefonos(){
+                this.viewTelefonos=true;
                 this.$root.$emit('limpiarFrmTel');
             },
             verRecordatorios(){
