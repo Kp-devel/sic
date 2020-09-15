@@ -3,9 +3,12 @@
         <!-- btn recordatorios -->
          <div class="panel-top text-center">
              <!-- fa-sort-down -->
-            <a href="" class="btn-up" data-toggle="modal" data-target="#modal-recordatorio" @click.prevent="verRecordatorios()"><i class="fa fa-clock fa-lg"></i></a>
+            <a href="" class="btn-up" data-toggle="modal" data-target="#modal-recordatorio" @click.prevent="verRecordatorios()">
+                <i class="fa fa-clock fa-lg"></i>
+                <i v-if="recordatorio!=''" class="fa fa-circle text-danger pt-3 pl-0" style="position:absolute;"></i>
+            </a>
         </div>
-        <recordatorio />
+        <recordatorio :recordatorio="recordatorio" :telRecordatorio="telRecordatorio" :pdps="pdpsRecordatorio" :contacto="contactoRecordatorio"/>
         <!-- lista de clientes y menu -->
         <clientes :userlogeado="userlogeado"/>
         <!-- detalle de cliente -->
@@ -98,11 +101,16 @@
                 dataCliente:[],
                 detalleGeneral:[],
                 idCliente:'',
-                loadCarga:false
+                loadCarga:false,
+                recordatorio:[],
+                telRecordatorio:[],
+                pdpsRecordatorio:[],
+                contactoRecordatorio:[],
+                // viewalerta:'false'
             }
         },
         created(){
-            
+            this.verRecordatorios();
         },
         methods:{
             cerrarDetalle(){
@@ -115,8 +123,15 @@
                 this.$root.$emit('limpiarFrmTel');
             },
             verRecordatorios(){
-                this.$root.$emit('listarRecordatorios');
-                //$('#modal-recordatorio').modal();
+                // this.viewalerta='false';
+                this.recordatorio=[];
+                this.telRecordatorio=[];
+                this.pdpsRecordatorio=[];
+                this.contactoRecordatorio=[];
+                axios.get("listarRecordatorio");
+            },
+            telefonosRecordatorio(tel){
+                this.$root.$emit('telefonosRecordatorio',tel); 
             },
             datosgenerales(id){
                 this.loadCarga=true;
@@ -138,6 +153,33 @@
                 this.datosgenerales(this.idCliente);
                 // $('html, body').animate({scrollTop:0}, 'slow');
             } );
+
+            // websocktes
+            var pusher = new Pusher('2e767ae318879ba2da40', {
+                cluster: 'us2'
+            });
+            const this2=this
+            var channel = pusher.subscribe('channel-recordatorio');
+            channel.bind('evento-recordatorio', function(data) {
+                    this2.recordatorio=[];
+                    this2.telRecordatorio=[];
+                    this2.pdpsRecordatorio=[];
+                    this2.contactoRecordatorio=[];
+                    // this2.viewalerta='true';
+                    const recordatorio=this2.recordatorio;
+                    const telRecordatorio=this2.telRecordatorio;
+                    const pdpsRecordatorio=this2.pdpsRecordatorio;
+                    const contactoRecordatorio=this2.contactoRecordatorio;
+                    // const viewalerta=this2.viewalerta;
+                
+                    if(data){
+                        recordatorio.push(data.data['recordatorios'][0]);
+                        telRecordatorio.push(data.data['telefonos']);   
+                        pdpsRecordatorio.push(data.data['pdps']);   
+                        contactoRecordatorio.push(data.data['validar_contacto']);   
+                        toastr.success('Los recordatorios sólo se encuentran disponibles 5min déspues de su hora de programada', 'Tienes un recordatorio activo',{"progressBar": true,"positionClass": "toast-bottom-right",});
+                    }
+            });
         },
         components:{
             clientes,

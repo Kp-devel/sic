@@ -14,6 +14,8 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css?05091') }}" rel="stylesheet">
     <link href="{{ asset('css/waves.css?1') }}" rel="stylesheet">
+    <link href="{{ asset('css/toastr.css?1') }}" rel="stylesheet" >
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <!-- <link href="{{ asset('css/bootstrap-select.min.css') }}" rel="stylesheet"> -->
 </head>
 <body class="">
@@ -28,8 +30,9 @@
         @endguest
     </div>
 
-    <script src="{{ asset('js/app.js?1309') }}" ></script>
+    <script src="{{ asset('js/app.js?14097') }}" ></script>
     <script src="{{ asset('js/waves.js') }}" ></script>
+    <script src="{{ asset('js/toastr.js') }}" type="text/javascript"></script>
     @yield('scripts')
     <!-- <script src="{{ asset('js/bootstrap-select.min.js') }}" ></script> -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script> -->
