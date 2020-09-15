@@ -1,33 +1,46 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Console\Commands;
 
-use Illuminate\Http\Request;
+use Illuminate\Console\Command;
 use App\Recordatorio;
 use App\Telefono;
 use App\Gestion;
 use App\Events\WebsocketsRecordatorio;
 
-class RecordatorioController extends Controller
+class AlertaRecordatorio extends Command
 {
-    public function insertarRecordatorio(Request $rq){
-        $rec=$rq->rec;
-        $fechaRec=$rq->fechaRec;
-        $horaRec=$rq->horaRec;
-        $id=$rq->id;
-        $tel=$rq->tel_rec;
-        if($rec==true && $fechaRec!="" && $horaRec!="" && $tel!=""){
-           Recordatorio::updateEstadoRecordatorio($id); 
-           Recordatorio::insertRecordatorio($rq);
-           return "ok";
-        }
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'recordatorio:alerta';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Visualizar recordatorios';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
     }
 
-    // public function listarRecordatorio(){
-    //     return Recordatorio::listarRecordatorio();
-    // }
-
-    public function listarRecordatorio(){
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {
         $datos=Recordatorio::listarRecordatorio();
         if(count($datos)>0){
             $telefonos=Telefono::infoTelefonos($datos[0]->id);

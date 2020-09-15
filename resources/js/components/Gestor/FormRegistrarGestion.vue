@@ -108,11 +108,11 @@
                         </div>
                     </div>
                     <div class="col-md-12 text-right">
-                        <a href="" class="btn btn-blue btn-sm px-5" @click.prevent="registrar()">
+                        <a href="#" class="btn btn-blue btn-sm px-5" @click.prevent="registrar()">
                             <span v-if="loadButton" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Registrar
                         </a>
-                        <a href="" v-if="tipo==2" class="btn btn-blue btn-sm ml-2 px-4" @click.prevent="reprogramar()">
+                        <a href="#" v-if="tipo==2" class="btn btn-blue btn-sm ml-2 px-4" @click.prevent="reprogramar()">
                             <span v-if="loadButton2" class="spinner-border spinner-border-sm pr-2" role="status" aria-hidden="true"></span>
                             <i class="fa fa-clock pr-1" v-else></i>Reprogramar
                         </a>
@@ -263,7 +263,7 @@
                             if(res.data){
                                 cantDetalle=res.data;
                                 if(cantDetalle[0].cant>0){
-                                    alert("Tener en cuenta! \nSe está repitiendo el detalle de gestión");
+                                    toastr.warning('Se está repitiendo el detalle de gestión', 'Tener en cuenta!',{"progressBar": true,"positionClass": "toast-top-center",});
                                 }
                             }
                         });
@@ -315,7 +315,7 @@
                     if(this.cant_contacto.length>0){
                         if(this.cant_contacto[0].cant_contacto>0){
                             this.datos.respuesta='';
-                            alert("No se puede seleccionar la respuesta asignada, el cliente tiene un contacto previo");
+                            toastr.warning('No se puede seleccionar la respuesta asignada, el cliente tiene un contacto previo', '',{"progressBar": true,"positionClass": "toast-top-center",});
                             // $("#panel-mensaje").modal();
                         }
                     }
@@ -325,7 +325,7 @@
                     if(this.cant_contacto.length>0){
                         if(this.cant_contacto[0].cant_contacto==0){
                             this.datos.respuesta='';
-                            alert("No se puede seleccionar la respuesta asignada, el cliente no tiene un contacto previo");
+                            toastr.warning('No se puede seleccionar la respuesta asignada, el cliente no tiene un contacto previo', '',{"progressBar": true,"positionClass": "toast-top-center",});
                             // $("#panel-mensaje").modal();
                         }
                     }
@@ -339,10 +339,12 @@
                         const usuario=this.pdps[0].usuario;
                         const mon=this.pdps[0].moneda;
                         let moneda='';
-                        if(mon==1){moneda="S/.";}else{moneda="$/.";};
+                        if(mon==0){moneda="S/.";}else{moneda="$/.";};
                         if(new Date(this.fechaActual).getTime()<=new Date(fecha_pago).getTime()){
                             this.datos.respuesta='';
-                            alert('Ya existe un compromiso de pago.\nFecha de Gestión: '+fecha_ges+'.\nUsuario: '+usuario+'.\nFecha de Pago: '+fecha_pago+'.\nCantidad: '+moneda+""+monto);
+                            toastr.info('Fecha de Gestión: '+fecha_ges+'.<br>Usuario: '+usuario+'.<br>Fecha de Pago: '+fecha_pago+'.<br>Cantidad: '+moneda+""+monto
+                            , 'Ya existe un compromiso de pago',
+                            {"progressBar": true,"positionClass": "toast-top-center",});
                         }
                     }
                 }
@@ -379,15 +381,7 @@
         mounted() {
             this.$root.$on('frglistarTelefonos',() => {
                 this.listaTelefonos();
-            } );
-            this.$root.$on('telefonosRecordatorio',(datos) => {
-                if(this.tipo==2){
-                    this.telefonos=datos['telefonos'];
-                    this.cant_contacto=datos['validar_contacto'];
-                    this.pdps=datos['pdps'];
-                }
-            } );
-            
+            } );            
         },
         // computed(){
         //     this.datos={detalle:'',montoPDP:'',fechaPDP:null,moneda:0,telefono:'',respuesta:'',rec:'',fechaRec:'',horaRec:'',id:this.idCliente,tel_rec:'',motivoNoPago:''};

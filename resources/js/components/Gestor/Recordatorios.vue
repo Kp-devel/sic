@@ -4,7 +4,7 @@
         tabindex="-1" role="dialog"  aria-hidden="true">
             <div class="modal-dialog modal-dialog-top" role="document">
                 <div class="modal-content " >
-                    <div class="modal-body px-3 bg-gray-2 pb-0" v-if="datosRecordatorio=='' && telef==''">
+                    <div class="modal-body px-3 bg-gray-2 pb-0" v-if="recordatorio==''">
                         <div class="d-flex justify-content-center py-5">
                             <div class="text-center">
                                 <i class="fa fa-clock fa-2x text-blue"></i><br>
@@ -30,21 +30,21 @@
                                 </thead>
                                 <tbody>
                                     <tr class="text-center">
-                                        <td>{{recordatorio.codigo}}</td>
-                                        <td>{{recordatorio.nombre}}</td>
-                                        <td>{{recordatorio.dni}}</td>
-                                        <td>{{recordatorio.capital}}</td>
-                                        <td>{{recordatorio.deuda}}</td>
-                                        <td>{{recordatorio.ic}}</td>
-                                        <td>{{recordatorio.medio}}</td>
-                                        <td>{{recordatorio.producto}}</td>
-                                        <td>{{recordatorio.ultres}}</td>
+                                        <td>{{recordatorio[0].codigo}}</td>
+                                        <td>{{recordatorio[0].nombre}}</td>
+                                        <td>{{recordatorio[0].dni}}</td>
+                                        <td>{{recordatorio[0].capital}}</td>
+                                        <td>{{recordatorio[0].deuda}}</td>
+                                        <td>{{recordatorio[0].importe}}</td>
+                                        <td>{{recordatorio[0].telefono}}</td>
+                                        <td>{{recordatorio[0].producto}}</td>
+                                        <td>{{recordatorio[0].ult_resp}}</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                         <!-- formulario de registro -->
-                        <formRegistrarGestion  :idCliente="recordatorio.id" :tipo="2" :telrecordatorio="recordatorio.tel_rec" />
+                        <formRegistrarGestion  :idCliente="recordatorio[0].id" :tipo="2" :telrecordatorio="recordatorio[0].tel_prog" :telefonosgenerales="telRecordatorio[0]" :valcontacto="contacto[0]" :datospdp="pdps[0]"/>
                         
                     </div>
                     <div class="modal-footer text-center py-0">
@@ -61,53 +61,14 @@
 <script>
     import formRegistrarGestion from './FormRegistrarGestion';
     export default {
+        props:['recordatorio','telRecordatorio','pdps','contacto'],
         data() {
             return {
-                viewFormRegistro:false,
-                datosRecordatorio:[],
-                recordatorio:{id:'',codigo:'',nombre:'',dni:'',capital:'',deuda:'',ic:'',medio:'',producto:'',ultres:'',tel_rec:''},
-                telef:[]
+            
             }
         },
         methods:{
-            async listaRecordatorios(){
-                this.datosRecordatorio=[];
-                try{
-                    axios.get("listarRecordatorio").then(res=>{
-                        if(res.data){
-                            this.datosRecordatorio=res.data;
-                            if(this.datosRecordatorio.length>0){
-                                this.recordatorio.codigo=this.datosRecordatorio[0].codigo;
-                                this.recordatorio.nombre=this.datosRecordatorio[0].nombre;
-                                this.recordatorio.dni=this.datosRecordatorio[0].dni;
-                                this.recordatorio.capital=this.datosRecordatorio[0].capital;
-                                this.recordatorio.deuda=this.datosRecordatorio[0].deuda;
-                                this.recordatorio.ic=this.datosRecordatorio[0].importe;
-                                this.recordatorio.producto=this.datosRecordatorio[0].producto;
-                                this.recordatorio.medio=this.datosRecordatorio[0].telefono;
-                                this.recordatorio.ultres=this.datosRecordatorio[0].ult_resp;
-                                this.recordatorio.id=this.datosRecordatorio[0].id;
-                                this.recordatorio.tel_rec=this.datosRecordatorio[0].tel_prog;
-                                this.listarTelf(this.recordatorio.id);
-                            }
-                        }
-                    })
-                }catch(err) { console.error(err); }
-            },
-            listarTelf(id){
-                this.telef=[];
-                axios.get("listaTel/"+id).then(res=>{
-                    if(res.data){
-                        this.telef=res.data;                           
-                        this.$root.$emit('telefonosRecordatorio',this.telef);      
-                    }
-                })
-            }
-        },
-        mounted() {
-            this.$root.$on('listarRecordatorios',() => {
-               this.listaRecordatorios();
-            } );
+
         },
         components:{
             formRegistrarGestion
