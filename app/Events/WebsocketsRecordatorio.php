@@ -10,11 +10,13 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+
 class WebsocketsRecordatorio implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $data; 
+    // public $user; 
     /**
      * Create a new event instance.
      *
@@ -23,6 +25,7 @@ class WebsocketsRecordatorio implements ShouldBroadcast
     public function __construct($data)
     {
         $this->data = $data;
+        // $this->user= $user;
     }
 
     /**
@@ -30,13 +33,16 @@ class WebsocketsRecordatorio implements ShouldBroadcast
      *
      * 
      */
-    // public function broadcastOn()
-    // {
-    //     return new PrivateChannel('channel-name');
-    // }
-      public function broadcastOn(){
-        return ['channel-recordatorio'];
-      }
+    public function broadcastOn()
+    { 
+      
+        return new PrivateChannel('user.'.$this->data['recordatorios']->idempleado); 
+      
+    }
+
+      // public function broadcastOn(){
+      //   return ['channel-recordatorio'];
+      // }
       public function broadcastAs() {
         return 'evento-recordatorio';
       }

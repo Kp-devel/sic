@@ -92,7 +92,7 @@
     import recordatorio from './Recordatorios';
     
     export default {
-        props:["userlogeado"],
+        props:["userlogeado","idlogeado"],
         data() {
             return {
                 viewDetalleCliente:false,
@@ -110,7 +110,7 @@
             }
         },
         created(){
-            this.verRecordatorios();
+            // this.verRecordatorios();
         },
         methods:{
             cerrarDetalle(){
@@ -124,11 +124,11 @@
             },
             verRecordatorios(){
                 // this.viewalerta='false';
-                this.recordatorio=[];
-                this.telRecordatorio=[];
-                this.pdpsRecordatorio=[];
-                this.contactoRecordatorio=[];
-                axios.get("listarRecordatorio");
+                // this.recordatorio=[];
+                // this.telRecordatorio=[];
+                // this.pdpsRecordatorio=[];
+                // this.contactoRecordatorio=[];
+                //axios.get("listarRecordatorio");
             },
             telefonosRecordatorio(tel){
                 this.$root.$emit('telefonosRecordatorio',tel); 
@@ -153,32 +153,33 @@
                 this.datosgenerales(this.idCliente);
                 // $('html, body').animate({scrollTop:0}, 'slow');
             } );
-
             // websocktes
-            var pusher = new Pusher('2e767ae318879ba2da40', {
-                cluster: 'us2'
-            });
             const this2=this
-            var channel = pusher.subscribe('channel-recordatorio');
-            channel.bind('evento-recordatorio', function(data) {
-                    this2.recordatorio=[];
-                    this2.telRecordatorio=[];
-                    this2.pdpsRecordatorio=[];
-                    this2.contactoRecordatorio=[];
-                    // this2.viewalerta='true';
-                    const recordatorio=this2.recordatorio;
-                    const telRecordatorio=this2.telRecordatorio;
-                    const pdpsRecordatorio=this2.pdpsRecordatorio;
-                    const contactoRecordatorio=this2.contactoRecordatorio;
-                    // const viewalerta=this2.viewalerta;
+            Echo.private('user.'+this.idlogeado)
+            .listen('.evento-recordatorio', (data) => {
+                this2.recordatorio=[];
+                this2.telRecordatorio=[];
+                this2.pdpsRecordatorio=[];
+                this2.contactoRecordatorio=[];
+                // this2.viewalerta='true';
+                const recordatorio=this2.recordatorio;
+                const telRecordatorio=this2.telRecordatorio;
+                const pdpsRecordatorio=this2.pdpsRecordatorio;
+                const contactoRecordatorio=this2.contactoRecordatorio;
                 
-                    if(data){
-                        recordatorio.push(data.data['recordatorios'][0]);
-                        telRecordatorio.push(data.data['telefonos']);   
-                        pdpsRecordatorio.push(data.data['pdps']);   
-                        contactoRecordatorio.push(data.data['validar_contacto']);   
-                        toastr.success('Los recordatorios sólo se encuentran disponibles 5min déspues de su hora de programada', 'Tienes un recordatorio activo',{"progressBar": true,"positionClass": "toast-bottom-right",});
-                    }
+                const currentdate = new Date(); 
+                const hora= currentdate.getHours()<10?'0'+currentdate.getHours():currentdate.getHours();
+                const min= currentdate.getMinutes()<10?'0'+currentdate.getMinutes():currentdate.getMinutes();
+                const sec= currentdate.getSeconds()<10?'0'+currentdate.getSeconds():currentdate.getSeconds();
+                const datetime=hora+":"+min+":"+sec;
+                console.log(datetime);
+                recordatorio.push(data.data['recordatorios']);
+                telRecordatorio.push(data.data['telefonos']);   
+                pdpsRecordatorio.push(data.data['pdps']);   
+                contactoRecordatorio.push(data.data['validar_contacto']);   
+                if(datetime>=data.data['recordatorios'].hora_programada && datetime<=data.data['recordatorios'].hora_fin){
+                    toastr.success('Los recordatorios sólo se encuentran disponibles 5min después de su hora programada', 'Tienes un recordatorio activo',{"progressBar": true,"positionClass": "toast-bottom-right",});
+                }
             });
         },
         components:{

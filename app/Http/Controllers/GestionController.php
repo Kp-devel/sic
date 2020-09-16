@@ -23,6 +23,9 @@ class GestionController extends Controller
         $fechaGestion=Carbon::now();
 
         if($tel!="" && $detalle!="" && $resp!="" && $id!=""){
+            
+            $validacion=Gestion::validarDetalleIdentico($rq);
+
             if($resp==1 || $resp==2 || $resp==43){
                 if($fechapc!="" && $monto!=""){
                     Gestion::insertarGestion($rq,$fechaGestion);
@@ -52,7 +55,7 @@ class GestionController extends Controller
                 Recordatorio::updateEstadoRecordatorio($id); 
                 Recordatorio::insertRecordatorio($rq);
             }
-            return "ok";
+            return ["ok",$validacion];
         }
     }
 
