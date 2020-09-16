@@ -265,14 +265,19 @@
                                 if(res.data[0]=="ok"){
                                     this.loadButton=false;
                                     this.mensaje = "Registro con éxito";
-                                    this.$root.$emit('listarGestiones');
+                                    if(this.tipo==1){
+                                        this.listaTelefonos();
+                                        this.$root.$emit('listarGestiones');
+                                    }
                                     this.$root.$emit('verListaClientes');
                                     this.limpiar();
                                     this.cantclick=0;
                                     if(res.data[1][0].cant>0){
                                         toastr.warning('Se está repitiendo el detalle de gestión', 'Tener en cuenta!',{"progressBar": true,"positionClass": "toast-top-center",});
                                     }
-                                    this.listaTelefonos();
+                                    if(this.tipo==2){
+                                        this.$root.$emit('limpiarRecordatorio');
+                                    }
                                     setTimeout(() => {
                                         this.mensaje="";
                                     }, 5000);
@@ -298,6 +303,7 @@
                         if(res.data=="ok"){
                             this.loadButton2=false;
                             this.mensaje = "Registro con éxito";
+                            this.$root.$emit('limpiarRecordatorio');
                             setTimeout(() => {
                                 this.mensaje="";
                             }, 5000);

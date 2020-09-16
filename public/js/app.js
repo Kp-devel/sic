@@ -3903,7 +3903,11 @@ __webpack_require__.r(__webpack_exports__);
                 _this4.loadButton = false;
                 _this4.mensaje = "Registro con éxito";
 
-                _this4.$root.$emit('listarGestiones');
+                if (_this4.tipo == 1) {
+                  _this4.listaTelefonos();
+
+                  _this4.$root.$emit('listarGestiones');
+                }
 
                 _this4.$root.$emit('verListaClientes');
 
@@ -3918,7 +3922,9 @@ __webpack_require__.r(__webpack_exports__);
                   });
                 }
 
-                _this4.listaTelefonos();
+                if (_this4.tipo == 2) {
+                  _this4.$root.$emit('limpiarRecordatorio');
+                }
 
                 setTimeout(function () {
                   _this4.mensaje = "";
@@ -3948,6 +3954,9 @@ __webpack_require__.r(__webpack_exports__);
           if (res.data == "ok") {
             _this5.loadButton2 = false;
             _this5.mensaje = "Registro con éxito";
+
+            _this5.$root.$emit('limpiarRecordatorio');
+
             setTimeout(function () {
               _this5.mensaje = "";
             }, 5000);
@@ -4229,6 +4238,13 @@ __webpack_require__.r(__webpack_exports__);
 
       _this2.datosgenerales(_this2.idCliente); // $('html, body').animate({scrollTop:0}, 'slow');
 
+    }); // limpiar recordatorios
+
+    this.$root.$on('limpiarRecordatorio', function () {
+      _this2.recordatorio = [];
+      _this2.telRecordatorio = [];
+      _this2.pdpsRecordatorio = [];
+      _this2.contactoRecordatorio = [];
     }); // websocktes
 
     var this2 = this;
@@ -63510,8 +63526,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
-  // authEndpoint : 'http://localhost/py-clonar2/sic/public/broadcasting/auth',
-  authEndpoint: 'http://3.129.240.76/sic-master/public/broadcasting/auth',
+  authEndpoint: 'http://localhost/py-clonar2/sic/public/broadcasting/auth',
+  // authEndpoint : 'http://3.129.240.76/sic-master/public/broadcasting/auth',
   broadcaster: 'pusher',
   key: "2e767ae318879ba2da40",
   cluster: "us2",

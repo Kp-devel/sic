@@ -29,7 +29,7 @@
         @endguest
     </div>
 
-    <script src="{{ asset('js/app.js?140911') }}" ></script>
+    <script src="{{ asset('js/app.js?140914') }}" ></script>
     <script src="{{ asset('js/waves.js') }}" ></script>
     <script src="{{ asset('js/toastr.js') }}" type="text/javascript"></script>
     <!-- <script src="{{ asset('js/echo.js') }}" ></script> -->
