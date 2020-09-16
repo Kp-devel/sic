@@ -34,8 +34,8 @@ import Echo from 'laravel-echo';
 window.Pusher = require('pusher-js');
 
  window.Echo = new Echo({
-    authEndpoint : 'http://localhost/py-clonar2/sic/public/broadcasting/auth',
-    // authEndpoint : 'http://3.129.240.76/sic-master/public/broadcasting/auth',
+    // authEndpoint : 'http://localhost/py-clonar2/sic/public/broadcasting/auth',
+    authEndpoint : 'http://3.129.240.76/sic-master/public/broadcasting/auth',
     broadcaster: 'pusher',
     key: process.env.MIX_PUSHER_APP_KEY,
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
