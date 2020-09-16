@@ -38,6 +38,7 @@ class Recordatorio extends Model
         $sql="
             SELECT 
                 cli_id as id,
+                emp_tel_id_FK as idempleado,
                 cli_cod as codigo,
                 cli_nom as nombre,
                 cli_num_doc as dni,
@@ -48,7 +49,9 @@ class Recordatorio extends Model
                 if(ges_cli_med is null,'-',ges_cli_med) as telefono,
                 if(res_id_FK is null,'Sin Gestión',res_des) as ult_resp,
                 date(ges_cli_fec) as fecha_ges,
-                ges_tel_id_FK as tel_prog
+                ges_tel_id_FK as tel_prog,
+                time(ges_rec_fec_hor) as hora_programada,
+                TIME(DATE_ADD(time(ges_rec_fec_hor),INTERVAL +1 MINUTE)) as hora_fin
             FROM 
                 cliente as c
             inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
@@ -58,16 +61,16 @@ class Recordatorio extends Model
             WHERE 
                 cli_est=0
             and cli_pas=0
-            and emp_tel_id_FK=:idEmp
             AND ges_rec_est=0 
             AND ges_rec_pas=0
             and date(ges_rec_fec_hor)=date(now())
             and TIME(NOW()) BETWEEN time(ges_rec_fec_hor) AND TIME(DATE_ADD(time(ges_rec_fec_hor),INTERVAL +6 MINUTE))
+            GROUP BY emp_tel_id_FK,cli_id
             ORDER BY ges_rec_fec_hor asc
-            limit 1
+            limit 5
         ";
 
-        $query=DB::connection('mysql')->select(DB::raw($sql),array("idEmp"=>$idEmpleado));
+        $query=DB::connection('mysql')->select(DB::raw($sql));
         return $query;
     }
 }

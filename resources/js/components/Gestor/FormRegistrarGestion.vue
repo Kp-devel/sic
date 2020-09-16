@@ -108,7 +108,7 @@
                         </div>
                     </div>
                     <div class="col-md-12 text-right">
-                        <a href="#" class="btn btn-blue btn-sm px-5" @click.prevent="registrar()">
+                        <a href="#" class="btn btn-blue btn-sm px-5" @click.prevent="cantclick+=1,registrar()">
                             <span v-if="loadButton" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Registrar
                         </a>
@@ -155,7 +155,8 @@
                 loadButton2:false,
                 cant_contacto:this.valcontacto,
                 motivos:[],
-                viewMotivo:false
+                viewMotivo:false,
+                cantclick:0
             }
         },
         methods:{
@@ -258,30 +259,29 @@
                     if(this.errorsDatos.length==0){
                         this.loadButton=true;
                         // evaluar detalle identicos
-                        let cantDetalle=[];
-                        axios.post("validarDetalleIdentico",this.datos).then(res=>{
-                            if(res.data){
-                                cantDetalle=res.data;
-                                if(cantDetalle[0].cant>0){
-                                    toastr.warning('Se está repitiendo el detalle de gestión', 'Tener en cuenta!',{"progressBar": true,"positionClass": "toast-top-center",});
+                        if(this.cantclick==1){
+                            // registrar gestion
+                            axios.post("insertarGestion",this.datos).then(res=>{
+                                if(res.data[0]=="ok"){
+                                    this.loadButton=false;
+                                    this.mensaje = "Registro con éxito";
+                                    this.$root.$emit('listarGestiones');
+                                    this.$root.$emit('verListaClientes');
+                                    this.limpiar();
+                                    this.cantclick=0;
+                                    if(res.data[1][0].cant>0){
+                                        toastr.warning('Se está repitiendo el detalle de gestión', 'Tener en cuenta!',{"progressBar": true,"positionClass": "toast-top-center",});
+                                    }
+                                    this.listaTelefonos();
+                                    setTimeout(() => {
+                                        this.mensaje="";
+                                    }, 5000);
                                 }
-                            }
-                        });
-                        // registrar gestion
-                        axios.post("insertarGestion",this.datos).then(res=>{
-                            if(res.data=="ok"){
-                                this.loadButton=false;
-                                this.mensaje = "Registro con éxito";
-                                this.$root.$emit('listarGestiones');
-                                this.$root.$emit('verListaClientes');
-                                this.limpiar();
-                                this.listaTelefonos();
-                                setTimeout(() => {
-                                    this.mensaje="";
-                                }, 5000);
-                            }
-                        });
-                    }   
+                            });
+                        }
+                    }else{
+                        this.cantclick=0;
+                    }
                 }catch(error){
                     this.mensaje = "Error al Registrar";
                     setTimeout(() => {

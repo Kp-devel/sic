@@ -30,17 +30,22 @@ class RecordatorioController extends Controller
     public function listarRecordatorio(){
         $datos=Recordatorio::listarRecordatorio();
         if(count($datos)>0){
-            $telefonos=Telefono::infoTelefonos($datos[0]->id);
-            $validacion_contacto=Gestion::validarContacto($datos[0]->id);
-            $validacion_pdp=Gestion::validarPDP($datos[0]->id);
+            for($i=0;$i<count($datos);$i++){
+                // $datosgenerales=[];
+                $telefonos=Telefono::infoTelefonos($datos[$i]->id);
+                $validacion_contacto=Gestion::validarContacto($datos[$i]->id);
+                $validacion_pdp=Gestion::validarPDP($datos[$i]->id);
 
-            $datosgenerales=['recordatorios'=>$datos,
-                            'telefonos'=>$telefonos,
-                            'validar_contacto'=>$validacion_contacto,
-                            'pdps'=>$validacion_pdp
-                            ];
-            $success = event(new WebsocketsRecordatorio($datosgenerales));
-            return $success;
+                $datosgenerales=['recordatorios'=>$datos[$i],
+                                'telefonos'=>$telefonos,
+                                'validar_contacto'=>$validacion_contacto,
+                                'pdps'=>$validacion_pdp
+                                ];
+                
+                 event(new WebsocketsRecordatorio($datosgenerales));
+            }
         }
+
     }
+    
 }
