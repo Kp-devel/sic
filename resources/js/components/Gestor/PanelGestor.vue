@@ -153,6 +153,14 @@
                 this.datosgenerales(this.idCliente);
                 // $('html, body').animate({scrollTop:0}, 'slow');
             } );
+            // limpiar recordatorios
+            this.$root.$on('limpiarRecordatorio', () => {
+                this.recordatorio=[];
+                this.telRecordatorio=[];
+                this.pdpsRecordatorio=[];
+                this.contactoRecordatorio=[];
+            });
+
             // websocktes
             const this2=this
             Echo.private('user.'+this.idlogeado)
