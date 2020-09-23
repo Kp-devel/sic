@@ -4320,6 +4320,7 @@ __webpack_require__.r(__webpack_exports__);
       _this2.telRecordatorio = [];
       _this2.pdpsRecordatorio = [];
       _this2.contactoRecordatorio = [];
+      _this2.historicoGestiones = [];
     }); // websocktes
 
     var this2 = this;
@@ -4345,6 +4346,7 @@ __webpack_require__.r(__webpack_exports__);
       pdpsRecordatorio.push(data.data['pdps']);
       contactoRecordatorio.push(data.data['validar_contacto']);
       historicoGestiones.push(data.data['gestiones']);
+      console.log(historicoGestiones);
 
       if (datetime >= data.data['recordatorios'].hora_programada && datetime <= data.data['recordatorios'].hora_fin) {
         toastr.success('Los recordatorios sólo se encuentran disponibles 5min después de su hora programada', 'Tienes un recordatorio activo', {
@@ -52948,15 +52950,18 @@ var render = function() {
                       _vm._v(" "),
                       _c(
                         "div",
+                        { staticClass: "pr-2" },
                         [
                           _vm._m(2),
                           _vm._v(" "),
-                          _c("detalleGestiones", {
-                            attrs: {
-                              idCliente: _vm.recordatorio[0].id,
-                              historico: _vm.historicoGestiones
-                            }
-                          })
+                          _vm.historicoGestiones
+                            ? _c("detalleGestiones", {
+                                attrs: {
+                                  idCliente: _vm.recordatorio[0].id,
+                                  historico: _vm.historicoGestiones[0]
+                                }
+                              })
+                            : _vm._e()
                         ],
                         1
                       ),
@@ -98132,8 +98137,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
-  // authEndpoint : 'http://localhost/py-clonar2/sic/public/broadcasting/auth',
-  authEndpoint: 'http://3.129.240.76/sic-master/public/broadcasting/auth',
+  authEndpoint: 'http://localhost/py-clonar2/sic/public/broadcasting/auth',
+  // authEndpoint : 'http://3.129.240.76/sic-master/public/broadcasting/auth',
   broadcaster: 'pusher',
   key: "2e767ae318879ba2da40",
   cluster: "us2",

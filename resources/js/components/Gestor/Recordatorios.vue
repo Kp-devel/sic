@@ -44,11 +44,11 @@
                             </table>
                         </div>
                         <!-- gestiones -->
-                        <div>
+                        <div class="pr-2">
                             <div class="d-flex">
                                 <p class=" badge bg-blue text-white py-2 px-3 min-w-125 text-left">HISTÓRICO GESTIONES</p>
                             </div>
-                            <detalleGestiones :idCliente="recordatorio[0].id" :historico="historicoGestiones"/>
+                            <detalleGestiones :idCliente="recordatorio[0].id" :historico="historicoGestiones[0]" v-if="historicoGestiones"/>
                         </div>
                         <!-- formulario de registro -->
                         <formRegistrarGestion  :idCliente="recordatorio[0].id" :tipo="2" :telrecordatorio="recordatorio[0].tel_prog" :telefonosgenerales="telRecordatorio[0]" :valcontacto="contacto[0]" :datospdp="pdps[0]"/>
