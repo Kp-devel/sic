@@ -98137,8 +98137,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
-  authEndpoint: 'http://localhost/py-clonar2/sic/public/broadcasting/auth',
-  // authEndpoint : 'http://3.129.240.76/sic-master/public/broadcasting/auth',
+  // authEndpoint : 'http://localhost/py-clonar2/sic/public/broadcasting/auth',
+  authEndpoint: 'http://3.129.240.76/sic-master/public/broadcasting/auth',
   broadcaster: 'pusher',
   key: "2e767ae318879ba2da40",
   cluster: "us2",
