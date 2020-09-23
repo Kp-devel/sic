@@ -154,6 +154,7 @@
                 this.telRecordatorio=[];
                 this.pdpsRecordatorio=[];
                 this.contactoRecordatorio=[];
+                this.historicoGestiones=[];
             });
 
             // websocktes
@@ -183,7 +184,8 @@
                 pdpsRecordatorio.push(data.data['pdps']);   
                 contactoRecordatorio.push(data.data['validar_contacto']);   
                 historicoGestiones.push(data.data['gestiones']);
-                
+
+                console.log(historicoGestiones);
                 if(datetime>=data.data['recordatorios'].hora_programada && datetime<=data.data['recordatorios'].hora_fin){
                     toastr.success('Los recordatorios sólo se encuentran disponibles 5min después de su hora programada', 'Tienes un recordatorio activo',{"progressBar": true,"positionClass": "toast-bottom-right",});
                 }

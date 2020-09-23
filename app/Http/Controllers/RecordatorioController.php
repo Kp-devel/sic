@@ -37,7 +37,7 @@ class RecordatorioController extends Controller
                 $validacion_contacto=Gestion::validarContacto($datos[$i]->id);
                 $validacion_pdp=Gestion::validarPDP($datos[$i]->id);
                 $gestiones=cliente::historicoGestiones($datos[$i]->id);
-
+                dd($gestiones);
                 $datosgenerales=['recordatorios'=>$datos[$i],
                                 'telefonos'=>$telefonos,
                                 'validar_contacto'=>$validacion_contacto,
