@@ -48,6 +48,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('estadosCampana', 'CampanaController@estadosCampana');
     
     //respuestas
+    Route::get('listasPanelBusqueda', 'RespuestaController@listasPanelBusqueda');
     Route::get('listRespuestas', 'RespuestaController@listRespuestas');
     Route::get('listaMotivosNoPago', 'RespuestaController@listaMotivosNoPago');
     Route::get('listaRespuesta/{ubi}', 'RespuestaController@listaRespuestaUbicabilidad');

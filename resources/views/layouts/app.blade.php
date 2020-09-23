@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/style.css?05091') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css?05093') }}" rel="stylesheet">
     <link href="{{ asset('css/waves.css?1') }}" rel="stylesheet">
     <link href="{{ asset('css/toastr.css?1') }}" rel="stylesheet" >
     <!-- <link href="{{ asset('css/bootstrap-select.min.css') }}" rel="stylesheet"> -->
@@ -29,9 +29,10 @@
         @endguest
     </div>
 
-    <script src="{{ asset('js/app.js?140914') }}" ></script>
+    <script src="{{ asset('js/app.js?22093') }}" ></script>
     <script src="{{ asset('js/waves.js') }}" ></script>
     <script src="{{ asset('js/toastr.js') }}" type="text/javascript"></script>
+    <!-- <script lang="javascript" src="dist/xlsx.full.min.js"></script> -->
     <!-- <script src="{{ asset('js/echo.js') }}" ></script> -->
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <!-- <script src="https://js.pusher.com/4.1/pusher.min.js"></script> -->

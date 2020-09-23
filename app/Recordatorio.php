@@ -34,7 +34,6 @@ class Recordatorio extends Model
     }
 
     public static function listarRecordatorio(){
-        $idEmpleado=auth()->user()->emp_id;
         $sql="
             SELECT 
                 cli_id as id,
