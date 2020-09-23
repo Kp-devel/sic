@@ -7,6 +7,25 @@ use App\Respuesta;
 
 class RespuestaController extends Controller
 {
+    public function listasPanelBusqueda(){
+        $respuestas=Respuesta::listRespuestas();
+        $motivonopago=Respuesta::listaMotivosNoPago();
+        $entidades=Respuesta::listaEntidades();
+        $score=Respuesta::listaScore();
+        $oficinas=Respuesta::listaOficinas();
+        $descuentos=Respuesta::listaDescuentos();
+        $prioridad=Respuesta::listaPrioridad();
+        return $opcionesBusqueda=[
+            "respuestas"=>$respuestas,
+            "motivonopago"=>$motivonopago,
+            "entidades"=>$entidades,
+            "score"=>$score,
+            "oficinas"=>$oficinas,
+            "descuentos"=>$descuentos,
+            "prioridad"=>$prioridad
+        ];
+    }
+
     public function listRespuestas(){
         return Respuesta::listRespuestas();
     }

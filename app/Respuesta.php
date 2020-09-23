@@ -64,6 +64,7 @@ class Respuesta extends Model
             WHERE 
                 car_id_FK=:car
             and tag_tipo='entidades'
+            and tag_est=0
         ";
         $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
         return $query;
@@ -79,6 +80,7 @@ class Respuesta extends Model
             WHERE 
                 car_id_FK=:car
             and tag_tipo='score'
+            and tag_est=0
         ";
         $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
         return $query;
@@ -96,6 +98,38 @@ class Respuesta extends Model
             ORDER BY loc_nom ASC 
         ";
         $query=DB::connection('mysql')->select(DB::raw($sql));
+        return $query;
+    }
+
+    public static function listaDescuentos(){
+        $cartera=session()->get('datos')->idcartera;
+        $sql="
+            SELECT
+                tag_valor as valor
+            FROM
+                creditoy_lotesms.tag_condicion
+            WHERE 
+                car_id_FK=:car
+            and tag_tipo='descuento'
+            and tag_est=0
+        ";
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
+        return $query;
+    }
+
+    public static function listaPrioridad(){
+        $cartera=session()->get('datos')->idcartera;
+        $sql="
+            SELECT
+                tag_valor as valor
+            FROM
+                creditoy_lotesms.tag_condicion
+            WHERE 
+                car_id_FK=:car
+            and tag_tipo='prioridad'
+            and tag_est=0
+        ";
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
         return $query;
     }
 }

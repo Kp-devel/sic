@@ -43,6 +43,13 @@
                                 </tbody>
                             </table>
                         </div>
+                        <!-- gestiones -->
+                        <div>
+                            <div class="d-flex">
+                                <p class=" badge bg-blue text-white py-2 px-3 min-w-125 text-left">HISTÓRICO GESTIONES</p>
+                            </div>
+                            <detalleGestiones :idCliente="recordatorio[0].id" :historico="historicoGestiones"/>
+                        </div>
                         <!-- formulario de registro -->
                         <formRegistrarGestion  :idCliente="recordatorio[0].id" :tipo="2" :telrecordatorio="recordatorio[0].tel_prog" :telefonosgenerales="telRecordatorio[0]" :valcontacto="contacto[0]" :datospdp="pdps[0]"/>
                         
@@ -60,8 +67,9 @@
 
 <script>
     import formRegistrarGestion from './FormRegistrarGestion';
+    import detalleGestiones from './DetalleGestiones';
     export default {
-        props:['recordatorio','telRecordatorio','pdps','contacto'],
+        props:['recordatorio','telRecordatorio','pdps','contacto','historicoGestiones'],
         data() {
             return {
             
@@ -71,7 +79,8 @@
 
         },
         components:{
-            formRegistrarGestion
+            formRegistrarGestion,
+            detalleGestiones
         },
     }
 </script>

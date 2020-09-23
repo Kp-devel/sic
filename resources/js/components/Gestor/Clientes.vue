@@ -136,13 +136,36 @@
                                 </td>
                             </tr>
                             <tr class="font-12"> 
+                                <td>Prioridad</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm mb-1" v-model="busqueda.prioridad" :disabled="prioridad==''">
+                                        <option value="">Seleccionar</option>
+                                        <option v-for="(item,index) in prioridad" :key="index" :value="item.valor">{{item.valor}}</option>
+                                    </select>
+                                </td>
+                                <td class="text-right pr-1">Dscto.</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm mb-1" v-model="busqueda.descuento" :disabled="descuentos==''">
+                                        <option value="">Seleccionar</option>
+                                        <option v-for="(item,index) in descuentos" :key="index" :value="item.valor">{{item.valor}}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="font-12"> 
                                 <td>Ordenar</td>
                                 <td>
                                     <select class="form-control font-12 form-control-sm" v-model="busqueda.ordenar">
                                         <option value="">Seleccionar</option>
-                                        <option value="1">Capital</option>
-                                        <option value="2">Deuda</option>
-                                        <option value="3">IC</option>
+                                        <optgroup label="Ascendente">
+                                            <option value="4">Capital</option>
+                                            <option value="5">Deuda</option>
+                                            <option value="6">IC</option>
+                                        </optgroup>
+                                        <optgroup label="Descendente">   
+                                            <option value="1">Capital</option>
+                                            <option value="2">Deuda</option>
+                                            <option value="3">IC</option>
+                                        </optgroup>
                                     </select>
                                 </td>
                                 <td colspan="2">
@@ -155,11 +178,15 @@
                                 </td>
                             </tr>
                             <tr class="font-12"> 
-                                <td colspan="2" class="pt-3">
-                                    <a href="" @click.prevent="listCLientes()" class="btn btn-outline-blue btn-sm btn-block btn-waves">Buscar</a>
-                                </td>
-                                <td colspan="2" class="pt-3">
-                                    <a href="" @click.prevent="limpiar()"  class="btn  btn-sm btn-block btn-waves btn-outline-blue">Limpiar</a>
+                                <td colspan="4" class="pt-3">
+                                    <div class="d-flex w-100 justify-content-between">
+                                            <a href="" @click.prevent="listCLientes()" class="btn px-4 btn-outline-blue btn-sm btn-waves "><i class="text-white pr-1"></i>Buscar<i class="text-white pl-1"></i></a>
+                                            <a href="" @click.prevent="limpiar()"  class="btn  px-4 btn-sm btn-waves btn-outline-blue ">Limpiar</a>
+                                            <a href="" @click.prevent="exportar()"  class="btn btn-sm btn-waves btn-outline-blue" :class="{'px-4':btnExportar==false,'px-3':btnExportar==true}">
+                                                 <span v-if="btnExportar" class="spinner-border spinner-border-sm" style="width: 0.65rem; height: 0.65rem;" role="status" aria-hidden="true"></span>
+                                                 Exportar
+                                            </a>
+                                    </div>
                                 </td>
                             </tr>
                         </table>
@@ -373,6 +400,7 @@
 
 <script>
     import vuePaginate from '../../../../node_modules/vue-paginate';
+    import XLSX from '../../../../node_modules/xlsx';
     //import detalleCliente from './detalleCliente';
 
     export default {
@@ -382,31 +410,37 @@
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 paginate: ['lista'],
                 lista: [],
-                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:'',capital:'',importe:'',oficina:''},
+                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:'',capital:'',importe:'',oficina:'',descuento:'',prioridad:''},
                 //codigo:'',
                 loading:false,
                 loading2:false,
-                respuestas: [],
-                entidades: [],
-                score: [],
                 firma:{firma:''},
                 estandar:[],
                 estados:[],
-                oficinas:[],
                 fecha_hoy:'',
                 dataMes:{meta:0,recupero:0,alcance:0,efectividad:0,pdp_caidas:0,pdp_pendiente:0,fecha_recupero:''},
-                motivosnopago:[]
+                respuestas: [],
+                motivosnopago:[],
+                entidades: [],
+                score: [],
+                oficinas:[],
+                descuentos: [],
+                prioridad: [],
+                dataBusqueda:{},
+                dataExportar:[],
+                btnExportar:false
             }
         },
         created(){
-             this.listRespuestas(); 
-             this.listMotivosnopago();
+             this.listaPanelBusqueda();
              this.datosMes(); 
              this.estadoCampana();   
              this.diaActual();
-             this.listEntidades();
-             this.listScore();
-             this.listOficinas();
+            //  this.listRespuestas(); 
+            //  this.listMotivosnopago();
+            //  this.listEntidades();
+            //  this.listScore();
+            //  this.listOficinas();
         },
         watch:{
             'busqueda.pdp_desde': function(val){this.busqueda.pdp_desde = this.validarFormatoFecha(val)},
@@ -450,40 +484,47 @@
                 this.busqueda.capital='';
                 this.busqueda.importe='';
                 this.busqueda.oficina='';
+                this.busqueda.prioridad='';
+                this.busqueda.descuento='';
+            },
+            parametros(){
+                const fechas_i =  this.busqueda.pdp_desde.split('/');                   
+                const nuevaFecha_i = `${fechas_i[2]}-${fechas_i[1]}-${fechas_i[0]}`
+                const fec_desde= nuevaFecha_i.split(' ').join('');
+
+                const fechas_f =  this.busqueda.pdp_hasta.split('/');                   
+                const nuevaFecha_f = `${fechas_f[2]}-${fechas_f[1]}-${fechas_f[0]}`
+                const fec_hasta= nuevaFecha_f.split(' ').join('');
+                
+                this.dataBusqueda = {
+                    codigo : this.busqueda.codigo,
+                    dni : this.busqueda.dni,
+                    nombre : this.busqueda.nombre,
+                    telefono : this.busqueda.telefono,
+                    tramo : this.busqueda.tramo,
+                    respuesta : this.busqueda.respuesta,
+                    fec_desde : fec_desde,
+                    fec_hasta : fec_hasta,
+                    ordenar : this.busqueda.ordenar,
+                    camp : this.busqueda.camp,
+                    deuda : this.busqueda.deuda,
+                    sueldo : this.busqueda.sueldo,
+                    entidades : this.busqueda.entidades,
+                    score : this.busqueda.score,
+                    motivo : this.busqueda.motivo,
+                    capital: this.busqueda.capital,
+                    importe: this.busqueda.importe,
+                    oficina: this.busqueda.oficina,
+                    prioridad:this.busqueda.prioridad,
+                    descuento:this.busqueda.descuento,
+                    tipo:0
+                };
             },
             listCLientes(){
-                //if(this.busqueda.codigo!="" && this.busqueda.dni!="" && this.busqueda.nombre!=""){
-                    const fechas_i =  this.busqueda.pdp_desde.split('/');                   
-                    const nuevaFecha_i = `${fechas_i[2]}-${fechas_i[1]}-${fechas_i[0]}`
-                    const fec_desde= nuevaFecha_i.split(' ').join('');
-
-                    const fechas_f =  this.busqueda.pdp_hasta.split('/');                   
-                    const nuevaFecha_f = `${fechas_f[2]}-${fechas_f[1]}-${fechas_f[0]}`
-                    const fec_hasta= nuevaFecha_f.split(' ').join('');
-                    
-                    const dataBusqueda = {
-                        codigo : this.busqueda.codigo,
-                        dni : this.busqueda.dni,
-                        nombre : this.busqueda.nombre,
-                        telefono : this.busqueda.telefono,
-                        tramo : this.busqueda.tramo,
-                        respuesta : this.busqueda.respuesta,
-                        fec_desde : fec_desde,
-                        fec_hasta : fec_hasta,
-                        ordenar : this.busqueda.ordenar,
-                        camp : this.busqueda.camp,
-                        deuda : this.busqueda.deuda,
-                        sueldo : this.busqueda.sueldo,
-                        entidades : this.busqueda.entidades,
-                        score : this.busqueda.score,
-                        motivo : this.busqueda.motivo,
-                        capital: this.busqueda.capital,
-                        importe: this.busqueda.importe,
-                        oficina: this.busqueda.oficina
-                    };
+                    this.parametros();
                     this.loading=true;
-                    
-                    axios.post("listClientes",dataBusqueda).then(res=>{
+                    this.dataBusqueda.tipo=1;
+                    axios.post("listClientes",this.dataBusqueda).then(res=>{
                         if(res.data){
                             this.lista=res.data;
                             this.loading=false;
@@ -492,46 +533,99 @@
                     })
                 //}
             },
-            listRespuestas(){    
+            listaPanelBusqueda(){    
                 this.respuestas=[];
-                axios.get("listRespuestas").then(res=>{
+                axios.get("listasPanelBusqueda").then(res=>{
                     if(res.data){
-                        this.respuestas=res.data;
+                        this.opcionesBusqueda=res.data;
+                        this.respuestas=this.opcionesBusqueda['respuestas'];
+                        this.motivosnopago=this.opcionesBusqueda['motivonopago'];
+                        this.entidades=this.opcionesBusqueda['entidades'];
+                        this.score=this.opcionesBusqueda['score'];
+                        this.oficinas=this.opcionesBusqueda['oficinas'];
+                        this.descuentos=this.opcionesBusqueda['descuentos'];
+                        this.prioridad=this.opcionesBusqueda['prioridad'];
                     }
                 })
             },
-            listMotivosnopago(){
-                this.motivosnopago=[];
-                axios.get("listaMotivosNoPago").then(res=>{
+            exportar(){
+                this.btnExportar=true;
+                this.parametros();
+                this.dataBusqueda.tipo=2;
+                axios.post("listClientes",this.dataBusqueda).then(res=>{
                     if(res.data){
-                        this.motivosnopago=res.data;
+                        this.dataExportar=res.data;
+                        let data = XLSX.utils.json_to_sheet(this.dataExportar)
+                        const workbook = XLSX.utils.book_new()
+                        // var data =XLSX.utils.aoa_to_sheet(this.dataExportar);
+                        // data['A2'].s = {
+                        //     fill: {
+                        //         patternType: "none", // none / solid
+                        //         fgColor: {rgb: "FF000000"},
+                        //         bgColor: {rgb: "FFFFFFFF"}
+                        //         },
+                        //         font: {
+                        //         name: 'Times New Roman',
+                        //         sz: 16,
+                        //         color: {rgb: "#FF000000"},
+                        //         bold: true,
+                        //         italic: false,
+                        //         underline: false
+                        //         },
+                        //         border: {
+                        //         top: {style: "thin", color: {auto: 1}},
+                        //         right: {style: "thin", color: {auto: 1}},
+                        //         bottom: {style: "thin", color: {auto: 1}},
+                        //         left: {style: "thin", color: {auto: 1}}
+                        //         }
+                        //     };
+                        const filename = 'Listado_Clientes'
+                        XLSX.utils.book_append_sheet(workbook, data, filename)
+                        XLSX.writeFile(workbook, `${filename}.xlsx`)
+                        this.btnExportar=false;
                     }
                 })
             },
-            listEntidades(){
-                this.entidades=[];
-                axios.get("listaEntidades").then(res=>{
-                    if(res.data){
-                        this.entidades=res.data;
-                    }
-                })
-            },
-            listScore(){
-                this.score=[];
-                axios.get("listaScore").then(res=>{
-                    if(res.data){
-                        this.score=res.data;
-                    }
-                })
-            },
-            listOficinas(){
-                this.oficinas=[];
-                axios.get("listaOficinas").then(res=>{
-                    if(res.data){
-                        this.oficinas=res.data;
-                    }
-                })
-            },
+            // listRespuestas(){    
+            //     this.respuestas=[];
+            //     axios.get("listRespuestas").then(res=>{
+            //         if(res.data){
+            //             this.respuestas=res.data;
+            //         }
+            //     })
+            // },
+            // listMotivosnopago(){
+            //     this.motivosnopago=[];
+            //     axios.get("listaMotivosNoPago").then(res=>{
+            //         if(res.data){
+            //             this.motivosnopago=res.data;
+            //         }
+            //     })
+            // },
+            // listEntidades(){
+            //     this.entidades=[];
+            //     axios.get("listaEntidades").then(res=>{
+            //         if(res.data){
+            //             this.entidades=res.data;
+            //         }
+            //     })
+            // },
+            // listScore(){
+            //     this.score=[];
+            //     axios.get("listaScore").then(res=>{
+            //         if(res.data){
+            //             this.score=res.data;
+            //         }
+            //     })
+            // },
+            // listOficinas(){
+            //     this.oficinas=[];
+            //     axios.get("listaOficinas").then(res=>{
+            //         if(res.data){
+            //             this.oficinas=res.data;
+            //         }
+            //     })
+            // },
             datosEstandar(){
                 this.loading2=true;
                 this.estandar=[];
@@ -568,20 +662,6 @@
                     }
                 })
             },
-
-            // buscar(codigo){
-            //     if(codigo!=""){
-            //         this.clientes=[];
-            //         for(var i=0;i<this.temp.length;i++){
-            //             if((this.temp[i].codigo).indexOf(codigo)!==-1){
-            //                 this.clientes.push(this.temp[i]);
-            //             }
-            //         }
-            //     }else{
-            //         this.clientes=this.temp;
-            //     }
-            //     this.total_clientes=this.clientes.length;
-            // },
             detalle(id){
                 let datos=[];
                 $('#contenidoLista').toggleClass('pos_fixed');
@@ -648,12 +728,13 @@
             }
         },
         mounted(){
-            this.$root.$on ('verListaClientes',() => {
+            this.$root.$on('verListaClientes',() => {
                 this.listCLientes();
             } );
         },
         components:{
-            vuePaginate
+            vuePaginate,
+            XLSX
         }
     }
 </script>

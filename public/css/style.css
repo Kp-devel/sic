@@ -758,3 +758,11 @@ legend{
   .border-blue{
     border-right: 0.5px solid rgb(3,42,81);
   }
+
+.modal::-webkit-scrollbar{
+    width: 10px;
+    background-color: #dbdbdb;
+}
+.modal::-webkit-scrollbar-thumb{
+    background-color: rgb(238, 238, 238);
+}

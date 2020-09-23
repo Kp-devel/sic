@@ -8,7 +8,7 @@
                 <i v-if="recordatorio!=''" class="fa fa-circle text-danger pt-3 pl-0" style="position:absolute;"></i>
             </a>
         </div>
-        <recordatorio :recordatorio="recordatorio" :telRecordatorio="telRecordatorio" :pdps="pdpsRecordatorio" :contacto="contactoRecordatorio"/>
+        <recordatorio :recordatorio="recordatorio" :telRecordatorio="telRecordatorio" :pdps="pdpsRecordatorio" :contacto="contactoRecordatorio" :historicoGestiones="historicoGestiones"/>
         <!-- lista de clientes y menu -->
         <clientes :userlogeado="userlogeado"/>
         <!-- detalle de cliente -->
@@ -106,6 +106,7 @@
                 telRecordatorio:[],
                 pdpsRecordatorio:[],
                 contactoRecordatorio:[],
+                historicoGestiones:[]
                 // viewalerta:'false'
             }
         },
@@ -123,12 +124,6 @@
                 this.$root.$emit('limpiarFrmTel');
             },
             verRecordatorios(){
-                // this.viewalerta='false';
-                // this.recordatorio=[];
-                // this.telRecordatorio=[];
-                // this.pdpsRecordatorio=[];
-                // this.contactoRecordatorio=[];
-                //axios.get("listarRecordatorio");
             },
             telefonosRecordatorio(tel){
                 this.$root.$emit('telefonosRecordatorio',tel); 
@@ -169,22 +164,26 @@
                 this2.telRecordatorio=[];
                 this2.pdpsRecordatorio=[];
                 this2.contactoRecordatorio=[];
+                this2.historicoGestiones=[];
                 // this2.viewalerta='true';
                 const recordatorio=this2.recordatorio;
                 const telRecordatorio=this2.telRecordatorio;
                 const pdpsRecordatorio=this2.pdpsRecordatorio;
                 const contactoRecordatorio=this2.contactoRecordatorio;
-                
+                const historicoGestiones=this2.historicoGestiones;
+
                 const currentdate = new Date(); 
                 const hora= currentdate.getHours()<10?'0'+currentdate.getHours():currentdate.getHours();
                 const min= currentdate.getMinutes()<10?'0'+currentdate.getMinutes():currentdate.getMinutes();
                 const sec= currentdate.getSeconds()<10?'0'+currentdate.getSeconds():currentdate.getSeconds();
                 const datetime=hora+":"+min+":"+sec;
-                console.log(datetime);
+                
                 recordatorio.push(data.data['recordatorios']);
                 telRecordatorio.push(data.data['telefonos']);   
                 pdpsRecordatorio.push(data.data['pdps']);   
                 contactoRecordatorio.push(data.data['validar_contacto']);   
+                historicoGestiones.push(data.data['gestiones']);
+                
                 if(datetime>=data.data['recordatorios'].hora_programada && datetime<=data.data['recordatorios'].hora_fin){
                     toastr.success('Los recordatorios sólo se encuentran disponibles 5min después de su hora programada', 'Tienes un recordatorio activo',{"progressBar": true,"positionClass": "toast-bottom-right",});
                 }
