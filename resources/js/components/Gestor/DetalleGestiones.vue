@@ -58,9 +58,13 @@
             },
         },
         mounted() {
-            this.$root.$on ('listarGestiones',() => {
+            this.$root.$on('listarGestiones',() => {
                 this.infoGestiones();
             } );
+            this.$root.$on('refreshGestiones',(gestiones) => {
+                this.gestiones=gestiones[0];
+            } );
         },
+
     }
 </script>

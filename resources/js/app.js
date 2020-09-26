@@ -7,6 +7,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('panel-gestor', require('./components/Gestor/PanelGestor.vue').default);
 Vue.component('control-llamadas', require('./components/Admin/ControlLlamadas.vue').default);
 Vue.component('control-llamadas-gestor', require('./components/Admin/ControlLlamadasGestor.vue').default);
+Vue.component('formRegistrarGestion', require('./components/Gestor/FormRegistrarGestion.vue').default);
 
 const app = new Vue({
     el: '#app',

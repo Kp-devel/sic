@@ -112,10 +112,10 @@
                             <span v-if="loadButton" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Registrar
                         </a>
-                        <a href="#" v-if="tipo==2" class="btn btn-blue btn-sm ml-2 px-4" @click.prevent="reprogramar()">
+                        <!-- <a href="#" v-if="tipo==2" class="btn btn-blue btn-sm ml-2 px-4" @click.prevent="reprogramar()">
                             <span v-if="loadButton2" class="spinner-border spinner-border-sm pr-2" role="status" aria-hidden="true"></span>
                             <i class="fa fa-clock pr-1" v-else></i>Reprogramar
-                        </a>
+                        </a> -->
                     </div>
                     <div class="col-md-7"></div>
                     <div class="col-md-5 text-center mt-3">
@@ -137,6 +137,7 @@
 </template>
 
 <script>
+    // import RecordatoriosVue from './Recordatorios.vue';
 
     export default {
         props:["idCliente","tipo","telrecordatorio","telefonosgenerales","valcontacto","datospdp"],
@@ -294,25 +295,25 @@
                     }, 5000);
                 }
             },
-            reprogramar(){
-                this.errorsDatos=[];
-                this.datos.tel_rec=this.telrecordatorio;
-                if(this.datos.tel_rec!="" && this.datos.fechaRec!="" && this.datos.horaRec!=""){
-                    this.loadButton2=true;
-                    axios.post("insertarRecordatorio",this.datos).then(res=>{
-                        if(res.data=="ok"){
-                            this.loadButton2=false;
-                            this.mensaje = "Registro con éxito";
-                            this.$root.$emit('limpiarRecordatorio');
-                            setTimeout(() => {
-                                this.mensaje="";
-                            }, 5000);
-                        }
-                    });
-                }else{
-                    this.errorsDatos.push("Selecciona una fecha y/o hora de recordatorio");
-                }
-            },
+            // reprogramar(){
+            //     this.errorsDatos=[];
+            //     this.datos.tel_rec=this.telrecordatorio;
+            //     if(this.datos.tel_rec!="" && this.datos.fechaRec!="" && this.datos.horaRec!=""){
+            //         this.loadButton2=true;
+            //         axios.post("insertarRecordatorio",this.datos).then(res=>{
+            //             if(res.data=="ok"){
+            //                 this.loadButton2=false;
+            //                 this.mensaje = "Registro con éxito";
+            //                 this.$root.$emit('limpiarRecordatorio');
+            //                 setTimeout(() => {
+            //                     this.mensaje="";
+            //                 }, 5000);
+            //             }
+            //         });
+            //     }else{
+            //         this.errorsDatos.push("Selecciona una fecha y/o hora de recordatorio");
+            //     }
+            // },
             validarRespuestas(res){
                 //respuesta 1,43 y 2--limitacion de calendario
                 this.fechaCalendario(res);
@@ -387,10 +388,14 @@
         mounted() {
             this.$root.$on('frglistarTelefonos',() => {
                 this.listaTelefonos();
-            } );            
+            } );
+            // this.$root.$on ('refreshFrmGestion',(tel,pdp,contacto,id) => {
+            //     this.telefonos=tel[0];                           
+            //     this.cant_contacto=contacto[0];  ;
+            //     this.pdps=pdp[0];     
+            //     this.datos.id=id;
+            // } );            
         },
-        // computed(){
-        //     this.datos={detalle:'',montoPDP:'',fechaPDP:null,moneda:0,telefono:'',respuesta:'',rec:'',fechaRec:'',horaRec:'',id:this.idCliente,tel_rec:'',motivoNoPago:''};
-        // }
+        
     }
 </script>
