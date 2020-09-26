@@ -61,9 +61,6 @@
             this.$root.$on('listarGestiones',() => {
                 this.infoGestiones();
             } );
-            this.$root.$on('refreshGestiones',(gestiones) => {
-                this.gestiones=gestiones[0];
-            } );
         },
 
     }
