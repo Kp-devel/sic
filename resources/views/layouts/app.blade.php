@@ -29,7 +29,7 @@
         @endguest
     </div>
 
-    <script src="{{ asset('js/app.js?22095') }}" ></script>
+    <script src="{{ asset('js/app.js?220912') }}" ></script>
     <script src="{{ asset('js/waves.js') }}" ></script>
     <script src="{{ asset('js/toastr.js') }}" type="text/javascript"></script>
     <!-- <script lang="javascript" src="dist/xlsx.full.min.js"></script> -->

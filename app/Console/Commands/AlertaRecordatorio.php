@@ -42,6 +42,11 @@ class AlertaRecordatorio extends Command
      */
     public function handle()
     {
+        $telefonos=[];
+        $validacion_contacto=[];
+        $validacion_pdp=[];
+        $gestiones=[];
+        $datosgenerales=[];
         $datos=Recordatorio::listarRecordatorio();
         if(count($datos)>0){
             for($i=0;$i<count($datos);$i++){
@@ -60,6 +65,8 @@ class AlertaRecordatorio extends Command
                 
                  event(new WebsocketsRecordatorio($datosgenerales));
             }
+        }else{
+            event(new WebsocketsRecordatorio([]));
         }
     }
 }
