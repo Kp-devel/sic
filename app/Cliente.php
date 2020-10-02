@@ -36,6 +36,7 @@ class Cliente extends Model
         //dd($camp);
         $idEmpleado=auth()->user()->emp_id;
         $cartera=session()->get('datos')->idcartera;
+        $acceso=auth()->user()->emp_tip_acc;
 
         if($camp!= null){
             $fec_actual=date("Y-m-d H:i:s");
@@ -62,6 +63,7 @@ class Cliente extends Model
             $cantidad_cli=0;
         }
 
+        //tipo=2 expotar, tipo=1 mostrar lista
         if($tipo==1){
             $filtro="
                 SELECT 
@@ -76,10 +78,12 @@ class Cliente extends Model
                     if(ges_cli_med is null,'-',ges_cli_med) as telefono,
                     if(res_id_FK is null,'Sin Gestión',res_des) as ult_resp,
                     date(ges_cli_fec) as fecha_ges,
-                    cli_ema as email
+                    cli_ema as email,
+                    car_nom as cartera
                 FROM 
-                    cliente as c
+                    cliente c
                 inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
+                inner join cartera ca ON c.car_id_FK=ca.car_id
                 left JOIN gestion_cliente g ON c.ges_cli_tel_id_FK=g.ges_cli_id
                 left JOIN respuesta as r on r.res_id=g.res_id_FK
             ";
@@ -101,23 +105,34 @@ class Cliente extends Model
                     ges_cli_det as 'ULTIMA GESTIÓN',
                     date(ges_cli_com_fec) as 'FECHA COMPROMISO',
                     cli_fec_hor as 'ACTUALIZADO',
-                    concat(loc_cod,' - ',loc_nom) as OFICINA
+                    concat(loc_cod,' - ',loc_nom) as OFICINA,
+                    car_nom as CARTERA
                 FROM 
                     cliente as c
                 inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
+                inner join cartera ca ON c.car_id_FK=ca.car_id
                 left JOIN gestion_cliente g ON c.ges_cli_tel_id_FK=g.ges_cli_id
                 left JOIN respuesta as r on r.res_id=g.res_id_FK
                 LEFT JOIN local l on c.loc_id_FK=l.loc_id
             ";
         }
+        
         $sql="
             where 
                 cli_est=0 and cli_pas=0 
                 and det_cli_est=0 and det_cli_pas=0
-                and emp_tel_id_FK=$idEmpleado
                 and det_cli_deu_mor = (SELECT MAX(det_cli_deu_mor) FROM detalle_cliente WHERE det_cli_est = 0 AND det_cli_pas = 0 AND cli_id_FK = c.cli_id)
-                    
+                and car_est=0 and car_pas=0
         ";
+        if($acceso==2){
+            $sql.=" and emp_tel_id_FK=$idEmpleado ";
+        }
+        /*else{
+            if($cartera!=0){
+                $sql.=" and car_id_FK in ($cartera)";
+            }
+        }*/
+
         if($codigo!= null){
             $sql = $sql." and cli_cod=$codigo ";
         }

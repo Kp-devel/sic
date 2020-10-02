@@ -6,13 +6,11 @@ Auth::routes();
 
 Route::group(['middleware' => ['auth']], function(){
     
-    Route::get('/', function () {
-        return view('gestor.clientes');
-    })->name("inicio");
+    Route::get('/', 'HomeController@inicio')->name('inicio');
+    Route::get('/home', 'HomeController@inicio')->name('home');
+    Route::get('/menu', 'HomeController@menuPrincipal')->name('menu');
+    Route::get('/clientes', 'HomeController@menuClientes')->name('clientes');
     
-    Route::get('/home', function () {
-        return view('gestor.clientes');
-    });
     //clientes
     //Route::get('clientes', function () {return view('gestor.clientes');})->name("clientes");
     Route::post('listClientes', 'ClienteController@listaClientes');
@@ -56,6 +54,17 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('listaScore', 'RespuestaController@listaScore');
     Route::get('listaOficinas', 'RespuestaController@listaOficinas');
     
+// --------------------------------------------------------------------------------------------
+    // vistas sms
+    Route::get('/sms', 'HomeController@sms')->name('sms');
+    Route::get('/smscampanas', 'HomeController@smscampanas')->name('smscampanas');
+    Route::get('/smsbandeja', 'HomeController@smsbandeja')->name('smsbandeja');
+
+    // Bandeja sms
+    Route::get('/bandejaMsj', 'SmsBandejaController@bandejaMsj')->name('bandejaMsj');
+    Route::get('/chat/{numero}', 'SmsBandejaController@chat')->name('chat');
+
+// ELASTIX -------------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix
     Route::get('panelcontrolllamadas', 'ControlLLamadaController@panelcontrolllamadas')->name('panelcontrolllamadas');
     Route::post('controlLLamadas', 'ControlLLamadaController@controlLLamadas')->name('controlLLamadas');
@@ -65,6 +74,6 @@ Route::group(['middleware' => ['auth']], function(){
     // empleado
     Route::get('agentesElastix/{cartera}', 'EmpleadoController@agentesElastix')->name('agentesElastix');    
     
-
+    
 });
 

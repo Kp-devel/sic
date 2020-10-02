@@ -62,11 +62,12 @@ class Respuesta extends Model
             FROM
                 creditoy_lotesms.tag_condicion
             WHERE 
-                car_id_FK=:car
+                car_id_FK in ($cartera)
             and tag_tipo='entidades'
             and tag_est=0
+            group by tag_valor
         ";
-        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
+        $query=DB::connection('mysql')->select(DB::raw($sql));
         return $query;
     }
 
@@ -78,11 +79,12 @@ class Respuesta extends Model
             FROM
                 creditoy_lotesms.tag_condicion
             WHERE 
-                car_id_FK=:car
+                car_id_FK in ($cartera)
             and tag_tipo='score'
             and tag_est=0
+            group by tag_valor
         ";
-        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
+        $query=DB::connection('mysql')->select(DB::raw($sql));
         return $query;
     }
 
@@ -109,11 +111,12 @@ class Respuesta extends Model
             FROM
                 creditoy_lotesms.tag_condicion
             WHERE 
-                car_id_FK=:car
+                car_id_FK in ($cartera)
             and tag_tipo='descuento'
             and tag_est=0
+            group by tag_valor
         ";
-        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
+        $query=DB::connection('mysql')->select(DB::raw($sql));
         return $query;
     }
 
@@ -125,11 +128,12 @@ class Respuesta extends Model
             FROM
                 creditoy_lotesms.tag_condicion
             WHERE 
-                car_id_FK=:car
+                car_id_FK in ($cartera)
             and tag_tipo='prioridad'
             and tag_est=0
+            group by tag_valor
         ";
-        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
+        $query=DB::connection('mysql')->select(DB::raw($sql));
         return $query;
     }
 }

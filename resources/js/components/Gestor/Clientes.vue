@@ -192,7 +192,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="datos-mes">
+                <div class="datos-mes" v-if="tipoacceso==2">
                     <div class="d-flex">
                         <div class="pr-1">
                             <i class="rounded-circle fa fa-chart-pie bg-blue text-white p-1"></i>
@@ -312,6 +312,7 @@
                         <div class="container-fluid px-0">
                             <div class="navbar-wrapper d-flex">
                                 <a href="" class="icono-bars waves-effect" @click.prevent="menu()"><i class="fa fa-bars fa-lg"></i></a>
+                                <a href="" v-if="tipoacceso==1" class="icono-bars waves-effect" @click.prevent="menuPrincipal()" title="Menu Principal"><i class="fa fa-home fa-lg"></i></a>
                             </div>
                             <button class="navbar-toggler p-0" type="button" data-toggle="collapse" data-target="#navigation"  aria-expanded="false" aria-label="Toggle navigation">
                                  <img src="img/center.jpeg" alt="" width="35px" height="35px" class=" rounded-circle border">
@@ -353,13 +354,15 @@
                                             <td class="align-middle">MEDIO</td>
                                             <td class="align-middle">PRODUCTO</td>
                                             <td class="align-middle">ULT. RPTA</td>
+                                            <td class="align-middle" v-if="tipoacceso==1">CARTERA</td>
                                             <td class="border-0 bg-white rounded-0" style="min-width:5px;"></td>
                                             <td class="border-0 bg-white rounded-0" style="min-width:5px;"></td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr class="text-center" v-if="lista=='' && loading==false">
-                                            <td colspan="9">No hay registros</td>
+                                            <td v-if="tipoacceso==1" colspan="10">No hay registros</td>
+                                            <td v-else colspan="9">No hay registros</td>
                                         </tr>
                                         <tr v-for="(item,index) in paginated('lista')" :key="index" v-else-if="loading==false">
                                             <td>{{item.codigo}}</td>
@@ -371,6 +374,7 @@
                                             <td>{{item.telefono}}</td>
                                             <td>{{item.producto}}</td>
                                             <td>{{item.ult_resp}}</td>
+                                            <td v-if="tipoacceso==1">{{item.cartera}}</td>
                                             <td class="border-0 bg-white rounded-0 px-0">
                                                 <a href="" class="btn-phone" @click.prevent="detalle(item.id)"><i class="fa fa-phone fa-1x"></i></a>
                                             </td>
@@ -404,7 +408,7 @@
     //import detalleCliente from './detalleCliente';
 
     export default {
-        props:["userlogeado"],
+        props:["userlogeado","tipoacceso"],
         data() {
             return {
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -436,11 +440,6 @@
              this.datosMes(); 
              this.estadoCampana();   
              this.diaActual();
-            //  this.listRespuestas(); 
-            //  this.listMotivosnopago();
-            //  this.listEntidades();
-            //  this.listScore();
-            //  this.listOficinas();
         },
         watch:{
             'busqueda.pdp_desde': function(val){this.busqueda.pdp_desde = this.validarFormatoFecha(val)},
@@ -557,28 +556,6 @@
                         this.dataExportar=res.data;
                         let data = XLSX.utils.json_to_sheet(this.dataExportar)
                         const workbook = XLSX.utils.book_new()
-                        // var data =XLSX.utils.aoa_to_sheet(this.dataExportar);
-                        // data['A2'].s = {
-                        //     fill: {
-                        //         patternType: "none", // none / solid
-                        //         fgColor: {rgb: "FF000000"},
-                        //         bgColor: {rgb: "FFFFFFFF"}
-                        //         },
-                        //         font: {
-                        //         name: 'Times New Roman',
-                        //         sz: 16,
-                        //         color: {rgb: "#FF000000"},
-                        //         bold: true,
-                        //         italic: false,
-                        //         underline: false
-                        //         },
-                        //         border: {
-                        //         top: {style: "thin", color: {auto: 1}},
-                        //         right: {style: "thin", color: {auto: 1}},
-                        //         bottom: {style: "thin", color: {auto: 1}},
-                        //         left: {style: "thin", color: {auto: 1}}
-                        //         }
-                        //     };
                         const filename = 'Listado_Clientes'
                         XLSX.utils.book_append_sheet(workbook, data, filename)
                         XLSX.writeFile(workbook, `${filename}.xlsx`)
@@ -586,46 +563,6 @@
                     }
                 })
             },
-            // listRespuestas(){    
-            //     this.respuestas=[];
-            //     axios.get("listRespuestas").then(res=>{
-            //         if(res.data){
-            //             this.respuestas=res.data;
-            //         }
-            //     })
-            // },
-            // listMotivosnopago(){
-            //     this.motivosnopago=[];
-            //     axios.get("listaMotivosNoPago").then(res=>{
-            //         if(res.data){
-            //             this.motivosnopago=res.data;
-            //         }
-            //     })
-            // },
-            // listEntidades(){
-            //     this.entidades=[];
-            //     axios.get("listaEntidades").then(res=>{
-            //         if(res.data){
-            //             this.entidades=res.data;
-            //         }
-            //     })
-            // },
-            // listScore(){
-            //     this.score=[];
-            //     axios.get("listaScore").then(res=>{
-            //         if(res.data){
-            //             this.score=res.data;
-            //         }
-            //     })
-            // },
-            // listOficinas(){
-            //     this.oficinas=[];
-            //     axios.get("listaOficinas").then(res=>{
-            //         if(res.data){
-            //             this.oficinas=res.data;
-            //         }
-            //     })
-            // },
             datosEstandar(){
                 this.loading2=true;
                 this.estandar=[];
@@ -700,18 +637,15 @@
                  $('.content-menu-2').toggleClass('abrir-menu-2');            
                  $('.content-body-2').toggleClass('p-left-menu-2');               
             },
-
+            menuPrincipal(){
+                window.location.href="menu";
+            },
             soloNumeros(e){
                 var key = window.event ? e.which : e.keyCode;
                 if (key < 48 || key > 57) {
                     e.preventDefault();
                 }
             },     
-            // inicioPaginacion() {
-            //     if (this.$refs.paginator) {
-            //         this.$refs.paginator.goToPage(1)
-            //     }
-            // },
             diaActual(){
                 var n=new Date();
                 var hoy=n.getFullYear()+"-"+this.addZero(n.getMonth()+1)+"-"+this.addZero(n.getDate());
@@ -726,6 +660,11 @@
             cerrarsession(){
                 $('#logout-form').submit();
             }
+            // inicioPaginacion() {
+            //     if (this.$refs.paginator) {
+            //         this.$refs.paginator.goToPage(1)
+            //     }
+            // },
         },
         mounted(){
             this.$root.$on('verListaClientes',() => {
