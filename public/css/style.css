@@ -65,7 +65,7 @@ body{
     color: rgba(0,0,0);
 }
 .text-white-light{
-    color: rgba(255, 255, 255, 0.979);
+    color: rgba(255, 255, 255, 0.9);
 }
 .text-gray{
     color: rgba(0, 0, 0, 0.5);
@@ -220,18 +220,19 @@ table tbody tr:last-of-type{
     -webkit-tap-highlight-color: transparent;
 }
 
+/* menu admin */
 .content-menu{
 	position: fixed;
 	overflow-y: auto;
 	height: 100vh;
-	width: 250px;
+	width: 270px;
 	z-index: 9;
     transition: 0.3s all;
-    transform: translateX(-245px);
-    padding: 20px 20px;
+    /* transform: translateX(-245px); */
+    /* padding: 20px 20px; */
 }
 .content-body{
-    margin-left: 15px;
+    margin-left: 270px;
     background-color: rgb(3,42,81);
     /* background-color:rgb(160, 85, 0); */
     transition: 0.3s all;
@@ -254,11 +255,30 @@ table tbody tr:last-of-type{
     background-color: #ffff;
 }
 .abrir{
-	transform: translateX(0px);
+	transform: translateX(-260px);
 }
 .p-left{
-	margin-left: 250px;
+	margin-left: 10px;
 }
+
+.menu-option a{
+  display: block;
+  color: #f3f3f3;
+  text-decoration: none;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+.menu-option a:hover{
+  color: #ffffff;
+  text-decoration: none;
+  background-color:rgba(255,255,255,0.2);
+}
+
+.menu-option .menu-active{
+  background-color:rgba(255,255,255,0.2);
+}
+
+/* ....................... */
 
 .alert-green{
     background-color: #ebfffe;
@@ -765,4 +785,74 @@ legend{
 }
 .modal::-webkit-scrollbar-thumb{
     background-color: rgb(238, 238, 238);
+}
+
+.menu-card{
+  min-width: 180px;
+  max-width: 180px;
+  width: 180px;
+  min-height: 150px;
+  border: 1.6px solid rgb(3,42,81);
+  border-radius: 8px;
+  color: black;
+  margin: 5px;
+  transition: all .5s;
+  text-decoration: none;
+}
+
+.menu-card:hover{
+  background-color: rgb(3,42,81);
+  color: white;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+
+/* bandeja sms */
+.overflow-auto::-webkit-scrollbar{
+  width: 7px;
+  background-color: #ffffff;
+}
+.overflow-auto::-webkit-scrollbar-thumb{
+background-color: rgb(214, 214, 214);
+}
+.bg-gray-top{
+background-color: rgb(250, 250, 250);
+}
+.btn-blue-hover{
+	color:black;
+	text-decoration: none;
+}
+.btn-blue-hover:hover{
+	background-color:#3490dc;
+	color:#ffff;
+	text-decoration: none;
+}
+
+.btn-blue-hover-active{
+	background-color:#3490dc;
+	color:#ffff;
+}
+
+.bg-blue-2{
+	background-color:#3490dc;
+	color:#ffff;
+}
+
+.text-gray-light{
+	color: rgba(255,255,255,.7);
+}
+.text-gray-2{
+	color: rgba(0,0,0,.6);
+}
+
+.chat{
+	box-sizing: content-box;
+	max-width: 65%;
+	position: relative;
+}
+
+.panel-list-btns{
+  display: flex;
+  flex-direction: column;
 }

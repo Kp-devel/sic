@@ -6,23 +6,57 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
+    
+    public function inicio(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        
+        if($tipo_acceso==1){
+            return view('admin.menuPrincipal');
+        }
+        if($tipo_acceso==2){
+            return view('gestor.clientes');
+        }
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function index()
-    {
-        return view('home');
+    public function menuPrincipal(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            return view('admin.menuPrincipal');
+        }else{
+            return "No puede acceder a esta página";
+        }
     }
+
+    public function menuClientes(){
+        return view('gestor.clientes');
+    }
+
+    public function sms(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            return view('admin.sms.panelControl');
+        }else{
+            return "No puede acceder a esta página";
+        }
+    }
+
+    public function smscampanas(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            return view('admin.sms.listaCampañas');
+        }else{
+            return "No puede acceder a esta página";
+        }
+    }
+
+    public function smsbandeja(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            return view('admin.sms.bandeja');
+        }else{
+            return "No puede acceder a esta página";
+        }
+    }
+
+    
 }

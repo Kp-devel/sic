@@ -11,7 +11,7 @@
             </div>
             <recordatorio v-if="recordatorio" :recordatorio="recordatorio" :telefonos="telRecordatorio" :pdp="pdpsRecordatorio" :cant_contacto="contactoRecordatorio" :gestiones="historicoGestiones"/>
             <!-- lista de clientes y menu -->
-            <clientes :userlogeado="userlogeado"/>   
+            <clientes :userlogeado="userlogeado" :tipoacceso="tipoacceso" />   
         </div>
         <!-- detalle de cliente -->
         <div v-if="viewDetalleCliente==true" class="bg-white">
@@ -94,7 +94,7 @@
     import recordatorio from './Recordatorios';
     
     export default {
-        props:["userlogeado","idlogeado"],
+        props:["userlogeado","idlogeado","tipoacceso"],
         data() {
             return {
                 viewDetalleCliente:false,
