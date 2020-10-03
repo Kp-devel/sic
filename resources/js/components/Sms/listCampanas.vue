@@ -18,80 +18,60 @@
         <div class="text-center d-flex justify-content-center pt-5" v-if="loadingIn">
            <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>
         </div>
-        <div class="row fadeIn" v-else>
-            <div class="col-md-3">
-                <div class="card-inf shadow d-flex justify-content-between">
-                    <div>
-                        <p class="text-num">{{total}}</p>
-                        <p>Campañas SMS</p>
-                        <a href="" class="btn btn-primary btn-round font-12" @click.prevent="crear()"><i class="fa fa-plus pr-2"></i>Crear Campaña</a>
-                    </div>
-                    <i class="fa fa-envelope fa-5x text-tranp"></i>
+        
+        <div class="" v-else>
+            <div class="row">
+                <div class="col-md-4 pb-2 form-group">
+                    <label for="" class="">Cartera</label>
+                    <select class="form-control" v-model="busqueda.cartera">
+                        <option value="">SELECCIONAR</option>
+                        <option v-for="(item,index) in carteras" :key="index" :value="item.id">{{item.cartera}}</option>
+                    </select>
                 </div>
-                <a  href="" @click.prevent="btnorden()" class="btn btn-orange shadow btn-block mb-3 btn-round">Orden de Envío de Campañas</a>
-                <div class="card-inf shadow">
-                    <div  v-for="(item, index) in orden" :key="index" class="m-0 p-0">
-                        <div class="d-flex ">
-                            <div class="pt-2" style="line-height:18px;">
-                                <p><b class="pr-2">{{item.numero}}.</b>{{item.o_cartera}}</p>
-                            </div>    
-                        </div><hr class="mt-0">
-                    </div>
+                <div class="col-md-3 pb-2 form-group">
+                    <label for="" class="">F. Programación</label> 
+                    <input type="date" class="form-control" v-model="busqueda.fecha_programada">
+                </div>
+                <div class="col-md-3 form-group">
+                    <label for="" class="text-white">.</label><br>
+                    <a href="" class="btn btn-outline-blue mb-3" @click.prevent="buscar()">
+                        <span v-if="btnbuscar" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Buscar
+                    </a>
                 </div>
             </div>
-            <div class="col-md-9 ">
-                <div class="card-inf shadow">
-                    <div class="row mb-4">
-                        <div class="col-md-4 pb-2">
-                            <label for="" class="font-weight-bold">Cartera</label>
-                            <select class="form-control" v-model="busqueda.cartera">
-                                <option value="">SELECCIONAR</option>
-                                <option v-for="(item,index) in carteras" :key="index" :value="item.id">{{item.cartera}}</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3 pb-2">
-                            <label for="" class="font-weight-bold">F. Programación</label> 
-                            <input type="date" class="form-control" v-model="busqueda.fecha_programada">
-                        </div>
-                        <div class="col-md-3">
-                            <a href="" class="btn btn-outline-green mt-3" @click.prevent="buscar()">
-                                <span v-if="btnbuscar" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                Buscar
-                            </a>
-                        </div>
-                    </div>
-                    <div class="table-responsive" style="line-height:18px;">
-                        <paginate name="pagLista" :list="lista" :per="10">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <paginate name="pagLista" :list="lista" :per="10" class="px-0">
                             <table class="table table-hover">
+                                <thead class="text-center bg-blue text-white">
+                                    <tr>
+                                        <td class="">F. Programación</td>
+                                        <td class="align-middle">Campaña</td>
+                                        <td class="align-middle">Cartera</td>
+                                        <td class="align-middle">Cant. de Clientes</td>
+                                        <td class="align-middle">Cant. de SMS</td>
+                                        <td class="align-middle"></td>
+                                    </tr>
+                                </thead>
                                 <tbody >
                                     <tr v-if="loading==false && lista==''">
-                                        <td colspan="5" class="font-12">No se encontraron datos</td>
+                                        <td colspan="6" class="text-center">No se encontraron campañas</td>
                                     </tr>
                                     <tr v-for="(item, index) in paginated('pagLista')" :key="index" v-else>
-                                        <td style="width:10px;" class="text-center px-0"><i class="fa fa-envelope fa-1x bg-blue-light p-2 rounded-circle text-black"></i></td>
-                                        <td style="vertical-align:top;width:20%;"><b>Campaña</b>
-                                            <br>{{item.nombre}}
-                                            <br>{{item.fecha}}
-                                        </td>
-                                        <td style="vertical-align:top;width:20%;"><b>Cartera</b>
-                                            <br>{{item.cartera}}
-                                        </td>
-                                        <td style="vertical-align:top;"><b>Cant. de Clientes</b>
-                                            <br>{{item.cant_cli}}
-                                        </td>
-                                        <td style="vertical-align:top;"><b>Cant. de SMS</b>
-                                            <br>{{item.cant_sms}}
-                                        </td>
-                                        <td class="" style="vertical-align:top;">
+                                        <td class="text-center">{{item.fecha}}</td>
+                                        <td>{{item.nombre}}</td>
+                                        <td>{{item.cartera}}</td>
+                                        <td class="text-center">{{item.cant_cli}}</td>
+                                        <td class="text-center">{{item.cant_sms}}</td>
+                                        <td class="text-center">
                                             <a href="" @click.prevent="modalDetalle(item.id)" class="btn btn-outline-green btn-sm" >Detalle</a>
                                             <a v-if="item.enviar==0" href="" @click.prevent="enviarCampana(item.id)" class="btn btn-outline-green btn-sm" >Enviar</a>
                                         </td>
                                     </tr>                                        
                                 </tbody>
                             </table>
-                            <div class="text-center">
-                               <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>            
-                            </div>
                         </paginate>
                     </div>
                     <paginate-links for="pagLista" 
@@ -102,13 +82,13 @@
                 </div>
             </div>
         </div>
-
+            
 
     <!-- modalDetalle -->
         <div class="modal fade" id="detallemodal" tabindex="-1" role="dialog"  aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
-                        <div class="modal-header bg-blue-gradiant text-white pt-4 pb-0 px-5 ">
+                        <div class="modal-header bg-blue text-white pt-4 pb-0 px-5 ">
                             <div>
                                 <p class="p-title"><b>{{detalle.dnombre}}</b> <span class="badge badge-danger py-1 px-2 font-12">{{detalle.cantSms}} SMS</span><span class="badge badge-primary py-1 px-2 font-12 ml-2">{{detalle.cantCli}} CLIENTES</span> </p>
                                 <div class="d-flex flex-wrap">  
@@ -128,11 +108,11 @@
                             <div v-else>
                                 <div class="row">
                                     <div class="col-md-3 p-0">
-                                        <div class="overflow-auto p-0 criterios" >
+                                        <div class="overflow-auto p-0 criterios">
                                             <p class="tittle-criterios mt-3">Criterios de Campaña</p><hr class="mb-0">
                                             <ul>
                                                 <li v-for="(item,index) in condiciones" :key="index" :id="'li'+index">
-                                                    <a href="" @click.prevent="detalleCondicion(index)"  >{{item.nomCond}}</a>
+                                                    <a href="" @click.prevent="detalleCondicion(index)" class="w-100 d-flex"  >{{item.nomCond}}</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -190,7 +170,7 @@
                 paginate: ['pagLista'],
                 loading : false,
                 loadCarga:false,
-                loadingIn : true,
+                loadingIn : false,
                 loadingModal : true,
                 color:'#3367d6',
                 colorModal:'#ec7c48',
@@ -205,18 +185,6 @@
             }
         },
         created(){
-           axios.get("listCampana").then(res=>{
-                if(res.data){
-                    this.lista=res.data;
-                    this.total=this.lista.length;
-                    this.loadingIn=false;
-                }
-            })
-            axios.get("listOrden").then(res=>{
-                if(res.data){
-                    this.orden=res.data;
-                }
-            })
 
         },
         methods:{
@@ -273,14 +241,6 @@
                     nomCond:this.condiciones[index].nomCond,
                     destino:this.condiciones[index].destino,
                     numero:this.condiciones[index].numero
-                }
-            },
-            crear(){
-                 window.location.href = "crearCampana";
-            },
-            btnorden(){
-                if(this.rol[0].rol_id_FK==1){
-                    window.location.href = "ordenCampana";
                 }
             },
             limpiarCampos(){

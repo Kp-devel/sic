@@ -67,18 +67,11 @@
                                 <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.pdp_hasta" placeholder="dd/mm/aaaa"></td>
                             </tr>
                             <tr class="font-12"> 
-                                <td>Entidades</td>
-                                <td>
-                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.entidades" :disabled="entidades==''">
-                                        <option value="">Seleccionar</option>
-                                        <option v-for="(item,index) in entidades" :key="index" :value="item.valor">{{item.valor}}</option>
-                                    </select>
-                                </td>
-                                <td class="text-right pr-1">Score</td>
-                                <td>
-                                    <select class="form-control font-12 form-control-sm" :disabled="score==''" v-model="busqueda.score">
-                                        <option value="">Seleccionar</option>
-                                        <option v-for="(item,index) in score" :key="index" :value="item.valor">{{item.valor}}</option>
+                                <td>Oficina</td>
+                                <td colspan="3">
+                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.oficina">
+                                        <option value="">Selecionar</option>
+                                        <option v-for="(item,index) in oficinas" :key="index" :value="item.idoficina">{{item.local}}</option>
                                     </select>
                                 </td>
                             </tr>
@@ -127,11 +120,27 @@
                                 </td>
                             </tr>
                             <tr class="font-12"> 
-                                <td>Oficina</td>
+                                <td>Cartera</td>
                                 <td colspan="3">
-                                    <select class="form-control font-12 form-control-sm mb-1" v-model="busqueda.oficina">
+                                    <select class="form-control font-12 form-control-sm mb-1" v-model="busqueda.cartera" @change="cargarDatosBusqueda(busqueda.cartera)">
                                         <option value="">Selecionar</option>
-                                        <option v-for="(item,index) in oficinas" :key="index" :value="item.idoficina">{{item.local}}</option>
+                                        <option v-for="(item,index) in carteras" :key="index" :value="item.id">{{item.cartera}}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>Entidades</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.entidades" :disabled="entidades==''">
+                                        <option value="">Seleccionar</option>
+                                        <option v-for="(item,index) in entidades" :key="index" :value="item.valor">{{item.valor}}</option>
+                                    </select>
+                                </td>
+                                <td class="text-right pr-1">Score</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm" :disabled="score==''" v-model="busqueda.score">
+                                        <option value="">Seleccionar</option>
+                                        <option v-for="(item,index) in score" :key="index" :value="item.valor">{{item.valor}}</option>
                                     </select>
                                 </td>
                             </tr>
@@ -414,7 +423,7 @@
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 paginate: ['lista'],
                 lista: [],
-                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:'',capital:'',importe:'',oficina:'',descuento:'',prioridad:''},
+                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:'',capital:'',importe:'',oficina:'',descuento:'',prioridad:'',cartera:''},
                 //codigo:'',
                 loading:false,
                 loading2:false,
@@ -430,6 +439,7 @@
                 oficinas:[],
                 descuentos: [],
                 prioridad: [],
+                carteras:[],
                 dataBusqueda:{},
                 dataExportar:[],
                 btnExportar:false
@@ -485,6 +495,11 @@
                 this.busqueda.oficina='';
                 this.busqueda.prioridad='';
                 this.busqueda.descuento='';
+                this.busqueda.cartera='';
+                this.entidades=[];
+                this.score=[];
+                this.descuentos=[];
+                this.prioridad=[];
             },
             parametros(){
                 const fechas_i =  this.busqueda.pdp_desde.split('/');                   
@@ -516,7 +531,8 @@
                     oficina: this.busqueda.oficina,
                     prioridad:this.busqueda.prioridad,
                     descuento:this.busqueda.descuento,
-                    tipo:0
+                    tipo:0,
+                    cartera:this.busqueda.cartera
                 };
             },
             listCLientes(){
@@ -539,13 +555,36 @@
                         this.opcionesBusqueda=res.data;
                         this.respuestas=this.opcionesBusqueda['respuestas'];
                         this.motivosnopago=this.opcionesBusqueda['motivonopago'];
-                        this.entidades=this.opcionesBusqueda['entidades'];
-                        this.score=this.opcionesBusqueda['score'];
                         this.oficinas=this.opcionesBusqueda['oficinas'];
-                        this.descuentos=this.opcionesBusqueda['descuentos'];
-                        this.prioridad=this.opcionesBusqueda['prioridad'];
+                        this.carteras=this.opcionesBusqueda['carteras'];
+                        // this.entidades=this.opcionesBusqueda['entidades'];
+                        // this.score=this.opcionesBusqueda['score'];
+                        // this.descuentos=this.opcionesBusqueda['descuentos'];
+                        // this.prioridad=this.opcionesBusqueda['prioridad'];
                     }
                 })
+            },
+            cargarDatosBusqueda(cartera){
+                this.entidades=[];
+                this.score=[];
+                this.descuentos=[];
+                this.prioridad=[];
+                if(cartera!=''){
+                    axios.get("listasBusquedaPorCartera/"+cartera).then(res=>{
+                        if(res.data){
+                            var res=res.data;
+                            this.entidades=res['entidades'];
+                            this.score=res['score'];
+                            this.descuentos=res['descuentos'];
+                            this.prioridad=res['prioridad'];
+                        }
+                    })
+                }else{
+                    this.entidades=[];
+                    this.score=[];
+                    this.descuentos=[];
+                    this.prioridad=[];
+                }
             },
             exportar(){
                 this.btnExportar=true;

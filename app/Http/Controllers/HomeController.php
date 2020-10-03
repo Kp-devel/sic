@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Cartera;
 
 class HomeController extends Controller
 {
@@ -40,19 +41,23 @@ class HomeController extends Controller
         }
     }
 
-    public function smscampanas(){
-        $tipo_acceso=auth()->user()->emp_tip_acc;
-        if($tipo_acceso==1){
-            return view('admin.sms.listaCampañas');
-        }else{
-            return "No puede acceder a esta página";
-        }
-    }
 
     public function smsbandeja(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==1){
             return view('admin.sms.bandeja');
+        }else{
+            return "No puede acceder a esta página";
+        }
+    }
+
+    public function smscampanas(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            $rol=2;
+            return view('admin.sms.listaCampanas',compact('carteras','rol'));
         }else{
             return "No puede acceder a esta página";
         }
