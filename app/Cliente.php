@@ -32,6 +32,7 @@ class Cliente extends Model
         $oficina=$rq->oficina;
         $descuento=$rq->descuento;
         $prioridad=$rq->prioridad;
+        $carteraBusqueda=$rq->cartera;
         $tipo=$rq->tipo;
         //dd($camp);
         $idEmpleado=auth()->user()->emp_id;
@@ -136,9 +137,15 @@ class Cliente extends Model
         if($codigo!= null){
             $sql = $sql." and cli_cod=$codigo ";
         }
+        
+        if($carteraBusqueda!= null){
+            $sql = $sql." and car_id_FK=$carteraBusqueda ";
+        }
+
         if($dni!= null){
             $sql = $sql." and cli_num_doc=$dni ";
         }
+
         if($nombre!= null){
             $sql = $sql." and cli_nom like '%$nombre%' ";
         }

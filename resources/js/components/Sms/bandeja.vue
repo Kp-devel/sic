@@ -4,10 +4,10 @@
            <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>
         </div>
         <div v-else>
-            <div class="d-flex justify-content-center mt-5 pt-5" v-if="lista==''">
-                <div class="mt-5 pt-5 text-center">
-                    <i class="fa fa-envelope text-gray-2 fa-4x"></i>
-                    <p>No se encontraron mensajes<br>en la bandeja de entrada</p>
+            <div class="d-flex justify-content-center pt-5" v-if="lista==''">
+                <div class=" text-center">
+                    <i class="fa fa-envelope text-gray-2 fa-3x"></i>
+                    <p class="font-12">No se encontraron mensajes<br>en la bandeja de entrada</p>
                 </div>
             </div>
             <!-- bandeja -->

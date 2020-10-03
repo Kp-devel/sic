@@ -856,3 +856,64 @@ background-color: rgb(250, 250, 250);
   display: flex;
   flex-direction: column;
 }
+
+/* criterios panel detalle */
+.tittle-criterios{
+	padding: 0px 45px;
+	font-weight: 600;
+}
+.criterios ul{
+	list-style:none;
+	padding: 0px;
+}
+
+.criterios ul li{
+	list-style:none;
+}
+
+.criterios ul li:hover{
+	background: rgb(226, 240, 251);
+}
+
+.criterios ul li a{
+	text-decoration: none;
+	color: black;
+  text-align: left;
+  padding: 10px 45px;
+}
+
+/* card info */
+.card-inf{
+	border-radius: 15px;
+  background: #fff;
+	margin-bottom: 25px;
+	line-height: 10px;
+}
+
+.card-inf .text-num{
+	font-size: 30px;
+	font-weight: 600;
+}
+
+.card-inf .text-num-p{
+	font-size: 23px;
+	font-weight: 600;
+}
+
+/* colors estados */
+.bg-green-light{
+	background: rgb(216, 255, 216);
+	border: 1px solid rgb(133, 244, 161);
+}
+.bg-gray-light{
+	background: rgb(245, 245, 245);
+	border: 1px solid rgb(189, 189, 189);
+}
+.bg-red-light{
+	background: rgb(241, 182, 182);
+	border: 1px solid rgb(209, 94, 94);
+}
+.bg-blue-light{
+	background: rgb(208, 238, 252);
+	border: 1px solid rgb(78, 209, 209);
+}

@@ -4,23 +4,39 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Respuesta;
+use App\Cartera;
 
 class RespuestaController extends Controller
 {
     public function listasPanelBusqueda(){
         $respuestas=Respuesta::listRespuestas();
         $motivonopago=Respuesta::listaMotivosNoPago();
-        $entidades=Respuesta::listaEntidades();
-        $score=Respuesta::listaScore();
         $oficinas=Respuesta::listaOficinas();
-        $descuentos=Respuesta::listaDescuentos();
-        $prioridad=Respuesta::listaPrioridad();
+        $carteras=Cartera::listCarteras();
+        // $entidades=Respuesta::listaEntidades();
+        // $score=Respuesta::listaScore();
+        // $descuentos=Respuesta::listaDescuentos();
+        // $prioridad=Respuesta::listaPrioridad();
         return $opcionesBusqueda=[
             "respuestas"=>$respuestas,
             "motivonopago"=>$motivonopago,
+            "oficinas"=>$oficinas,
+            "carteras"=>$carteras
+            // "entidades"=>$entidades,
+            // "score"=>$score,
+            // "descuentos"=>$descuentos,
+            // "prioridad"=>$prioridad
+        ];
+    }
+
+    public function listasBusquedaPorCartera($cartera){
+        $entidades=Respuesta::listaEntidades($cartera);
+        $score=Respuesta::listaScore($cartera);
+        $descuentos=Respuesta::listaDescuentos($cartera);
+        $prioridad=Respuesta::listaPrioridad($cartera);
+        return $opcionesBusqueda=[
             "entidades"=>$entidades,
             "score"=>$score,
-            "oficinas"=>$oficinas,
             "descuentos"=>$descuentos,
             "prioridad"=>$prioridad
         ];

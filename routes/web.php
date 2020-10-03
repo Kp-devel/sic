@@ -47,6 +47,7 @@ Route::group(['middleware' => ['auth']], function(){
     
     //respuestas
     Route::get('listasPanelBusqueda', 'RespuestaController@listasPanelBusqueda');
+    Route::get('listasBusquedaPorCartera/{car}', 'RespuestaController@listasBusquedaPorCartera');
     Route::get('listRespuestas', 'RespuestaController@listRespuestas');
     Route::get('listaMotivosNoPago', 'RespuestaController@listaMotivosNoPago');
     Route::get('listaRespuesta/{ubi}', 'RespuestaController@listaRespuestaUbicabilidad');
@@ -57,12 +58,20 @@ Route::group(['middleware' => ['auth']], function(){
 // --------------------------------------------------------------------------------------------
     // vistas sms
     Route::get('/sms', 'HomeController@sms')->name('sms');
-    Route::get('/smscampanas', 'HomeController@smscampanas')->name('smscampanas');
-    Route::get('/smsbandeja', 'HomeController@smsbandeja')->name('smsbandeja');
-
+    
     // Bandeja sms
+    Route::get('/smsbandeja', 'HomeController@smsbandeja')->name('smsbandeja');
     Route::get('/bandejaMsj', 'SmsBandejaController@bandejaMsj')->name('bandejaMsj');
     Route::get('/chat/{numero}', 'SmsBandejaController@chat')->name('chat');
+    
+    //campana sms
+    Route::get('/smscampanas', 'HomeController@smscampanas')->name('smscampanas');
+    Route::post('/buscarCampana', 'SmsCampanaController@buscarCampana')->name('buscarCampana');
+    Route::get('/detalleCampana/{id}', 'SmsCampanaController@detalleCampana')->name('detalleCampana');
+    Route::get('/condicionCampana/{id}', 'SmsCampanaController@condicionCampana')->name('condicionCampana');
+    Route::get('/enviarCampana/{id}', 'SmsCampanaController@enviarCampana')->name('enviarCampana');
+    Route::get('/listCampanasDia', 'SmsCampanaController@listCampanasDia')->name('listCampanasDia');
+
 
 // ELASTIX -------------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix

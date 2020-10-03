@@ -13,6 +13,7 @@ Vue.component('formRegistrarGestion', require('./components/Gestor/FormRegistrar
 Vue.component('sms-bandeja', require('./components/Sms/bandeja.vue').default);
 Vue.component('sms-list-campanas', require('./components/Sms/listCampanas.vue').default);
 Vue.component('sms-crear-campana', require('./components/Sms/crearCampana.vue').default);
+Vue.component('sms-panel-control', require('./components/Sms/panelControl.vue').default);
 
 const app = new Vue({
     el: '#app',

@@ -14,6 +14,8 @@
             </div>
 
         </div>
-
+        <div class="py-3">
+            <sms-panel-control/>
+        </div>
     </div>         
 @endsection

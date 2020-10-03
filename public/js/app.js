@@ -2759,6 +2759,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
  //import detalleCliente from './detalleCliente';
 
@@ -2789,7 +2798,8 @@ __webpack_require__.r(__webpack_exports__);
         importe: '',
         oficina: '',
         descuento: '',
-        prioridad: ''
+        prioridad: '',
+        cartera: ''
       },
       //codigo:'',
       loading: false,
@@ -2816,6 +2826,7 @@ __webpack_require__.r(__webpack_exports__);
       oficinas: [],
       descuentos: [],
       prioridad: [],
+      carteras: [],
       dataBusqueda: {},
       dataExportar: [],
       btnExportar: false
@@ -2880,6 +2891,11 @@ __webpack_require__.r(__webpack_exports__);
       this.busqueda.oficina = '';
       this.busqueda.prioridad = '';
       this.busqueda.descuento = '';
+      this.busqueda.cartera = '';
+      this.entidades = [];
+      this.score = [];
+      this.descuentos = [];
+      this.prioridad = [];
     },
     parametros: function parametros() {
       var fechas_i = this.busqueda.pdp_desde.split('/');
@@ -2909,7 +2925,8 @@ __webpack_require__.r(__webpack_exports__);
         oficina: this.busqueda.oficina,
         prioridad: this.busqueda.prioridad,
         descuento: this.busqueda.descuento,
-        tipo: 0
+        tipo: 0,
+        cartera: this.busqueda.cartera
       };
     },
     listCLientes: function listCLientes() {
@@ -2935,34 +2952,59 @@ __webpack_require__.r(__webpack_exports__);
           _this2.opcionesBusqueda = res.data;
           _this2.respuestas = _this2.opcionesBusqueda['respuestas'];
           _this2.motivosnopago = _this2.opcionesBusqueda['motivonopago'];
-          _this2.entidades = _this2.opcionesBusqueda['entidades'];
-          _this2.score = _this2.opcionesBusqueda['score'];
           _this2.oficinas = _this2.opcionesBusqueda['oficinas'];
-          _this2.descuentos = _this2.opcionesBusqueda['descuentos'];
-          _this2.prioridad = _this2.opcionesBusqueda['prioridad'];
+          _this2.carteras = _this2.opcionesBusqueda['carteras']; // this.entidades=this.opcionesBusqueda['entidades'];
+          // this.score=this.opcionesBusqueda['score'];
+          // this.descuentos=this.opcionesBusqueda['descuentos'];
+          // this.prioridad=this.opcionesBusqueda['prioridad'];
         }
       });
     },
-    exportar: function exportar() {
+    cargarDatosBusqueda: function cargarDatosBusqueda(cartera) {
       var _this3 = this;
+
+      this.entidades = [];
+      this.score = [];
+      this.descuentos = [];
+      this.prioridad = [];
+
+      if (cartera != '') {
+        axios.get("listasBusquedaPorCartera/" + cartera).then(function (res) {
+          if (res.data) {
+            var res = res.data;
+            _this3.entidades = res['entidades'];
+            _this3.score = res['score'];
+            _this3.descuentos = res['descuentos'];
+            _this3.prioridad = res['prioridad'];
+          }
+        });
+      } else {
+        this.entidades = [];
+        this.score = [];
+        this.descuentos = [];
+        this.prioridad = [];
+      }
+    },
+    exportar: function exportar() {
+      var _this4 = this;
 
       this.btnExportar = true;
       this.parametros();
       this.dataBusqueda.tipo = 2;
       axios.post("listClientes", this.dataBusqueda).then(function (res) {
         if (res.data) {
-          _this3.dataExportar = res.data;
-          var data = _node_modules_xlsx__WEBPACK_IMPORTED_MODULE_1___default.a.utils.json_to_sheet(_this3.dataExportar);
+          _this4.dataExportar = res.data;
+          var data = _node_modules_xlsx__WEBPACK_IMPORTED_MODULE_1___default.a.utils.json_to_sheet(_this4.dataExportar);
           var workbook = _node_modules_xlsx__WEBPACK_IMPORTED_MODULE_1___default.a.utils.book_new();
           var filename = 'Listado_Clientes';
           _node_modules_xlsx__WEBPACK_IMPORTED_MODULE_1___default.a.utils.book_append_sheet(workbook, data, filename);
           _node_modules_xlsx__WEBPACK_IMPORTED_MODULE_1___default.a.writeFile(workbook, "".concat(filename, ".xlsx"));
-          _this3.btnExportar = false;
+          _this4.btnExportar = false;
         }
       });
     },
     datosEstandar: function datosEstandar() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.loading2 = true;
       this.estandar = [];
@@ -2970,36 +3012,36 @@ __webpack_require__.r(__webpack_exports__);
       if (this.firma != "") {
         axios.post("datosEstandar", this.firma).then(function (res) {
           if (res.data) {
-            _this4.estandar = res.data;
-            _this4.loading2 = false;
+            _this5.estandar = res.data;
+            _this5.loading2 = false;
           }
         });
       }
     },
     datosMes: function datosMes() {
-      var _this5 = this;
+      var _this6 = this;
 
       var datos = [];
       axios.get("datosMes").then(function (res) {
         if (res.data) {
           datos = res.data;
-          _this5.dataMes.meta = datos[0].meta;
-          _this5.dataMes.recupero = datos[0].recupero;
-          _this5.dataMes.fecha_recupero = datos[0].fecha_recupero;
-          _this5.dataMes.alcance = (datos[0].recupero / datos[0].meta * 100).toFixed(2);
-          _this5.dataMes.efectividad = datos[0].efectividad != null ? datos[0].efectividad : 0;
-          _this5.dataMes.pdp_caidas = datos[0].pdp_caidos;
-          _this5.dataMes.pdp_pendiente = datos[0].pdp_pendiente;
+          _this6.dataMes.meta = datos[0].meta;
+          _this6.dataMes.recupero = datos[0].recupero;
+          _this6.dataMes.fecha_recupero = datos[0].fecha_recupero;
+          _this6.dataMes.alcance = (datos[0].recupero / datos[0].meta * 100).toFixed(2);
+          _this6.dataMes.efectividad = datos[0].efectividad != null ? datos[0].efectividad : 0;
+          _this6.dataMes.pdp_caidas = datos[0].pdp_caidos;
+          _this6.dataMes.pdp_pendiente = datos[0].pdp_pendiente;
         }
       });
     },
     estadoCampana: function estadoCampana() {
-      var _this6 = this;
+      var _this7 = this;
 
       this.estados = [];
       axios.get("estadosCampana").then(function (res) {
         if (res.data) {
-          _this6.estados = res.data;
+          _this7.estados = res.data;
         }
       });
     },
@@ -3078,10 +3120,10 @@ __webpack_require__.r(__webpack_exports__);
 
   },
   mounted: function mounted() {
-    var _this7 = this;
+    var _this8 = this;
 
     this.$root.$on('verListaClientes', function () {
-      _this7.listCLientes();
+      _this8.listCLientes();
     });
   },
   components: {
@@ -6145,26 +6187,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['carteras', 'rol'],
@@ -6175,7 +6197,7 @@ __webpack_require__.r(__webpack_exports__);
       paginate: ['pagLista'],
       loading: false,
       loadCarga: false,
-      loadingIn: true,
+      loadingIn: false,
       loadingModal: true,
       color: '#3367d6',
       colorModal: '#ec7c48',
@@ -6206,37 +6228,22 @@ __webpack_require__.r(__webpack_exports__);
       btnbuscar: false
     };
   },
-  created: function created() {
-    var _this = this;
-
-    axios.get("listCampana").then(function (res) {
-      if (res.data) {
-        _this.lista = res.data;
-        _this.total = _this.lista.length;
-        _this.loadingIn = false;
-      }
-    });
-    axios.get("listOrden").then(function (res) {
-      if (res.data) {
-        _this.orden = res.data;
-      }
-    });
-  },
+  created: function created() {},
   methods: {
     buscar: function buscar() {
-      var _this2 = this;
+      var _this = this;
 
       this.btnbuscar = true;
       axios.post("buscarCampana", this.busqueda).then(function (res) {
         if (res.data) {
-          _this2.lista = res.data;
-          _this2.total = _this2.lista.length;
-          _this2.btnbuscar = false;
+          _this.lista = res.data;
+          _this.total = _this.lista.length;
+          _this.btnbuscar = false;
         }
       });
     },
     modalDetalle: function modalDetalle(id) {
-      var _this3 = this;
+      var _this2 = this;
 
       this.loadingModal = true;
       this.viewDetalleCondicion = false;
@@ -6254,8 +6261,8 @@ __webpack_require__.r(__webpack_exports__);
           };
           axios.get("condicionCampana/" + id).then(function (res) {
             if (res.data) {
-              _this3.condiciones = res.data;
-              _this3.loadingModal = false;
+              _this2.condiciones = res.data;
+              _this2.loadingModal = false;
             }
           });
           break;
@@ -6285,14 +6292,6 @@ __webpack_require__.r(__webpack_exports__);
         numero: this.condiciones[index].numero
       };
     },
-    crear: function crear() {
-      window.location.href = "crearCampana";
-    },
-    btnorden: function btnorden() {
-      if (this.rol[0].rol_id_FK == 1) {
-        window.location.href = "ordenCampana";
-      }
-    },
     limpiarCampos: function limpiarCampos() {
       this.detalleCondiciones.cantcli = 0;
       this.detalleCondiciones.cantsms = 0;
@@ -6302,7 +6301,7 @@ __webpack_require__.r(__webpack_exports__);
       this.detalleCondiciones.sms = "";
     },
     enviarCampana: function enviarCampana(id) {
-      var _this4 = this;
+      var _this3 = this;
 
       this.loadCarga = true;
       $("#modalCarga").modal({
@@ -6311,7 +6310,7 @@ __webpack_require__.r(__webpack_exports__);
       });
       axios.get("enviarCampana/" + id).then(function (res) {
         if (res.data == "ok") {
-          _this4.loadCarga = false;
+          _this3.loadCarga = false;
           setTimeout(function () {
             $("#modalCarga").modal('hide');
           }, 1500);
@@ -6322,6 +6321,322 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     vuePaginate: _node_modules_vue_paginate__WEBPACK_IMPORTED_MODULE_0___default.a
   }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Sms/panelControl.vue?vue&type=script&lang=js&":
+/*!***************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Sms/panelControl.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+// import PieChart from './Chart/PieChart.js';
+// import conf from './Chart/confBarHorizontal.js';
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['id'],
+  data: function data() {
+    return {
+      loadingIn: true,
+      loading: false,
+      color: '#3367d6',
+      dataClaro: [],
+      dataOperadoras: [],
+      options1: [],
+      options2: [],
+      screen1: 0,
+      screen2: 0,
+      lista: [],
+      total: 0,
+      cargados: 0,
+      enviados: 0,
+      dataEnviados: {
+        enviados: 0,
+        cargados: 0
+      },
+      dataEnviadosClaro: {
+        enviados: 0,
+        cargados: 0
+      },
+      paginate: ['pagLista'],
+      nomCampana: ''
+    };
+  },
+  created: function created() {
+    var _this = this;
+
+    axios.get("listCampanasDia").then(function (res) {
+      if (res.data) {
+        _this.lista = res.data;
+        _this.total = _this.lista.length;
+
+        for (var i = 0; i < _this.total; i++) {
+          _this.cargados += parseInt(_this.lista[i].cant_sms_opr) + parseInt(_this.lista[i].cant_sms_claro);
+          _this.enviados += parseInt(_this.lista[i].enviados) + parseInt(_this.lista[i].enviados_claro);
+          _this.dataEnviadosClaro.enviados += parseInt(_this.lista[i].enviados_claro);
+          _this.dataEnviadosClaro.cargados += parseInt(_this.lista[i].cant_sms_claro);
+          _this.dataEnviados.enviados += parseInt(_this.lista[i].enviados);
+          _this.dataEnviados.cargados += parseInt(_this.lista[i].cant_sms_opr);
+        }
+
+        _this.graficasCampanaClaro();
+
+        _this.graficasCampanaOperadoras();
+
+        _this.loadingIn = false;
+      }
+    });
+  },
+  methods: {
+    graficasCampanaOperadoras: function graficasCampanaOperadoras() {
+      if (screen.width <= 768) {
+        this.screen2 = 350;
+      } else {
+        this.screen2 = 320;
+      }
+
+      var sms_enviados = this.dataEnviados.cargados - this.dataEnviados.enviados;
+      var arrayLabels = [this.formatoMil(this.dataEnviados.cargados) + ' SMS Cargados', this.formatoMil(this.dataEnviados.enviados) + ' SMS Enviados'];
+      var arrayData = [];
+      var backgrounds = [];
+
+      if (this.dataEnviados.cargados != 0) {
+        arrayData = [sms_enviados, this.dataEnviados.enviados];
+        backgrounds = ['#fc947e', '#ff4f2b'];
+      } else {
+        arrayData = [1];
+        backgrounds = ['#f0edee'];
+      }
+
+      this.dataOperadoras = {
+        labels: arrayLabels,
+        datasets: [{
+          label: 'mm',
+          data: arrayData,
+          backgroundColor: backgrounds,
+          borderColor: ['rgb(255, 255, 255)', '#ff4f2b'],
+          borderWidth: 6
+        }]
+      };
+      this.options2 = {
+        title: {
+          display: true,
+          text: 'CAMPAÑAS - OPERADORAS'
+        }
+      };
+    },
+    graficasCampanaClaro: function graficasCampanaClaro() {
+      if (screen.width <= 768) {
+        this.screen1 = 350;
+      } else {
+        this.screen1 = 320;
+      }
+
+      var sms_enviados = this.dataEnviadosClaro.cargados - this.dataEnviadosClaro.enviados;
+      var arrayLabels = [this.formatoMil(this.dataEnviadosClaro.cargados) + ' SMS Cargados', this.formatoMil(this.dataEnviadosClaro.enviados) + ' SMS Enviados'];
+      var arrayData = [];
+      var backgrounds = [];
+
+      if (this.dataEnviadosClaro.cargados != 0) {
+        arrayData = [sms_enviados, this.dataEnviadosClaro.enviados];
+        backgrounds = ['#fc947e', '#ff4f2b'];
+      } else {
+        arrayData = [1];
+        backgrounds = ['#f0edee'];
+      }
+
+      this.dataClaro = {
+        labels: arrayLabels,
+        datasets: [{
+          label: 'mm',
+          data: arrayData,
+          backgroundColor: backgrounds,
+          borderColor: ['rgb(255, 255, 255)', '#ff4f2b'],
+          borderWidth: 6
+        }]
+      };
+      this.options1 = {
+        title: {
+          display: true,
+          text: 'CAMPAÑAS - CLARO'
+        }
+      };
+    },
+    crear: function crear() {
+      window.location.href = "crearCampana";
+    },
+    // hora(index){
+    //     var contEnviado=0;
+    //     for( var i=0;i<this.lista.length;i++){
+    //         if(this.lista[i].estado=='Enviando'){
+    //           contEnviado+=1;
+    //         }
+    //     }
+    //     if(this.lista[index].estado=='Enviando'){
+    //         return 'Enviando...';
+    //     }else{
+    //         if(contEnviado>0){
+    //             return this.lista[index-1].hora;
+    //         }else{
+    //              return '00h 00m';
+    //             //return this.lista[index].hora;
+    //         }
+    //     }
+    // },
+    formatoMil: function formatoMil(nStr) {
+      nStr += '';
+      var x = nStr.split('.');
+      var x1 = x[0];
+      var x2 = x.length > 1 ? '.' + x[1] : '';
+      var rgx = /(\d+)(\d{3})/;
+
+      while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+      }
+
+      return x1 + x2;
+    }
+  },
+  components: {}
 });
 
 /***/ }),
@@ -51166,9 +51481,9 @@ var render = function() {
               ]),
               _vm._v(" "),
               _c("tr", { staticClass: "font-12" }, [
-                _c("td", [_vm._v("Entidades")]),
+                _c("td", [_vm._v("Oficina")]),
                 _vm._v(" "),
-                _c("td", [
+                _c("td", { attrs: { colspan: "3" } }, [
                   _c(
                     "select",
                     {
@@ -51176,12 +51491,11 @@ var render = function() {
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.busqueda.entidades,
-                          expression: "busqueda.entidades"
+                          value: _vm.busqueda.oficina,
+                          expression: "busqueda.oficina"
                         }
                       ],
                       staticClass: "form-control font-12 form-control-sm",
-                      attrs: { disabled: _vm.entidades == "" },
                       on: {
                         change: function($event) {
                           var $$selectedVal = Array.prototype.filter
@@ -51194,7 +51508,7 @@ var render = function() {
                             })
                           _vm.$set(
                             _vm.busqueda,
-                            "entidades",
+                            "oficina",
                             $event.target.multiple
                               ? $$selectedVal
                               : $$selectedVal[0]
@@ -51204,67 +51518,14 @@ var render = function() {
                     },
                     [
                       _c("option", { attrs: { value: "" } }, [
-                        _vm._v("Seleccionar")
+                        _vm._v("Selecionar")
                       ]),
                       _vm._v(" "),
-                      _vm._l(_vm.entidades, function(item, index) {
+                      _vm._l(_vm.oficinas, function(item, index) {
                         return _c(
                           "option",
-                          { key: index, domProps: { value: item.valor } },
-                          [_vm._v(_vm._s(item.valor))]
-                        )
-                      })
-                    ],
-                    2
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Score")]),
-                _vm._v(" "),
-                _c("td", [
-                  _c(
-                    "select",
-                    {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.busqueda.score,
-                          expression: "busqueda.score"
-                        }
-                      ],
-                      staticClass: "form-control font-12 form-control-sm",
-                      attrs: { disabled: _vm.score == "" },
-                      on: {
-                        change: function($event) {
-                          var $$selectedVal = Array.prototype.filter
-                            .call($event.target.options, function(o) {
-                              return o.selected
-                            })
-                            .map(function(o) {
-                              var val = "_value" in o ? o._value : o.value
-                              return val
-                            })
-                          _vm.$set(
-                            _vm.busqueda,
-                            "score",
-                            $event.target.multiple
-                              ? $$selectedVal
-                              : $$selectedVal[0]
-                          )
-                        }
-                      }
-                    },
-                    [
-                      _c("option", { attrs: { value: "" } }, [
-                        _vm._v("Seleccionar")
-                      ]),
-                      _vm._v(" "),
-                      _vm._l(_vm.score, function(item, index) {
-                        return _c(
-                          "option",
-                          { key: index, domProps: { value: item.valor } },
-                          [_vm._v(_vm._s(item.valor))]
+                          { key: index, domProps: { value: item.idoficina } },
+                          [_vm._v(_vm._s(item.local))]
                         )
                       })
                     ],
@@ -51510,7 +51771,7 @@ var render = function() {
               ]),
               _vm._v(" "),
               _c("tr", { staticClass: "font-12" }, [
-                _c("td", [_vm._v("Oficina")]),
+                _c("td", [_vm._v("Cartera")]),
                 _vm._v(" "),
                 _c("td", { attrs: { colspan: "3" } }, [
                   _c(
@@ -51520,11 +51781,71 @@ var render = function() {
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.busqueda.oficina,
-                          expression: "busqueda.oficina"
+                          value: _vm.busqueda.cartera,
+                          expression: "busqueda.cartera"
                         }
                       ],
                       staticClass: "form-control font-12 form-control-sm mb-1",
+                      on: {
+                        change: [
+                          function($event) {
+                            var $$selectedVal = Array.prototype.filter
+                              .call($event.target.options, function(o) {
+                                return o.selected
+                              })
+                              .map(function(o) {
+                                var val = "_value" in o ? o._value : o.value
+                                return val
+                              })
+                            _vm.$set(
+                              _vm.busqueda,
+                              "cartera",
+                              $event.target.multiple
+                                ? $$selectedVal
+                                : $$selectedVal[0]
+                            )
+                          },
+                          function($event) {
+                            return _vm.cargarDatosBusqueda(_vm.busqueda.cartera)
+                          }
+                        ]
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "" } }, [
+                        _vm._v("Selecionar")
+                      ]),
+                      _vm._v(" "),
+                      _vm._l(_vm.carteras, function(item, index) {
+                        return _c(
+                          "option",
+                          { key: index, domProps: { value: item.id } },
+                          [_vm._v(_vm._s(item.cartera))]
+                        )
+                      })
+                    ],
+                    2
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", { staticClass: "font-12" }, [
+                _c("td", [_vm._v("Entidades")]),
+                _vm._v(" "),
+                _c("td", [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.busqueda.entidades,
+                          expression: "busqueda.entidades"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm",
+                      attrs: { disabled: _vm.entidades == "" },
                       on: {
                         change: function($event) {
                           var $$selectedVal = Array.prototype.filter
@@ -51537,7 +51858,7 @@ var render = function() {
                             })
                           _vm.$set(
                             _vm.busqueda,
-                            "oficina",
+                            "entidades",
                             $event.target.multiple
                               ? $$selectedVal
                               : $$selectedVal[0]
@@ -51547,14 +51868,67 @@ var render = function() {
                     },
                     [
                       _c("option", { attrs: { value: "" } }, [
-                        _vm._v("Selecionar")
+                        _vm._v("Seleccionar")
                       ]),
                       _vm._v(" "),
-                      _vm._l(_vm.oficinas, function(item, index) {
+                      _vm._l(_vm.entidades, function(item, index) {
                         return _c(
                           "option",
-                          { key: index, domProps: { value: item.idoficina } },
-                          [_vm._v(_vm._s(item.local))]
+                          { key: index, domProps: { value: item.valor } },
+                          [_vm._v(_vm._s(item.valor))]
+                        )
+                      })
+                    ],
+                    2
+                  )
+                ]),
+                _vm._v(" "),
+                _c("td", { staticClass: "text-right pr-1" }, [_vm._v("Score")]),
+                _vm._v(" "),
+                _c("td", [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.busqueda.score,
+                          expression: "busqueda.score"
+                        }
+                      ],
+                      staticClass: "form-control font-12 form-control-sm",
+                      attrs: { disabled: _vm.score == "" },
+                      on: {
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.$set(
+                            _vm.busqueda,
+                            "score",
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          )
+                        }
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "" } }, [
+                        _vm._v("Seleccionar")
+                      ]),
+                      _vm._v(" "),
+                      _vm._l(_vm.score, function(item, index) {
+                        return _c(
+                          "option",
+                          { key: index, domProps: { value: item.valor } },
+                          [_vm._v(_vm._s(item.valor))]
                         )
                       })
                     ],
@@ -56057,11 +56431,9 @@ var render = function() {
         )
       : _c("div", [
           _vm.lista == ""
-            ? _c(
-                "div",
-                { staticClass: "d-flex justify-content-center mt-5 pt-5" },
-                [_vm._m(0)]
-              )
+            ? _c("div", { staticClass: "d-flex justify-content-center pt-5" }, [
+                _vm._m(0)
+              ])
             : _c("div", [
                 _c(
                   "div",
@@ -56415,10 +56787,10 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "mt-5 pt-5 text-center" }, [
-      _c("i", { staticClass: "fa fa-envelope text-gray-2 fa-4x" }),
+    return _c("div", { staticClass: " text-center" }, [
+      _c("i", { staticClass: "fa fa-envelope text-gray-2 fa-3x" }),
       _vm._v(" "),
-      _c("p", [
+      _c("p", { staticClass: "font-12" }, [
         _vm._v("No se encontraron mensajes"),
         _c("br"),
         _vm._v("en la bandeja de entrada")
@@ -58315,222 +58687,166 @@ var render = function() {
             })
           ]
         )
-      : _c("div", { staticClass: "row fadeIn" }, [
-          _c("div", { staticClass: "col-md-3" }, [
-            _c(
-              "div",
-              { staticClass: "card-inf shadow d-flex justify-content-between" },
-              [
-                _c("div", [
-                  _c("p", { staticClass: "text-num" }, [
-                    _vm._v(_vm._s(_vm.total))
+      : _c("div", {}, [
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col-md-4 pb-2 form-group" }, [
+              _c("label", { attrs: { for: "" } }, [_vm._v("Cartera")]),
+              _vm._v(" "),
+              _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.busqueda.cartera,
+                      expression: "busqueda.cartera"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  on: {
+                    change: function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.$set(
+                        _vm.busqueda,
+                        "cartera",
+                        $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      )
+                    }
+                  }
+                },
+                [
+                  _c("option", { attrs: { value: "" } }, [
+                    _vm._v("SELECCIONAR")
                   ]),
                   _vm._v(" "),
-                  _c("p", [_vm._v("Campañas SMS")]),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "btn btn-primary btn-round font-12",
-                      attrs: { href: "" },
-                      on: {
-                        click: function($event) {
-                          $event.preventDefault()
-                          return _vm.crear()
-                        }
-                      }
-                    },
-                    [
-                      _c("i", { staticClass: "fa fa-plus pr-2" }),
-                      _vm._v("Crear Campaña")
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("i", { staticClass: "fa fa-envelope fa-5x text-tranp" })
-              ]
-            ),
+                  _vm._l(_vm.carteras, function(item, index) {
+                    return _c(
+                      "option",
+                      { key: index, domProps: { value: item.id } },
+                      [_vm._v(_vm._s(item.cartera))]
+                    )
+                  })
+                ],
+                2
+              )
+            ]),
             _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "btn btn-orange shadow btn-block mb-3 btn-round",
-                attrs: { href: "" },
+            _c("div", { staticClass: "col-md-3 pb-2 form-group" }, [
+              _c("label", { attrs: { for: "" } }, [_vm._v("F. Programación")]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.busqueda.fecha_programada,
+                    expression: "busqueda.fecha_programada"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: { type: "date" },
+                domProps: { value: _vm.busqueda.fecha_programada },
                 on: {
-                  click: function($event) {
-                    $event.preventDefault()
-                    return _vm.btnorden()
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(
+                      _vm.busqueda,
+                      "fecha_programada",
+                      $event.target.value
+                    )
                   }
                 }
-              },
-              [_vm._v("Orden de Envío de Campañas")]
-            ),
+              })
+            ]),
             _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "card-inf shadow" },
-              _vm._l(_vm.orden, function(item, index) {
-                return _c("div", { key: index, staticClass: "m-0 p-0" }, [
-                  _c("div", { staticClass: "d-flex " }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass: "pt-2",
-                        staticStyle: { "line-height": "18px" }
-                      },
-                      [
-                        _c("p", [
-                          _c("b", { staticClass: "pr-2" }, [
-                            _vm._v(_vm._s(item.numero) + ".")
-                          ]),
-                          _vm._v(_vm._s(item.o_cartera))
-                        ])
-                      ]
-                    )
-                  ]),
-                  _c("hr", { staticClass: "mt-0" })
-                ])
-              }),
-              0
-            )
+            _c("div", { staticClass: "col-md-3 form-group" }, [
+              _c("label", { staticClass: "text-white", attrs: { for: "" } }, [
+                _vm._v(".")
+              ]),
+              _c("br"),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "btn btn-outline-blue mb-3",
+                  attrs: { href: "" },
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      return _vm.buscar()
+                    }
+                  }
+                },
+                [
+                  _vm.btnbuscar
+                    ? _c("span", {
+                        staticClass: "spinner-border spinner-border-sm",
+                        attrs: { role: "status", "aria-hidden": "true" }
+                      })
+                    : _vm._e(),
+                  _vm._v("\n                    Buscar\n                ")
+                ]
+              )
+            ])
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "col-md-9 " }, [
+          _c("div", { staticClass: "row" }, [
             _c(
               "div",
-              { staticClass: "card-inf shadow" },
+              { staticClass: "col-md-12" },
               [
-                _c("div", { staticClass: "row mb-4" }, [
-                  _c("div", { staticClass: "col-md-4 pb-2" }, [
-                    _c(
-                      "label",
-                      { staticClass: "font-weight-bold", attrs: { for: "" } },
-                      [_vm._v("Cartera")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "select",
-                      {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.busqueda.cartera,
-                            expression: "busqueda.cartera"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        on: {
-                          change: function($event) {
-                            var $$selectedVal = Array.prototype.filter
-                              .call($event.target.options, function(o) {
-                                return o.selected
-                              })
-                              .map(function(o) {
-                                var val = "_value" in o ? o._value : o.value
-                                return val
-                              })
-                            _vm.$set(
-                              _vm.busqueda,
-                              "cartera",
-                              $event.target.multiple
-                                ? $$selectedVal
-                                : $$selectedVal[0]
-                            )
-                          }
-                        }
-                      },
-                      [
-                        _c("option", { attrs: { value: "" } }, [
-                          _vm._v("SELECCIONAR")
-                        ]),
-                        _vm._v(" "),
-                        _vm._l(_vm.carteras, function(item, index) {
-                          return _c(
-                            "option",
-                            { key: index, domProps: { value: item.id } },
-                            [_vm._v(_vm._s(item.cartera))]
-                          )
-                        })
-                      ],
-                      2
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-md-3 pb-2" }, [
-                    _c(
-                      "label",
-                      { staticClass: "font-weight-bold", attrs: { for: "" } },
-                      [_vm._v("F. Programación")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.busqueda.fecha_programada,
-                          expression: "busqueda.fecha_programada"
-                        }
-                      ],
-                      staticClass: "form-control",
-                      attrs: { type: "date" },
-                      domProps: { value: _vm.busqueda.fecha_programada },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.busqueda,
-                            "fecha_programada",
-                            $event.target.value
-                          )
-                        }
-                      }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-md-3" }, [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "btn btn-outline-green mt-3",
-                        attrs: { href: "" },
-                        on: {
-                          click: function($event) {
-                            $event.preventDefault()
-                            return _vm.buscar()
-                          }
-                        }
-                      },
-                      [
-                        _vm.btnbuscar
-                          ? _c("span", {
-                              staticClass: "spinner-border spinner-border-sm",
-                              attrs: { role: "status", "aria-hidden": "true" }
-                            })
-                          : _vm._e(),
-                        _vm._v(
-                          "\n                            Buscar\n                        "
-                        )
-                      ]
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
                 _c(
                   "div",
-                  {
-                    staticClass: "table-responsive",
-                    staticStyle: { "line-height": "18px" }
-                  },
+                  { staticClass: "table-responsive" },
                   [
                     _c(
                       "paginate",
-                      { attrs: { name: "pagLista", list: _vm.lista, per: 10 } },
+                      {
+                        staticClass: "px-0",
+                        attrs: { name: "pagLista", list: _vm.lista, per: 10 }
+                      },
                       [
                         _c("table", { staticClass: "table table-hover" }, [
+                          _c(
+                            "thead",
+                            { staticClass: "text-center bg-blue text-white" },
+                            [
+                              _c("tr", [
+                                _c("td", {}, [_vm._v("F. Programación")]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "align-middle" }, [
+                                  _vm._v("Campaña")
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "align-middle" }, [
+                                  _vm._v("Cartera")
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "align-middle" }, [
+                                  _vm._v("Cant. de Clientes")
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "align-middle" }, [
+                                  _vm._v("Cant. de SMS")
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "align-middle" })
+                              ])
+                            ]
+                          ),
+                          _vm._v(" "),
                           _c(
                             "tbody",
                             [
@@ -58539,10 +58855,10 @@ var render = function() {
                                     _c(
                                       "td",
                                       {
-                                        staticClass: "font-12",
-                                        attrs: { colspan: "5" }
+                                        staticClass: "text-center",
+                                        attrs: { colspan: "6" }
                                       },
-                                      [_vm._v("No se encontraron datos")]
+                                      [_vm._v("No se encontraron campañas")]
                                     )
                                   ])
                                 : _vm._l(_vm.paginated("pagLista"), function(
@@ -58550,160 +58866,64 @@ var render = function() {
                                     index
                                   ) {
                                     return _c("tr", { key: index }, [
-                                      _c(
-                                        "td",
-                                        {
-                                          staticClass: "text-center px-0",
-                                          staticStyle: { width: "10px" }
-                                        },
-                                        [
-                                          _c("i", {
+                                      _c("td", { staticClass: "text-center" }, [
+                                        _vm._v(_vm._s(item.fecha))
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("td", [_vm._v(_vm._s(item.nombre))]),
+                                      _vm._v(" "),
+                                      _c("td", [_vm._v(_vm._s(item.cartera))]),
+                                      _vm._v(" "),
+                                      _c("td", { staticClass: "text-center" }, [
+                                        _vm._v(_vm._s(item.cant_cli))
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("td", { staticClass: "text-center" }, [
+                                        _vm._v(_vm._s(item.cant_sms))
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("td", { staticClass: "text-center" }, [
+                                        _c(
+                                          "a",
+                                          {
                                             staticClass:
-                                              "fa fa-envelope fa-1x bg-blue-light p-2 rounded-circle text-black"
-                                          })
-                                        ]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        {
-                                          staticStyle: {
-                                            "vertical-align": "top",
-                                            width: "20%"
-                                          }
-                                        },
-                                        [
-                                          _c("b", [_vm._v("Campaña")]),
-                                          _vm._v(" "),
-                                          _c("br"),
-                                          _vm._v(
-                                            _vm._s(item.nombre) +
-                                              "\n                                        "
-                                          ),
-                                          _c("br"),
-                                          _vm._v(
-                                            _vm._s(item.fecha) +
-                                              "\n                                    "
-                                          )
-                                        ]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        {
-                                          staticStyle: {
-                                            "vertical-align": "top",
-                                            width: "20%"
-                                          }
-                                        },
-                                        [
-                                          _c("b", [_vm._v("Cartera")]),
-                                          _vm._v(" "),
-                                          _c("br"),
-                                          _vm._v(
-                                            _vm._s(item.cartera) +
-                                              "\n                                    "
-                                          )
-                                        ]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        {
-                                          staticStyle: {
-                                            "vertical-align": "top"
-                                          }
-                                        },
-                                        [
-                                          _c("b", [
-                                            _vm._v("Cant. de Clientes")
-                                          ]),
-                                          _vm._v(" "),
-                                          _c("br"),
-                                          _vm._v(
-                                            _vm._s(item.cant_cli) +
-                                              "\n                                    "
-                                          )
-                                        ]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        {
-                                          staticStyle: {
-                                            "vertical-align": "top"
-                                          }
-                                        },
-                                        [
-                                          _c("b", [_vm._v("Cant. de SMS")]),
-                                          _vm._v(" "),
-                                          _c("br"),
-                                          _vm._v(
-                                            _vm._s(item.cant_sms) +
-                                              "\n                                    "
-                                          )
-                                        ]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        {
-                                          staticStyle: {
-                                            "vertical-align": "top"
-                                          }
-                                        },
-                                        [
-                                          _c(
-                                            "a",
-                                            {
-                                              staticClass:
-                                                "btn btn-outline-green btn-sm",
-                                              attrs: { href: "" },
-                                              on: {
-                                                click: function($event) {
-                                                  $event.preventDefault()
-                                                  return _vm.modalDetalle(
-                                                    item.id
-                                                  )
-                                                }
+                                              "btn btn-outline-green btn-sm",
+                                            attrs: { href: "" },
+                                            on: {
+                                              click: function($event) {
+                                                $event.preventDefault()
+                                                return _vm.modalDetalle(item.id)
                                               }
-                                            },
-                                            [_vm._v("Detalle")]
-                                          ),
-                                          _vm._v(" "),
-                                          item.enviar == 0
-                                            ? _c(
-                                                "a",
-                                                {
-                                                  staticClass:
-                                                    "btn btn-outline-green btn-sm",
-                                                  attrs: { href: "" },
-                                                  on: {
-                                                    click: function($event) {
-                                                      $event.preventDefault()
-                                                      return _vm.enviarCampana(
-                                                        item.id
-                                                      )
-                                                    }
+                                            }
+                                          },
+                                          [_vm._v("Detalle")]
+                                        ),
+                                        _vm._v(" "),
+                                        item.enviar == 0
+                                          ? _c(
+                                              "a",
+                                              {
+                                                staticClass:
+                                                  "btn btn-outline-green btn-sm",
+                                                attrs: { href: "" },
+                                                on: {
+                                                  click: function($event) {
+                                                    $event.preventDefault()
+                                                    return _vm.enviarCampana(
+                                                      item.id
+                                                    )
                                                   }
-                                                },
-                                                [_vm._v("Enviar")]
-                                              )
-                                            : _vm._e()
-                                        ]
-                                      )
+                                                }
+                                              },
+                                              [_vm._v("Enviar")]
+                                            )
+                                          : _vm._e()
+                                      ])
                                     ])
                                   })
                             ],
                             2
                           )
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "text-center" }, [
-                          _c("span", {
-                            staticClass: "spinner-border spinner-border-lg",
-                            attrs: { role: "status", "aria-hidden": "true" }
-                          })
                         ])
                       ]
                     )
@@ -58749,8 +58969,7 @@ var render = function() {
               _c(
                 "div",
                 {
-                  staticClass:
-                    "modal-header bg-blue-gradiant text-white pt-4 pb-0 px-5 "
+                  staticClass: "modal-header bg-blue text-white pt-4 pb-0 px-5 "
                 },
                 [
                   _c("div", [
@@ -58842,6 +59061,7 @@ var render = function() {
                                         _c(
                                           "a",
                                           {
+                                            staticClass: "w-100 d-flex",
                                             attrs: { href: "" },
                                             on: {
                                               click: function($event) {
@@ -59037,6 +59257,484 @@ var staticRenderFns = [
         attrs: { href: "", "data-dismiss": "modal", "aria-label": "Close" }
       },
       [_c("span", { staticClass: "fa fa-times text-white" })]
+    )
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Sms/panelControl.vue?vue&type=template&id=1c1d369a&":
+/*!*******************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Sms/panelControl.vue?vue&type=template&id=1c1d369a& ***!
+  \*******************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _vm.loadingIn
+      ? _c(
+          "div",
+          { staticClass: "text-center d-flex justify-content-center pt-5" },
+          [
+            _c("span", {
+              staticClass: "spinner-border spinner-border-lg",
+              attrs: { role: "status", "aria-hidden": "true" }
+            })
+          ]
+        )
+      : _c("div", { staticClass: "fadeIn form-crear" }, [
+          _vm.lista == ""
+            ? _c("div", { staticClass: "text-center pt-5" }, [
+                _c("i", { staticClass: "fa fa-sad-cry fa-3x" }),
+                _c("br"),
+                _vm._v(" "),
+                _c("p", { staticStyle: { "font-size": "12px" } }, [
+                  _vm._v("No existen campañas cargadas")
+                ])
+              ])
+            : _c("div", { staticClass: "row" }, [
+                _c("div", { staticClass: "col-md-7" }),
+                _vm._v(" "),
+                _c("div", { staticClass: "col-md-5" }, [
+                  _c("div", { staticClass: "card-inf border" }, [
+                    _c(
+                      "div",
+                      { staticClass: "overflow-auto" },
+                      [
+                        _vm._m(0),
+                        _c("br"),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "table-responsive px-3" },
+                          [
+                            _c(
+                              "paginate",
+                              {
+                                staticClass: "px-0",
+                                attrs: {
+                                  name: "pagLista",
+                                  list: _vm.lista,
+                                  per: 4
+                                }
+                              },
+                              [
+                                _c(
+                                  "table",
+                                  { staticClass: "border-0 w-100" },
+                                  [
+                                    _c("thead", [
+                                      _c("tr", { staticClass: "text-center" }, [
+                                        _c("td", { attrs: { width: "50%" } }),
+                                        _vm._v(" "),
+                                        _c(
+                                          "td",
+                                          { staticClass: "text-center" },
+                                          [
+                                            _c("img", {
+                                              staticClass: "img-fluid",
+                                              attrs: {
+                                                src: "img/claro.png",
+                                                width: "50px",
+                                                height: "45px"
+                                              }
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "td",
+                                          { staticClass: "text-center" },
+                                          [
+                                            _c("img", {
+                                              staticClass: "img-fluid",
+                                              attrs: {
+                                                src: "img/sim.png",
+                                                width: "40px",
+                                                height: "35px"
+                                              }
+                                            })
+                                          ]
+                                        )
+                                      ])
+                                    ]),
+                                    _vm._v(" "),
+                                    _vm.loading == false && _vm.lista == ""
+                                      ? _c(
+                                          "tbody",
+                                          { staticClass: "border-0" },
+                                          [
+                                            _c(
+                                              "tr",
+                                              { staticClass: "text-center" },
+                                              [
+                                                _vm._v(
+                                                  " \n                                            No existen campañas cargadas\n                                        "
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        )
+                                      : _vm._l(
+                                          _vm.paginated("pagLista"),
+                                          function(item, index) {
+                                            return _c(
+                                              "tbody",
+                                              {
+                                                key: index,
+                                                staticClass: "item ",
+                                                class: {
+                                                  "bg-green":
+                                                    item.estado == "Enviando",
+                                                  rounded:
+                                                    item.estado == "Enviando"
+                                                }
+                                              },
+                                              [
+                                                _c("tr", [
+                                                  _c("td", [
+                                                    _c(
+                                                      "a",
+                                                      {
+                                                        staticClass:
+                                                          "d-flex justify-content-between text-left text-dark",
+                                                        staticStyle: {
+                                                          "line-height": "18px",
+                                                          "column-gap": "3em",
+                                                          columns: "3"
+                                                        },
+                                                        attrs: {
+                                                          "data-toggle":
+                                                            "collapse",
+                                                          href: "#c" + index,
+                                                          role: "button",
+                                                          "aria-expanded":
+                                                            "false",
+                                                          "aria-controls":
+                                                            "collapseExample"
+                                                        }
+                                                      },
+                                                      [
+                                                        _c("div", {}, [
+                                                          _c("b", [
+                                                            _vm._v(
+                                                              " " +
+                                                                _vm._s(
+                                                                  item.cartera
+                                                                )
+                                                            )
+                                                          ]),
+                                                          _c("br"),
+                                                          _vm._v(" "),
+                                                          _c(
+                                                            "p",
+                                                            {
+                                                              staticClass:
+                                                                "font-12"
+                                                            },
+                                                            [
+                                                              _vm._v(
+                                                                _vm._s(
+                                                                  item.nombre
+                                                                )
+                                                              )
+                                                            ]
+                                                          )
+                                                        ])
+                                                      ]
+                                                    )
+                                                  ]),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "td",
+                                                    {
+                                                      staticClass: "text-center"
+                                                    },
+                                                    [
+                                                      _c(
+                                                        "div",
+                                                        {
+                                                          staticClass:
+                                                            "d-flex justify-content-center"
+                                                        },
+                                                        [
+                                                          item.estado_claro ==
+                                                          "Enviando"
+                                                            ? _c(
+                                                                "div",
+                                                                {
+                                                                  staticClass:
+                                                                    "spinner-border spinner-border-sm text-success",
+                                                                  attrs: {
+                                                                    role:
+                                                                      "status"
+                                                                  }
+                                                                },
+                                                                [
+                                                                  _c(
+                                                                    "span",
+                                                                    {
+                                                                      staticClass:
+                                                                        "sr-only"
+                                                                    },
+                                                                    [
+                                                                      _vm._v(
+                                                                        "Loading..."
+                                                                      )
+                                                                    ]
+                                                                  )
+                                                                ]
+                                                              )
+                                                            : _vm._e(),
+                                                          _vm._v(" "),
+                                                          item.estado_claro !=
+                                                          "Enviando"
+                                                            ? _c(
+                                                                "p",
+                                                                {
+                                                                  staticClass:
+                                                                    "badge px-3 py-2 ",
+                                                                  class:
+                                                                    item.color_claro
+                                                                },
+                                                                [
+                                                                  _vm._v(
+                                                                    _vm._s(
+                                                                      item.estado_claro
+                                                                    )
+                                                                  )
+                                                                ]
+                                                              )
+                                                            : _c(
+                                                                "p",
+                                                                {
+                                                                  staticClass:
+                                                                    "text-center pt-1 ml-1"
+                                                                },
+                                                                [
+                                                                  _vm._v(
+                                                                    _vm._s(
+                                                                      item.avance_claro
+                                                                    )
+                                                                  )
+                                                                ]
+                                                              )
+                                                        ]
+                                                      )
+                                                    ]
+                                                  ),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "td",
+                                                    {
+                                                      staticClass: "text-center"
+                                                    },
+                                                    [
+                                                      _c(
+                                                        "div",
+                                                        {
+                                                          staticClass:
+                                                            "d-flex justify-content-center"
+                                                        },
+                                                        [
+                                                          item.estado ==
+                                                          "Enviando"
+                                                            ? _c(
+                                                                "div",
+                                                                {
+                                                                  staticClass:
+                                                                    "spinner-border spinner-border-sm text-success",
+                                                                  attrs: {
+                                                                    role:
+                                                                      "status"
+                                                                  }
+                                                                },
+                                                                [
+                                                                  _c(
+                                                                    "span",
+                                                                    {
+                                                                      staticClass:
+                                                                        "sr-only"
+                                                                    },
+                                                                    [
+                                                                      _vm._v(
+                                                                        "Loading..."
+                                                                      )
+                                                                    ]
+                                                                  )
+                                                                ]
+                                                              )
+                                                            : _vm._e(),
+                                                          _vm._v(" "),
+                                                          item.estado !=
+                                                          "Enviando"
+                                                            ? _c(
+                                                                "p",
+                                                                {
+                                                                  staticClass:
+                                                                    "badge px-3 py-2 ",
+                                                                  class:
+                                                                    item.color
+                                                                },
+                                                                [
+                                                                  _vm._v(
+                                                                    _vm._s(
+                                                                      item.estado
+                                                                    )
+                                                                  )
+                                                                ]
+                                                              )
+                                                            : _c(
+                                                                "p",
+                                                                {
+                                                                  staticClass:
+                                                                    "text-center pt-1 ml-1"
+                                                                },
+                                                                [
+                                                                  _vm._v(
+                                                                    _vm._s(
+                                                                      item.avance
+                                                                    )
+                                                                  )
+                                                                ]
+                                                              )
+                                                        ]
+                                                      )
+                                                    ]
+                                                  )
+                                                ]),
+                                                _vm._v(" "),
+                                                _c("tr", [
+                                                  _c(
+                                                    "td",
+                                                    { attrs: { colspan: "3" } },
+                                                    [
+                                                      _c(
+                                                        "div",
+                                                        {
+                                                          staticClass:
+                                                            "collapse",
+                                                          attrs: {
+                                                            id: "c" + index
+                                                          }
+                                                        },
+                                                        [
+                                                          _c(
+                                                            "div",
+                                                            {
+                                                              staticClass:
+                                                                "card card-body"
+                                                            },
+                                                            [
+                                                              _c("div", {}, [
+                                                                _c(
+                                                                  "p",
+                                                                  {
+                                                                    staticClass:
+                                                                      "mb-2"
+                                                                  },
+                                                                  [
+                                                                    _c("b", [
+                                                                      _vm._v(
+                                                                        "Cantidad de Clientes:"
+                                                                      )
+                                                                    ]),
+                                                                    _vm._v(
+                                                                      " " +
+                                                                        _vm._s(
+                                                                          _vm.formatoMil(
+                                                                            item.cant_cli
+                                                                          )
+                                                                        )
+                                                                    )
+                                                                  ]
+                                                                ),
+                                                                _vm._v(" "),
+                                                                _c(
+                                                                  "p",
+                                                                  {
+                                                                    staticClass:
+                                                                      "mb-2"
+                                                                  },
+                                                                  [
+                                                                    _c("b", [
+                                                                      _vm._v(
+                                                                        "Cantidad de SMS:"
+                                                                      )
+                                                                    ]),
+                                                                    _vm._v(
+                                                                      " " +
+                                                                        _vm._s(
+                                                                          _vm.formatoMil(
+                                                                            item.cant_sms
+                                                                          )
+                                                                        )
+                                                                    )
+                                                                  ]
+                                                                )
+                                                              ])
+                                                            ]
+                                                          )
+                                                        ]
+                                                      )
+                                                    ]
+                                                  )
+                                                ])
+                                              ]
+                                            )
+                                          }
+                                        )
+                                  ],
+                                  2
+                                )
+                              ]
+                            )
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c("paginate-links", {
+                          staticClass: "px-3",
+                          attrs: {
+                            for: "pagLista",
+                            async: true,
+                            "show-step-links": true,
+                            classes: {
+                              ul: "pagination",
+                              li: "page-item",
+                              a: "page-link"
+                            }
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ])
+                ])
+              ])
+        ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "bg-blue text-white py-2 text-center rounded" },
+      [_c("p", { staticClass: "mb-0" }, [_vm._v("Lista de Campañas")])]
     )
   }
 ]
@@ -104075,6 +104773,7 @@ Vue.component('formRegistrarGestion', __webpack_require__(/*! ./components/Gesto
 Vue.component('sms-bandeja', __webpack_require__(/*! ./components/Sms/bandeja.vue */ "./resources/js/components/Sms/bandeja.vue")["default"]);
 Vue.component('sms-list-campanas', __webpack_require__(/*! ./components/Sms/listCampanas.vue */ "./resources/js/components/Sms/listCampanas.vue")["default"]);
 Vue.component('sms-crear-campana', __webpack_require__(/*! ./components/Sms/crearCampana.vue */ "./resources/js/components/Sms/crearCampana.vue")["default"]);
+Vue.component('sms-panel-control', __webpack_require__(/*! ./components/Sms/panelControl.vue */ "./resources/js/components/Sms/panelControl.vue")["default"]);
 var app = new Vue({
   el: '#app'
 });
@@ -105165,6 +105864,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_listCampanas_vue_vue_type_template_id_c39b4182___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_listCampanas_vue_vue_type_template_id_c39b4182___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/Sms/panelControl.vue":
+/*!******************************************************!*\
+  !*** ./resources/js/components/Sms/panelControl.vue ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _panelControl_vue_vue_type_template_id_1c1d369a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./panelControl.vue?vue&type=template&id=1c1d369a& */ "./resources/js/components/Sms/panelControl.vue?vue&type=template&id=1c1d369a&");
+/* harmony import */ var _panelControl_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./panelControl.vue?vue&type=script&lang=js& */ "./resources/js/components/Sms/panelControl.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _panelControl_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _panelControl_vue_vue_type_template_id_1c1d369a___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _panelControl_vue_vue_type_template_id_1c1d369a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/Sms/panelControl.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/Sms/panelControl.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************!*\
+  !*** ./resources/js/components/Sms/panelControl.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_panelControl_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./panelControl.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Sms/panelControl.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_panelControl_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/Sms/panelControl.vue?vue&type=template&id=1c1d369a&":
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/Sms/panelControl.vue?vue&type=template&id=1c1d369a& ***!
+  \*************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_panelControl_vue_vue_type_template_id_1c1d369a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./panelControl.vue?vue&type=template&id=1c1d369a& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Sms/panelControl.vue?vue&type=template&id=1c1d369a&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_panelControl_vue_vue_type_template_id_1c1d369a___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_panelControl_vue_vue_type_template_id_1c1d369a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

@@ -54,37 +54,37 @@ class Respuesta extends Model
             "));
     }
 
-    public static function listaEntidades(){
-        $cartera=session()->get('datos')->idcartera;
+    public static function listaEntidades($cartera){
+        // $cartera=session()->get('datos')->idcartera;
         $sql="
             SELECT
                 tag_valor as valor
             FROM
                 creditoy_lotesms.tag_condicion
             WHERE 
-                car_id_FK in ($cartera)
+                car_id_FK in (:car)
             and tag_tipo='entidades'
             and tag_est=0
             group by tag_valor
         ";
-        $query=DB::connection('mysql')->select(DB::raw($sql));
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
         return $query;
     }
 
-    public static function listaScore(){
-        $cartera=session()->get('datos')->idcartera;
+    public static function listaScore($cartera){
+        // $cartera=session()->get('datos')->idcartera;
         $sql="
             SELECT
                 tag_valor as valor
             FROM
                 creditoy_lotesms.tag_condicion
             WHERE 
-                car_id_FK in ($cartera)
+                car_id_FK in (:car)
             and tag_tipo='score'
             and tag_est=0
             group by tag_valor
         ";
-        $query=DB::connection('mysql')->select(DB::raw($sql));
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
         return $query;
     }
 
@@ -103,37 +103,37 @@ class Respuesta extends Model
         return $query;
     }
 
-    public static function listaDescuentos(){
-        $cartera=session()->get('datos')->idcartera;
+    public static function listaDescuentos($cartera){
+        // $cartera=session()->get('datos')->idcartera;
         $sql="
             SELECT
                 tag_valor as valor
             FROM
                 creditoy_lotesms.tag_condicion
             WHERE 
-                car_id_FK in ($cartera)
+                car_id_FK in (:car)
             and tag_tipo='descuento'
             and tag_est=0
             group by tag_valor
         ";
-        $query=DB::connection('mysql')->select(DB::raw($sql));
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
         return $query;
     }
 
-    public static function listaPrioridad(){
-        $cartera=session()->get('datos')->idcartera;
+    public static function listaPrioridad($cartera){
+        // $cartera=session()->get('datos')->idcartera;
         $sql="
             SELECT
                 tag_valor as valor
             FROM
                 creditoy_lotesms.tag_condicion
             WHERE 
-                car_id_FK in ($cartera)
+                car_id_FK in (:car)
             and tag_tipo='prioridad'
             and tag_est=0
             group by tag_valor
         ";
-        $query=DB::connection('mysql')->select(DB::raw($sql));
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
         return $query;
     }
 }
