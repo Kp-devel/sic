@@ -54,6 +54,10 @@ class RespuestaController extends Controller
         return Respuesta::listaRespuestaUbicabilidad($ubic);
     }
 
+    public function listaRespuestaUbicSms($ubic){
+        return Respuesta::listaRespuestaUbicSms($ubic);
+    }
+
     public function listaEntidades(){
         return Respuesta::listaEntidades();
     }

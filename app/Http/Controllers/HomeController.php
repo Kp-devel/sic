@@ -24,7 +24,7 @@ class HomeController extends Controller
         if($tipo_acceso==1){
             return view('admin.menuPrincipal');
         }else{
-            return "No puede acceder a esta página";
+            return view('errors.403');
         }
     }
 
@@ -37,7 +37,7 @@ class HomeController extends Controller
         if($tipo_acceso==1){
             return view('admin.sms.panelControl');
         }else{
-            return "No puede acceder a esta página";
+            return view('errors.403');
         }
     }
 
@@ -47,7 +47,7 @@ class HomeController extends Controller
         if($tipo_acceso==1){
             return view('admin.sms.bandeja');
         }else{
-            return "No puede acceder a esta página";
+            return view('errors.403');
         }
     }
 
@@ -59,9 +59,21 @@ class HomeController extends Controller
             $rol=2;
             return view('admin.sms.listaCampanas',compact('carteras','rol'));
         }else{
-            return "No puede acceder a esta página";
+            return view('errors.403');
         }
     }
 
+    public function smscrearcampana(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            $rol=2;
+            return view('admin.sms.crearCampana',compact('carteras','rol'));
+        }else{
+            return view('errors.403');
+        }
+    }
     
+
 }

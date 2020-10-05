@@ -11,4 +11,8 @@ class CarteraController extends Controller
         return Cartera::listCarteras();
     }
 
+    public function listCarterasUsuario(){
+        return Cartera::listCarterasUsuario();
+    }
+    
 }

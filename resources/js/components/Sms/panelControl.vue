@@ -5,63 +5,58 @@
         </div>
         <div v-else class="fadeIn form-crear" >
             <div v-if="lista==''" class="text-center pt-5"> 
-                <i class="fa fa-sad-cry fa-3x"></i><br>
+                <i class="far fa-list-alt fa-3x"></i><br>
                 <p style="font-size:12px;">No existen campañas cargadas</p>
             </div>
            <div class="row" v-else>
                <div class="col-md-7">
-                   <!-- <div class="row">
+                   <div class="row">
                         <div class="col-md-6">
-                            <div class="card-inf shadow d-flex justify-content-between">
-                                <div class="pt-2 pb-2">
-                                    <p class="text-num" style="font-size:40px;">{{total}}</p>
-                                    <p>Campañas SMS</p>
-                                    <a href="" class="btn btn-primary btn-round font-12" @click.prevent="crear()"><i class="fa fa-plus pr-2"></i>Crear Campaña</a>
-                                    
-                                </div>
-                                <i class="fa fa-envelope fa-5x text-tranp"></i>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card-inf shadow d-flex justify-content-between pb-0">
-                                <div>
+                            <div class="card-inf border p-3 d-flex justify-content-between">
+                                <div class="pt-2">
                                     <p class="text-num" style="font-size:27px;">{{formatoMil(cargados)}}</p>
                                     <p class="font-12">SMS Cargados</p>
-                                    <br>
-                                    <p class="text-num text-success" style="font-size:27px;">{{formatoMil(enviados)}}</p>
-                                    <p class="font-12">SMS Enviados</p>
-                                    <br>
                                 </div>
-                                <i class="fa fa-sms fa-5x text-tranp"></i>
+                                <i class="fa fa-envelope fa-3x text-gray"></i>
                             </div>
                         </div>
-                    </div> -->
-                   <!-- <div class="card-inf shadow py-3">
+                        <div class="col-md-6">
+                            <div class="card-inf border p-3 d-flex justify-content-between pb-0">
+                                <div class="pt-2">
+                                    <p class="text-num text-success" style="font-size:27px;">{{formatoMil(enviados)}}</p>
+                                    <p class="font-12">SMS Enviados</p>
+                                </div>
+                                <i class="fa fa-sms fa-3x text-gray"></i>
+                            </div>
+                        </div>
+                    </div>
+                   <div class="card-inf p-3">
                        <div v-if="lista==''" class="text-center py-3">
                             <i class="fas fa-chart-pie fa-3x text-success"></i><br><br>
                             <b> No se encontraron datos</b>
                        </div>
                        <div class="row pb-3" v-else>
                             <div class="col-md-6">
-                                <PieChart :chart-data="dataClaro" :options="options1" :height="screen1"></PieChart>
+                                <!-- <PieChart :chart-data="dataClaro" :options="options1" :height="screen1"></PieChart> -->
                                 <br><br>
                             </div>
                             <div class="col-md-6">
-                                <PieChart :chart-data="dataOperadoras" :options="options2" :height="screen2"></PieChart>
+                                <!-- <canvas id="pieOperadoras" width="260px" height="200px"></canvas> -->
+                                <!-- <PieChart :chart-data="dataOperadoras" :options="options2" :height="screen2"></PieChart> -->
                                 <br><br>
                             </div>
                        </div>
-                   </div> -->
+                   </div>
                </div>
                <div class="col-md-5">
-                   <div class="card-inf border">
+                   <div class="card-inf border h-100" style="min-height: 100%;">
                         <div class="overflow-auto">
                             <div class="bg-blue text-white py-2 text-center rounded">
                                 <p class="mb-0">Lista de Campañas</p>
                             </div><br>
                             <div class="table-responsive px-3">
                                 <paginate name="pagLista" :list="lista" :per="4" class="px-0">
-                                    <table class="border-0 w-100">
+                                    <table class="border-0 w-100" id="table-2">
                                         <thead>
                                             <tr class="text-center">
                                                 <td width="50%"></td>
@@ -135,7 +130,7 @@
 </template>
 
 <script>
-    // import PieChart from './Chart/PieChart.js';
+    // import PieChart from '../Chart/PieChart.js';
     // import conf from './Chart/confBarHorizontal.js';
     export default {
         props:['id'],
@@ -202,6 +197,9 @@
                     backgrounds=['#f0edee'];
                 }
 
+                // var canvas = document.getElementById("pieOperadoras");
+                // var ctx = canvas.getContext('2d');
+
                 this.dataOperadoras = {
                     labels: arrayLabels,
                     datasets: [{
@@ -222,6 +220,13 @@
                         text: 'CAMPAÑAS - OPERADORAS'
                     }
                 }
+
+                // var pieChart = new Chart(ctx, {
+                //     type: 'pie',
+                //     data: this.dataOperadoras,
+                //     options: this.options2
+                // });
+
             },
             graficasCampanaClaro(){
                 if(screen.width<=768){
@@ -266,27 +271,6 @@
             crear(){
                  window.location.href = "crearCampana";
             },
-            // hora(index){
-            //     var contEnviado=0;
-            //     for( var i=0;i<this.lista.length;i++){
-            //         if(this.lista[i].estado=='Enviando'){
-            //           contEnviado+=1;
-            //         }
-            //     }
-
-
-            //     if(this.lista[index].estado=='Enviando'){
-            //         return 'Enviando...';
-            //     }else{
-            //         if(contEnviado>0){
-            //             return this.lista[index-1].hora;
-            //         }else{
-            //              return '00h 00m';
-            //             //return this.lista[index].hora;
-            //         }
-            //     }
-
-            // },
             formatoMil(nStr){
                 nStr += '';
                 var x = nStr.split('.');
@@ -300,7 +284,7 @@
             },
         },  
         components: {
-            
+            // PieChart
         }
    
     }
