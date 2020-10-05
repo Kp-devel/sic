@@ -51,6 +51,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('listRespuestas', 'RespuestaController@listRespuestas');
     Route::get('listaMotivosNoPago', 'RespuestaController@listaMotivosNoPago');
     Route::get('listaRespuesta/{ubi}', 'RespuestaController@listaRespuestaUbicabilidad');
+    Route::get('listaRespuestaSms/{ubi}', 'RespuestaController@listaRespuestaUbicSms');
     Route::get('listaEntidades', 'RespuestaController@listaEntidades');
     Route::get('listaScore', 'RespuestaController@listaScore');
     Route::get('listaOficinas', 'RespuestaController@listaOficinas');
@@ -66,12 +67,25 @@ Route::group(['middleware' => ['auth']], function(){
     
     //campana sms
     Route::get('/smscampanas', 'HomeController@smscampanas')->name('smscampanas');
+    Route::get('/smscrearcampana', 'HomeController@smscrearcampana')->name('smscrearcampana');
     Route::post('/buscarCampana', 'SmsCampanaController@buscarCampana')->name('buscarCampana');
     Route::get('/detalleCampana/{id}', 'SmsCampanaController@detalleCampana')->name('detalleCampana');
     Route::get('/condicionCampana/{id}', 'SmsCampanaController@condicionCampana')->name('condicionCampana');
     Route::get('/enviarCampana/{id}', 'SmsCampanaController@enviarCampana')->name('enviarCampana');
     Route::get('/listCampanasDia', 'SmsCampanaController@listCampanasDia')->name('listCampanasDia');
+    Route::post('/datosclientesCampana', 'SmsCampanaController@datosclientesCampana')->name('datosclientesCampana');
+    Route::post('/insertCampana', 'SmsCampanaController@insertCampana')->name('insertCampana');
 
+    //speech
+    Route::get('/carteraSpeech/{cartera}', 'SmsSpeechController@carteraSpeech')->name('carteraSpeech');
+    Route::post('/insertSpeech', 'SmsSpeechController@insertSpeech')->name('insertSpeech');
+    Route::get('/listEtiquetas', 'SmsSpeechController@etiquetas')->name('listEtiquetas');
+    
+    //condiciones:entidades,score,prioridad,etc
+    Route::get('/tagCondicion/{car}/{tipo}', 'SmsCampanaController@tagCondicion')->name('tagCondicion');
+
+    //carteras
+    Route::get('listCarterasUsuario', 'CarteraController@listCarterasUsuario');
 
 // ELASTIX -------------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix
@@ -83,6 +97,11 @@ Route::group(['middleware' => ['auth']], function(){
     // empleado
     Route::get('agentesElastix/{cartera}', 'EmpleadoController@agentesElastix')->name('agentesElastix');    
     
+
+    
+    //errors---------------------------------------------------------------------------
+    // 403
+    Route::get('/403', function(){return view('errors.403');});
     
 });
 

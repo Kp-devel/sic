@@ -27,4 +27,16 @@ class SmsCampanaController extends Controller
     public function listCampanasDia(){
         return SmsCampana::listCampanasDia();
     }
+
+    public function datosclientesCampana(Request $rq){
+        return SmsCampana::datosclientesCampana($rq);
+    }
+
+    public function tagCondicion($cartera,$tipo){
+        return SmsCampana::tagCondicion($cartera,$tipo);
+    }
+
+    public function insertCampana(Request $rq){
+        return SmsCampana::insertCampana($rq);
+    }
 }

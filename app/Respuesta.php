@@ -136,4 +136,24 @@ class Respuesta extends Model
         $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
         return $query;
     }
+
+    public static function listaRespuestaUbicSms($ubic){
+        $sql="
+            select 
+                res_id as id,
+                res_des as respuesta
+            from respuesta
+            WHERE 
+                res_ubi=:ubi
+                and res_est=0 
+                and res_pas=0
+                and res_id NOT IN (1, 43, 2, 6,	12,	13,	19,	22,	27,	28,	37,	38,	41,	46)
+                and res_acc like('%2%')
+            order by res_des 
+        ";
+
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("ubi"=>$ubic));
+        return $query;
+    }
+    
 }

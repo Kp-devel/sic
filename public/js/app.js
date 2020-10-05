@@ -5401,12 +5401,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['id'],
+  props: ['carteras', 'rol'],
   data: function data() {
     return {
-      loadingIn: true,
+      loadingIn: false,
       loading: false,
       loadingModal: false,
       color: '#3367d6',
@@ -5419,7 +5418,7 @@ __webpack_require__.r(__webpack_exports__);
       errorsSpeech: [],
       errorsCondicion: [],
       condiciones: [],
-      carteras: [],
+      // carteras:[],
       speechs: [],
       respuestas: [],
       etiquetas: [],
@@ -5484,14 +5483,6 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   created: function created() {
-    var _this = this;
-
-    axios.get("usersCarteras").then(function (res) {
-      if (res.data) {
-        _this.carteras = res.data;
-        _this.loadingIn = false;
-      }
-    });
     this.hoy();
   },
   methods: {
@@ -5506,7 +5497,7 @@ __webpack_require__.r(__webpack_exports__);
       this.fechaActual = f.getFullYear() + "-" + mes + "-" + dia;
     },
     viewCondicion: function viewCondicion() {
-      var _this2 = this;
+      var _this = this;
 
       if (this.campana.cartera != 0) {
         this.limpiarCamposCondiciones();
@@ -5516,33 +5507,33 @@ __webpack_require__.r(__webpack_exports__);
         this.mensajeCant = '';
         axios.get("carteraSpeech/" + this.campana.cartera).then(function (res) {
           if (res.data) {
-            _this2.speechs = res.data;
-            _this2.loadingIn = false;
+            _this.speechs = res.data;
+            _this.loadingIn = false;
           }
         });
         axios.get("tagCondicion/" + this.campana.cartera + "/score").then(function (res) {
           if (res.data) {
-            _this2.scors = res.data;
+            _this.scors = res.data;
           }
         });
         axios.get("tagCondicion/" + this.campana.cartera + "/entidades").then(function (res) {
           if (res.data) {
-            _this2.entidades = res.data;
+            _this.entidades = res.data;
           }
         });
         axios.get("tagCondicion/" + this.campana.cartera + "/zona").then(function (res) {
           if (res.data) {
-            _this2.zonas = res.data;
+            _this.zonas = res.data;
           }
         });
         axios.get("tagCondicion/" + this.campana.cartera + "/prioridad").then(function (res) {
           if (res.data) {
-            _this2.prioridades = res.data;
+            _this.prioridades = res.data;
           }
         });
         axios.get("tagCondicion/" + this.campana.cartera + "/tramo").then(function (res) {
           if (res.data) {
-            _this2.tramos = res.data;
+            _this.tramos = res.data;
           }
         });
       } else {
@@ -5556,7 +5547,7 @@ __webpack_require__.r(__webpack_exports__);
       this.speech.valor = '';
     },
     accionesSpeech: function accionesSpeech(option) {
-      var _this3 = this;
+      var _this2 = this;
 
       if (option == 0) {
         this.crearSpeech = true;
@@ -5564,8 +5555,8 @@ __webpack_require__.r(__webpack_exports__);
         this.loading = true;
         axios.get("listEtiquetas").then(function (res) {
           if (res.data) {
-            _this3.etiquetas = res.data;
-            _this3.loading = false;
+            _this2.etiquetas = res.data;
+            _this2.loading = false;
           }
         });
         $('#nombreSpeech').focus();
@@ -5609,17 +5600,17 @@ __webpack_require__.r(__webpack_exports__);
       $("#mostrarhtml").focus();
     },
     listaRespuestas: function listaRespuestas(ubi) {
-      var _this4 = this;
+      var _this3 = this;
 
       this.rpta = true;
       this.respuestas = "";
 
       if (ubi.length != 0) {
-        axios.get("listRespuestas/" + ubi).then(function (res) {
+        axios.get("listaRespuestaSms/" + ubi).then(function (res) {
           if (res.data) {
-            _this4.respuestas = res.data;
-            _this4.rpta = false;
-            _this4.loadingIn = false;
+            _this3.respuestas = res.data;
+            _this3.rpta = false;
+            _this3.loadingIn = false;
           }
         });
       }
@@ -5755,7 +5746,7 @@ __webpack_require__.r(__webpack_exports__);
       this.detalleCondicion = this.detalleCondicion.substr(0, this.detalleCondicion.length - 2);
     },
     agregarCondicion: function agregarCondicion() {
-      var _this5 = this;
+      var _this4 = this;
 
       this.errorsCondicion = [];
       this.mensajeCant = "";
@@ -5810,41 +5801,41 @@ __webpack_require__.r(__webpack_exports__);
         axios.post("datosclientesCampana", parametros).then(function (res) {
           if (res.data) {
             //recibir datos del controlador
-            _this5.datosClientes = res.data; //cantidad de mensjaes relacinados a las condiciones seleccionadas
+            _this4.datosClientes = res.data; //cantidad de mensjaes relacinados a las condiciones seleccionadas
 
-            cantNumClientes = _this5.datosClientes[0].cant_cli;
-            cantSmsClientes = _this5.datosClientes[0].cant_sms; //codCLientes=this.datosClientes[0].codigos;
+            cantNumClientes = _this4.datosClientes[0].cant_cli;
+            cantSmsClientes = _this4.datosClientes[0].cant_sms; //codCLientes=this.datosClientes[0].codigos;
 
             if (cantSmsClientes > 0) {
               //agregar criterio
-              _this5.campana.detalle.push({
-                nombre: _this5.condicion.nombre,
-                textcondicion: _this5.detalleCondicion,
-                baseCondicion: _this5.sqlCondicion,
-                codNumeros: _this5.condicion.numero,
+              _this4.campana.detalle.push({
+                nombre: _this4.condicion.nombre,
+                textcondicion: _this4.detalleCondicion,
+                baseCondicion: _this4.sqlCondicion,
+                codNumeros: _this4.condicion.numero,
                 nomNumeros: nomNumero,
-                idSpeech: _this5.vspeech.id,
-                nomSpeech: _this5.vspeech.nombre,
-                descSpeech: _this5.vspeech.desc,
+                idSpeech: _this4.vspeech.id,
+                nomSpeech: _this4.vspeech.nombre,
+                descSpeech: _this4.vspeech.desc,
                 destino: opcionDestinatario,
-                idDestino: _this5.condicion.destinatario,
+                idDestino: _this4.condicion.destinatario,
                 //codigos:codCLientes.toString(),
                 cantClientes: cantNumClientes,
                 cantSms: cantSmsClientes
               });
 
-              _this5.viewFrm = true;
+              _this4.viewFrm = true;
 
-              _this5.totales();
+              _this4.totales();
             } else {
-              _this5.mensajeCant = "No se encontraron clientes asociados a los criterios seleccionados";
+              _this4.mensajeCant = "No se encontraron clientes asociados a los criterios seleccionados";
             } //cerrar modal de carga
 
 
-            _this5.loadingModal = false;
+            _this4.loadingModal = false;
             $('#modalCarga').modal('hide');
             setTimeout(function () {
-              return _this5.mensajeCant = "";
+              return _this4.mensajeCant = "";
             }, 6000);
           }
         });
@@ -5855,7 +5846,7 @@ __webpack_require__.r(__webpack_exports__);
       this.totales();
     },
     validarCampos: function validarCampos() {
-      var _this6 = this;
+      var _this5 = this;
 
       this.errors = [];
 
@@ -5876,7 +5867,7 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       setTimeout(function () {
-        return _this6.errors = [];
+        return _this5.errors = [];
       }, 5000);
     },
     validarCamposSpeech: function validarCamposSpeech() {
@@ -5891,7 +5882,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     validarCamposCondicion: function validarCamposCondicion() {
-      var _this7 = this;
+      var _this6 = this;
 
       this.errorsCondicion = [];
 
@@ -5904,11 +5895,11 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       setTimeout(function () {
-        return _this7.errorsCondicion = [];
+        return _this6.errorsCondicion = [];
       }, 5000);
     },
     agregarSpeech: function agregarSpeech() {
-      var _this8 = this;
+      var _this7 = this;
 
       this.errorsSpeech = [];
       this.validarCamposSpeech();
@@ -5921,14 +5912,14 @@ __webpack_require__.r(__webpack_exports__);
         this.speech.texto = this.eliminarAcentos(this.speech.texto);
         axios.post("insertSpeech", this.speech).then(function (res) {
           if (res.data == "ok") {
-            axios.get("carteraSpeech/" + _this8.campana.cartera).then(function (res) {
+            axios.get("carteraSpeech/" + _this7.campana.cartera).then(function (res) {
               if (res.data) {
-                _this8.speechs = res.data;
-                _this8.cargaSpeech = false;
-                _this8.msjSpeech = "El Speech se creó correctamente";
-                _this8.speech.valor = '';
+                _this7.speechs = res.data;
+                _this7.cargaSpeech = false;
+                _this7.msjSpeech = "El Speech se creó correctamente";
+                _this7.speech.valor = '';
                 setTimeout(function () {
-                  return _this8.msjSpeech = "";
+                  return _this7.msjSpeech = "";
                 }, 4800);
               }
             });
@@ -5968,7 +5959,7 @@ __webpack_require__.r(__webpack_exports__);
       this.campana.totalSms = 0;
     },
     crearCampana: function crearCampana() {
-      var _this9 = this;
+      var _this8 = this;
 
       this.errors = [];
       this.validarCampos();
@@ -5981,9 +5972,9 @@ __webpack_require__.r(__webpack_exports__);
         });
         axios.post("insertCampana", this.campana).then(function (res) {
           if (res.data == "ok") {
-            _this9.limpiarCamposCampana();
+            _this8.limpiarCamposCampana();
 
-            _this9.loadingModal = false;
+            _this8.loadingModal = false;
             setTimeout(function () {
               return $('#modalCarga').modal('hide');
             }, 2500);
@@ -6465,12 +6456,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-// import PieChart from './Chart/PieChart.js';
+// import PieChart from '../Chart/PieChart.js';
 // import conf from './Chart/confBarHorizontal.js';
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['id'],
@@ -6545,7 +6531,9 @@ __webpack_require__.r(__webpack_exports__);
       } else {
         arrayData = [1];
         backgrounds = ['#f0edee'];
-      }
+      } // var canvas = document.getElementById("pieOperadoras");
+      // var ctx = canvas.getContext('2d');
+
 
       this.dataOperadoras = {
         labels: arrayLabels,
@@ -6562,7 +6550,11 @@ __webpack_require__.r(__webpack_exports__);
           display: true,
           text: 'CAMPAÑAS - OPERADORAS'
         }
-      };
+      }; // var pieChart = new Chart(ctx, {
+      //     type: 'pie',
+      //     data: this.dataOperadoras,
+      //     options: this.options2
+      // });
     },
     graficasCampanaClaro: function graficasCampanaClaro() {
       if (screen.width <= 768) {
@@ -6604,24 +6596,6 @@ __webpack_require__.r(__webpack_exports__);
     crear: function crear() {
       window.location.href = "crearCampana";
     },
-    // hora(index){
-    //     var contEnviado=0;
-    //     for( var i=0;i<this.lista.length;i++){
-    //         if(this.lista[i].estado=='Enviando'){
-    //           contEnviado+=1;
-    //         }
-    //     }
-    //     if(this.lista[index].estado=='Enviando'){
-    //         return 'Enviando...';
-    //     }else{
-    //         if(contEnviado>0){
-    //             return this.lista[index-1].hora;
-    //         }else{
-    //              return '00h 00m';
-    //             //return this.lista[index].hora;
-    //         }
-    //     }
-    // },
     formatoMil: function formatoMil(nStr) {
       nStr += '';
       var x = nStr.split('.');
@@ -6636,7 +6610,8 @@ __webpack_require__.r(__webpack_exports__);
       return x1 + x2;
     }
   },
-  components: {}
+  components: {// PieChart
+  }
 });
 
 /***/ }),
@@ -51344,7 +51319,7 @@ var render = function() {
                     },
                     [
                       _c("option", { attrs: { value: "" } }, [
-                        _vm._v("Selecionar")
+                        _vm._v("Seleccionar")
                       ]),
                       _vm._v(" "),
                       _c("option", { attrs: { value: "0" } }, [
@@ -51407,7 +51382,7 @@ var render = function() {
                         },
                         [
                           _c("option", { attrs: { value: "" } }, [
-                            _vm._v("Selecionar")
+                            _vm._v("Seleccionar")
                           ]),
                           _vm._v(" "),
                           _vm._l(_vm.motivosnopago, function(item, index) {
@@ -51518,7 +51493,7 @@ var render = function() {
                     },
                     [
                       _c("option", { attrs: { value: "" } }, [
-                        _vm._v("Selecionar")
+                        _vm._v("Seleccionar")
                       ]),
                       _vm._v(" "),
                       _vm._l(_vm.oficinas, function(item, index) {
@@ -51813,7 +51788,7 @@ var render = function() {
                     },
                     [
                       _c("option", { attrs: { value: "" } }, [
-                        _vm._v("Selecionar")
+                        _vm._v("Seleccionar")
                       ]),
                       _vm._v(" "),
                       _vm._l(_vm.carteras, function(item, index) {
@@ -52096,58 +52071,62 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _c("td", { attrs: { colspan: "2" } }, [
-                  _c("div", { staticClass: "d-flex justify-content-end" }, [
-                    _vm._v(
-                      "\n                                    Listar Campaña\n                                    "
-                    ),
-                    _c("div", { staticClass: "pt-1" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.busqueda.camp,
-                            expression: "busqueda.camp"
-                          }
-                        ],
-                        staticClass: "ml-2",
-                        attrs: { type: "checkbox" },
-                        domProps: {
-                          checked: Array.isArray(_vm.busqueda.camp)
-                            ? _vm._i(_vm.busqueda.camp, null) > -1
-                            : _vm.busqueda.camp
-                        },
-                        on: {
-                          change: function($event) {
-                            var $$a = _vm.busqueda.camp,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = null,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 &&
-                                  _vm.$set(
-                                    _vm.busqueda,
-                                    "camp",
-                                    $$a.concat([$$v])
-                                  )
-                              } else {
-                                $$i > -1 &&
-                                  _vm.$set(
-                                    _vm.busqueda,
-                                    "camp",
-                                    $$a.slice(0, $$i).concat($$a.slice($$i + 1))
-                                  )
+                  _vm.tipoacceso == 2
+                    ? _c("div", { staticClass: "d-flex justify-content-end" }, [
+                        _vm._v(
+                          "\n                                    Listar Campaña\n                                    "
+                        ),
+                        _c("div", { staticClass: "pt-1" }, [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.busqueda.camp,
+                                expression: "busqueda.camp"
                               }
-                            } else {
-                              _vm.$set(_vm.busqueda, "camp", $$c)
+                            ],
+                            staticClass: "ml-2",
+                            attrs: { type: "checkbox" },
+                            domProps: {
+                              checked: Array.isArray(_vm.busqueda.camp)
+                                ? _vm._i(_vm.busqueda.camp, null) > -1
+                                : _vm.busqueda.camp
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.busqueda.camp,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      _vm.$set(
+                                        _vm.busqueda,
+                                        "camp",
+                                        $$a.concat([$$v])
+                                      )
+                                  } else {
+                                    $$i > -1 &&
+                                      _vm.$set(
+                                        _vm.busqueda,
+                                        "camp",
+                                        $$a
+                                          .slice(0, $$i)
+                                          .concat($$a.slice($$i + 1))
+                                      )
+                                  }
+                                } else {
+                                  _vm.$set(_vm.busqueda, "camp", $$c)
+                                }
+                              }
                             }
-                          }
-                        }
-                      })
-                    ])
-                  ])
+                          })
+                        ])
+                      ])
+                    : _vm._e()
                 ])
               ]),
               _vm._v(" "),
@@ -56844,24 +56823,7 @@ var render = function() {
                 staticClass: "d-flex justify-content-center align-items-center",
                 staticStyle: { "margin-top": "150px" }
               },
-              [
-                _c(
-                  "div",
-                  [
-                    _c("spinnerIn", {
-                      attrs: {
-                        loading: _vm.loadingModal,
-                        color: _vm.colorModal
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("p", { staticClass: "text-white", staticStyle: {} }, [
-                      _vm._v("Cargando...")
-                    ])
-                  ],
-                  1
-                )
-              ]
+              [_vm._m(0)]
             )
           : _c(
               "div",
@@ -56869,7 +56831,7 @@ var render = function() {
                 staticClass: "d-flex justify-content-center align-items-center",
                 staticStyle: { "margin-top": "150px" }
               },
-              [_vm._m(0)]
+              [_vm._m(1)]
             )
       ]
     ),
@@ -56879,11 +56841,11 @@ var render = function() {
           "div",
           { staticClass: "text-center d-flex justify-content-center pt-5" },
           [
-            _c("spinnerIn", {
-              attrs: { loading: _vm.loadingIn, color: _vm.color }
+            _c("span", {
+              staticClass: "spinner-border spinner-border-lg",
+              attrs: { role: "status", "aria-hidden": "true" }
             })
-          ],
-          1
+          ]
         )
       : _c("div", { staticClass: "fadeIn" }, [
           _vm.viewFrm
@@ -56900,16 +56862,11 @@ var render = function() {
                     }
                   },
                   [
-                    _c("p", { staticClass: "frm-title" }, [
-                      _vm._v("Nueva Campaña")
-                    ]),
-                    _c("hr"),
-                    _vm._v(" "),
                     _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-md-3 pt-4" }, [
+                      _c("div", { staticClass: "col-md-3" }, [
                         _c("div", { staticClass: "form-group" }, [
                           _c("label", { attrs: { for: "" } }, [
-                            _vm._v("Colócale un nombre a tu campaña")
+                            _vm._v("Nombre de campaña")
                           ]),
                           _vm._v(" "),
                           _c("input", {
@@ -56940,7 +56897,7 @@ var render = function() {
                         ])
                       ]),
                       _vm._v(" "),
-                      _c("div", { staticClass: "col-md-3 pt-4" }, [
+                      _c("div", { staticClass: "col-md-3" }, [
                         _c("div", { staticClass: "form-group" }, [
                           _c("label", { attrs: { for: "" } }, [
                             _vm._v("Selecciona una cartera")
@@ -57007,7 +56964,7 @@ var render = function() {
                           "div",
                           {
                             staticClass:
-                              "card-inf shadow d-flex justify-content-between"
+                              "card-inf p-3 border d-flex justify-content-between"
                           },
                           [
                             _c("div", [
@@ -57015,11 +56972,11 @@ var render = function() {
                                 _vm._v(_vm._s(_vm.campana.totalClientes))
                               ]),
                               _vm._v(" "),
-                              _c("p", [_vm._v("Cantidad de Clientes")])
+                              _c("p", [_vm._v("Cant. Clientes")])
                             ]),
                             _vm._v(" "),
                             _c("i", {
-                              staticClass: "fa fa-users fa-2x text-tranp"
+                              staticClass: "fa fa-users fa-2x text-gray"
                             })
                           ]
                         )
@@ -57030,7 +56987,7 @@ var render = function() {
                           "div",
                           {
                             staticClass:
-                              "card-inf shadow d-flex justify-content-between"
+                              "card-inf p-3 border d-flex justify-content-between"
                           },
                           [
                             _c("div", [
@@ -57038,11 +56995,11 @@ var render = function() {
                                 _vm._v(_vm._s(_vm.campana.totalSms))
                               ]),
                               _vm._v(" "),
-                              _c("p", [_vm._v("Cantidad de SMS")])
+                              _c("p", [_vm._v("Cant. SMS")])
                             ]),
                             _vm._v(" "),
                             _c("i", {
-                              staticClass: "fa fa-envelope fa-2x text-tranp"
+                              staticClass: "fa fa-envelope fa-2x text-gray"
                             })
                           ]
                         )
@@ -57052,7 +57009,7 @@ var render = function() {
                     _c(
                       "a",
                       {
-                        staticClass: "btn btn-outline-danger",
+                        staticClass: "btn btn-outline-blue",
                         attrs: { href: "" },
                         on: {
                           click: function($event) {
@@ -57068,8 +57025,8 @@ var render = function() {
                     ),
                     _vm._v(" "),
                     _c("div", { staticClass: "table-responsive mt-4" }, [
-                      _c("table", { staticClass: "table table-hover" }, [
-                        _vm._m(1),
+                      _c("table", { staticClass: "table" }, [
+                        _vm._m(2),
                         _vm._v(" "),
                         _c(
                           "tbody",
@@ -57093,6 +57050,7 @@ var render = function() {
                                     _c(
                                       "td",
                                       {
+                                        staticClass: "text-center",
                                         staticStyle: {
                                           "vertical-align": "top",
                                           "min-width": "2.5rem"
@@ -57103,7 +57061,7 @@ var render = function() {
                                           "a",
                                           {
                                             staticClass:
-                                              "btn btn-orange py-1 px-2",
+                                              "btn-outline-green rounded py-1 px-2",
                                             attrs: { href: "" },
                                             on: {
                                               click: function($event) {
@@ -57274,7 +57232,7 @@ var render = function() {
                       _c("div", { staticClass: "col-md-3 pt-4" }, [
                         _c("div", { staticClass: "form-group" }, [
                           _c("label", { attrs: { for: "" } }, [
-                            _vm._v("Selecciona una fecha de envío")
+                            _vm._v("Fecha de envío")
                           ]),
                           _vm._v(" "),
                           _c("input", {
@@ -57334,7 +57292,7 @@ var render = function() {
                     _c(
                       "button",
                       {
-                        staticClass: "btn bg-blue mt-3 text-white",
+                        staticClass: "btn bg-blue mt-3 text-white waves-effect",
                         attrs: { type: "submit" }
                       },
                       [_vm._v("Crear Campaña")]
@@ -57343,7 +57301,7 @@ var render = function() {
                 )
               ])
             : _c("div", { staticClass: "form-criterios fadeInCont" }, [
-                _c("div", { staticClass: "card-inf shadow px-5" }, [
+                _c("div", { staticClass: "card-inf px-2 py-2" }, [
                   _c("div", { staticClass: "d-flex " }, [
                     _c(
                       "a",
@@ -57366,12 +57324,11 @@ var render = function() {
                       "b",
                       {
                         staticClass: "pt-1",
-                        staticStyle: { "font-size": "16px" }
+                        staticStyle: { "font-size": "14px" }
                       },
                       [_vm._v("Nuevo Criterio")]
                     )
                   ]),
-                  _c("br"),
                   _c("br"),
                   _c("hr"),
                   _vm._v(" "),
@@ -57410,14 +57367,11 @@ var render = function() {
                       ])
                     ])
                   ]),
-                  _c("br"),
-                  _c("br"),
-                  _c("br"),
                   _vm._v(" "),
                   _c("div", { staticClass: "row mt-3" }, [
                     _c("div", { staticClass: "col-md-6" }, [
                       _c("div", { staticClass: "form-group" }, [
-                        _vm._m(2),
+                        _vm._m(3),
                         _vm._v(" "),
                         _c(
                           "select",
@@ -57473,7 +57427,7 @@ var render = function() {
                   _c("br"),
                   _c("br"),
                   _vm._v(" "),
-                  _vm._m(3),
+                  _vm._m(4),
                   _vm._v(" "),
                   _c("div", { staticClass: "row mt-3" }, [
                     _c("div", { staticClass: "col-md-5" }, [
@@ -58095,7 +58049,7 @@ var render = function() {
                   _c("div", { staticClass: "row mt-3" }, [
                     _c("div", { staticClass: "col-md-6" }, [
                       _c("div", { staticClass: "form-group" }, [
-                        _vm._m(4),
+                        _vm._m(5),
                         _vm._v(" "),
                         _c(
                           "select",
@@ -58149,7 +58103,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("div", { staticClass: "row mt-3" }, [
                     _c("div", { staticClass: "col-md-6" }, [
-                      _vm._m(5),
+                      _vm._m(6),
                       _vm._v(" "),
                       _c("div", { staticClass: "form-group" }, [
                         _c(
@@ -58227,17 +58181,14 @@ var render = function() {
                           "div",
                           {
                             staticClass:
-                              "text-center d-flex justify-content-center "
+                              "text-center d-flex justify-content-center py-2"
                           },
                           [
-                            _c("spinner", {
-                              attrs: {
-                                loading: _vm.cargaSpeech,
-                                color: _vm.color
-                              }
+                            _c("span", {
+                              staticClass: "spinner-border spinner-border-lg",
+                              attrs: { role: "status", "aria-hidden": "true" }
                             })
-                          ],
-                          1
+                          ]
                         )
                       : _vm.msjSpeech
                       ? _c("div", { staticClass: "alert alert-success" }, [
@@ -58261,7 +58212,7 @@ var render = function() {
                             [
                               _c("div", { staticClass: "form-group " }, [
                                 _c("label", { attrs: { for: "" } }, [
-                                  _vm._v("Colócale un nombre a tu speech")
+                                  _vm._v("Nombre a speech")
                                 ]),
                                 _vm._v(" "),
                                 _c("input", {
@@ -58304,14 +58255,15 @@ var render = function() {
                                             "text-center d-flex justify-content-center "
                                         },
                                         [
-                                          _c("spinner", {
+                                          _c("span", {
+                                            staticClass:
+                                              "spinner-border spinner-border-lg",
                                             attrs: {
-                                              loading: _vm.loading,
-                                              color: _vm.color2
+                                              role: "status",
+                                              "aria-hidden": "true"
                                             }
                                           })
-                                        ],
-                                        1
+                                        ]
                                       )
                                     : _c("div", [
                                         _vm.etiquetas != ""
@@ -58327,7 +58279,7 @@ var render = function() {
                                                   {
                                                     key: index,
                                                     staticClass:
-                                                      "btn btn-outline-primary ml-2",
+                                                      "btn btn-outline-blue ml-2",
                                                     attrs: { href: "" },
                                                     on: {
                                                       click: function($event) {
@@ -58443,7 +58395,7 @@ var render = function() {
                               _c(
                                 "button",
                                 {
-                                  staticClass: "btn btn-outline-primary",
+                                  staticClass: "btn btn-outline-green",
                                   attrs: { type: "submit" }
                                 },
                                 [_vm._v("Crear Speech")]
@@ -58525,7 +58477,7 @@ var render = function() {
                   _c(
                     "a",
                     {
-                      staticClass: "btn btn-danger",
+                      staticClass: "btn btn-blue  waves-effect",
                       attrs: { href: "", id: "btnAgregarCriterio" },
                       on: {
                         click: function($event) {
@@ -58548,6 +58500,21 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c("div", [
+      _c("span", {
+        staticClass: "spinner-border spinner-border-xl text-white ml-3",
+        attrs: { role: "status", "aria-hidden": "true" }
+      }),
+      _vm._v(" "),
+      _c("p", { staticClass: "text-white", staticStyle: {} }, [
+        _vm._v("Cargando...")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c("div", { staticClass: "text-center" }, [
       _c("p", [_c("i", { staticClass: "fa fa-thumbs-up fa-4x text-white" })]),
       _vm._v(" "),
@@ -58560,41 +58527,51 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("thead", [
+    return _c("thead", { staticClass: "bg-blue text-white" }, [
       _c("tr", [
-        _c("th", {
+        _c("td", {
           staticClass: "text-center",
           staticStyle: { "min-width": "2rem" }
         }),
         _vm._v(" "),
         _c(
-          "th",
-          { staticStyle: { "vertical-align": "top" }, attrs: { width: "25%" } },
+          "td",
+          {
+            staticStyle: { "vertical-align": "top", "text-align": "center" },
+            attrs: { width: "25%" }
+          },
           [_vm._v("Detalle Criterio")]
         ),
         _vm._v(" "),
         _c(
-          "th",
-          { staticStyle: { "vertical-align": "top" }, attrs: { width: "25%" } },
+          "td",
+          {
+            staticStyle: { "vertical-align": "top", "text-align": "center" },
+            attrs: { width: "25%" }
+          },
           [_vm._v("Speech")]
         ),
         _vm._v(" "),
-        _c("th", { staticStyle: { "vertical-align": "top" } }, [
-          _vm._v("Enviar a")
-        ]),
-        _vm._v(" "),
-        _c("th", { staticStyle: { "vertical-align": "top" } }, [
-          _vm._v("Número Contacto")
-        ]),
+        _c(
+          "td",
+          { staticStyle: { "vertical-align": "top", "text-align": "center" } },
+          [_vm._v("Enviar a")]
+        ),
         _vm._v(" "),
         _c(
-          "th",
+          "td",
+          { staticStyle: { "vertical-align": "top", "text-align": "center" } },
+          [_vm._v("Número Contacto")]
+        ),
+        _vm._v(" "),
+        _c(
+          "td",
           { staticStyle: { "vertical-align": "top", "text-align": "center" } },
           [_vm._v("Cant. de Clientes")]
         ),
         _vm._v(" "),
         _c(
-          "th",
+          "td",
           { staticStyle: { "vertical-align": "top", "text-align": "center" } },
           [_vm._v("Cant. de SMS")]
         )
@@ -59296,7 +59273,7 @@ var render = function() {
       : _c("div", { staticClass: "fadeIn form-crear" }, [
           _vm.lista == ""
             ? _c("div", { staticClass: "text-center pt-5" }, [
-                _c("i", { staticClass: "fa fa-sad-cry fa-3x" }),
+                _c("i", { staticClass: "far fa-list-alt fa-3x" }),
                 _c("br"),
                 _vm._v(" "),
                 _c("p", { staticStyle: { "font-size": "12px" } }, [
@@ -59304,429 +59281,540 @@ var render = function() {
                 ])
               ])
             : _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "col-md-7" }),
+                _c("div", { staticClass: "col-md-7" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "col-md-6" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass:
+                            "card-inf border p-3 d-flex justify-content-between"
+                        },
+                        [
+                          _c("div", { staticClass: "pt-2" }, [
+                            _c(
+                              "p",
+                              {
+                                staticClass: "text-num",
+                                staticStyle: { "font-size": "27px" }
+                              },
+                              [_vm._v(_vm._s(_vm.formatoMil(_vm.cargados)))]
+                            ),
+                            _vm._v(" "),
+                            _c("p", { staticClass: "font-12" }, [
+                              _vm._v("SMS Cargados")
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("i", {
+                            staticClass: "fa fa-envelope fa-3x text-gray"
+                          })
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-6" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass:
+                            "card-inf border p-3 d-flex justify-content-between pb-0"
+                        },
+                        [
+                          _c("div", { staticClass: "pt-2" }, [
+                            _c(
+                              "p",
+                              {
+                                staticClass: "text-num text-success",
+                                staticStyle: { "font-size": "27px" }
+                              },
+                              [_vm._v(_vm._s(_vm.formatoMil(_vm.enviados)))]
+                            ),
+                            _vm._v(" "),
+                            _c("p", { staticClass: "font-12" }, [
+                              _vm._v("SMS Enviados")
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("i", { staticClass: "fa fa-sms fa-3x text-gray" })
+                        ]
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "card-inf p-3" }, [
+                    _vm.lista == ""
+                      ? _c("div", { staticClass: "text-center py-3" }, [
+                          _c("i", {
+                            staticClass: "fas fa-chart-pie fa-3x text-success"
+                          }),
+                          _c("br"),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c("b", [_vm._v(" No se encontraron datos")])
+                        ])
+                      : _c("div", { staticClass: "row pb-3" }, [
+                          _vm._m(0),
+                          _vm._v(" "),
+                          _vm._m(1)
+                        ])
+                  ])
+                ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "col-md-5" }, [
-                  _c("div", { staticClass: "card-inf border" }, [
-                    _c(
-                      "div",
-                      { staticClass: "overflow-auto" },
-                      [
-                        _vm._m(0),
-                        _c("br"),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          { staticClass: "table-responsive px-3" },
-                          [
-                            _c(
-                              "paginate",
-                              {
-                                staticClass: "px-0",
-                                attrs: {
-                                  name: "pagLista",
-                                  list: _vm.lista,
-                                  per: 4
-                                }
-                              },
-                              [
-                                _c(
-                                  "table",
-                                  { staticClass: "border-0 w-100" },
-                                  [
-                                    _c("thead", [
-                                      _c("tr", { staticClass: "text-center" }, [
-                                        _c("td", { attrs: { width: "50%" } }),
-                                        _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass: "card-inf border h-100",
+                      staticStyle: { "min-height": "100%" }
+                    },
+                    [
+                      _c(
+                        "div",
+                        { staticClass: "overflow-auto" },
+                        [
+                          _vm._m(2),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "table-responsive px-3" },
+                            [
+                              _c(
+                                "paginate",
+                                {
+                                  staticClass: "px-0",
+                                  attrs: {
+                                    name: "pagLista",
+                                    list: _vm.lista,
+                                    per: 4
+                                  }
+                                },
+                                [
+                                  _c(
+                                    "table",
+                                    {
+                                      staticClass: "border-0 w-100",
+                                      attrs: { id: "table-2" }
+                                    },
+                                    [
+                                      _c("thead", [
                                         _c(
-                                          "td",
+                                          "tr",
                                           { staticClass: "text-center" },
                                           [
-                                            _c("img", {
-                                              staticClass: "img-fluid",
-                                              attrs: {
-                                                src: "img/claro.png",
-                                                width: "50px",
-                                                height: "45px"
-                                              }
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "td",
-                                          { staticClass: "text-center" },
-                                          [
-                                            _c("img", {
-                                              staticClass: "img-fluid",
-                                              attrs: {
-                                                src: "img/sim.png",
-                                                width: "40px",
-                                                height: "35px"
-                                              }
-                                            })
-                                          ]
-                                        )
-                                      ])
-                                    ]),
-                                    _vm._v(" "),
-                                    _vm.loading == false && _vm.lista == ""
-                                      ? _c(
-                                          "tbody",
-                                          { staticClass: "border-0" },
-                                          [
+                                            _c("td", {
+                                              attrs: { width: "50%" }
+                                            }),
+                                            _vm._v(" "),
                                             _c(
-                                              "tr",
+                                              "td",
                                               { staticClass: "text-center" },
                                               [
-                                                _vm._v(
-                                                  " \n                                            No existen campañas cargadas\n                                        "
-                                                )
+                                                _c("img", {
+                                                  staticClass: "img-fluid",
+                                                  attrs: {
+                                                    src: "img/claro.png",
+                                                    width: "50px",
+                                                    height: "45px"
+                                                  }
+                                                })
+                                              ]
+                                            ),
+                                            _vm._v(" "),
+                                            _c(
+                                              "td",
+                                              { staticClass: "text-center" },
+                                              [
+                                                _c("img", {
+                                                  staticClass: "img-fluid",
+                                                  attrs: {
+                                                    src: "img/sim.png",
+                                                    width: "40px",
+                                                    height: "35px"
+                                                  }
+                                                })
                                               ]
                                             )
                                           ]
                                         )
-                                      : _vm._l(
-                                          _vm.paginated("pagLista"),
-                                          function(item, index) {
-                                            return _c(
-                                              "tbody",
-                                              {
-                                                key: index,
-                                                staticClass: "item ",
-                                                class: {
-                                                  "bg-green":
-                                                    item.estado == "Enviando",
-                                                  rounded:
-                                                    item.estado == "Enviando"
-                                                }
-                                              },
-                                              [
-                                                _c("tr", [
-                                                  _c("td", [
+                                      ]),
+                                      _vm._v(" "),
+                                      _vm.loading == false && _vm.lista == ""
+                                        ? _c(
+                                            "tbody",
+                                            { staticClass: "border-0" },
+                                            [
+                                              _c(
+                                                "tr",
+                                                { staticClass: "text-center" },
+                                                [
+                                                  _vm._v(
+                                                    " \n                                            No existen campañas cargadas\n                                        "
+                                                  )
+                                                ]
+                                              )
+                                            ]
+                                          )
+                                        : _vm._l(
+                                            _vm.paginated("pagLista"),
+                                            function(item, index) {
+                                              return _c(
+                                                "tbody",
+                                                {
+                                                  key: index,
+                                                  staticClass: "item ",
+                                                  class: {
+                                                    "bg-green":
+                                                      item.estado == "Enviando",
+                                                    rounded:
+                                                      item.estado == "Enviando"
+                                                  }
+                                                },
+                                                [
+                                                  _c("tr", [
+                                                    _c("td", [
+                                                      _c(
+                                                        "a",
+                                                        {
+                                                          staticClass:
+                                                            "d-flex justify-content-between text-left text-dark",
+                                                          staticStyle: {
+                                                            "line-height":
+                                                              "18px",
+                                                            "column-gap": "3em",
+                                                            columns: "3"
+                                                          },
+                                                          attrs: {
+                                                            "data-toggle":
+                                                              "collapse",
+                                                            href: "#c" + index,
+                                                            role: "button",
+                                                            "aria-expanded":
+                                                              "false",
+                                                            "aria-controls":
+                                                              "collapseExample"
+                                                          }
+                                                        },
+                                                        [
+                                                          _c("div", {}, [
+                                                            _c("b", [
+                                                              _vm._v(
+                                                                " " +
+                                                                  _vm._s(
+                                                                    item.cartera
+                                                                  )
+                                                              )
+                                                            ]),
+                                                            _c("br"),
+                                                            _vm._v(" "),
+                                                            _c(
+                                                              "p",
+                                                              {
+                                                                staticClass:
+                                                                  "font-12"
+                                                              },
+                                                              [
+                                                                _vm._v(
+                                                                  _vm._s(
+                                                                    item.nombre
+                                                                  )
+                                                                )
+                                                              ]
+                                                            )
+                                                          ])
+                                                        ]
+                                                      )
+                                                    ]),
+                                                    _vm._v(" "),
                                                     _c(
-                                                      "a",
+                                                      "td",
                                                       {
                                                         staticClass:
-                                                          "d-flex justify-content-between text-left text-dark",
-                                                        staticStyle: {
-                                                          "line-height": "18px",
-                                                          "column-gap": "3em",
-                                                          columns: "3"
-                                                        },
-                                                        attrs: {
-                                                          "data-toggle":
-                                                            "collapse",
-                                                          href: "#c" + index,
-                                                          role: "button",
-                                                          "aria-expanded":
-                                                            "false",
-                                                          "aria-controls":
-                                                            "collapseExample"
-                                                        }
+                                                          "text-center"
                                                       },
                                                       [
-                                                        _c("div", {}, [
-                                                          _c("b", [
-                                                            _vm._v(
-                                                              " " +
-                                                                _vm._s(
-                                                                  item.cartera
+                                                        _c(
+                                                          "div",
+                                                          {
+                                                            staticClass:
+                                                              "d-flex justify-content-center"
+                                                          },
+                                                          [
+                                                            item.estado_claro ==
+                                                            "Enviando"
+                                                              ? _c(
+                                                                  "div",
+                                                                  {
+                                                                    staticClass:
+                                                                      "spinner-border spinner-border-sm text-success",
+                                                                    attrs: {
+                                                                      role:
+                                                                        "status"
+                                                                    }
+                                                                  },
+                                                                  [
+                                                                    _c(
+                                                                      "span",
+                                                                      {
+                                                                        staticClass:
+                                                                          "sr-only"
+                                                                      },
+                                                                      [
+                                                                        _vm._v(
+                                                                          "Loading..."
+                                                                        )
+                                                                      ]
+                                                                    )
+                                                                  ]
                                                                 )
-                                                            )
-                                                          ]),
-                                                          _c("br"),
-                                                          _vm._v(" "),
-                                                          _c(
-                                                            "p",
-                                                            {
-                                                              staticClass:
-                                                                "font-12"
-                                                            },
-                                                            [
-                                                              _vm._v(
-                                                                _vm._s(
-                                                                  item.nombre
+                                                              : _vm._e(),
+                                                            _vm._v(" "),
+                                                            item.estado_claro !=
+                                                            "Enviando"
+                                                              ? _c(
+                                                                  "p",
+                                                                  {
+                                                                    staticClass:
+                                                                      "badge px-3 py-2 ",
+                                                                    class:
+                                                                      item.color_claro
+                                                                  },
+                                                                  [
+                                                                    _vm._v(
+                                                                      _vm._s(
+                                                                        item.estado_claro
+                                                                      )
+                                                                    )
+                                                                  ]
                                                                 )
-                                                              )
-                                                            ]
-                                                          )
-                                                        ])
+                                                              : _c(
+                                                                  "p",
+                                                                  {
+                                                                    staticClass:
+                                                                      "text-center pt-1 ml-1"
+                                                                  },
+                                                                  [
+                                                                    _vm._v(
+                                                                      _vm._s(
+                                                                        item.avance_claro
+                                                                      )
+                                                                    )
+                                                                  ]
+                                                                )
+                                                          ]
+                                                        )
+                                                      ]
+                                                    ),
+                                                    _vm._v(" "),
+                                                    _c(
+                                                      "td",
+                                                      {
+                                                        staticClass:
+                                                          "text-center"
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "div",
+                                                          {
+                                                            staticClass:
+                                                              "d-flex justify-content-center"
+                                                          },
+                                                          [
+                                                            item.estado ==
+                                                            "Enviando"
+                                                              ? _c(
+                                                                  "div",
+                                                                  {
+                                                                    staticClass:
+                                                                      "spinner-border spinner-border-sm text-success",
+                                                                    attrs: {
+                                                                      role:
+                                                                        "status"
+                                                                    }
+                                                                  },
+                                                                  [
+                                                                    _c(
+                                                                      "span",
+                                                                      {
+                                                                        staticClass:
+                                                                          "sr-only"
+                                                                      },
+                                                                      [
+                                                                        _vm._v(
+                                                                          "Loading..."
+                                                                        )
+                                                                      ]
+                                                                    )
+                                                                  ]
+                                                                )
+                                                              : _vm._e(),
+                                                            _vm._v(" "),
+                                                            item.estado !=
+                                                            "Enviando"
+                                                              ? _c(
+                                                                  "p",
+                                                                  {
+                                                                    staticClass:
+                                                                      "badge px-3 py-2 ",
+                                                                    class:
+                                                                      item.color
+                                                                  },
+                                                                  [
+                                                                    _vm._v(
+                                                                      _vm._s(
+                                                                        item.estado
+                                                                      )
+                                                                    )
+                                                                  ]
+                                                                )
+                                                              : _c(
+                                                                  "p",
+                                                                  {
+                                                                    staticClass:
+                                                                      "text-center pt-1 ml-1"
+                                                                  },
+                                                                  [
+                                                                    _vm._v(
+                                                                      _vm._s(
+                                                                        item.avance
+                                                                      )
+                                                                    )
+                                                                  ]
+                                                                )
+                                                          ]
+                                                        )
                                                       ]
                                                     )
                                                   ]),
                                                   _vm._v(" "),
-                                                  _c(
-                                                    "td",
-                                                    {
-                                                      staticClass: "text-center"
-                                                    },
-                                                    [
-                                                      _c(
-                                                        "div",
-                                                        {
-                                                          staticClass:
-                                                            "d-flex justify-content-center"
-                                                        },
-                                                        [
-                                                          item.estado_claro ==
-                                                          "Enviando"
-                                                            ? _c(
-                                                                "div",
-                                                                {
-                                                                  staticClass:
-                                                                    "spinner-border spinner-border-sm text-success",
-                                                                  attrs: {
-                                                                    role:
-                                                                      "status"
-                                                                  }
-                                                                },
-                                                                [
+                                                  _c("tr", [
+                                                    _c(
+                                                      "td",
+                                                      {
+                                                        attrs: { colspan: "3" }
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "div",
+                                                          {
+                                                            staticClass:
+                                                              "collapse",
+                                                            attrs: {
+                                                              id: "c" + index
+                                                            }
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "div",
+                                                              {
+                                                                staticClass:
+                                                                  "card card-body"
+                                                              },
+                                                              [
+                                                                _c("div", {}, [
                                                                   _c(
-                                                                    "span",
+                                                                    "p",
                                                                     {
                                                                       staticClass:
-                                                                        "sr-only"
+                                                                        "mb-2"
                                                                     },
                                                                     [
+                                                                      _c("b", [
+                                                                        _vm._v(
+                                                                          "Cantidad de Clientes:"
+                                                                        )
+                                                                      ]),
                                                                       _vm._v(
-                                                                        "Loading..."
+                                                                        " " +
+                                                                          _vm._s(
+                                                                            _vm.formatoMil(
+                                                                              item.cant_cli
+                                                                            )
+                                                                          )
+                                                                      )
+                                                                    ]
+                                                                  ),
+                                                                  _vm._v(" "),
+                                                                  _c(
+                                                                    "p",
+                                                                    {
+                                                                      staticClass:
+                                                                        "mb-2"
+                                                                    },
+                                                                    [
+                                                                      _c("b", [
+                                                                        _vm._v(
+                                                                          "Cantidad de SMS:"
+                                                                        )
+                                                                      ]),
+                                                                      _vm._v(
+                                                                        " " +
+                                                                          _vm._s(
+                                                                            _vm.formatoMil(
+                                                                              item.cant_sms
+                                                                            )
+                                                                          )
                                                                       )
                                                                     ]
                                                                   )
-                                                                ]
-                                                              )
-                                                            : _vm._e(),
-                                                          _vm._v(" "),
-                                                          item.estado_claro !=
-                                                          "Enviando"
-                                                            ? _c(
-                                                                "p",
-                                                                {
-                                                                  staticClass:
-                                                                    "badge px-3 py-2 ",
-                                                                  class:
-                                                                    item.color_claro
-                                                                },
-                                                                [
-                                                                  _vm._v(
-                                                                    _vm._s(
-                                                                      item.estado_claro
-                                                                    )
-                                                                  )
-                                                                ]
-                                                              )
-                                                            : _c(
-                                                                "p",
-                                                                {
-                                                                  staticClass:
-                                                                    "text-center pt-1 ml-1"
-                                                                },
-                                                                [
-                                                                  _vm._v(
-                                                                    _vm._s(
-                                                                      item.avance_claro
-                                                                    )
-                                                                  )
-                                                                ]
-                                                              )
-                                                        ]
-                                                      )
-                                                    ]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "td",
-                                                    {
-                                                      staticClass: "text-center"
-                                                    },
-                                                    [
-                                                      _c(
-                                                        "div",
-                                                        {
-                                                          staticClass:
-                                                            "d-flex justify-content-center"
-                                                        },
-                                                        [
-                                                          item.estado ==
-                                                          "Enviando"
-                                                            ? _c(
-                                                                "div",
-                                                                {
-                                                                  staticClass:
-                                                                    "spinner-border spinner-border-sm text-success",
-                                                                  attrs: {
-                                                                    role:
-                                                                      "status"
-                                                                  }
-                                                                },
-                                                                [
-                                                                  _c(
-                                                                    "span",
-                                                                    {
-                                                                      staticClass:
-                                                                        "sr-only"
-                                                                    },
-                                                                    [
-                                                                      _vm._v(
-                                                                        "Loading..."
-                                                                      )
-                                                                    ]
-                                                                  )
-                                                                ]
-                                                              )
-                                                            : _vm._e(),
-                                                          _vm._v(" "),
-                                                          item.estado !=
-                                                          "Enviando"
-                                                            ? _c(
-                                                                "p",
-                                                                {
-                                                                  staticClass:
-                                                                    "badge px-3 py-2 ",
-                                                                  class:
-                                                                    item.color
-                                                                },
-                                                                [
-                                                                  _vm._v(
-                                                                    _vm._s(
-                                                                      item.estado
-                                                                    )
-                                                                  )
-                                                                ]
-                                                              )
-                                                            : _c(
-                                                                "p",
-                                                                {
-                                                                  staticClass:
-                                                                    "text-center pt-1 ml-1"
-                                                                },
-                                                                [
-                                                                  _vm._v(
-                                                                    _vm._s(
-                                                                      item.avance
-                                                                    )
-                                                                  )
-                                                                ]
-                                                              )
-                                                        ]
-                                                      )
-                                                    ]
-                                                  )
-                                                ]),
-                                                _vm._v(" "),
-                                                _c("tr", [
-                                                  _c(
-                                                    "td",
-                                                    { attrs: { colspan: "3" } },
-                                                    [
-                                                      _c(
-                                                        "div",
-                                                        {
-                                                          staticClass:
-                                                            "collapse",
-                                                          attrs: {
-                                                            id: "c" + index
-                                                          }
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "div",
-                                                            {
-                                                              staticClass:
-                                                                "card card-body"
-                                                            },
-                                                            [
-                                                              _c("div", {}, [
-                                                                _c(
-                                                                  "p",
-                                                                  {
-                                                                    staticClass:
-                                                                      "mb-2"
-                                                                  },
-                                                                  [
-                                                                    _c("b", [
-                                                                      _vm._v(
-                                                                        "Cantidad de Clientes:"
-                                                                      )
-                                                                    ]),
-                                                                    _vm._v(
-                                                                      " " +
-                                                                        _vm._s(
-                                                                          _vm.formatoMil(
-                                                                            item.cant_cli
-                                                                          )
-                                                                        )
-                                                                    )
-                                                                  ]
-                                                                ),
-                                                                _vm._v(" "),
-                                                                _c(
-                                                                  "p",
-                                                                  {
-                                                                    staticClass:
-                                                                      "mb-2"
-                                                                  },
-                                                                  [
-                                                                    _c("b", [
-                                                                      _vm._v(
-                                                                        "Cantidad de SMS:"
-                                                                      )
-                                                                    ]),
-                                                                    _vm._v(
-                                                                      " " +
-                                                                        _vm._s(
-                                                                          _vm.formatoMil(
-                                                                            item.cant_sms
-                                                                          )
-                                                                        )
-                                                                    )
-                                                                  ]
-                                                                )
-                                                              ])
-                                                            ]
-                                                          )
-                                                        ]
-                                                      )
-                                                    ]
-                                                  )
-                                                ])
-                                              ]
-                                            )
-                                          }
-                                        )
-                                  ],
-                                  2
-                                )
-                              ]
-                            )
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c("paginate-links", {
-                          staticClass: "px-3",
-                          attrs: {
-                            for: "pagLista",
-                            async: true,
-                            "show-step-links": true,
-                            classes: {
-                              ul: "pagination",
-                              li: "page-item",
-                              a: "page-link"
+                                                                ])
+                                                              ]
+                                                            )
+                                                          ]
+                                                        )
+                                                      ]
+                                                    )
+                                                  ])
+                                                ]
+                                              )
+                                            }
+                                          )
+                                    ],
+                                    2
+                                  )
+                                ]
+                              )
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c("paginate-links", {
+                            staticClass: "px-3",
+                            attrs: {
+                              for: "pagLista",
+                              async: true,
+                              "show-step-links": true,
+                              classes: {
+                                ul: "pagination",
+                                li: "page-item",
+                                a: "page-link"
+                              }
                             }
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ])
+                          })
+                        ],
+                        1
+                      )
+                    ]
+                  )
                 ])
               ])
         ])
   ])
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-md-6" }, [_c("br"), _c("br")])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-md-6" }, [_c("br"), _c("br")])
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement

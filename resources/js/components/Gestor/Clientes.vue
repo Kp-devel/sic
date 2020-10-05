@@ -39,7 +39,7 @@
                                 <td>Ult. Gest.</td>
                                 <td colspan="3">
                                     <select class="form-control font-12 form-control-sm " v-model="busqueda.respuesta" @change="busqueda.motivo=''">
-                                        <option value="">Selecionar</option>
+                                        <option value="">Seleccionar</option>
                                         <option value="0">Clientes nuevos sin gestión</option>
                                         <option value="-1">Clientes sin gestión en el mes</option>
                                         <option v-for="(item,index) in respuestas" :key="index" :value="item.res_id">{{item.res_des}}</option>
@@ -50,7 +50,7 @@
                                 <td>Motivo No Pago</td>
                                 <td colspan="3">
                                     <select class="form-control font-12 form-control-sm " v-model="busqueda.motivo">
-                                        <option value="">Selecionar</option>
+                                        <option value="">Seleccionar</option>
                                         <option v-for="(item,index) in motivosnopago" :key="index" :value="item.id">{{item.motivo}}</option>
                                     </select>
                                 </td>
@@ -70,7 +70,7 @@
                                 <td>Oficina</td>
                                 <td colspan="3">
                                     <select class="form-control font-12 form-control-sm" v-model="busqueda.oficina">
-                                        <option value="">Selecionar</option>
+                                        <option value="">Seleccionar</option>
                                         <option v-for="(item,index) in oficinas" :key="index" :value="item.idoficina">{{item.local}}</option>
                                     </select>
                                 </td>
@@ -123,7 +123,7 @@
                                 <td>Cartera</td>
                                 <td colspan="3">
                                     <select class="form-control font-12 form-control-sm mb-1" v-model="busqueda.cartera" @change="cargarDatosBusqueda(busqueda.cartera)">
-                                        <option value="">Selecionar</option>
+                                        <option value="">Seleccionar</option>
                                         <option v-for="(item,index) in carteras" :key="index" :value="item.id">{{item.cartera}}</option>
                                     </select>
                                 </td>
@@ -178,7 +178,7 @@
                                     </select>
                                 </td>
                                 <td colspan="2">
-                                    <div class="d-flex justify-content-end">
+                                    <div class="d-flex justify-content-end" v-if="tipoacceso==2">
                                         Listar Campaña
                                         <div class="pt-1">
                                             <input type="checkbox" class="ml-2" v-model="busqueda.camp">

@@ -3,7 +3,7 @@
         <div  class="modal" tabindex="-1" role="dialog" id="modalCarga" >
             <div v-if="loadingModal" class="d-flex justify-content-center align-items-center" style="margin-top:150px;">
                 <div>
-                    <spinnerIn  :loading = "loadingModal" :color="colorModal" > </spinnerIn>
+                    <span class="spinner-border spinner-border-xl text-white ml-3" role="status" aria-hidden="true"></span>
                     <p style="font-20px;" class="text-white">Cargando...</p>
                 </div>
             </div>
@@ -16,20 +16,19 @@
 
         </div>
         <div class="text-center d-flex justify-content-center pt-5" v-if="loadingIn">
-            <spinnerIn  :loading = "loadingIn" :color="color" > </spinnerIn>
+           <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>
         </div>
         <div v-else class="fadeIn" >
             <div class="form-crear fadeIn" v-if="viewFrm"> 
                 <form @submit.prevent="crearCampana" method="POST"> 
-                    <p class="frm-title">Nueva Campaña</p><hr>
                     <div class="row">
-                        <div class="col-md-3 pt-4" >
+                        <div class="col-md-3" >
                             <div class="form-group">
-                                <label for="">Colócale un nombre a tu campaña</label>
+                                <label for="">Nombre de campaña</label>
                                 <input type="text" class="form-control input-sb" autofocus v-model="campana.nombre">
                             </div>
                         </div>
-                        <div class="col-md-3 pt-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="">Selecciona una cartera</label>
                                 <select class="form-control input-sb" v-model="campana.cartera" @change="limpiar()">
@@ -39,36 +38,36 @@
                             </div>
                         </div>
                         <div class="col-md-3 py-0">
-                            <div class="card-inf shadow d-flex justify-content-between">
+                            <div class="card-inf p-3 border d-flex justify-content-between">
                                 <div>
                                     <p class="text-num">{{campana.totalClientes}}</p>
-                                    <p>Cantidad de Clientes</p>
+                                    <p>Cant. Clientes</p>
                                 </div>
-                                <i class="fa fa-users fa-2x text-tranp"></i>
+                                <i class="fa fa-users fa-2x text-gray"></i>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="card-inf shadow d-flex justify-content-between">
+                            <div class="card-inf p-3 border d-flex justify-content-between">
                                 <div>
                                     <p class="text-num">{{campana.totalSms}}</p>
-                                    <p>Cantidad de SMS</p>
+                                    <p>Cant. SMS</p>
                                 </div>
-                                <i class="fa fa-envelope fa-2x text-tranp"></i>
+                                <i class="fa fa-envelope fa-2x text-gray"></i>
                             </div>
                         </div>
                     </div>
-                    <a href="" @click.prevent="viewCondicion()" class="btn btn-outline-danger"><i class="fa fa-plus fa-xs pr-2"></i>Añadir Criterio</a>
+                    <a href="" @click.prevent="viewCondicion()" class="btn btn-outline-blue"><i class="fa fa-plus fa-xs pr-2"></i>Añadir Criterio</a>
                     <div class="table-responsive mt-4">
-                        <table class="table table-hover">
-                            <thead>
+                        <table class="table">
+                            <thead class="bg-blue text-white">
                                 <tr>
-                                    <th style="min-width: 2rem;" class="text-center"></th>
-                                    <th style="vertical-align:top;" width="25%">Detalle Criterio</th>
-                                    <th style="vertical-align:top;" width="25%">Speech</th>
-                                    <th style="vertical-align:top;">Enviar a</th>
-                                    <th style="vertical-align:top;">Número Contacto</th>
-                                    <th style="vertical-align:top;text-align:center;">Cant. de Clientes</th>
-                                    <th style="vertical-align:top;text-align:center;">Cant. de SMS</th>
+                                    <td style="min-width: 2rem;" class="text-center"></td>
+                                    <td style="vertical-align:top;text-align:center;" width="25%">Detalle Criterio</td>
+                                    <td style="vertical-align:top;text-align:center;" width="25%">Speech</td>
+                                    <td style="vertical-align:top;text-align:center;">Enviar a</td>
+                                    <td style="vertical-align:top;text-align:center;">Número Contacto</td>
+                                    <td style="vertical-align:top;text-align:center;">Cant. de Clientes</td>
+                                    <td style="vertical-align:top;text-align:center;">Cant. de SMS</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -76,8 +75,8 @@
                                     <td colspan="7" class="text-center">Sin datos</td>
                                 </tr>
                                 <tr v-for="(item,index) in campana.detalle" :key="index" v-else>
-                                    <td style="vertical-align:top;min-width: 2.5rem;">
-                                        <a href="" @click.prevent="eliminarCondicion(index)" class="btn btn-orange py-1 px-2"><i class="fa fa-times fa-xs"></i></a>
+                                    <td style="vertical-align:top;min-width: 2.5rem;" class="text-center">
+                                        <a href="" @click.prevent="eliminarCondicion(index)" class="btn-outline-green rounded py-1 px-2"><i class="fa fa-times fa-xs"></i></a>
                                     </td>
                                     <td style="vertical-align:top;">
                                         <a class="text-dark text-left" data-toggle="collapse" :href="'#n'+index" role="button" aria-expanded="false" aria-controls="collapseExample">
@@ -110,7 +109,7 @@
                     <div class="row">
                         <div class="col-md-3 pt-4" >
                             <div class="form-group">
-                                <label for="">Selecciona una fecha de envío</label>
+                                <label for="">Fecha de envío</label>
                                 <input type="date" class="form-control input-sb"  v-model="campana.fecha" :min="fechaActual">
                             </div>
                         </div>
@@ -119,17 +118,17 @@
                             <b>Por favor, corrija el(los) siguiente(s) error(es):</b>
                             <ul class="px-3"><li v-for="(error,index) in errors" :key="index" >{{ error }}</li></ul>
                     </div>
-                    <button type="submit"  class="btn bg-blue mt-3 text-white">Crear Campaña</button>
+                    <button type="submit"  class="btn bg-blue mt-3 text-white waves-effect">Crear Campaña</button>
                 </form>
             </div>
 
             <!-- criterios -->
             <div class="form-criterios fadeInCont" v-else>
-                        <div class="card-inf shadow px-5">
+                        <div class="card-inf px-2 py-2">
                             <div class="d-flex ">
                                 <a href="" @click.prevent="viewCampana()" class="text-left text-dark" style="text-decoration:none;"><i class="fa fa-reply fa-lg pr-3"></i></a><br>
-                                <b style="font-size:16px;" class="pt-1">Nuevo Criterio</b>
-                            </div><br><br><hr>
+                                <b style="font-size:14px;" class="pt-1">Nuevo Criterio</b>
+                            </div><br><hr>
                             <div class="row mt-3">
                                 <div class="col-md-12">
                                     <div class="form-group w-50">
@@ -137,7 +136,7 @@
                                         <input type="text" class="form-control input-sb" required autofocus v-model="condicion.nombre">
                                     </div>
                                 </div>
-                            </div><br><br><br>
+                            </div>
                             <div class="row mt-3">
                                <div class="col-md-6">
                                     <div class="form-group">
@@ -272,8 +271,8 @@
                             <br><br>
 
                             <div>
-                                <div class="text-center d-flex justify-content-center " v-if="cargaSpeech">
-                                    <spinner  :loading = "cargaSpeech" :color="color" > </spinner>
+                                <div class="text-center d-flex justify-content-center py-2" v-if="cargaSpeech">
+                                    <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>
                                 </div>
                                 <div class="alert alert-success"  v-else-if="msjSpeech">
                                     <p>{{msjSpeech}}</p>
@@ -282,16 +281,16 @@
                                 <div v-if="crearSpeech" class="alert bg-celeste pt-4">
                                     <form @submit.prevent="agregarSpeech" method="POST">  
                                         <div class="form-group ">
-                                            <label for="">Colócale un nombre a tu speech</label>
+                                            <label for="">Nombre a speech</label>
                                             <input type="text" class="form-control input-sb w-50 bg-transparente" v-model="speech.nombre" id="nombreSpeech">
                                         </div>
                                         <div class="overflow-auto pb-4 pt-2">
                                             <div class="text-center d-flex justify-content-center " v-if="loading">
-                                                <spinner  :loading = "loading" :color="color2" > </spinner>
+                                                <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>
                                             </div>
                                             <div v-else>
                                                 <div v-if="etiquetas!=''" class="d-flex">
-                                                    <a href="" v-for="(item,index) in etiquetas" :key="index" @click.prevent="addEtiqueta(index,item.cant,item.nombre)" class="btn btn-outline-primary ml-2">{{item.nombre}}</a>                   
+                                                    <a href="" v-for="(item,index) in etiquetas" :key="index" @click.prevent="addEtiqueta(index,item.cant,item.nombre)" class="btn btn-outline-blue ml-2">{{item.nombre}}</a>                   
                                                 </div>
                                                 <div v-else class="text-center d-flex justify-content-center">
                                                     <p class="mb-0">Sin datos</p>
@@ -306,7 +305,7 @@
                                                 <b>Por favor, corrija el(los) siguiente(s) error(es):</b>
                                                 <ul class="px-3"><li v-for="(error,index) in errorsSpeech" :key="index" >{{ error }}</li></ul>
                                         </div>
-                                        <button type="submit" class="btn btn-outline-primary">Crear Speech</button>
+                                        <button type="submit" class="btn btn-outline-green">Crear Speech</button>
                                         <br><br><br><br>
                                     </form>
                                 </div> 
@@ -325,7 +324,7 @@
                                     <ul class="px-3"><li v-for="(error,index) in errorsCondicion" :key="index" >{{ error }}</li></ul>
                             </div>
                             <div class="alert alert-danger fadeInCont fadeOut px-3"  v-if="mensajeCant"><p class="pt-2">{{mensajeCant}}</p></div>
-                            <a href="" @click.prevent="agregarCondicion()" id="btnAgregarCriterio" class="btn btn-danger">Agregar Criterio</a><br><br>
+                            <a href="" @click.prevent="agregarCondicion()" id="btnAgregarCriterio" class="btn btn-blue  waves-effect">Agregar Criterio</a><br><br>
                                
                         </div>
                     </div>
@@ -336,10 +335,10 @@
 <script>
 
     export default {
-        props:['id'],
+        props:['carteras','rol'],
         data() {
             return {
-                loadingIn : true,
+                loadingIn : false,
                 loading:false,
                 loadingModal:false,
                 color:'#3367d6',
@@ -350,7 +349,7 @@
                 errorsSpeech:[],
                 errorsCondicion:[],
                 condiciones:[],
-                carteras:[],
+                // carteras:[],
                 speechs:[],
                 respuestas:[],
                 etiquetas:[],
@@ -389,12 +388,6 @@
             }
         },
         created(){
-            axios.get("usersCarteras").then(res=>{
-                if(res.data){
-                    this.carteras=res.data;
-                    this.loadingIn=false;
-                }
-            })
             this.hoy()
         },
         methods:{
@@ -508,7 +501,7 @@
                 this.rpta=true;
                 this.respuestas="";
                 if(ubi.length!=0){
-                    axios.get("listRespuestas/"+ubi).then(res=>{
+                    axios.get("listaRespuestaSms/"+ubi).then(res=>{
                         if(res.data){
                             this.respuestas=res.data;
                             this.rpta=false;
