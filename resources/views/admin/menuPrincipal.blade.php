@@ -44,7 +44,7 @@
             <img src="{{asset('img/buscar.svg')}}" alt="" class="img-fluid mt-2">
             <p class="mb-0 px-1 pt-2 pb-1 font-15">Consultar/Gestión Clientes</p>
         </a>
-        <a href="" class="menu-card p-3">
+        <a href="{{route('indicadores')}}" class="menu-card p-3">
             <img src="{{asset('img/indicador.svg')}}" alt="" class="img-fluid" width="100px" height="40px">
             <p class="mb-0 px-1 pt-2 pb-1 font-15">Indicadores de Gestión</p>
         </a>

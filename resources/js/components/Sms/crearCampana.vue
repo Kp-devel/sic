@@ -7,12 +7,12 @@
                     <p style="font-20px;" class="text-white">Cargando...</p>
                 </div>
             </div>
-            <div v-else class="d-flex justify-content-center align-items-center" style="margin-top:150px;" >
+            <!-- <div v-else class="d-flex justify-content-center align-items-center" style="margin-top:150px;" >
                 <div class="text-center">
                     <p><i class="fa fa-thumbs-up fa-4x text-white"></i></p>
                     <p style="font-20px;" class="text-white">Campaña Registrada!</p>
                 </div>
-            </div>
+            </div> -->
 
         </div>
         <div class="text-center d-flex justify-content-center pt-5" v-if="loadingIn">
@@ -814,7 +814,10 @@
                         if(res.data=="ok"){
                             this.limpiarCamposCampana();
                             this.loadingModal=false;
-                            setTimeout(() => $('#modalCarga').modal('hide'), 2500);
+                            // $('#modalCarga').modal('hide');
+                            setTimeout(() => $('#modalCarga').modal('hide'), 400);
+                            toastr.info('Campaña registrada con éxito', 'Registro Exitoso!',{"progressBar": true,"positionClass": "toast-bottom-right",});
+
                         }
                     })
                 }

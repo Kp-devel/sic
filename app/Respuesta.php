@@ -58,6 +58,7 @@ class Respuesta extends Model
         // $cartera=session()->get('datos')->idcartera;
         $sql="
             SELECT
+                tag_valor as id,
                 tag_valor as valor
             FROM
                 creditoy_lotesms.tag_condicion
@@ -75,6 +76,7 @@ class Respuesta extends Model
         // $cartera=session()->get('datos')->idcartera;
         $sql="
             SELECT
+                tag_valor as id,
                 tag_valor as valor
             FROM
                 creditoy_lotesms.tag_condicion

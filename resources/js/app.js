@@ -15,6 +15,13 @@ Vue.component('sms-list-campanas', require('./components/Sms/listCampanas.vue').
 Vue.component('sms-crear-campana', require('./components/Sms/crearCampana.vue').default);
 Vue.component('sms-panel-control', require('./components/Sms/panelControl.vue').default);
 
+// indicadores
+Vue.component('estructura-cartera', require('./components/Indicadores/estructuraCartera.vue').default);
+Vue.component('estructura-gestor', require('./components/Indicadores/estructuraGestor.vue').default);
+Vue.component('seguimiento-plan', require('./components/Indicadores/seguimientoPlan.vue').default);
+Vue.component('form-plan', require('./components/Indicadores/formPlan.vue').default);
+Vue.component('indicadores-operativos', require('./components/Indicadores/indicadoresOperativos.vue').default);
+
 const app = new Vue({
     el: '#app',
 });
