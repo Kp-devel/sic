@@ -45,6 +45,9 @@ body{
 .bg-celeste{
     background-attachment: rgb(245,249,250);
 }
+.bg-blue-bold{
+  background-color: rgb(1, 29, 58);
+}
 .bg-turquesa{
     background-color: rgb(5, 81, 156);
 }
@@ -507,7 +510,7 @@ legend{
     -webkit-animation-name: fadeInDown;
     animation-name: fadeInDown; 
     -webkit-animation-duration:.25s;
-    animation-duration: .25s;
+    animation-duration: .5s;
   }
     
     
@@ -952,10 +955,21 @@ background-color: rgb(250, 250, 250);
   border-color: #c7c7c7;
 }
 
-.spinner-border{
+.spinner-blue{
   color:rgb(3,42,81);
 }
 
 #table-2 tbody tr:last-of-type {
   border-bottom: 2px solid #fff;
 }
+
+#modalCarga{
+  background-color: rgba(0,0,0,.4);
+}
+
+/* input[type="checkbox"] + label::before{
+  background-color: rgb(3,42,81);
+}
+.form-check-input{
+  background-color: rgb(3,42,81);
+} */

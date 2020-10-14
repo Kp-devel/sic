@@ -86,6 +86,28 @@ Route::group(['middleware' => ['auth']], function(){
 
     //carteras
     Route::get('listCarterasUsuario', 'CarteraController@listCarterasUsuario');
+    
+// indicadores---------------------------------------------------------------------------------
+
+    Route::get('/indicadores', 'HomeController@indicadores')->name('indicadores');
+    Route::get('/indicadoresoperativos', 'HomeController@indicadoresoperativos')->name('indicadoresoperativos');
+    Route::get('/estructuracartera', 'HomeController@indestructuracartera')->name('estructuracartera');
+    Route::get('/estructuragestor', 'HomeController@indestructuragestor')->name('estructuragestor');
+    Route::get('/crearplantrabajo', 'HomeController@indcrearplantrabajo')->name('crearplantrabajo');
+    Route::get('/seguimientoplantrabajo', 'HomeController@indseguimientoplantrabajo')->name('seguimientoplantrabajo');
+    
+    Route::post('reporteEstructuraCartera', 'EstructuraController@reporteEstructuraCartera');
+    Route::post('reporteEstructuraGestor', 'EstructuraController@reporteEstructuraGestor');
+    Route::get('listaGestores/{cartera}', 'EstructuraController@listaGestores');
+    Route::get('listaAsignacion', 'IndicadorController@asignacion');
+    Route::post('listaEstructuras', 'IndicadorController@estructuras');
+    Route::post('reporteIndicadoresOperativos', 'IndicadorController@reporteIndicadoresOperativos');
+    
+//Plan de Trabajo-----------------------------------------------------------------------------------------------------------------------
+    Route::post('listaPlanes', 'PlanController@listaPlanes');
+    Route::post('resumenPlan', 'PlanController@resumenPlan');
+    Route::post('insertarPlan', 'PlanController@insertarPlan');
+    
 
 // ELASTIX -------------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix
