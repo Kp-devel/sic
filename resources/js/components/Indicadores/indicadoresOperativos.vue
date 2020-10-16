@@ -163,18 +163,25 @@
 
                 //mes actual
                 // console.log(this.datos[0][0]);
-                if(this.datos[0][0]){
+                if(this.datos[0][0]!=""){
                     for(var j=0;j<this.datos[1].length;j++){
                         acumuladoCantidadMesActual+=parseInt(this.datos[1][j].cantidad);
                         if(this.busqueda.indicador=='intensidad'){
                             arrayMesActual[this.datos[1][j].dia-1]=Math.round10((acumuladoCantidadMesActual/this.datos[0][0].total),-2);
                         }else if(this.busqueda.indicador=='directa' || this.busqueda.indicador=='tasa' || this.busqueda.indicador=='promesas'){
                             if(this.datos[0][0].length>0){
-                                acumuladoTotalMesActual+=parseInt(this.datos[0][0][j].total);
+                                acumuladoTotalMesActual=0;
+                                for(var i=0;i<this.datos[0][0].length;i++){
+                                    if(this.datos[1][j].dia>=this.datos[0][0][i].dia){
+                                        acumuladoTotalMesActual+=parseInt(this.datos[0][0][i].total);
+                                        // console.log("diaDato:"+this.datos[1][j].dia+"  diaTotal:" +this.datos[0][2][i].dia+" total:"+this.datos[0][0][i].total);
+                                    }
+                                }
                                 if(this.busqueda.indicador=='directa'){
                                     arrayMesActual[this.datos[1][j].dia-1]=Math.round10((acumuladoCantidadMesActual/acumuladoTotalMesActual),-2);
                                 }else{
                                     arrayMesActual[this.datos[1][j].dia-1]=Math.round10((acumuladoCantidadMesActual/acumuladoTotalMesActual)*100,-1);
+                                    // console.log(acumuladoCantidadMesActual+" / "+acumuladoTotalMesActual);
                                 }
                             }
                         }else{
@@ -184,17 +191,17 @@
                     }
                 }
                 // 1 mes atras
-                if(this.datos[0][1]){
+                if(this.datos[0][1]!=""){
                     for(var j=0;j<this.datos[2].length;j++){
                         acumuladoCantidadMesMenos1+=parseInt(this.datos[2][j].cantidad);
                         if(this.busqueda.indicador=='intensidad'){
                             arrayMesMenos1[this.datos[2][j].dia-1]=Math.round10((acumuladoCantidadMesMenos1/this.datos[0][1].total),-2);
                         }else if(this.busqueda.indicador=='directa' || this.busqueda.indicador=='tasa' || this.busqueda.indicador=='promesas'){
                             if(this.datos[0][1].length>0){
+                                acumuladoTotalMesMenos1=0;
                                 for(var i=0;i<this.datos[0][1].length;i++){
-                                    if(this.datos[2][j].dia==this.datos[0][1][i].dia){
+                                    if(this.datos[2][j].dia>=this.datos[0][1][i].dia){
                                         acumuladoTotalMesMenos1+=parseInt(this.datos[0][1][i].total);
-                                        console.log(acumuladoTotalMesMenos1);
                                     }
                                 }
                                 if(this.busqueda.indicador=='directa'){
@@ -210,15 +217,16 @@
                     }
                 }
                 // 2 meses atras
-                if(this.datos[0][2]){
+                if(this.datos[0][2]!=""){
                     for(var j=0;j<this.datos[3].length;j++){
                         acumuladoCantidadMesMenos2+=parseInt(this.datos[3][j].cantidad);
                         if(this.busqueda.indicador=='intensidad'){
                             arrayMesMenos2[this.datos[3][j].dia-1]=Math.round10((acumuladoCantidadMesMenos2/this.datos[0][2].total),-2);
                         }else if(this.busqueda.indicador=='directa' || this.busqueda.indicador=='tasa' || this.busqueda.indicador=='promesas'){
                             if(this.datos[0][2].length>0){
+                                acumuladoTotalMesMenos2=0;
                                 for(var i=0;i<this.datos[0][2].length;i++){
-                                    if(this.datos[3][j].dia==this.datos[0][2][i].dia){
+                                    if(this.datos[3][j].dia>=this.datos[0][2][i].dia){
                                         acumuladoTotalMesMenos2+=parseInt(this.datos[0][2][i].total);
                                     }
                                 }
@@ -234,7 +242,6 @@
                     }
                 }
                 arrayData.push(arrayMesMenos2,arrayMesMenos1,arrayMesActual);
-                console.log(arrayData);
                 var fecha = new Date();
                 var fecha1 = new Date();
                 var fecha2 = new Date();

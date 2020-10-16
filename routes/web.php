@@ -88,14 +88,17 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('listCarterasUsuario', 'CarteraController@listCarterasUsuario');
     
 // indicadores---------------------------------------------------------------------------------
-
+    //vistas
     Route::get('/indicadores', 'HomeController@indicadores')->name('indicadores');
     Route::get('/indicadoresoperativos', 'HomeController@indicadoresoperativos')->name('indicadoresoperativos');
     Route::get('/estructuracartera', 'HomeController@indestructuracartera')->name('estructuracartera');
     Route::get('/estructuragestor', 'HomeController@indestructuragestor')->name('estructuragestor');
     Route::get('/crearplantrabajo', 'HomeController@indcrearplantrabajo')->name('crearplantrabajo');
     Route::get('/seguimientoplantrabajo', 'HomeController@indseguimientoplantrabajo')->name('seguimientoplantrabajo');
-    
+    Route::get('/reportegeneral', 'HomeController@indreportegeneral')->name('reportegeneral');
+    Route::get('/reportegestor', 'HomeController@indreportegestor')->name('reportegestor');
+
+// indicadores operativos ---------------------------------------------------------------------------------------------------------------
     Route::post('reporteEstructuraCartera', 'EstructuraController@reporteEstructuraCartera');
     Route::post('reporteEstructuraGestor', 'EstructuraController@reporteEstructuraGestor');
     Route::get('listaGestores/{cartera}', 'EstructuraController@listaGestores');
@@ -107,9 +110,18 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('listaPlanes', 'PlanController@listaPlanes');
     Route::post('resumenPlan', 'PlanController@resumenPlan');
     Route::post('insertarPlan', 'PlanController@insertarPlan');
+    Route::get('usuariosPlan/{id}', 'PlanController@usuariosPlan');
+    Route::post('resultadosPlan', 'PlanController@resultadosPlan');
+
+//Reporte general------------------------------------------------------------------------------------------------------------------------
+    Route::post('reporteGeneralGestiones', 'ReporteController@reporteGeneralGestiones');
+
+//Reporte gestión telef por gestor-------------------------------------------------------------------------------------------------------
+    Route::get('asignacionCall', 'ReporteController@asignacionCall');
+    Route::post('reporteResumenGestor', 'ReporteController@reporteResumenGestor');
     
 
-// ELASTIX -------------------------------------------------------------------------------------------------------------------------------------
+// ELASTIX ------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix
     Route::get('panelcontrolllamadas', 'ControlLLamadaController@panelcontrolllamadas')->name('panelcontrolllamadas');
     Route::post('controlLLamadas', 'ControlLLamadaController@controlLLamadas')->name('controlLLamadas');

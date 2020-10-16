@@ -21,6 +21,8 @@ Vue.component('estructura-gestor', require('./components/Indicadores/estructuraG
 Vue.component('seguimiento-plan', require('./components/Indicadores/seguimientoPlan.vue').default);
 Vue.component('form-plan', require('./components/Indicadores/formPlan.vue').default);
 Vue.component('indicadores-operativos', require('./components/Indicadores/indicadoresOperativos.vue').default);
+Vue.component('reporte-general', require('./components/Indicadores/reporteGeneral.vue').default);
+Vue.component('reporte-gestor', require('./components/Indicadores/reporteGestor.vue').default);
 
 const app = new Vue({
     el: '#app',

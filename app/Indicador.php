@@ -58,7 +58,7 @@ class Indicador extends Model
         $mesActual = $actual->format('Ym');
         $mesParametro=$fecha->format('Ym');
         $sql="";
-        
+        $sqlInner="";
         if($asignacion!=''){
             if($asignacion=="0"){
                 $sql.=" and nuevo='NUEVO' ";
@@ -66,6 +66,8 @@ class Indicador extends Model
                 if($asignacion!="-1"){
                     if($mesActual==$mesParametro){
                         $sql.=" and cal_nom in ('$asignacion') ";
+                        $sqlInner=" INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+                        INNER JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id ";
                     }else{
                         $sql.=" and call_pertenece in ('$asignacion') ";
                     }
@@ -126,8 +128,7 @@ class Indicador extends Model
                             gestion_cliente g
                         INNER JOIN cliente c ON c.cli_id = g.cli_id_FK
                         INNER JOIN indicadores.cartera_detalle ic ON c.cli_cod = ic.cuenta
-                        left JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
-                        left JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id
+                        $sqlInner
                         WHERE
                             c.car_id_fk=:car1
                             AND ic.car_id_FK=:car2
@@ -237,7 +238,7 @@ class Indicador extends Model
         $mesActual = $actual->format('Ym');
         $mesParametro=$fecha->format('Ym')  ;
         $sql="";
-        
+        $sqlInner="";
         if($asignacion!=''){
             if($asignacion=="0"){
                 $sql.=" and nuevo='NUEVO' ";
@@ -245,6 +246,8 @@ class Indicador extends Model
                 if($asignacion!="-1"){
                     if($mesActual==$mesParametro){
                         $sql.=" and cal_nom in ('$asignacion') ";
+                        $sqlInner=" INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+                        INNER JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id ";
                     }else{
                         $sql.=" and call_pertenece in ('$asignacion') ";
                     }
@@ -312,8 +315,7 @@ class Indicador extends Model
                             gestion_cliente g
                         INNER JOIN cliente c ON c.cli_id = g.cli_id_FK
                         INNER JOIN indicadores.cartera_detalle ic ON c.cli_cod = ic.cuenta
-                        left JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
-                        left JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id
+                        $sqlInner
                         WHERE
                                 c.car_id_fk=:car1
                             AND ic.car_id_FK=:car2
@@ -343,7 +345,7 @@ class Indicador extends Model
         $mesActual = $actual->format('Ym');
         $mesParametro=$fecha->format('Ym')  ;
         $sql="";
-        
+        $sqlInner="";
         if($asignacion!=''){
             if($asignacion=="0"){
                 $sql.=" and nuevo='NUEVO' ";
@@ -351,6 +353,8 @@ class Indicador extends Model
                 if($asignacion!="-1"){
                     if($mesActual==$mesParametro){
                         $sql.=" and cal_nom in ('$asignacion') ";
+                        $sqlInner=" INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+                        INNER JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id ";
                     }else{
                         $sql.=" and call_pertenece in ('$asignacion') ";
                     }
@@ -418,8 +422,7 @@ class Indicador extends Model
                             gestion_cliente g
                         INNER JOIN cliente c ON c.cli_id = g.cli_id_FK
                         INNER JOIN indicadores.cartera_detalle ic ON c.cli_cod = ic.cuenta
-                        left JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
-                        left JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id
+                        $sqlInner
                         WHERE
                                 c.car_id_fk=:car1
                             AND ic.car_id_FK=:car2
@@ -449,7 +452,7 @@ class Indicador extends Model
         $mesActual = $actual->format('Ym');
         $mesParametro=$fecha->format('Ym')  ;
         $sql="";
-        
+        $sqlInner="";
         if($asignacion!=''){
             if($asignacion=="0"){
                 $sql.=" and nuevo='NUEVO' ";
@@ -457,6 +460,8 @@ class Indicador extends Model
                 if($asignacion!="-1"){
                     if($mesActual==$mesParametro){
                         $sql.=" and cal_nom in ('$asignacion') ";
+                        $sqlInner=" INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+                        INNER JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id ";
                     }else{
                         $sql.=" and call_pertenece in ('$asignacion') ";
                     }
@@ -493,8 +498,7 @@ class Indicador extends Model
                             gestion_cliente g
                         INNER JOIN cliente c ON c.cli_id = g.cli_id_FK
                         INNER JOIN indicadores.cartera_detalle ic ON c.cli_cod = ic.cuenta
-                        left JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
-                        left JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id
+                        $sqlInner
                         WHERE
                                 c.car_id_fk=:car1
                             AND ic.car_id_FK=:car2
@@ -516,7 +520,7 @@ class Indicador extends Model
         $mesActual = $actual->format('Ym');
         $mesParametro=$fecha->format('Ym')  ;
         $sql="";
-        
+        $sqlInner="";
         if($asignacion!=''){
             if($asignacion=="0"){
                 $sql.=" and nuevo='NUEVO' ";
@@ -524,6 +528,8 @@ class Indicador extends Model
                 if($asignacion!="-1"){
                     if($mesActual==$mesParametro){
                         $sql.=" and cal_nom in ('$asignacion') ";
+                        $sqlInner=" INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+                        INNER JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id ";
                     }else{
                         $sql.=" and call_pertenece in ('$asignacion') ";
                     }
@@ -560,8 +566,7 @@ class Indicador extends Model
                             gestion_cliente g
                         INNER JOIN cliente c ON c.cli_id = g.cli_id_FK
                         INNER JOIN indicadores.cartera_detalle ic ON c.cli_cod = ic.cuenta
-                        left JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
-                        left JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id
+                        $sqlInner
                         WHERE
                                 c.car_id_fk=:car1
                             AND ic.car_id_FK=:car2
@@ -584,7 +589,7 @@ class Indicador extends Model
         $mesActual = $actual->format('Ym');
         $mesParametro=$fecha->format('Ym')  ;
         $sql="";
-        
+        $sqlInner="";
         if($asignacion!=''){
             if($asignacion=="0"){
                 $sql.=" and nuevo='NUEVO' ";
@@ -592,6 +597,8 @@ class Indicador extends Model
                 if($asignacion!="-1"){
                     if($mesActual==$mesParametro){
                         $sql.=" and cal_nom in ('$asignacion') ";
+                        $sqlInner=" INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+                        INNER JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id ";
                     }else{
                         $sql.=" and call_pertenece in ('$asignacion') ";
                     }
@@ -659,8 +666,7 @@ class Indicador extends Model
                             gestion_cliente g
                         INNER JOIN cliente c ON c.cli_id = g.cli_id_FK
                         INNER JOIN indicadores.cartera_detalle ic ON c.cli_cod = ic.cuenta
-                        left JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
-                        left JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id
+                        $sqlInner
                         WHERE
                                 c.car_id_fk=:car1
                             AND ic.car_id_FK=:car2
@@ -690,7 +696,8 @@ class Indicador extends Model
         $mesActual = $actual->format('Ym');
         $mesParametro=$fecha->format('Ym')  ;
         $sql="";
-        
+        $sqlInner="";
+
         if($asignacion!=''){
             if($asignacion=="0"){
                 $sql.=" and nuevo='NUEVO' ";
@@ -698,6 +705,8 @@ class Indicador extends Model
                 if($asignacion!="-1"){
                     if($mesActual==$mesParametro){
                         $sql.=" and cal_nom in ('$asignacion') ";
+                        $sqlInner=" INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+                        INNER JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id ";
                     }else{
                         $sql.=" and call_pertenece in ('$asignacion') ";
                     }
@@ -734,8 +743,7 @@ class Indicador extends Model
                             gestion_cliente g
                         INNER JOIN cliente c ON c.cli_id = g.cli_id_FK
                         INNER JOIN indicadores.cartera_detalle ic ON c.cli_cod = ic.cuenta
-                        left JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
-                        left JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id
+                        $sqlInner
                         WHERE
                                 c.car_id_fk=:car1
                             AND ic.car_id_FK=:car2
@@ -758,7 +766,8 @@ class Indicador extends Model
         $mesActual = $actual->format('Ym');
         $mesParametro=$fecha->format('Ym')  ;
         $sql="";
-        
+        $sqlInner="";
+
         if($asignacion!=''){
             if($asignacion=="0"){
                 $sql.=" and nuevo='NUEVO' ";
@@ -766,6 +775,8 @@ class Indicador extends Model
                 if($asignacion!="-1"){
                     if($mesActual==$mesParametro){
                         $sql.=" and cal_nom in ('$asignacion') ";
+                        $sqlInner=" INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+                        INNER JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id ";
                     }else{
                         $sql.=" and call_pertenece in ('$asignacion') ";
                     }
@@ -805,15 +816,14 @@ class Indicador extends Model
                     from cliente c
                     INNER JOIN gestion_cliente ge ON ge.cli_id_FK = c.cli_id
                     INNER JOIN indicadores.cartera_detalle cd ON c.cli_cod= cd.cuenta
-                    left JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
-                    left JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id
+                    $sqlInner
                     WHERE 
                         c.car_id_fk = :car1
                     and cd.car_id_fk = :car2
                     and DATE_FORMAT(ges_cli_fec,'%Y%m') = DATE_FORMAT(:fec1,'%Y%m')
                     and DATE_FORMAT(ges_cli_com_fec,'%Y%m') = DATE_FORMAT(:fec2,'%Y%m')
                     and DATE_FORMAT(fecha,'%Y%m') = DATE_FORMAT(:fec3,'%Y%m')
-                    and res_id_fk in (1,43)            
+                    and res_id_fk in (1,43)    
                     $sql
                 ) a
                 GROUP BY fecha
@@ -830,7 +840,8 @@ class Indicador extends Model
         $mesActual = $actual->format('Ym');
         $mesParametro=$fecha->format('Ym')  ;
         $sql="";
-        
+        $sqlInner="";
+
         if($asignacion!=''){
             if($asignacion=="0"){
                 $sql.=" and nuevo='NUEVO' ";
@@ -838,6 +849,8 @@ class Indicador extends Model
                 if($asignacion!="-1"){
                     if($mesActual==$mesParametro){
                         $sql.=" and cal_nom in ('$asignacion') ";
+                        $sqlInner=" INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+                        INNER JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id ";
                     }else{
                         $sql.=" and call_pertenece in ('$asignacion') ";
                     }
@@ -867,31 +880,38 @@ class Indicador extends Model
 
         return DB::connection('mysql')->select(DB::raw("
                     select 
-                            day(fecha) as dia,
-                            if(sum(pag_cli_mon) is null,0,sum(pag_cli_mon)) as cantidad
+                        day(fecha) as dia,
+                        sum(pag_cli_mon) as cantidad
                     from
                     (select                 
                             cli_cod,
                             ges_cli_com_fec as fecha,
                             cd.car_id_FK
-                    from cliente c
-                    INNER JOIN gestion_cliente ge ON ge.cli_id_FK = c.cli_id
-                    INNER JOIN indicadores.cartera_detalle cd ON c.cli_cod= cd.cuenta
-                    left JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
-                    left JOIN call_telefonica as cal on e.cal_id_FK=cal.cal_id
+                            ges_cli_fec,
+                            ges_cli_com_can,
+                            pag_cli_mon, 
+                            pag_cli_fec,
+                            ges_cli_com_fec
+                    FROM pago_cliente_2 as p
+                    INNER JOIN cliente AS c ON c.cli_cod = p.pag_cli_cod
+                    INNER JOIN gestion_cliente AS ge ON ge.cli_id_FK = c.cli_id
+                    INNER JOIN indicadores.cartera_detalle AS cd ON p.pag_cli_cod = cd.cuenta            
+                    $sqlInner
                     WHERE 
-                            c.car_id_fk = :car1
+                           c.car_id_fk = :car1
                         and cd.car_id_fk = :car2
                         and DATE_FORMAT(ges_cli_fec,'%Y%m') = DATE_FORMAT(:fec1,'%Y%m')
                         and DATE_FORMAT(ges_cli_com_fec,'%Y%m') = DATE_FORMAT(:fec2,'%Y%m')
                         and DATE_FORMAT(fecha,'%Y%m') = DATE_FORMAT(:fec3,'%Y%m')
+                        and DATE_FORMAT(pag_cli_fec,'%Y%m') = DATE_FORMAT(:fec4,'%Y%m')
                         and res_id_fk in (1,43)
-                        GROUP BY cli_cod,ges_cli_fec
+                        $sql
+                        GROUP BY cli_cod,ges_cli_com_fec
                     ) c
-                    INNER JOIN pago_cliente_2 p ON c.cli_cod=p.pag_cli_cod and p.car_id_FK=c.car_id_FK and DATE_FORMAT(pag_cli_fec,'%Y%m') = DATE_FORMAT(fecha,'%Y%m')
                     GROUP BY fecha
                     ORDER BY fecha
-        "),array("car1"=>$cartera,"car2"=>$cartera,"fec1"=>$fecha,":fec2"=>$fecha,":fec3"=>$fecha));
+        "),array("car1"=>$cartera,"car2"=>$cartera,"fec1"=>$fecha,":fec2"=>$fecha,":fec3"=>$fecha,":fec4"=>$fecha));
+        
     }
 }
 
