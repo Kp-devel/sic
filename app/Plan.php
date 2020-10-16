@@ -14,6 +14,7 @@ class Plan extends Model
         $fechaFin = $rq->fechaFin;
         return DB::connection('mysql')->select(DB::raw("
                 select 
+                    id_plan as id,
                     fecha_i as fecha, 
                     fecha_f as fechaFin,
                     nombre_cartera as cartera,
@@ -343,4 +344,84 @@ class Plan extends Model
         "),array("car1"=>$cartera,"car2"=>$cartera));
         return "ok";
     }
+
+    public static function usuariosPlan($clientes,$cartera){
+        return DB::connection('mysql')->select(DB::raw("
+                SELECT 
+                    emp_id as id,
+                    concat(emp_cod,' - ',emp_nom) as usuario,
+                    count(cli_cod) as cantidad
+                FROM
+                (
+                    SELECT 
+                        cli_cod,
+                        emp_id,
+                        emp_cod,
+                        emp_nom
+                    FROM cliente as c
+                    INNER JOIN indicadores.cartera_detalle as cd on c.cli_cod =cd.cuenta
+                    INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+                    where 
+                        cli_est=0 and cli_pas=0
+                        and c.car_id_fk=:car1
+                        and	cd.car_id_fk=:car2
+                        and date_format(fecha,'%Y-%m') = date_format(now(),'%Y-%m')
+                        and cli_cod in ($clientes)
+                    group By cli_cod
+                ) t
+                GROUP BY emp_cod
+        "),array("car1"=>$cartera,"car2"=>$cartera));
+    }
+
+    public static function resultadoPlan($idEmpleado,$clientes,$cartera,$fechaInicio,$fechaFin){
+        return DB::connection('mysql')->select(DB::raw("
+            SELECT
+                sum(pdp) as can_pdp,
+                sum(monto_pdp) as monto_pdp,
+                sum(conf) as can_conf,
+                sum(monto_conf)as monto_conf,
+                sum(mot_np) as can_mot_np,
+                if(cliente,count(DISTINCT cliente),0) as can_clientes,
+                sum(gestiones) as cant_gestiones,
+                count(DISTINCT contacto) as can_contacto,
+                format(sum(gestiones)/if(cliente,count(DISTINCT cliente),0),2) as intensidad
+            FROM 
+            (SELECT
+                if(gg.res_id_FK in (2,37,33,10,1,8,43,39,7,3,5,9,34,17,21,18,28,30,35,36,46,47,48,49) AND (date_format(gg.ges_cli_fec,'%Y-%m-%d') between :fecInicio1 and :fecFin1),cli_cod,null) as contacto,
+                if(ges_cli_tel_id_FK,1,0) as gestiones,
+                cli_cod as cliente,
+                if(g.res_id_FK in (1,43),1,0) as pdp,
+                if(g.res_id_FK in (1,43),g.ges_cli_com_can,0) as monto_pdp,
+                if(g.res_id_FK in (2),1,0) as conf,
+                if(g.res_id_FK in (2),g.ges_cli_conf_can,0) as monto_conf,
+                if(g.mot_id_FK in (3),1,0) as mot_np
+            FROM
+                gestion_cliente as g
+            inner JOIN cliente as c ON g.cli_id_FK=c.cli_id
+            inner JOIN gestion_cliente gg ON c.ges_cli_tel_id_FK=gg.ges_cli_id
+            WHERE
+                    cli_est=0
+                and cli_pas=0
+                and car_id_FK=:car
+                and if(:usuario=0,g.emp_id_FK=g.emp_id_FK,g.emp_id_FK=:emp)
+                AND (date_format(g.ges_cli_fec,'%Y-%m-%d') between :fecInicio2 and :fecFin2)
+                and cli_cod in ($clientes)
+            ) t
+        "),array("car"=>$cartera,"fecInicio1"=>$fechaInicio,"fecFin1"=>$fechaFin,"fecInicio2"=>$fechaInicio,
+                "fecFin2"=>$fechaFin,"usuario"=>$idEmpleado,"emp"=>$idEmpleado));
+    }
+
+    public static function datosPlan($id){
+        return DB::connection('mysql')->select(DB::raw("
+                select 
+                    clientes,
+                    id_cartera as cartera,
+                    fecha_f as fechaFin,
+                    fecha_i as fechaInicio 
+                from 
+                    indicadores.plan 
+                WHERE id_plan=:id
+        "),array("id"=>$id));
+    }
+    
 }
