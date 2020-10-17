@@ -32,6 +32,8 @@
         <div class="collapse" id="submenureporte" class="bg-blue-bold">
             <a href="{{route('reportegeneral')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('reportegeneral') ? 'menu-active' : '' }}">Reporte General</a>
             <a href="{{route('reportegestor')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('reportegestor') ? 'menu-active' : '' }}">Gest. Telefónica por Gestor</a>
+            <a href="{{route('reporteprimerayultimagestion')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('reporteprimerayultimagestion') ? 'menu-active' : '' }}">Primera y Última Gestión</a>
+            <a href="{{route('reportegestionhora')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('reportegestionhora') ? 'menu-active' : '' }}">Cant. Gestiones por Hora</a>
         </div>
     </div>
 </div>

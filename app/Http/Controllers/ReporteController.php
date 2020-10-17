@@ -18,4 +18,12 @@ class ReporteController extends Controller
     public function reporteResumenGestor(Request $rq){
         return Reporte::reporteResumenGestor($rq);
     }
+
+    public function primerayultimagestion(Request $rq){
+        return Reporte::primerayultimagestion($rq);
+    }
+
+    public function cantGestioneHora($cartera){
+        return Reporte::cantGestioneHora($cartera);
+    }
 }

@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="col-md-5 col-xl-4">
-                <label for="cartera" class="font-bold col-form-label text-dark text-righ">Fecha de Gestíon (Desde-Hasta)</label>
+                <label for="cartera" class="font-bold col-form-label text-dark text-righ">Fecha de Gestión (Desde-Hasta)</label>
                 <div class="d-flex ">
                     <div class="w-50">
                         <input type="date" class="form-control" v-model="busqueda.fechaInicio">
@@ -110,7 +110,7 @@
                         <td class="text-right">{{formatoNumero(total('montopdps'),'M')}}</td>
                         <td class="text-center">{{formatoNumero(total('nuevos_sin_gestion_mes'),'C')}}</td>
                         <td class="text-center">{{formatoNumero(total('sin_gestion_mes'),'C')}}</td>
-                        <td class="text-center">{{formatoNumero(((total('clientes')-total('nuevos_sin_gestion_mes'))/total('clientes'))*100,'C')}}%</td>
+                        <td class="text-center">{{formatoNumero(((total('clientes')-total('nuevos_sin_gestion_mes'))/total('clientes'))*100,'M')}}%</td>
                     </tr>
                 </tfoot>
             </table>
