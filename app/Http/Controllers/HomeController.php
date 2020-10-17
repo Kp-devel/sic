@@ -160,4 +160,26 @@ class HomeController extends Controller
             return view('errors.403');
         }
     }
+
+    public function indreportegestionhora(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            return view('admin.indicadores.reporteGestionHora',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function indreporteprimyultgestion(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            return view('admin.indicadores.reportePrimyUltGestion',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
 }

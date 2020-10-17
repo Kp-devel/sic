@@ -95,10 +95,8 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/estructuragestor', 'HomeController@indestructuragestor')->name('estructuragestor');
     Route::get('/crearplantrabajo', 'HomeController@indcrearplantrabajo')->name('crearplantrabajo');
     Route::get('/seguimientoplantrabajo', 'HomeController@indseguimientoplantrabajo')->name('seguimientoplantrabajo');
-    Route::get('/reportegeneral', 'HomeController@indreportegeneral')->name('reportegeneral');
-    Route::get('/reportegestor', 'HomeController@indreportegestor')->name('reportegestor');
-
-// indicadores operativos ---------------------------------------------------------------------------------------------------------------
+    
+    // indicadores operativos ---------------------------------------------------------------------------------------------------------------
     Route::post('reporteEstructuraCartera', 'EstructuraController@reporteEstructuraCartera');
     Route::post('reporteEstructuraGestor', 'EstructuraController@reporteEstructuraGestor');
     Route::get('listaGestores/{cartera}', 'EstructuraController@listaGestores');
@@ -106,20 +104,29 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('listaEstructuras', 'IndicadorController@estructuras');
     Route::post('reporteIndicadoresOperativos', 'IndicadorController@reporteIndicadoresOperativos');
     
-//Plan de Trabajo-----------------------------------------------------------------------------------------------------------------------
+    //Plan de Trabajo-----------------------------------------------------------------------------------------------------------------------
     Route::post('listaPlanes', 'PlanController@listaPlanes');
     Route::post('resumenPlan', 'PlanController@resumenPlan');
     Route::post('insertarPlan', 'PlanController@insertarPlan');
     Route::get('usuariosPlan/{id}', 'PlanController@usuariosPlan');
     Route::post('resultadosPlan', 'PlanController@resultadosPlan');
-
-//Reporte general------------------------------------------------------------------------------------------------------------------------
+    
+    //Reporte general------------------------------------------------------------------------------------------------------------------------
+    Route::get('/reportegeneral', 'HomeController@indreportegeneral')->name('reportegeneral');
     Route::post('reporteGeneralGestiones', 'ReporteController@reporteGeneralGestiones');
-
-//Reporte gestión telef por gestor-------------------------------------------------------------------------------------------------------
+    
+    //Reporte gestión telef por gestor-------------------------------------------------------------------------------------------------------
+    Route::get('/reportegestor', 'HomeController@indreportegestor')->name('reportegestor');
     Route::get('asignacionCall', 'ReporteController@asignacionCall');
     Route::post('reporteResumenGestor', 'ReporteController@reporteResumenGestor');
     
+//Reporte Primer y Ultima gestion--------------------------------------------------------------------------------------------------------
+    Route::get('/reporteprimerayultimagestion', 'HomeController@indreporteprimyultgestion')->name('reporteprimerayultimagestion');
+    Route::post('primerayultimagestion', 'ReporteController@primerayultimagestion');
+
+//Reporte cant de gestiones por hora--------------------------------------------------------------------------------------------------------
+    Route::get('/reportegestionhora', 'HomeController@indreportegestionhora')->name('reportegestionhora');
+    Route::get('cantGestioneHora/{cartera}', 'ReporteController@cantGestioneHora');
 
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix
