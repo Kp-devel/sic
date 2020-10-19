@@ -8,8 +8,8 @@
            <i class="fa fa-angle-down pt-1"></i>
         </a>
         <div class="collapse" id="submenuEstructura" class="bg-blue-bold">
-            <a href="{{route('estructuracartera')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('estructuracartera') ? 'menu-active' : '' }}">Por Cartera</a>
-            <a href="{{route('estructuragestor')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('estructuragestor') ? 'menu-active' : '' }}">Por Gestor</a>
+            <a href="{{route('estructuracartera')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('estructuracartera') ? 'menu-active' : '' }}">Estructura Por Cartera</a>
+            <a href="{{route('estructuragestor')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('estructuragestor') ? 'menu-active' : '' }}">Estructura Por Gestor</a>
         </div>
         <a href="{{route('indicadoresoperativos')}}" class="px-4 waves-effect {{ request()->is('indicadoresoperativos') ? 'menu-active' : '' }}"><i class="fa fa-chart-line pr-2"></i>Indicadores Operativos</a>
         <a href="#submenuPlan" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseExample" class="d-flex justify-content-between px-4 waves-effect {{ request()->is('smscampanas') ? 'menu-active' : '' }}">

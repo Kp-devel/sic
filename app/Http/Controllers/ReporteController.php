@@ -19,6 +19,10 @@ class ReporteController extends Controller
         return Reporte::reporteResumenGestor($rq);
     }
 
+    public function descargarGestionesGestor(Request $rq){
+        return Reporte::descargarGestionesGestor($rq);
+    }
+
     public function primerayultimagestion(Request $rq){
         return Reporte::primerayultimagestion($rq);
     }
@@ -26,4 +30,5 @@ class ReporteController extends Controller
     public function cantGestioneHora($cartera){
         return Reporte::cantGestioneHora($cartera);
     }
+
 }

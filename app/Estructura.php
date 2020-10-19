@@ -255,4 +255,6 @@ class Estructura extends Model
                 "tipo1"=>$tipo,"tipo2"=>$tipo,"tipo3"=>$tipo,"tipo4"=>$tipo));
     }
 
+    
+    
 }

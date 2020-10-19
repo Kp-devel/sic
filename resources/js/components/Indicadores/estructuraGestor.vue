@@ -1,6 +1,119 @@
 <template>
     <div >
-        <div class="row my-3">
+         <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link active text-dark" id="nav-cartera-tab" data-toggle="tab" href="#nav-cartera" role="tab" aria-controls="nav-home" aria-selected="true"><i class="fa fa-folder pr-1"></i>Cartera</a>
+                <a class="nav-item nav-link text-dark" id="nav-gestion-tab" data-toggle="tab" href="#nav-gestion" role="tab" aria-controls="nav-profile" aria-selected="false"><i class="fa fa-headset pr-1"></i>Gestión</a>
+            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-cartera" role="tabpanel" aria-labelledby="nav-cartera-tab">
+                <div class="row my-3">
+                    <div class="col-md-4">
+                        <div class="px-2">
+                            <label for="cartera" class="font-bold col-form-label text-dark text-righ">Nombre de Cartera</label>
+                            <select name="cartera" id="cartera" class="form-control" v-model="busquedaCartera.cartera"  @change="listarGestoresCartera(busquedaCartera.cartera)">
+                                <option selected value="">Seleccionar</option>
+                                <option v-for="(item,index) in carteras" :key="index"  class="option" :value="item.id">{{item.cartera}}</option>
+                            </select>
+                        </div>
+                        <div class="px-2">
+                            <label for="indicador" class="font-bold col-form-label text-dark text-righ">Gestor</label>
+                            <select name="i_gestor" id="i_gestor" class="form-control" v-model="busquedaCartera.gestor" :disabled="gestoresCartera==''">
+                                <option selected value="">Seleccionar</option>
+                                <option v-for="(item,index) in gestoresCartera" :key="index"  class="option" :value="item.firma">{{item.gestor}}</option>                   
+                            </select>
+                        </div>
+                        <div class="px-2">
+                            <label for="ubic" class="font-bold col-form-label text-dark text-righ">Ubicabilidad</label>
+                            <select name="ubic" id="ubic" class="form-control" v-model="busquedaCartera.ubicabilidad">
+                                <option selected value="">Seleccionar</option>
+                                <option class="option" value="todos">TODOS</option>
+                                <option class="option" value="cfrn">C-F-R-N</option>
+                                <option class="option" value="contacto">CONTACTO</option>
+                                <option class="option" value="nocontacto">NO CONTACTO</option>
+                                <option class="option" value="nodisponible">NO DISPONIBLE</option>
+                                <option class="option" value="inubicable">INUBICABLE</option>
+                                <option class="option" value="singestion">SIN GESTIÓN</option>
+                            </select>
+                        </div>
+                        <div class="px-2">
+                            <label for="estructura" class="font-bold col-form-label text-dark text-righ">Estructura</label>
+                            <select name="estructura" id="estructura" class="form-control" v-model="busquedaCartera.estructura">
+                                <option selected value="">Seleccionar</option>
+                                <option class="option" value="tramo">TRAMO</option>
+                                <option class="option" value="score">SCORE</option>
+                                <option class="option" value="dep">DEPARTAMENTO</option>
+                                <option class="option" value="entidades">ENTIDADES</option>
+                                <option class="option" value="dep_ind">DEP. E IND.</option>
+                                <option class="option" value="prioridad">PRIORIDAD</option>
+                                <option class="option" value="saldo_deuda">RANGO DE DEUDA</option>
+                                <option class="option" value="capital">RANGO CAPITAL</option>
+                                <option class="option" value="monto_camp">RANGO IMPORTE CANC.</option>
+                            </select>
+                        </div>
+                        <div class="px-2">
+                            <label for="mes" class="font-bold col-form-label text-dark text-righ">Mes</label>
+                            <input type="month" id="mes" name="mes" class="form-control" v-model="busquedaCartera.mes">
+                        </div>
+                        <div class="px-2 py-3">
+                            <a href="" @click.prevent="generarReporteCartera()" class="btn btn-outline-blue btn-block waves-effect">Generar Reporte</a>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div v-if="loading==true" class="d-flex justify-content-center pt-5">
+                            <div class="pt-5 text-center">
+                                <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center pt-5" v-else-if="datos==''">
+                            <div class="pt-5 text-center">
+                                <i class="fa fa-chart-pie fa-2x text-blue"></i>
+                                <p>Genera un reporte usando los<br>filtros de la izquierda.</p>
+                            </div>
+                        </div>
+                        <div v-else class="">
+                            <div class="d-flex justify-content-center chart-container-pastel " >
+                                <PieChart :chart-data="dataGraficaCartera" :options="confGraficaCartera" class="p-0"></PieChart>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="bg-blue text-center text-white">
+                                        <tr>
+                                            <td>Estructura</td>
+                                            <td>Clientes</td>
+                                            <td>Capital</td>
+                                            <td>Deuda</td>
+                                            <td>IC</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item,index) in datos" :key="index" class="text-center">
+                                            <td>{{item.estructura}}</td>
+                                            <td>{{formatoNumero(item.clientes,'C')}}</td>
+                                            <td>{{formatoNumero(item.capital,'M')}}</td>
+                                            <td>{{formatoNumero(item.deuda,'M')}}</td>
+                                            <td>{{formatoNumero(item.importe,'M')}}</td>
+                                        </tr>                   
+                                    </tbody>
+                                    <tfoot class="text-center font-bold bg-gray">
+                                        <tr>
+                                            <td>TOTAL</td>
+                                            <td>{{formatoNumero(total('clientes'),'C')}}</td>
+                                            <td>{{formatoNumero(total('capital'),'M')}}</td>
+                                            <td>{{formatoNumero(total('deuda'),'M')}}</td>
+                                            <td>{{formatoNumero(total('importe'),'M')}}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- endTab -->
+            <div class="tab-pane fade" id="nav-gestion" role="tabpanel" aria-labelledby="nav-gestion-tab">
+                <div class="row my-3">
                     <div class="col-md-4">
                         <div class="px-2">
                             <label for="cartera" class="font-bold col-form-label text-dark text-righ">Nombre de Cartera</label>
@@ -110,6 +223,8 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -121,8 +236,10 @@
             return {
                 datos: [],
                 gestores: [],
+                gestoresCartera: [],
                 loading : false,
                 busqueda:{cartera:'',gestor:'',tipoAnalisis:'',estructura:'',fechaInicio:'',fechaFin:''},
+                busquedaCartera:{cartera:'',gestor:'',ubicabilidad:'',estructura:'',mes:''},
                 dataGrafica:[],
                 confGrafica:[],
                 titulo_1:'',
@@ -136,6 +253,16 @@
                     axios.get("listaGestores/"+cartera).then(res=>{
                         if(res.data){
                             this.gestores=res.data;
+                        }
+                    });
+                }
+            },
+            listarGestoresCartera(cartera){
+                this.gestoresCartera=[];
+                if(cartera!=''){
+                    axios.get("listaGestores/"+cartera).then(res=>{
+                        if(res.data){
+                            this.gestoresCartera=res.data;
                         }
                     });
                 }
