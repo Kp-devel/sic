@@ -998,3 +998,7 @@ background-color: rgb(250, 250, 250);
 #table-report table td:nth-child(17){
   min-width: 4rem;
 }
+.btn-hover:hover{
+  background-color: rgb(3,42,81);
+  color: #fff;
+}

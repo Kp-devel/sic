@@ -123,7 +123,7 @@ class Reporte extends Model
 
         return DB::connection('mysql')->select(DB::raw("
                     (SELECT
-                        idEmpleado,
+                        idEmpleado as id,
                         gestor,
                         cartera,
                         'Gestor Telefónico' as perfil,
@@ -449,5 +449,144 @@ class Reporte extends Model
                     and car_id_FK=:car2
                     order by total desc
         "),array("car1"=>$cartera,"car2"=>$cartera));
+    }
+
+    public static function descargarGestionesGestor(Request $rq){
+        $opcion=$rq->opcion;
+        $cartera=$rq->cartera;
+        $id=$rq->id;
+        $fechaInicio=$rq->fechaInicio;
+        $fechaFin=$rq->fechaFin;
+        $sql="";
+
+        if($opcion==0 || $opcion==5){
+            $sql=" and res_ubi=0 ";
+        }
+        if($opcion==1){
+            $sql=" and res_ubi=1 ";
+        }
+        if($opcion==2){
+            $sql=" and res_ubi=2 ";
+        }
+        if($opcion==3){
+            $sql=" and res_id_FK=33 and mot_id_FK=3 ";
+        }
+        if($opcion==6){
+            $sql=" and res_id_Fk in (1,43) ";
+        }
+        
+        return DB::connection('mysql')->select(DB::raw("
+                    SELECT
+                        cli_cod as 'Código',
+                        cli_nom as 'Nombre',
+                        (
+                            SELECT
+                                count(*)
+                            FROM
+                                gestion_cliente
+                            WHERE
+                                ges_cli_est = 0
+                            AND cli_id_FK = t.cli_id
+                            AND emp_id_FK = t.emp_id_FK
+                            AND DATE_FORMAT(date(ges_cli_fec), '%Y%m') = DATE_FORMAT(date(:fecInicio2), '%Y%m')
+                            AND ges_cli_acc IN (1,2)
+                        ) AS 'Cant. de llamadas en el mes',
+                        format(sum(det_cli_deu_mor_sol),2) as 'Saldo Moroso Total (S/.)',
+                        ges_cli_fec as 'Fecha de Gestión',
+                        gestor as 'Usuario / Gestor',
+                        perfil AS 'Perfil',
+                        ges_cli_med as 'Medio',
+                        accion AS 'Acción',
+                        ubicabilidad as 'Ubic.',
+                        res_des as 'Rspta.',
+                        mot_res as 'Motivo No Pago',
+                        ges_cli_det as 'Detalle',
+                        fecha as 'Fecha',
+                        CAST(monto AS SIGNED) as 'Monto',
+                        if(ges_cli_com_mon=0,'SOLES','DOLARES') as 'Moneda',
+                        cli_dir_dir as 'Dirección',
+                        cli_dir_dis as 'Distrito',
+                        cli_dir_pro as 'Provincia',
+                        cli_dir_dep as 'Departamento'
+                    FROM
+                    (SELECT
+                        emp_id_FK,
+                        cli_id,
+                        cli_cod,
+                        cli_nom,
+                        ges_cli_fec,
+                        CONCAT(emp_cod,' - ',emp_nom) as gestor,
+                        CASE
+                            WHEN emp_tip_acc = 1 THEN
+                                'ADMINISTRADOR'
+                            WHEN emp_tip_acc = 2 THEN
+                                'G. TELEFONICO'
+                            WHEN emp_tip_acc = 3 THEN
+                                'G. DOMICILIARIO'
+                            WHEN emp_tip_acc = 4 THEN
+                                'DIGITADOR'
+                            WHEN emp_tip_acc = 5 THEN
+                                'SUPERVISOR'
+                            ELSE
+                                ''
+                        END AS perfil,
+                        ges_cli_med,
+                        CASE
+                            WHEN ges_cli_acc = 1 THEN
+                                'LLAMADA RECIBIDA'
+                            WHEN ges_cli_acc = 2 THEN
+                                'LLAMADA SALIENTE'
+                            WHEN ges_cli_acc = 3 THEN
+                                'RECIBIR VISITA'
+                            WHEN ges_cli_acc = 4 THEN
+                                'REALIZAR VISITA'
+                            WHEN ges_cli_acc = 5 THEN
+                                'LLAMADA RECIBIDA - SMS'
+                            WHEN ges_cli_acc = 6 THEN
+                                'LLAMADA RECIBIDA - IVR'
+                            WHEN ges_cli_acc = 7 THEN
+                                'LLAMADA RECIBIDA - EMAIL'
+                            ELSE
+                                ''
+                        END AS accion,
+                        CASE WHEN res_ubi=0 THEN 'CONTACTO' 
+                                WHEN res_ubi=1 THEN 'NO CONTACTO' 
+                                WHEN res_ubi=2 THEN 'NO DISPONIBLE'
+                        END AS ubicabilidad,
+                        res_des ,
+                        mot_res ,
+                        ges_cli_det,
+                        case when res_id_FK=2 then ges_cli_conf_fec
+                                when res_id_FK in (1,43) then ges_cli_com_fec
+                        end as fecha,
+                        case when res_id_FK=2 then ges_cli_conf_can
+                                when res_id_FK in (1,43) then ges_cli_com_can
+                        end as monto,
+                        ges_cli_com_mon,
+                        cli_dir_dir,
+                        cli_dir_dis,
+                        cli_dir_pro,
+                        cli_dir_dep
+                    FROM
+                        cliente c
+                    INNER JOIN gestion_cliente g ON c.cli_id=g.cli_id_FK
+                    INNER JOIN empleado e on g.emp_id_FK=e.emp_id
+                    LEFT JOIN cliente_direccion_2 cd ON c.cli_id=cd.cli_id_FK and cli_dir_est=0 AND cli_dir_pas=0
+                    INNER JOIN respuesta r on g.res_id_FK=r.res_id
+                    LEFT JOIN motivo_nopago m on g.mot_id_FK=m.mot_id
+                    WHERE
+                        cli_est=0
+                    and cli_pas=0
+                    and car_id_FK=:car
+                    and (date(ges_cli_fec) BETWEEN :fecInicio1 and :fecFin1)
+                    and emp_id=:id
+                    $sql
+                    and res_est=0
+                    GROUP BY cli_id,ges_cli_fec
+                )t
+                INNER JOIN detalle_cliente d on t.cli_id=d.cli_id_FK
+                WHERE det_cli_est=0 and det_cli_pas=0
+                GROUP BY cli_id,ges_cli_fec
+        "),array("car"=>$cartera,"id"=>$id,"fecInicio1"=>$fechaInicio,"fecFin1"=>$fechaFin,"fecInicio2"=>$fechaInicio));
     }
 }

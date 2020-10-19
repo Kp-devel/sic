@@ -119,7 +119,8 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/reportegestor', 'HomeController@indreportegestor')->name('reportegestor');
     Route::get('asignacionCall', 'ReporteController@asignacionCall');
     Route::post('reporteResumenGestor', 'ReporteController@reporteResumenGestor');
-    
+    Route::post('descargarGestionesGestor', 'ReporteController@descargarGestionesGestor');
+        
 //Reporte Primer y Ultima gestion--------------------------------------------------------------------------------------------------------
     Route::get('/reporteprimerayultimagestion', 'HomeController@indreporteprimyultgestion')->name('reporteprimerayultimagestion');
     Route::post('primerayultimagestion', 'ReporteController@primerayultimagestion');
