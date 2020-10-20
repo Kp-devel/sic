@@ -45,7 +45,7 @@
                     <div class="table-responsive">
                         <paginate name="pagLista" :list="lista" :per="10" class="px-0">
                             <table class="table table-hover">
-                                <thead class="text-center bg-blue text-white">
+                                <thead class="text-center bg-blue-3 text-white">
                                     <tr>
                                         <td class="">F. Programación</td>
                                         <td class="align-middle">Campaña</td>
@@ -88,7 +88,7 @@
         <div class="modal fade" id="detallemodal" tabindex="-1" role="dialog"  aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
-                        <div class="modal-header bg-blue text-white pt-4 pb-0 px-5 ">
+                        <div class="modal-header bg-blue-3 text-white pt-4 pb-0 px-5 ">
                             <div>
                                 <p class="p-title"><b>{{detalle.dnombre}}</b> <span class="badge badge-danger py-1 px-2 font-12">{{detalle.cantSms}} SMS</span><span class="badge badge-primary py-1 px-2 font-12 ml-2">{{detalle.cantCli}} CLIENTES</span> </p>
                                 <div class="d-flex flex-wrap">  

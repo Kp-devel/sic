@@ -37,12 +37,12 @@
                        </div>
                        <div class="row pb-3" v-else>
                             <div class="col-md-6">
-                                <!-- <PieChart :chart-data="dataClaro" :options="options1" :height="screen1"></PieChart> -->
+                                <PieChart :chart-data="dataClaro" :options="options1" :height="screen1"></PieChart>
                                 <br><br>
                             </div>
                             <div class="col-md-6">
                                 <!-- <canvas id="pieOperadoras" width="260px" height="200px"></canvas> -->
-                                <!-- <PieChart :chart-data="dataOperadoras" :options="options2" :height="screen2"></PieChart> -->
+                                <PieChart :chart-data="dataOperadoras" :options="options2" :height="screen2"></PieChart>
                                 <br><br>
                             </div>
                        </div>
@@ -51,8 +51,8 @@
                <div class="col-md-5">
                    <div class="card-inf border h-100" style="min-height: 100%;">
                         <div class="overflow-auto">
-                            <div class="bg-blue text-white py-2 text-center rounded">
-                                <p class="mb-0">Lista de Campañas</p>
+                            <div class="bg-blue-3 text-white py-2 text-center rounded">
+                                <p class="mb-0">Lista de Campañas ({{total}})</p>
                             </div><br>
                             <div class="table-responsive px-3">
                                 <paginate name="pagLista" :list="lista" :per="4" class="px-0">
@@ -130,7 +130,7 @@
 </template>
 
 <script>
-    // import PieChart from '../Chart/PieChart.js';
+    import PieChart from '../Chart/PieChart.js';
     // import conf from './Chart/confBarHorizontal.js';
     export default {
         props:['id'],
@@ -138,7 +138,7 @@
             return {
                 loadingIn : true,
                 loading:false,
-                color:'#3367d6',
+                color:'#41afa5',
                 dataClaro:[],
                 dataOperadoras:[],
                 options1:[],
@@ -191,7 +191,7 @@
 
                 if(this.dataEnviados.cargados!=0 ){
                     arrayData=[sms_enviados,this.dataEnviados.enviados];
-                    backgrounds=['#fc947e','#ff4f2b'];
+                    backgrounds=['#f0edee','#41afa5'];
                 }else{
                     arrayData=[1];
                     backgrounds=['#f0edee'];
@@ -206,9 +206,10 @@
                                 label: 'mm',
                                 data: arrayData,
                                 backgroundColor: backgrounds,
-                                borderColor: ['rgb(255, 255, 255)','#ff4f2b'],
-                                borderWidth: 6
-                                
+                                borderColor: ['rgb(255, 255, 255)','#41afa5'],
+                                borderWidth: 6,
+                                lineTension: 0,
+                                fill:false
                             }]
                     
                 };
@@ -218,6 +219,9 @@
                     title: {
                         display: true,
                         text: 'CAMPAÑAS - OPERADORAS'
+                    },
+                    legend: {
+                        position: 'bottom'
                     }
                 }
 
@@ -241,7 +245,7 @@
 
                 if(this.dataEnviadosClaro.cargados!=0 ){
                     arrayData=[sms_enviados,this.dataEnviadosClaro.enviados];
-                    backgrounds=['#fc947e','#ff4f2b'];
+                    backgrounds=['#f0edee','#41afa5'];
                 }else{
                     arrayData=[1];
                     backgrounds=['#f0edee'];
@@ -253,9 +257,10 @@
                                 label: 'mm',
                                 data: arrayData,
                                 backgroundColor: backgrounds,
-                                borderColor: ['rgb(255, 255, 255)','#ff4f2b'],
-                                borderWidth: 6
-                                
+                                borderColor: ['rgb(255, 255, 255)','#41afa5'],
+                                borderWidth: 6,
+                                lineTension: 0,
+                                fill:false
                             }]
                     
                 };
@@ -265,6 +270,9 @@
                     title: {
                         display: true,
                         text: 'CAMPAÑAS - CLARO'
+                    },
+                    legend: {
+                        position: 'bottom'
                     }
                 }
             },
@@ -284,7 +292,7 @@
             },
         },  
         components: {
-            // PieChart
+            PieChart
         }
    
     }
