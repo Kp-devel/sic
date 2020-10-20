@@ -10,7 +10,7 @@
             <i class="fa fa-list-alt pr-2 fa-lg pt-3 text-green"></i>
             <div>
                 <p class="subheader-title mb-0">Reporte Cantidad de Gestiones por Hora</p>
-                <p class="mb-0">Xxxxxx</p>
+                <p class="mb-0">Reporte del día</p>
             </div>
         </div>
         <div class="py-3">

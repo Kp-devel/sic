@@ -14,6 +14,9 @@ Vue.component('sms-bandeja', require('./components/Sms/bandeja.vue').default);
 Vue.component('sms-list-campanas', require('./components/Sms/listCampanas.vue').default);
 Vue.component('sms-crear-campana', require('./components/Sms/crearCampana.vue').default);
 Vue.component('sms-panel-control', require('./components/Sms/panelControl.vue').default);
+Vue.component('sms-lista-negra-numero', require('./components/Sms/listaNegraNumero.vue').default);
+Vue.component('sms-lista-negra-archivo', require('./components/Sms/listaNegraArchivo.vue').default);
+Vue.component('sms-lista-negra-buscar', require('./components/Sms/listaNegraBuscar.vue').default);
 
 // indicadores
 Vue.component('estructura-cartera', require('./components/Indicadores/estructuraCartera.vue').default);

@@ -75,16 +75,23 @@
                 // var fecha=this.fechaInicio.replace('-','')+"_"+this.fechaFin.replace('-','');
                 // console.log(fecha);
                 if(this.busqueda.cartera!='' && this.busqueda.fechaInicio!='' && this.busqueda.fechaFin!=''){
+                    
                     axios.post("reporteGeneralGestiones",this.busqueda).then(res=>{
                         if(res.data){
-                            this.dataExportar=res.data;
+                            // this.dataExportar=res.data;
                             this.loading=false;
-                            let data = XLSX.utils.json_to_sheet(this.dataExportar)
+                            //Pay attention to the returned data here, some need to add data (res.data) to get it, otherwise the excel file that will be downloaded is [object][object]**
+                            let blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
+                            let link = document.createElement('a')
+                            link.href = window.URL.createObjectURL(blob)
+                            link.download = 'comisionjv.xlsx'
+                            link.click()
+                            /*let data = XLSX.utils.json_to_sheet(this.dataExportar)
                             const workbook = XLSX.utils.book_new()
                             const filename = 'Reporte_General'
                             XLSX.utils.book_append_sheet(workbook, data, filename)
                             XLSX.writeFile(workbook, `${filename}.xlsx`)
-                            this.btnExportar=false;
+                            this.btnExportar=false;*/
                         }
                     })
                 }else{

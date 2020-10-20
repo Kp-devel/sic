@@ -32,13 +32,18 @@ class Cartera extends Model
 
     public static function listCarterasUsuario(){
         $carteras=session()->get('datos')->idcartera;
+        $sql="";
+        if($carteras!=0){
+            $sql="and car_id in ($carteras)";
+        }
+
         return DB::connection('mysql')->select(DB::raw("
             select 
                 car_id as id, 
                 car_nom as cartera
             from cartera
             where car_est=0 and car_pas=0
-            and car_id in ($carteras)
+            $sql
         "),array("usu"=>auth()->user()->emp_cod));
     }
 }

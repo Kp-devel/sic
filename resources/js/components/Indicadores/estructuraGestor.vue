@@ -20,14 +20,14 @@
                         <div class="px-2">
                             <label for="indicador" class="font-bold col-form-label text-dark text-righ">Gestor</label>
                             <select name="i_gestor" id="i_gestor" class="form-control" v-model="busquedaCartera.gestor" :disabled="gestoresCartera==''">
-                                <option selected value="">Seleccionar</option>
-                                <option v-for="(item,index) in gestoresCartera" :key="index"  class="option" :value="item.firma">{{item.gestor}}</option>                   
+                                <option value="">Seleccionar</option>
+                                <option v-for="(item,index) in gestoresCartera" :key="index"  class="option" :value="item.codigo">{{item.gestor}}</option>                   
                             </select>
                         </div>
                         <div class="px-2">
                             <label for="ubic" class="font-bold col-form-label text-dark text-righ">Ubicabilidad</label>
                             <select name="ubic" id="ubic" class="form-control" v-model="busquedaCartera.ubicabilidad">
-                                <option selected value="">Seleccionar</option>
+                                <option value="">Seleccionar</option>
                                 <option class="option" value="todos">TODOS</option>
                                 <option class="option" value="cfrn">C-F-R-N</option>
                                 <option class="option" value="contacto">CONTACTO</option>
@@ -40,7 +40,7 @@
                         <div class="px-2">
                             <label for="estructura" class="font-bold col-form-label text-dark text-righ">Estructura</label>
                             <select name="estructura" id="estructura" class="form-control" v-model="busquedaCartera.estructura">
-                                <option selected value="">Seleccionar</option>
+                                <option value="">Seleccionar</option>
                                 <option class="option" value="tramo">TRAMO</option>
                                 <option class="option" value="score">SCORE</option>
                                 <option class="option" value="dep">DEPARTAMENTO</option>
@@ -61,12 +61,12 @@
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div v-if="loading==true" class="d-flex justify-content-center pt-5">
+                        <div v-if="loading2==true" class="d-flex justify-content-center pt-5">
                             <div class="pt-5 text-center">
                                 <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-center pt-5" v-else-if="datos==''">
+                        <div class="d-flex justify-content-center pt-5" v-else-if="datosCatera==''">
                             <div class="pt-5 text-center">
                                 <i class="fa fa-chart-pie fa-2x text-blue"></i>
                                 <p>Genera un reporte usando los<br>filtros de la izquierda.</p>
@@ -88,7 +88,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(item,index) in datos" :key="index" class="text-center">
+                                        <tr v-for="(item,index) in datosCatera" :key="index" class="text-center">
                                             <td>{{item.estructura}}</td>
                                             <td>{{formatoNumero(item.clientes,'C')}}</td>
                                             <td>{{formatoNumero(item.capital,'M')}}</td>
@@ -99,10 +99,10 @@
                                     <tfoot class="text-center font-bold bg-gray">
                                         <tr>
                                             <td>TOTAL</td>
-                                            <td>{{formatoNumero(total('clientes'),'C')}}</td>
-                                            <td>{{formatoNumero(total('capital'),'M')}}</td>
-                                            <td>{{formatoNumero(total('deuda'),'M')}}</td>
-                                            <td>{{formatoNumero(total('importe'),'M')}}</td>
+                                            <td>{{formatoNumero(totalC('clientes'),'C')}}</td>
+                                            <td>{{formatoNumero(totalC('capital'),'M')}}</td>
+                                            <td>{{formatoNumero(totalC('deuda'),'M')}}</td>
+                                            <td>{{formatoNumero(totalC('importe'),'M')}}</td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -235,13 +235,17 @@
         data() {
             return {
                 datos: [],
+                datosCatera: [],
                 gestores: [],
                 gestoresCartera: [],
                 loading : false,
+                loading2 : false,
                 busqueda:{cartera:'',gestor:'',tipoAnalisis:'',estructura:'',fechaInicio:'',fechaFin:''},
                 busquedaCartera:{cartera:'',gestor:'',ubicabilidad:'',estructura:'',mes:''},
                 dataGrafica:[],
                 confGrafica:[],
+                dataGraficaCartera:[],
+                confGraficaCartera:[],
                 titulo_1:'',
                 titulo_2:'',
             }
@@ -253,16 +257,6 @@
                     axios.get("listaGestores/"+cartera).then(res=>{
                         if(res.data){
                             this.gestores=res.data;
-                        }
-                    });
-                }
-            },
-            listarGestoresCartera(cartera){
-                this.gestoresCartera=[];
-                if(cartera!=''){
-                    axios.get("listaGestores/"+cartera).then(res=>{
-                        if(res.data){
-                            this.gestoresCartera=res.data;
                         }
                     });
                 }
@@ -419,6 +413,132 @@
                         x1 = x1.replace(rgx, '$1' + ',' + '$2');
                 }
                 return x1 + x2
+            },
+            listarGestoresCartera(cartera){
+                this.gestoresCartera=[];
+                if(cartera!=''){
+                    axios.get("listaGestores/"+cartera).then(res=>{
+                        if(res.data){
+                            this.gestoresCartera=res.data;
+                        }
+                    });
+                }
+            },
+            generarReporteCartera(){
+                this.loading2=true;
+                this.datosCatera=[];
+                if(this.busquedaCartera.cartera!='' && this.busquedaCartera.ubicabilidad!='' && this.busquedaCartera.estructura!='' && this.busquedaCartera.mes!='' && this.busquedaCartera.gestor!=''){
+                    axios.post("reporteEstructuraGestorCartera",this.busquedaCartera).then(res=>{
+                        if(res.data){
+                            this.datosCatera=res.data;
+                            this.loading2=false;
+                            this.graficaReporteCartera();
+                        }
+                    })
+                }else{
+                    setTimeout(() => {
+                        this.loading=false;
+                        this.datosCatera=[];
+                    }, 500);
+                }
+            },
+            graficaReporteCartera(){
+                var arrayDatos=[];
+                var arrayLabels=[];
+                var ultDatos=0;
+                for(var i=0;i<this.datosCatera.length;i++){
+                    if(i<=6){
+                        arrayDatos.push(this.datosCatera[i].clientes);
+                        arrayLabels.push(this.datosCatera[i].estructura+" - "+this.formatoNumero(this.datosCatera[i].clientes,'C'));
+                    }else{
+                        ultDatos+=parseInt(this.datosCatera[i].clientes);
+                    }
+                }
+                if(ultDatos!=0){
+                    arrayDatos.push(ultDatos);
+                    arrayLabels.push("OTROS - "+this.formatoNumero(ultDatos,'C'));
+                }
+
+                this.dataGraficaCartera = {
+                    labels: arrayLabels,
+                    datasets: [{
+                                label: 'mm',
+                                data: arrayDatos,
+                                backgroundColor: ['#41afa5','rgb(144, 196, 248)','rgb(119, 194, 234)','rgb(224,153,183)','rgb(239,153,120)','rgb(254,246,163)','rgb(226,230,154)','rgb(170,215,210)','rgb(229,229,229)'],
+                                borderColor: ['#41afa5','#ffff'],
+                                borderWidth: 8
+                            }]                
+                };
+
+                this.confGraficaCartera={
+                    title: {
+                        display: true,
+                        text: 'RESULTADOS - REPORTE ESTRUCTURA'
+                    },
+                    // showDatapoints: true,
+                    responsive:true,
+                    legend: {
+                        position: 'right',
+                    },
+                    maintainAspectRatio: false ,
+                    animation: {
+                    duration: 0,
+                    onComplete: function () {
+                      var self = this,
+                          chartInstance = this.chart,
+                          ctx = chartInstance.ctx;
+               
+                      ctx.font = '12px Arial';
+                      ctx.textAlign = "center";
+                      ctx.fillStyle = "#17202A";
+               
+                      Chart.helpers.each(self.data.datasets.forEach(function (dataset, datasetIndex) {
+                          var meta = self.getDatasetMeta(datasetIndex),
+                              total = 0, //total values to compute fraction
+                              labelxy = [],
+                              offset = Math.PI / 2, //start sector from top
+                              radius,
+                              centerx,
+                              centery, 
+                              lastend = 0; //prev arc's end line: starting with 0
+               
+                          for (var val of dataset.data) { total += val; } 
+               
+                          Chart.helpers.each(meta.data.forEach( function (element, index) {
+                              radius = 0.9 * element._model.outerRadius - element._model.innerRadius;
+                              centerx = element._model.x;
+                              centery = element._model.y;
+                              var thispart = dataset.data[index],
+                                  arcsector = Math.PI * (2 * thispart / total);
+                              if (element.hasValue() && dataset.data[index] > 0) {
+                                labelxy.push(lastend + arcsector / 2 + Math.PI + offset);
+                              }
+                              else {
+                                labelxy.push(-1);
+                              }
+                              lastend += arcsector;
+                          }), self)
+               
+                          var lradius = radius * 3 / 4;
+                          for (var idx in labelxy) {
+                            if (labelxy[idx] === -1) continue;
+                            if(dataset.data[idx] >= 1){//para que muestre en la torta los mayores a 1%
+                                var langle = labelxy[idx],
+                                    dx = centerx + lradius * Math.cos(langle),
+                                    dy = centery + lradius * Math.sin(langle),
+                                    val = Math.round(dataset.data[idx] / total * 100);
+                                    console.log(val);
+                                ctx.fillText(val + '%', dx, dy);
+                            }
+                          }
+               
+                      }), self);
+                    }
+               }
+                }
+            },
+            totalC(base) {
+                return this.datosCatera.reduce( (sum,cur) => sum+parseFloat(cur[base]) , 0);
             },
         },
         components: {
