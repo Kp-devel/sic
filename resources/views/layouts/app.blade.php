@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/style.css?0210165') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css?0210169') }}" rel="stylesheet">
     <link href="{{ asset('css/waves.css?1') }}" rel="stylesheet">
     <link href="{{ asset('css/toastr.css?1') }}" rel="stylesheet" >
     <link href="{{ asset('css/bootstrap-select.min.css') }}" rel="stylesheet">
@@ -31,7 +31,7 @@
         @endguest
     </div>
 
-    <script src="{{ asset('js/app.js?19107') }}" ></script>
+    <script src="{{ asset('js/app.js?19109') }}" ></script>
     <script src="{{ asset('js/waves.js') }}" ></script>
     <script src="{{ asset('js/toastr.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/bootstrap-select.min.js') }}" ></script>
@@ -47,7 +47,6 @@
     <script type="text/javascript">
         Waves.init();
         Waves.attach('.btn-waves', ['waves-button', 'waves-float']);
-        // $('[data-toggle="tooltip"]').tooltip();
 
     </script>   
 </body>
