@@ -208,4 +208,32 @@ class SmsCampana extends Model
 
         return "ok";
     }
+
+    public static function insertarListaNegra($numero){   
+        $usuario=auth()->user()->emp_id;
+        DB::connection('mysql')->insert("
+                insert into creditoy_sms.blacklist (bl_numero,bl_c_n,emp_id_FK,fecha_add) VALUES (:num,'N',:usu,now())
+        ",array("num"=>$numero,"usu"=>$usuario));
+    }
+
+    public static function buscarListaNegra($numero){
+        return DB::connection('mysql')->select(DB::raw("
+            select 
+                bl_id as id,
+                bl_numero as numero,
+                emp_id_FK as usuario,
+                fecha_add as fecha
+            from 
+                creditoy_sms.blacklist 
+            where 
+                bl_numero=:num
+            and bl_c_n='N'
+        "),array("num"=>$numero));
+    }
+
+    public static function retirarListaNegra($id){
+        return DB::connection('mysql')->delete("
+            Delete from creditoy_sms.blacklist where bl_id=:id
+        ",array("id"=>$id));
+    }
 }

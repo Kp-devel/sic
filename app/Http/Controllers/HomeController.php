@@ -75,6 +75,33 @@ class HomeController extends Controller
         }
     }
     
+    public function smslistanegranumero(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            return view('admin.sms.listaNegraNumero');
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function smslistanegraarchivo(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            return view('admin.sms.listaNegraArchivo');
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function smsbuscarlistanegra(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            return view('admin.sms.listaNegraBuscar');
+        }else{
+            return view('errors.403');
+        }
+    }
+
     public function indicadores(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==1){

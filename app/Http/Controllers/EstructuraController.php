@@ -23,4 +23,13 @@ class EstructuraController extends Controller
     public  function reporteEstructuraGestor(Request $rq){
         return Estructura::estructuraGestor($rq);
     }
+
+    public function reporteEstructuraGestorCartera(Request $rq){
+        $ubicabilidad=$rq->ubicabilidad;
+        if($ubicabilidad=='todos'){
+            return Estructura::reporteEstructuraGestorCarteraTodo($rq);
+        }else{
+            return Estructura::reporteEstructuraGestorCarteraGestion($rq);
+        }
+    }
 }

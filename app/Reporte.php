@@ -579,6 +579,7 @@ class Reporte extends Model
                     and cli_pas=0
                     and car_id_FK=:car
                     and (date(ges_cli_fec) BETWEEN :fecInicio1 and :fecFin1)
+                    and emp_tel_id_FK=emp_id_FK
                     and emp_id=:id
                     $sql
                     and res_est=0

@@ -56,7 +56,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('listaScore', 'RespuestaController@listaScore');
     Route::get('listaOficinas', 'RespuestaController@listaOficinas');
     
-// --------------------------------------------------------------------------------------------
+// SMS--------------------------------------------------------------------------------------------
     // vistas sms
     Route::get('/sms', 'HomeController@sms')->name('sms');
     
@@ -87,6 +87,16 @@ Route::group(['middleware' => ['auth']], function(){
     //carteras
     Route::get('listCarterasUsuario', 'CarteraController@listCarterasUsuario');
     
+    //lista negra
+    Route::get('/smslistanegranumero', 'HomeController@smslistanegranumero')->name('smslistanegranumero');
+    Route::get('/smslistanegraarchivo', 'HomeController@smslistanegraarchivo')->name('smslistanegraarchivo');
+    Route::get('/smsbuscarlistanegra', 'HomeController@smsbuscarlistanegra')->name('smsbuscarlistanegra');
+    Route::post('cargarListaNegra', 'SmsCampanaController@cargarListaNegra')->name('cargarListaNegra');
+    Route::post('insertarListaNegra', 'SmsCampanaController@insertarListaNegra')->name('insertarListaNegra');
+    Route::post('buscarListaNegra', 'SmsCampanaController@buscarListaNegra')->name('buscarListaNegra');
+    Route::get('retirarListaNegra/{id}', 'SmsCampanaController@retirarListaNegra')->name('retirarListaNegra');
+    
+
 // indicadores---------------------------------------------------------------------------------
     //vistas
     Route::get('/indicadores', 'HomeController@indicadores')->name('indicadores');
@@ -99,6 +109,7 @@ Route::group(['middleware' => ['auth']], function(){
     // indicadores operativos ---------------------------------------------------------------------------------------------------------------
     Route::post('reporteEstructuraCartera', 'EstructuraController@reporteEstructuraCartera');
     Route::post('reporteEstructuraGestor', 'EstructuraController@reporteEstructuraGestor');
+    Route::post('reporteEstructuraGestorCartera', 'EstructuraController@reporteEstructuraGestorCartera');
     Route::get('listaGestores/{cartera}', 'EstructuraController@listaGestores');
     Route::get('listaAsignacion', 'IndicadorController@asignacion');
     Route::post('listaEstructuras', 'IndicadorController@estructuras');
