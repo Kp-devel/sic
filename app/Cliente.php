@@ -249,7 +249,7 @@ class Cliente extends Model
         }
 
         if($descuento!= null){
-            $sql = $sql." and (SELECT count(cli_id_FK) FROM detalle_cliente WHERE cli_id_FK = c.cli_id AND det_cli_est = 0 AND det_cli_pas = 0 AND det_cli_dscto like ('$descuento%'))>0";
+            $sql = $sql." and (SELECT count(cli_id_FK) FROM detalle_cliente WHERE cli_id_FK = c.cli_id AND det_cli_est = 0 AND det_cli_pas = 0 AND det_cli_dscto_adc like ('$descuento%'))>0";
         }
 
         if($prioridad!= null){
@@ -508,6 +508,8 @@ class Cliente extends Model
                 dscto,
                 importe_dscto,
                 importe,
+                dscto_adc,
+                importe_adc,
                 (case 
                     WHEN dscto_ant IS NULL THEN '-2'
                     WHEN CAST(dscto AS UNSIGNED)=0 THEN '-3'
@@ -533,6 +535,8 @@ class Cliente extends Model
                     det_cli_dscto as dscto,
                     det_cli_imp_dscto as importe_dscto,
                     det_cli_imp_can as importe,
+                    det_cli_dscto_adc as dscto_adc,
+                    det_cli_imp_can_adc as importe_adc,
                     (SELECT det_dsc_dscto FROM detalle_dscto WHERE det_dsc_fec=DATE_FORMAT(DATE_ADD(DATE(NOW()),INTERVAL -1 MONTH),'%Y%m') AND det_dsc_num_doc=det_cli_num_doc and det_dsc_est=0) as dscto_ant
             FROM 
                     detalle_cliente

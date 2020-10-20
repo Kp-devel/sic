@@ -18,6 +18,7 @@
                             <td class="align-middle font-11 bg-white border-0 rounded-0" style="max-width:7px;"></td>
                             <td class="align-middle font-11">IMP. DTO.</td>
                             <td class="align-middle font-11">IMP. CANC.</td>
+                            <td class="align-middle bg-white border-0 rounded-0 px-0" style="min-width: 0.1rem"></td>
                         </tr>
                     </thead>
                     <tbody class="text-center">
@@ -39,6 +40,9 @@
                             <td class="border-0 rounded-0" :class="{'text-danger':item.indicador_dscto==-1,'text-green':item.indicador_dscto==-2,'text-green':item.indicador_dscto==1,'text-black':item.indicador_dscto==0}">{{indicadoresDscto(item.indicador_dscto)}}</td>
                             <td>{{formatoMonto(item.importe_dscto)}}</td>
                             <td>{{formatoMonto(item.importe)}}</td>
+                            <td class="border-0 rounded-0 px-0" style="width:0.5rem" v-if="item.dscto_adc!=''">
+                                <a href="#" id="tooltip"><i class="far fa-star text-blue"></i><span class="tooltiptext text-center">{{item.dscto_adc}} - {{formatoMonto(item.importe_adc)}}</span></a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

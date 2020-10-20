@@ -90,5 +90,11 @@
                 this.limpiar();
             } );
         },
+        updated(){
+            this.$nextTick(() => {
+                $('[data-toggle="tooltip"]').tooltip();
+            })
+        }
+        
     }
 </script>
