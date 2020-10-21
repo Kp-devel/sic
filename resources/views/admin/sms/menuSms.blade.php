@@ -5,7 +5,7 @@
         <a href="{{route('smscrearcampana')}}" class="px-4 waves-effect {{ request()->is('smscrearcampana') ? 'menu-active' : '' }}"><i class="fa fa-plus pr-2"></i>Crear Campaña</a>
         <a href="{{route('smscampanas')}}" class="px-4 waves-effect {{ request()->is('smscampanas') ? 'menu-active' : '' }}"><i class="fa fa-sms pr-2"></i>Lista de Campañas</a>
         <a href="{{route('smsbandeja')}}" class="px-4 waves-effect {{ request()->is('smsbandeja') ? 'menu-active' : '' }}"><i class="fa fa-envelope pr-2"></i>Bandeja de Entrada</a>                
-        <a href="#submenulista" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseExample" class="d-flex justify-content-between px-4 waves-effect {{ request()->is('smscampanas') ? 'menu-active' : '' }}">
+        <a href="#submenulista" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseExample" class="d-flex justify-content-between px-4 waves-effect">
             <div>
                 <i class="fa fa-trash pr-2"></i>Lista Negra
             </div>

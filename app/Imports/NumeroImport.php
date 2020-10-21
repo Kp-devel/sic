@@ -15,7 +15,7 @@ class NumeroImport implements ToModel
 
     public function model(array $row)
     {
-        $usuario=auth()->user()->emp_id;
+        $usuario=auth()->user()->emp_cod;
         return new ListaNegra([
            'bl_numero' => $row[0],
            'bl_c_n'    => 'N', 
