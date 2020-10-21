@@ -43,7 +43,7 @@
                             <div class="d-flex">
                                 <p class=" badge bg-blue text-white py-2 px-3 min-w-125 text-left">INFORMACIÓN DEL CLIENTE</p>
                             </div>
-                            <detalleCliente :datos="dataCliente" v-if="dataCliente.length>0" :info="detalleGeneral['infoCliente']" />
+                            <detalleCliente :datos="dataCliente" v-if="dataCliente.length>0" :info="detalleGeneral['infoCliente']" :tipoacceso="tipoacceso" />
                         </div>
                         <!-- panel de historico de gestiones -->
                         <div class="col-md-8">

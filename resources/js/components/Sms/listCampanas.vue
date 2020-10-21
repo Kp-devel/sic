@@ -48,7 +48,7 @@
                                 <thead class="text-center bg-blue-3 text-white">
                                     <tr>
                                         <td class="">F. Programación</td>
-                                        <td class="align-middle">Campaña</td>
+                                        <td class="align-middle">Campaña ({{total}})</td>
                                         <td class="align-middle">Cartera</td>
                                         <td class="align-middle">Cant. de Clientes</td>
                                         <td class="align-middle">Cant. de SMS</td>

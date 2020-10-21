@@ -80,11 +80,13 @@ class Cliente extends Model
                     if(res_id_FK is null,'Sin Gestión',res_des) as ult_resp,
                     date(ges_cli_fec) as fecha_ges,
                     cli_ema as email,
+                    concat(emp_cod,' - ',emp_nom) as gestor,
                     car_nom as cartera
                 FROM 
                     cliente c
                 inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
                 inner join cartera ca ON c.car_id_FK=ca.car_id
+                inner join empleado e on c.emp_tel_id_FK=e.emp_id
                 left JOIN gestion_cliente g ON c.ges_cli_tel_id_FK=g.ges_cli_id
                 left JOIN respuesta as r on r.res_id=g.res_id_FK
             ";
@@ -107,11 +109,13 @@ class Cliente extends Model
                     date(ges_cli_com_fec) as 'FECHA COMPROMISO',
                     cli_fec_hor as 'ACTUALIZADO',
                     concat(loc_cod,' - ',loc_nom) as OFICINA,
+                    concat(emp_cod,' - ',emp_nom) as 'GESTOR TELEFÓNICO',
                     car_nom as CARTERA
                 FROM 
                     cliente as c
                 inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
                 inner join cartera ca ON c.car_id_FK=ca.car_id
+                inner join empleado e on c.emp_tel_id_FK=e.emp_id
                 left JOIN gestion_cliente g ON c.ges_cli_tel_id_FK=g.ges_cli_id
                 left JOIN respuesta as r on r.res_id=g.res_id_FK
                 LEFT JOIN local l on c.loc_id_FK=l.loc_id
@@ -249,7 +253,13 @@ class Cliente extends Model
         }
 
         if($descuento!= null){
-            $sql = $sql." and (SELECT count(cli_id_FK) FROM detalle_cliente WHERE cli_id_FK = c.cli_id AND det_cli_est = 0 AND det_cli_pas = 0 AND det_cli_dscto_adc like ('$descuento%'))>0";
+            $dto="";
+            if($carteraBusqueda==9){
+                $dto=" AND det_cli_dscto like ('$descuento%') ";
+            }else{
+                $dto=" AND det_cli_dscto_adc like ('$descuento%') ";
+            }
+            $sql = $sql." and (SELECT count(cli_id_FK) FROM detalle_cliente WHERE cli_id_FK = c.cli_id AND det_cli_est = 0 AND det_cli_pas = 0 $dto)>0";
         }
 
         if($prioridad!= null){

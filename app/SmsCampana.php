@@ -13,18 +13,21 @@ class SmsCampana extends Model
         $fecha=$rq->fecha_programada;
         $cartera=$rq->cartera;
         $usuario=auth()->user()->emp_cod;
-        $rol=DB::connection('mysql')->select(DB::raw("select rol_id_FK as rol from creditoy_lotesms.usuario where usuario=:usu limit 1"),array("usu"=>$usuario));
+        $rol=DB::connection('mysql')->select(DB::raw("select rol_id_FK as rol from creditoy_lotesms.usuario where usuario=:usu and usu_est=0 limit 1"),array("usu"=>$usuario));
         $sql="";
-
-        if($rol==1){
-            $sql.="case when :cart is null then car_id_FK=car_id_FK
-                        else car_id_FK=:car
-                    end";
-        }else{
-            $sql.="case when :cart is null then car_id_FK IN (SELECT car_id_Fk FROM creditoy_lotesms.empleado where usu_FK=$usuario)
-                        else car_id_FK=:car
-                    end";
+        // $sql2="";
+        $where="";
+        if(count($rol)>0){
+            if($rol[0]->rol!=1){
+                $sql=" INNER JOIN ( SELECT car_id_FK,emp_asig FROM creditoy_lotesms.empleado e WHERE usu_FK = $usuario) u ON c.car_id_FK=u.car_id_FK";
+                $where=" and if((select con_asignacion from creditoy_lotesms.condicion where camp_id_FK=c.camp_id LIMIT 1) is null,1=1,(select con_asignacion from creditoy_lotesms.condicion where camp_id_FK=c.camp_id LIMIT 1)=u.emp_asig) ";
+                // $sql2=" and case when :cart is null then c.car_id_FK IN (SELECT car_id_Fk FROM creditoy_lotesms.empleado where usu_FK=$usuario) else c.car_id_FK=:car end ";
+            }
+            // else{
+                // $sql2=" and case when :cart is null then c.car_id_FK=c.car_id_FK else c.car_id_FK=:car end ";
+            // }
         }
+        
         return DB::connection('mysql')->select(DB::raw(
             "SELECT
                 camp_id as id,
@@ -38,11 +41,15 @@ class SmsCampana extends Model
             FROM
                 creditoy_lotesms.campana c
             INNER JOIN creditoy_cobranzas.cartera cc on c.car_id_FK=cc.car_id
+            $sql
             WHERE 
-                $sql
+                case when :cart is null then c.car_id_FK=c.car_id_FK
+                    else c.car_id_FK=:car
+                end
             and date(camp_fec_prog)=:fec
             and car_est=0 and car_pas=0
             and camp_est=0
+            $where
             ORDER BY camp_id DESC
         "),array("car"=>$cartera,"fec"=>$fecha,"cart"=>$cartera));
     }
@@ -107,11 +114,15 @@ class SmsCampana extends Model
 
     public static function listCampanasDia(){
         $usuario=auth()->user()->emp_cod;
-        $rol=DB::connection('mysql')->select(DB::raw("select rol_id_FK as rol from creditoy_lotesms.usuario where usuario=:usu limit 1"),array("usu"=>$usuario));
+        $res=DB::connection('mysql')->select(DB::raw("select rol_id_FK as rol from creditoy_lotesms.usuario where usuario=:usu and usu_est=0 limit 1"),array("usu"=>$usuario));
+        $rol=1;
         
+        if(count($res)>0){
+            $rol=$res[0]->rol;
+        }
         return DB::connection('mysql')->select(DB::raw("
             call creditoy_lotesms.MONITOREO(:rol,:usu);
-        "),array("rol"=>$rol[0]->rol,"usu"=>$usuario));
+        "),array("rol"=>$rol,"usu"=>$usuario));
     }
 
     public static function datosclientesCampana(Request $rq){
@@ -119,15 +130,20 @@ class SmsCampana extends Model
         $cartera=$rq->cartera;
         $opcion=$rq->opcion;
         $destinatario=$rq->destinatario;
-        
+        $usuario=auth()->user()->emp_cod;
+        $resAsignacion=DB::connection('mysql')->select(DB::raw("SELECT emp_asig as asig FROM creditoy_lotesms.empleado WHERE usu_FK = '$usuario' and car_id_FK=$cartera"));
+        $asignacion="";
+        if(count($resAsignacion)>0){
+            $asignacion=$resAsignacion[0]->asig;
+        }
         if($opcion==1){
             return DB::connection('mysql')->select(DB::raw("
-                    CALL creditoy_lotesms.SMS('',:car,:cond,:dest,'',0)
-            "),array("car"=>$cartera,"cond"=>$condiciones,"dest"=>$destinatario));
+                    CALL creditoy_lotesms.SMS('',:car,:cond,:dest,'',:asig,0)
+            "),array("car"=>$cartera,"cond"=>$condiciones,"dest"=>$destinatario,"asig"=>$asignacion));
         }else{
             return DB::connection('mysql')->select(DB::raw("
-                    CALL creditoy_lotesms.SMS_TLN('',:car,:cond,:dest,'',0)
-            "),array("car"=>$cartera,"cond"=>$condiciones,"dest"=>$destinatario));
+                    CALL creditoy_lotesms.SMS_TLN('',:car,:cond,:dest,'',:asig,0)
+            "),array("car"=>$cartera,"cond"=>$condiciones,"dest"=>$destinatario,"asig"=>$asignacion));
         }
     }
 
@@ -160,11 +176,12 @@ class SmsCampana extends Model
         $totalSms=$rq->totalSms;
         $fechaProg=$rq->fecha;
         $fecha=Carbon::now();
+        $usuario=auth()->user()->emp_cod;
 
         DB::connection('mysql')->insert("
-            insert into creditoy_lotesms.campana (camp_nom,car_id_FK,camp_fec_prog,camp_cant_cli,camp_cant_sms,est_id_Fk,est_id_Fk_claro,camp_ord,camp_est,fecha_create)
-            values (:nom,:car,:fecha_pro,:cli,:sms,0,0,0,0,:fecha)
-        ",array("nom"=>$nomCampana,"car"=>$cartera,"fecha_pro"=>$fechaProg,"cli"=>$totalClientes,"sms"=>$totalSms,"fecha"=>$fecha));
+            insert into creditoy_lotesms.campana (camp_nom,car_id_FK,camp_fec_prog,camp_cant_cli,camp_cant_sms,est_id_Fk,est_id_Fk_claro,camp_ord,usu_FK,camp_est,fecha_create)
+            values (:nom,:car,:fecha_pro,:cli,:sms,0,0,0,:usu,0,:fecha)
+        ",array("nom"=>$nomCampana,"car"=>$cartera,"fecha_pro"=>$fechaProg,"cli"=>$totalClientes,"sms"=>$totalSms,"fecha"=>$fecha,"usu"=>$usuario));
 
         $idCamp=DB::connection('mysql')->select(DB::raw("
                 select 
@@ -199,10 +216,16 @@ class SmsCampana extends Model
             $cantSms=$detalle[$i]['cantSms'];
             $destino=$detalle[$i]['idDestino'];
 
+            $resAsignacion=DB::connection('mysql')->select(DB::raw("SELECT emp_asig as asig FROM creditoy_lotesms.empleado WHERE usu_FK = '$usuario' and car_id_FK=$cartera"));
+            $asignacion="";
+            if(count($resAsignacion)>0){
+                $asignacion=$resAsignacion[0]->asig;
+            }
+
             DB::connection('mysql')->insert("
-                insert into creditoy_lotesms.condicion (con_nom,camp_id_FK,spc_id_FK,con_des,con_sql,con_destino,con_opcion_num,con_cli,con_sms,con_est,fecha_create)
-                values (:nom,:idcamp,:idsp,:desc,:sql,:dest,:num,:cli,:sms,0,:fecha)
-            ",array("nom"=>strval($nomCond),"idcamp"=>$idCamp[0]->id,"idsp"=>$idspeech,"num"=>$tipoNum,"desc"=>$descripcion,"sql"=>$sql,"dest"=>$destino,"cli"=>$cantCli,"sms"=>$cantSms,"fecha"=>$fecha));
+                insert into creditoy_lotesms.condicion (con_nom,camp_id_FK,spc_id_FK,con_des,con_sql,con_asignacion,con_destino,con_opcion_num,con_cli,con_sms,con_est,fecha_create)
+                values (:nom,:idcamp,:idsp,:desc,:sql,:asig,:dest,:num,:cli,:sms,0,:fecha)
+            ",array("nom"=>strval($nomCond),"idcamp"=>$idCamp[0]->id,"idsp"=>$idspeech,"num"=>$tipoNum,"desc"=>$descripcion,"sql"=>$sql,"asig"=>$asignacion,"dest"=>$destino,"cli"=>$cantCli,"sms"=>$cantSms,"fecha"=>$fecha));
         }
         
 
@@ -210,7 +233,7 @@ class SmsCampana extends Model
     }
 
     public static function insertarListaNegra($numero){   
-        $usuario=auth()->user()->emp_id;
+        $usuario=auth()->user()->emp_cod;
         DB::connection('mysql')->insert("
                 insert into creditoy_sms.blacklist (bl_numero,bl_c_n,emp_id_FK,fecha_add) VALUES (:num,'N',:usu,now())
         ",array("num"=>$numero,"usu"=>$usuario));

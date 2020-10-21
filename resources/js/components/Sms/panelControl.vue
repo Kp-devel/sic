@@ -55,7 +55,7 @@
                                 <p class="mb-0">Lista de Campañas ({{total}})</p>
                             </div><br>
                             <div class="table-responsive px-3">
-                                <paginate name="pagLista" :list="lista" :per="4" class="px-0">
+                                <paginate name="pagLista" :list="lista" :per="5" class="px-0">
                                     <table class="border-0 w-100" id="table-2">
                                         <thead>
                                             <tr class="text-center">
