@@ -14,9 +14,9 @@ class ReporteController extends Controller
     }
 
     public function reporteGeneralGestiones(Request $rq){
-        return (new GestionesExport($rq))->download('reporte_general.xlsx');
+        //return (new GestionesExport($rq))->download('reporte_general.xlsx');
         // return Excel::download(new GestionesExport, 'users.xlsx');
-        // return Reporte::reporteGeneralGestiones($rq);
+         return Reporte::reporteGeneralGestiones($rq);
     }
     
     public function reporteResumenGestor(Request $rq){
