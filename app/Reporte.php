@@ -92,7 +92,7 @@ class Reporte extends Model
                     FROM
                         cliente c
                     INNER JOIN gestion_cliente g ON c.cli_id=g.cli_id_FK
-                    INNER JOIN empleado e on g.emp_id_FK=e.emp_id
+                    LEFT JOIN empleado e on g.emp_id_FK=e.emp_id
                     INNER JOIN cartera ca on c.car_id_FK=ca.car_id
                     LEFT JOIN cliente_direccion_2 cd ON c.cli_id=cd.cli_id_FK and cli_dir_est=0 AND cli_dir_pas=0
                     INNER JOIN respuesta r on g.res_id_FK=r.res_id
@@ -106,7 +106,7 @@ class Reporte extends Model
                     and car_est=0 
                     and car_pas=0
                     and res_est=0
-                    GROUP BY cli_id,ges_cli_fec    
+                    GROUP BY ges_cli_id   
         "),array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
     }
 

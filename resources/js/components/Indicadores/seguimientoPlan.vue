@@ -72,12 +72,13 @@
                                 <span class="fa fa-times text-white"></span>
                             </a>
                         </div>
-                        <div class="modal-body py-3 overflow-auto" style="height:calc(100% - 500px);">
-                                <table class="table table-hover">
+                        <div class="modal-body py-3">
+                            <div class="">
+                                <table class="table table-hover" style="table-layout:fixed;width: 100%;overflow-wrap:break-word;">
                                     <tbody>
                                         <tr>
-                                            <td class="px-3 bg-gray">Cartera</td>
-                                            <td class="px-3">{{detalle.cartera}}</td>
+                                            <td class="px-3 bg-gray" style="width:40%">Cartera</td>
+                                            <td class="px-3" style="width:60%">{{detalle.cartera}}</td>
                                         </tr>
                                         <tr>
                                             <td class="px-3 bg-gray">Fecha</td>
@@ -97,6 +98,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -106,22 +108,22 @@
             <div class="modal fade" id="modalResultados" tabindex="-1" role="dialog"  aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
-                        <div class="modal-header bg-blue text-white pt-4 pb-0 px-3 ">
+                        <div class="modal-header bg-blue text-white px-3 pb-0">
                             <p>{{resultados.campana}}</p>      
                             <a href="" class="close" data-dismiss="modal" aria-label="Close">
                                 <span class="fa fa-times text-white"></span>
                             </a>
                         </div>
-                        <div class="modal-body py-4 px-4 overflow-auto">
+                        <div class="modal-body py-4 px-4 overflow-auto" style="height:400px;">
                             <div class="text-center d-flex justify-content-center py-5" v-if="loadingIn">
                                 <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>
                             </div>
                             <div class="row" v-else>
                                 <div class="col-md-6">
                                     <div style="height:280px;" class="overflow-auto">
-                                        <a href="" @click.prevent="verResultadosUsuarios(0)" class="btn btn-outline-blue btn-sm btn-block btn-active">Todos los Usuarios</a>
+                                        <a href="" @click.prevent="verResultadosUsuarios(0,resultados.total,'Todos los Usuarios')" class="btn btn-outline-blue btn-sm btn-block  panel-list-option">Todos los Usuarios</a>
                                         <div v-if="usuarios!=''" class="py-2">
-                                            <a href="" v-for="(item,index) in usuarios" :key="index" @click.prevent="verResultadosUsuarios(item.id,item.cantidad)" class="btn btn-outline-blue btn-sm btn-block">{{item.usuario}} ({{item.cantidad}})</a>
+                                            <a href="#" v-for="(item,index) in usuarios" :key="index" @click.prevent="verResultadosUsuarios(item.id,item.cantidad,item.usuario)" :id="'b'+item.id" class="btn btn-outline-blue btn-sm btn-block panel-list-option">{{item.usuario}} ({{item.cantidad}})</a>
                                         </div>
                                     </div>
                                 </div>
@@ -129,7 +131,7 @@
                                     <table class="table table-hover">
                                         <tbody>
                                             <tr>
-                                                <td class="px-3 bg-gray font-bold text-center" colspan="2">RESULTADOS</td>
+                                                <td class="px-3 bg-gray font-bold text-center" colspan="2">{{gestor}}</td>
                                             </tr>
                                             <tr>
                                                 <td class="px-3 bg-gray">Cobertura</td>
@@ -178,8 +180,9 @@
                 spinnerbuscar:false,
                 busqueda:{cartera:'',fechaInicio:'',fechaFin:''},
                 detalle:{cartera:'',clientes:'',fecha:'',detalle:[],speech:''},
-                resultados:{cobertura:'',contactabilidad:'',pdps:'',confirmaciones:'',intensidad:'',negociacion:'',campana:''},
-                idcampana:0
+                resultados:{cobertura:'',contactabilidad:'',pdps:'',confirmaciones:'',intensidad:'',negociacion:'',campana:'',total:''},
+                idcampana:0,
+                gestor:''
             }
         },
         methods:{
@@ -222,17 +225,22 @@
                 this.usuarios=[];
                 this.idcampana=this.datos[index].id;
                 this.resultados.campana=this.datos[index].nombre;
+                this.resultados.total=this.datos[index].clientes;
                 axios.get("usuariosPlan/"+this.idcampana).then(res=>{
                     if(res.data){
                         this.usuarios=res.data;
-                        this.verResultadosUsuarios(0,0);
+                        this.verResultadosUsuarios(0,this.resultados.total,'Todos los Usuarios');
                         this.loadingIn=false;
                     }
                 })
             },
-            verResultadosUsuarios(usuario,cantidad){
+            verResultadosUsuarios(usuario,cantidad,gestor){
                 this.limpiarResultados();
                 var datos={idPlan:this.idcampana,idEmpleado:usuario};
+                this.gestor=gestor;
+                $("#b"+usuario).addClass('btn-active');
+                $("#b"+usuario).removeClass('btn-white');
+                $(".panel-list-option").not('#b'+usuario).addClass("btn-white");
                 axios.post("resultadosPlan",datos).then(res=>{
                     if(res.data){
                         res=res.data;
@@ -248,7 +256,6 @@
                 })
             },
             limpiarResultados(){
-                this.resultados.campana='';
                 this.resultados.cobertura='0%';
                 this.resultados.contactabilidad='0%';
                 this.resultados.pdps='0; S/.0.00';

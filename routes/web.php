@@ -108,6 +108,7 @@ Route::group(['middleware' => ['auth']], function(){
     
     // indicadores operativos ---------------------------------------------------------------------------------------------------------------
     Route::post('reporteEstructuraCartera', 'EstructuraController@reporteEstructuraCartera');
+    Route::post('reporteEstructuraGestionCartera', 'EstructuraController@reporteEstructuraGestionCartera');
     Route::post('reporteEstructuraGestor', 'EstructuraController@reporteEstructuraGestor');
     Route::post('reporteEstructuraGestorCartera', 'EstructuraController@reporteEstructuraGestorCartera');
     Route::get('listaGestores/{cartera}', 'EstructuraController@listaGestores');

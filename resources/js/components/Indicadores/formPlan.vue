@@ -309,13 +309,13 @@
                 prioridad:[{valor:"'Sin Dato'",nombre:'Sin Dato'},{valor:"'P1'",nombre:'P1'},{valor:"'P2'",nombre:'P2'},{valor:"'P3'",nombre:'P3'}],
                 situacion_laboral:[{valor:"'Dependiente'",nombre:'Dependiente'},{valor:"'Independiente'",nombre:'Independiente'},{valor:"'Informal'",nombre:'Informal'},{valor:"'Mixto'",nombre:'Mixto'},{valor:"'Sin Dato'",nombre:'Sin Dato'}],
                 call:[{valor:"'Call 01'",nombre:'Call 01'},{valor:"'Call 02'",nombre:'Call 02'},{valor:"'Call 03'",nombre:'Call 03'},{valor:"'Sin Call'",nombre:'Sin Call'}],
-                sueldos:[{valor:"'A'",nombre:'0-500'},{valor:"'B'",nombre:'500-100'},{valor:"'C'",nombre:'1000-3000'},{valor:"'D'",nombre:'3000 +'},{valor:"'Sin Dato'",nombre:'Sin Dato'}],
-                capital:[{valor:"'A'",nombre:'0-500'},{valor:"'B'",nombre:'500-100'},{valor:"'C'",nombre:'1000-3000'},{valor:"'D'",nombre:'3000 +'}],
-                deuda:[{valor:"'A'",nombre:'0-500'},{valor:"'B'",nombre:'500-100'},{valor:"'C'",nombre:'1000-3000'},{valor:"'D'",nombre:'3000 +'}],
-                importe:[{valor:"'A'",nombre:'0-500'},{valor:"'B'",nombre:'500-100'},{valor:"'C'",nombre:'1000-3000'},{valor:"'D'",nombre:'3000 +'}],
-                ubicabilidad:[{valor:"'cfrn'",nombre:'C-F-R-N'},{valor:"'contacto'",nombre:'Contacto'},{valor:"'nodisponible'",nombre:'No Disponible'},{valor:"'nocontacto'",nombre:'No Contacto'},{valor:"'inubicable'",nombre:'Ilocalizado'},{valor:"'SG'",nombre:'Sin Gestión'}],
+                sueldos:[{valor:"'AA'",nombre:'0-500'},{valor:"'BB'",nombre:'500-100'},{valor:"'CC'",nombre:'1000-3000'},{valor:"'DD'",nombre:'3000 +'},{valor:"'Sin Dato'",nombre:'Sin Dato'}],
+                capital:[{valor:"'AA'",nombre:'0-500'},{valor:"'BB'",nombre:'500-100'},{valor:"'CC'",nombre:'1000-3000'},{valor:"'DD'",nombre:'3000 +'}],
+                deuda:[{valor:"'AA'",nombre:'0-500'},{valor:"'BB'",nombre:'500-100'},{valor:"'CC'",nombre:'1000-3000'},{valor:"'DD'",nombre:'3000 +'}],
+                importe:[{valor:"'AA'",nombre:'0-500'},{valor:"'BB'",nombre:'500-100'},{valor:"'CC'",nombre:'1000-3000'},{valor:"'DD'",nombre:'3000 +'}],
+                ubicabilidad:[{valor:"'C-F-R-N'",nombre:'C-F-R-N'},{valor:"'Contacto'",nombre:'Contacto'},{valor:"'No Disponible'",nombre:'No Disponible'},{valor:"'No Contacto'",nombre:'No Contacto'},{valor:"'Ilocalizado'",nombre:'Ilocalizado'},{valor:"'Sin Gestión'",nombre:'Sin Gestión'}],
                 entidades:[1,2,3,4],
-                tipoCliente:[{valor:"'nuevo'",nombre:'Nuevos/Nuevos Castigo'},{valor:"'no'",nombre:'Otros'}],
+                tipoCliente:[{valor:"'Nuevos/Nuevos Castigo'",nombre:'Nuevos/Nuevos Castigo'},{valor:"'Otros'",nombre:'Otros'}],
                 arrayTramos:[],
                 arrayDepartamentos:[],
                 arrayPrioridad:[],
@@ -331,7 +331,8 @@
                 arrayUsuarios:[],
                 usuarios:[],
                 totalSelecionado:0,
-                detalleCondiciones:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:''}
+                detalleCondiciones:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:''},
+                totales:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:''}
             }
         },
         created(){
@@ -375,52 +376,68 @@
                 this.tipoCliente.forEach(element => {
                     this.arrayTipo.push(element.valor);
                 });
+                this.totales.tramo=this.tramos.length;
+                this.totales.departamento=this.departamentos.length;
+                this.totales.prioridad=this.prioridad.length;
+                this.totales.situacion=this.situacion_laboral.length;
+                this.totales.call=this.call.length;
+                this.totales.sueldo=this.sueldos.length;
+                this.totales.capital=this.capital.length;
+                this.totales.deuda=this.deuda.length;
+                this.totales.importe=this.importe.length;
+                this.totales.ubicabilidad=this.ubicabilidad.length;
+                this.totales.entidad=this.entidades.length;
+                this.totales.tipo=this.tipoCliente.length;
             },
             verResumen(){
-                this.spinnerbuscar=true;
                 this.totalSelecionado=0;
                 this.datos.total=0;
+                this.arrayUsuarios=[];
+                this.usuarios=[];
                 var parametros={
                     cartera:this.datos.cartera,
-                    tramo:this.arrayTramos,
-                    departamento:this.arrayDepartamentos,
-                    prioridad:this.arrayPrioridad,
-                    situacion:this.arraySituacion,
-                    call:this.arrayCall,
-                    sueldo:this.arraySueldos,
-                    deuda:this.arrayDeuda,
-                    capital:this.arrayCapital,
-                    importe:this.arrayImporte,
-                    ubicabilidad:this.arrayUbicabilidad,
-                    entidad:this.arrayEntidades,
-                    tipoCliente:this.arrayTipo
+                    tramo:this.arrayTramos.length==this.totales.tramo?["'TODOS'"]:this.arrayTramos,
+                    departamento:this.arrayDepartamentos.length==this.totales.departamento?["'TODOS'"]:this.arrayDepartamentos,
+                    prioridad:this.arrayPrioridad.length==this.totales.prioridad?["'TODOS'"]:this.arrayPrioridad,
+                    situacion:this.arraySituacion.length==this.totales.situacion?["'TODOS'"]:this.arraySituacion,
+                    call:this.arrayCall.length==this.totales.call?["'TODOS'"]:this.arrayCall,
+                    sueldo:this.arraySueldos.length==this.totales.sueldo?["'TODOS'"]:this.arraySueldos,
+                    deuda:this.arrayDeuda.length==this.totales.deuda?["'TODOS'"]:this.arrayDeuda,
+                    capital:this.arrayCapital.length==this.totales.capital?["'TODOS'"]:this.arrayCapital,
+                    importe:this.arrayImporte.length==this.totales.importe?["'TODOS'"]:this.arrayImporte,
+                    ubicabilidad:this.arrayUbicabilidad.length==this.totales.ubicabilidad?["'TODOS'"]:this.arrayUbicabilidad,
+                    entidad:this.arrayEntidades.length==this.totales.entidad?["'TODOS'"]:this.arrayEntidades,
+                    tipoCliente:this.arrayTipo.length==this.totales.tipo?["'TODOS'"]:this.arrayTipo
                 };
-                axios.post("resumenPlan",parametros).then(res=>{
-                    if(res.data){
-                        this.usuarios=res.data;
-                        this.spinnerbuscar=false;
-                        for(var i=0;i<this.carteras.length;i++){
-                            if(this.datos.cartera==this.carteras[i].id){
-                                this.datos.nombreCartera=this.carteras[i].cartera;
+                if(this.datos.cartera!='' && this.datos.nombre!='' && this.datos.fechaInicio!='' && this.datos.fechaFin!=''){
+                     this.spinnerbuscar=true;
+                    axios.post("resumenPlan",parametros).then(res=>{
+                        if(res.data){
+                            this.usuarios=res.data;
+                            this.spinnerbuscar=false;
+                            for(var i=0;i<this.carteras.length;i++){
+                                if(this.datos.cartera==this.carteras[i].id){
+                                    this.datos.nombreCartera=this.carteras[i].cartera;
+                                }
                             }
+                            for(var i=0;i<this.usuarios.length;i++){
+                                this.datos.total+=parseInt(this.usuarios[i].cantidad);
+                                this.arrayUsuarios.push("'"+this.usuarios[i].usuario+"'");
+                            }
+                            this.totalSelecionado=this.datos.total;
+                            this.viewForm=false;
                         }
-                        for(var i=0;i<this.usuarios.length;i++){
-                            this.datos.total+=parseInt(this.usuarios[i].cantidad);
-                            this.arrayUsuarios.push(this.usuarios[i].usuario);
-                        }
-                        this.totalSelecionado=this.datos.total;
-                        this.viewForm=false;
-                    }
-                })
+                    })
+                }
             },
             seleccionCheck(index){
                 if( $('#check'+index).prop('checked') ) {
-                    this.arrayUsuarios.push(this.usuarios[index].usuario);
+                    this.arrayUsuarios.push("'"+this.usuarios[index].usuario+"'");
                     this.totalSelecionado+=parseInt(this.usuarios[index].cantidad);
                 }else{
                     this.totalSelecionado-=parseInt(this.usuarios[index].cantidad);
                     for(var i=0;i<this.arrayUsuarios.length;i++){
-                        if(this.arrayUsuarios[i]==this.usuarios[index].usuario){
+                        if(this.arrayUsuarios[i]=="'"+this.usuarios[index].usuario+"'"){
                             this.arrayUsuarios.splice(i,1);
                         }
                     }
@@ -441,18 +458,30 @@
                     fechaInicio:this.datos.fechaInicio,
                     fechaFin:this.datos.fechaFin,
                     usuarios:this.arrayUsuarios,
-                    tramo:this.arrayTramos,
-                    departamento:this.arrayDepartamentos,
-                    prioridad:this.arrayPrioridad,
-                    situacion:this.arraySituacion,
-                    call:this.arrayCall,
-                    sueldo:this.arraySueldos,
-                    deuda:this.arrayDeuda,
-                    capital:this.arrayCapital,
-                    importe:this.arrayImporte,
-                    ubicabilidad:this.arrayUbicabilidad,
-                    entidad:this.arrayEntidades,
-                    tipoCliente:this.arrayTipo
+                    tramo:this.arrayTramos.length==this.totales.tramo?["'TODOS'"]:this.arrayTramos,
+                    departamento:this.arrayDepartamentos.length==this.totales.departamento?["'TODOS'"]:this.arrayDepartamentos,
+                    prioridad:this.arrayPrioridad.length==this.totales.prioridad?["'TODOS'"]:this.arrayPrioridad,
+                    situacion:this.arraySituacion.length==this.totales.situacion?["'TODOS'"]:this.arraySituacion,
+                    call:this.arrayCall.length==this.totales.call?["'TODOS'"]:this.arrayCall,
+                    sueldo:this.arraySueldos.length==this.totales.sueldo?["'TODOS'"]:this.arraySueldos,
+                    deuda:this.arrayDeuda.length==this.totales.deuda?["'TODOS'"]:this.arrayDeuda,
+                    capital:this.arrayCapital.length==this.totales.capital?["'TODOS'"]:this.arrayCapital,
+                    importe:this.arrayImporte.length==this.totales.importe?["'TODOS'"]:this.arrayImporte,
+                    ubicabilidad:this.arrayUbicabilidad.length==this.totales.ubicabilidad?["'TODOS'"]:this.arrayUbicabilidad,
+                    entidad:this.arrayEntidades.length==this.totales.entidad?["'TODOS'"]:this.arrayEntidades,
+                    tipoCliente:this.arrayTipo.length==this.totales.tipo?["'TODOS'"]:this.arrayTipo
+                    // tramo:this.arrayTramos,
+                    // departamento:this.arrayDepartamentos,
+                    // prioridad:this.arrayPrioridad,
+                    // situacion:this.arraySituacion,
+                    // call:this.arrayCall,
+                    // sueldo:this.arraySueldos,
+                    // deuda:this.arrayDeuda,
+                    // capital:this.arrayCapital,
+                    // importe:this.arrayImporte,
+                    // ubicabilidad:this.arrayUbicabilidad,
+                    // entidad:this.arrayEntidades,
+                    // tipoCliente:this.arrayTipo
                 };
                 axios.post("insertarPlan",parametros).then(res=>{
                     if(res.data=="ok"){

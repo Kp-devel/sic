@@ -151,8 +151,7 @@ class Estructura extends Model
 
     }
 
-    public static function listaGestores($cartera)
-    {
+    public static function listaGestores($cartera){
         return DB::connection('mysql')->select(DB::raw("
                 select 
                     emp_id as id,
@@ -406,4 +405,204 @@ class Estructura extends Model
 
     }
     
+    public static function reporteEstructuraGestionCartera(Request $rq){
+        $cartera=$rq->cartera;
+        $estructura=$rq->estructura;
+        $fecInicio=$rq->fechaInicio;
+        $fecFin=$rq->fechaFin;
+        $tipo=$rq->tipo;
+        $respuesta="";
+        if($tipo=="pdps"){
+            $respuesta="and res_id_fk in (1,43)";
+        }
+        if($tipo=="confirmacion"){
+            $respuesta="and res_id_fk in (2)";
+        }
+
+        return DB::connection('mysql')->select(DB::raw("
+                    SELECT
+                        estructura,
+                        count(cli_cod) as clientes,
+                        sum(capital) as capital,
+                        sum(saldo_deuda) as deuda,
+                        sum(monto_camp) as importe
+                    FROM
+                    (select 
+                        case when :estr11='ubic' then 
+                            (CASE WHEN res_id_FK IN ( 38, 6, 22, 41 ) THEN 'CRFN'
+                                WHEN res_id_FK IN ( 2, 37, 33, 10, 1, 8, 43, 39, 7, 3, 5, 9, 34, 17, 21, 18, 28, 30, 35, 36, 46, 47, 48, 49 ) THEN 'CONTACTO'
+                                WHEN res_id_FK IN ( 19, 27, 12, 26, 13, 4, 11, 12, 20, 14, 15, 16, 23, 24, 29, 31 ) THEN 'ILOCALIZADO'
+                                WHEN res_id_FK IN ( 45, 25, 44 ) THEN 'NO CONTACTO'
+                                WHEN res_id_FK IN ( 32 ) THEN 'NO DISPONIBLE'
+                            end)
+                            else estructura
+                        end as estructura,
+                        cli_cod,
+                        capital,
+                        saldo_deuda,
+                        monto_camp
+                    from
+                        (select 
+                            cli_cod, 
+                            case when :estr1='tramo' then if(c.car_id_FK in (34,88,89,2),if(tramo<=2016,2016,tramo),tramo)
+                                    when :estr2='score' then score
+                                    when :estr3='entidades' then entidades
+                                    when :estr4='dep' then dep
+                                    when :estr5='dep_ind' then dep_ind
+                                    when :estr6='prioridad' then prioridad
+                                    when :estr7='saldo_deuda' then 
+                                                    (case WHEN saldo_deuda<500 THEN 'A: [0-500>'
+                                                            WHEN saldo_deuda<1000 THEN 'B: [500-1000>'
+                                                            WHEN saldo_deuda<3000 THEN 'C: [1000-3000>'
+                                                            WHEN saldo_deuda>=3000 THEN 'D: [3000-+>'
+                                                    end)
+                                    when :estr8='capital' then 
+                                                    (case WHEN capital<500 THEN 'A: [0-500>'
+                                                            WHEN capital<1000 THEN 'B: [500-1000>'
+                                                            WHEN capital<3000 THEN 'C: [1000-3000>'
+                                                            WHEN capital>=3000 THEN 'D: [3000-+>'
+                                                    end)
+                                    when :estr9='monto_camp' then 
+                                                    (case WHEN monto_camp<500 THEN 'A: [0-500>'
+                                                            WHEN monto_camp<1000 THEN 'B: [500-1000>'
+                                                            WHEN monto_camp<3000 THEN 'C: [1000-3000>'
+                                                            WHEN monto_camp>=3000 THEN 'D: [3000-+>'
+                                                    end)
+                                    when :estr10='rango_sueldo' then rango_sueldo
+                            end as estructura,
+                            count(ges_cli_id) as gestiones,
+                            max(ges_cli_id) as maxid,
+                            capital,
+                            saldo_deuda,
+                            monto_camp
+                        from gestion_cliente as g
+                        inner join cliente as c on g.cli_id_FK=c.cli_id
+                        inner join indicadores.cartera_detalle as cd on c.cli_cod=cd.cuenta
+                        where 
+                            (date(ges_cli_fec) between :fecInicio and :fecFin)
+                            and (date_format(fecha,'%Y%m'))=(date_format(:fec,'%Y%m'))
+                            and c.car_id_FK=:car1
+                            and cd.car_id_fk=:car2
+                            $respuesta
+                            and ges_cli_est=0
+                        group by cli_cod
+                    ) t
+                    inner join gestion_cliente gmax on gmax.ges_cli_id=t.maxid
+                )tt
+                group by estructura
+                order by clientes desc
+        "),array('car1' =>$cartera,'car2' =>$cartera,"fec"=>$fecInicio,"fecInicio"=>$fecInicio,"fecFin"=>$fecFin,
+                "estr1"=>$estructura,"estr2"=>$estructura,"estr3"=>$estructura,"estr4"=>$estructura,"estr5"=>$estructura,
+                "estr6"=>$estructura,"estr7"=>$estructura,"estr8"=>$estructura,"estr9"=>$estructura,"estr10"=>$estructura,
+                "estr11"=>$estructura
+            ));
+    }
+
+    public static function reporteEstructuraCarteraPagos($rq){
+        $cartera=$rq->cartera;
+        $estructura=$rq->estructura;
+        $fecInicio=$rq->fechaInicio;
+        $fecFin=$rq->fechaFin;
+        $tipo=$rq->tipo;
+        
+        return DB::connection('mysql')->select(DB::raw("
+                select 
+                    * 
+                from
+                (select 
+                    estructura,
+                    count(cartera) as clientes,
+                    sum(capital) as capital,
+                    sum(saldo_deuda) as deuda,
+                    sum(monto_camp) as importe,
+                    sum(cliente_pago) as clientes_pagos,
+                    sum(capital_pago) as capital_pagos,
+                    sum(importe_pago) as importe_pagos,
+                    sum(monto_pagos) as monto_pagos,
+                    (sum(cliente_pago)/count(cartera))*100 as cobertura,
+                    (sum(monto_pagos)/sum(monto_camp))*100 as recupero
+                from
+                    (SELECT 
+                        case when :estr11='ubic' then 
+                            (CASE WHEN res_id_FK IN ( 38, 6, 22, 41 ) THEN 'CRFN'
+                                WHEN res_id_FK IN ( 2, 37, 33, 10, 1, 8, 43, 39, 7, 3, 5, 9, 34, 17, 21, 18, 28, 30, 35, 36, 46, 47, 48, 49 ) THEN 'CONTACTO'
+                                WHEN res_id_FK IN ( 19, 27, 12, 26, 13, 4, 11, 12, 20, 14, 15, 16, 23, 24, 29, 31 ) THEN 'ILOCALIZADO'
+                                WHEN res_id_FK IN ( 45, 25, 44 ) THEN 'NO CONTACTO'
+                                WHEN res_id_FK IN ( 32 ) THEN 'NO DISPONIBLE'
+                                ELSE 'SIN GESTIÓN'
+                            end)
+                            else estructura
+                        end as estructura,
+                        cartera,
+                        if(capital is null,0,capital) as capital,
+                        if(saldo_deuda is null,0,saldo_deuda) as saldo_deuda,
+                        if(monto_camp is null,0,monto_camp) as monto_camp,
+                        if(cliente_pago is null,0,cliente_pago) as cliente_pago,
+                        capital_pago,
+                        importe_pago,
+                        monto_pagos
+                    FROM
+                    (SELECT 
+                        case when :estr1='tramo' then if(i.car_id_FK in (34,88,89,2),if(tramo<=2016,2016,tramo),tramo)
+                            when :estr2='score' then score
+                            when :estr3='entidades' then entidades
+                            when :estr4='dep' then dep
+                            when :estr5='dep_ind' then dep_ind
+                            when :estr6='prioridad' then prioridad
+                            when :estr7='saldo_deuda' then 
+                                    (case WHEN saldo_deuda<500 THEN 'A: [0-500>'
+                                        WHEN saldo_deuda<1000 THEN 'B: [500-1000>'
+                                        WHEN saldo_deuda<3000 THEN 'C: [1000-3000>'
+                                        WHEN saldo_deuda>=3000 THEN 'D: [3000-+>'
+                                    end)
+                            when :estr8='capital' then 
+                                    (case WHEN capital<500 THEN 'A: [0-500>'
+                                        WHEN capital<1000 THEN 'B: [500-1000>'
+                                        WHEN capital<3000 THEN 'C: [1000-3000>'
+                                        WHEN capital>=3000 THEN 'D: [3000-+>'
+                                    end)
+                            when :estr9='monto_camp' then 
+                                    (case WHEN monto_camp<500 THEN 'A: [0-500>'
+                                        WHEN monto_camp<1000 THEN 'B: [500-1000>'
+                                        WHEN monto_camp<3000 THEN 'C: [1000-3000>'
+                                        WHEN monto_camp>=3000 THEN 'D: [3000-+>'
+                                    end)
+                            when :estr10='rango_sueldo' then rango_sueldo
+                        end as estructura,
+                        cartera,
+                        capital,
+                        saldo_deuda,
+                        monto_camp,
+                        count(pag_cli_cod) as cant_pagos,
+                        sum(pag_cli_mon) as monto_pagos,
+                        if(pag_cli_cod is null,0,capital) as capital_pago,
+                        if(pag_cli_cod is null,0,monto_camp) as importe_pago,
+                        if(pag_cli_cod is null,0,1) as cliente_pago,
+                        (select max(ges_cli_id)
+                            from cliente c 
+                            inner join gestion_cliente g on c.cli_id=g.cli_id_FK
+                            where c.cli_cod=i.cuenta
+                            and c.car_id_FK=i.car_id_FK
+                            and (date(ges_cli_fec) between :fecInicio3 and :fecFin3)
+                        ) as maxid
+                    FROM indicadores.cartera_detalle i
+                    LEFT join pago_cliente_2 p on p.pag_cli_cod=i.cuenta and p.car_id_FK=:car2 and date(pag_cli_fec) between date(:fecInicio1) and date(:fecFin1)
+                    WHERE 
+                        i.car_id_fk=:car
+                    and date_format(fecha,'%Y%m') in (date_format(:fecInicio2,'%Y%m'),date_format(:fecFin2,'%Y%m'))
+                    group by cuenta
+                    )t
+                    LEFT JOIN gestion_cliente gg ON t.maxid=gg.ges_cli_id
+                )tt
+                group by estructura
+                Order by clientes desc
+            )ttt
+            where clientes_pagos>0
+        "),array("car"=>$cartera,"car2"=>$cartera,"fecInicio1"=>$fecInicio,"fecFin1"=>$fecFin,
+            "fecInicio2"=>$fecInicio,"fecFin2"=>$fecFin,"fecInicio3"=>$fecInicio,"fecFin3"=>$fecFin,
+            "estr1"=>$estructura,"estr2"=>$estructura,"estr3"=>$estructura,"estr4"=>$estructura,
+            "estr5"=>$estructura,"estr6"=>$estructura,"estr7"=>$estructura,"estr8"=>$estructura,
+            "estr9"=>$estructura,"estr10"=>$estructura,"estr11"=>$estructura
+            ));
+    }
 }
