@@ -106,7 +106,122 @@
             </div>
             <!-- end tab panel -->
             <div class="tab-pane fade" id="nav-gestion" role="tabpanel" aria-labelledby="nav-gestion-tab">
-                
+                <div class="row my-3">
+                    <div class="col-md-4">
+                        <div class="px-2">
+                            <label for="cartera" class="font-bold col-form-label text-dark text-righ">Nombre de Cartera</label>
+                            <select name="cartera" id="cartera" class="form-control" v-model="busquedaGestion.cartera">
+                                <option selected value="">Seleccionar</option>
+                                <option v-for="(item,index) in carteras" :key="index"  class="option" :value="item.id">{{item.cartera}}</option>
+                            </select>
+                        </div>
+                        <div class="px-2">
+                            <label for="estructura" class="font-bold col-form-label text-dark text-righ">Estructura</label>
+                            <select name="estructura" id="estructura" class="form-control" v-model="busquedaGestion.estructura">
+                                <option selected value="">Seleccionar</option>
+                                <option class="option" value="tramo">TRAMO</option>
+                                <option class="option" value="score">SCORE</option>
+                                <option class="option" value="dep">DEPARTAMENTO</option>
+                                <option class="option" value="entidades">ENTIDADES</option>
+                                <option class="option" value="dep_ind">DEP. E IND.</option>
+                                <option class="option" value="prioridad">PRIORIDAD</option>
+                                <option class="option" value="ubic">UBICABILIDAD</option>
+                                <option class="option" value="rango_sueldo">RANGO SUELDO</option>
+                                <option class="option" value="saldo_deuda">RANGO DE DEUDA</option>
+                                <option class="option" value="capital">RANGO CAPITAL</option>
+                                <option class="option" value="monto_camp">RANGO IMPORTE CANC.</option>
+                            </select>
+                        </div>
+                        <div class="px-2">
+                            <label for="ubic" class="font-bold col-form-label text-dark text-righ">Tipo de Gestion</label>
+                            <select  class="form-control" v-model="busquedaGestion.tipo">
+                                <option value="">Seleccionar</option>
+                                <option class="option" value="gestion">GESTION</option>
+                                <option class="option" value="pdps">PDP</option>
+                                <option class="option" value="confirmacion">CONFIRMACION</option>
+                                <option class="option" value="pagos">PAGOS</option>
+                            </select>
+                        </div>
+                        <div class="px-2">
+                            <label class="font-bold col-form-label text-dark text-righ">Fecha Inicio</label>
+                            <input type="date" class="form-control" v-model="busquedaGestion.fechaInicio">
+                        </div>
+                        <div class="px-2">
+                            <label class="font-bold col-form-label text-dark text-righ">Fecha Fin</label>
+                            <input type="date" class="form-control" v-model="busquedaGestion.fechaFin">
+                        </div>
+                        <div class="px-2 py-3">
+                            <a href="" @click.prevent="generarReporteGestion()" class="btn btn-outline-blue btn-block waves-effect">Generar Reporte</a>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div v-if="loadingG==true" class="d-flex justify-content-center pt-5">
+                            <div class="pt-5 text-center">
+                                <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center pt-5" v-else-if="datosGestion==''">
+                            <div class="pt-5 text-center">
+                                <i class="fa fa-chart-pie fa-2x text-blue"></i>
+                                <p>Genera un reporte usando los<br>filtros de la izquierda.</p>
+                            </div>
+                        </div>
+                        <div v-else class="">
+                            <div class="d-flex justify-content-center chart-container-pastel " >
+                                <PieChart :chart-data="dataGraficaGestion" :options="confGraficaGestion" class="p-0"></PieChart>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="bg-blue text-center text-white">
+                                        <tr>
+                                            <td class="align-middle">Estructura</td>
+                                            <td class="align-middle">Clientes</td>
+                                            <td class="align-middle">Capital</td>
+                                            <td class="align-middle">Deuda</td>
+                                            <td class="align-middle">IC</td>
+                                            <td class="align-middle" v-if="viewEstrPago">Clientes<br>C/ Pago</td>
+                                            <td class="align-middle" v-if="viewEstrPago">Capital</td>
+                                            <td class="align-middle" v-if="viewEstrPago">IC</td>
+                                            <td class="align-middle" v-if="viewEstrPago">Monto Pago</td>
+                                            <td class="align-middle" v-if="viewEstrPago">%<br>Clientes</td>
+                                            <td class="align-middle" v-if="viewEstrPago">%<br>Recupero</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item,index) in datosGestion" :key="index" class="text-center">
+                                            <td>{{item.estructura}}</td>
+                                            <td>{{formatoNumero(item.clientes,'C')}}</td>
+                                            <td>{{formatoNumero(item.capital,'M')}}</td>
+                                            <td>{{formatoNumero(item.deuda,'M')}}</td>
+                                            <td>{{formatoNumero(item.importe,'M')}}</td>
+                                            <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.clientes_pagos,'C')}}</td>
+                                            <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.capital_pagos,'M')}}</td>
+                                            <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.importe_pagos,'M')}}</td>
+                                            <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.monto_pagos,'M')}}</td>
+                                            <td v-if="viewEstrPago" class="bg-green-light-2">{{item.cobertura?formatoNumero(item.cobertura,'M'):0}}%</td>
+                                            <td v-if="viewEstrPago" class="bg-green-light-2">{{item.recupero?formatoNumero(item.recupero,'M'):0}}%</td>
+                                        </tr>                   
+                                    </tbody>
+                                    <tfoot class="text-center font-bold bg-gray">
+                                        <tr>
+                                            <td>TOTAL</td>
+                                            <td>{{formatoNumero(totalG('clientes'),'C')}}</td>
+                                            <td>{{formatoNumero(totalG('capital'),'M')}}</td>
+                                            <td>{{formatoNumero(totalG('deuda'),'M')}}</td>
+                                            <td>{{formatoNumero(totalG('importe'),'M')}}</td>
+                                            <td v-if="viewEstrPago">{{formatoNumero(totalG('clientes_pagos'),'C')}}</td>
+                                            <td v-if="viewEstrPago">{{formatoNumero(totalG('capital_pagos'),'M')}}</td>
+                                            <td v-if="viewEstrPago">{{formatoNumero(totalG('importe_pagos'),'M')}}</td>
+                                            <td v-if="viewEstrPago">{{formatoNumero(totalG('monto_pagos'),'M')}}</td>
+                                            <td v-if="viewEstrPago">{{totalG('clientes')?formatoNumero((totalG('clientes_pagos')/totalG('clientes'))*100,'M'):0}}%</td>
+                                            <td v-if="viewEstrPago">{{totalG('importe')?formatoNumero((totalG('monto_pagos')/totalG('importe'))*100,'M'):0}}%</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- end tab panel -->
         </div>
@@ -115,16 +230,22 @@
 
 <script>
     import PieChart from '../Chart/PieChart.js';
-    import conf from '../Chart/conf.js';
+    // import conf from '../Chart/conf.js';
     export default {
         props:['carteras'],
         data() {
             return {
                 datos: [],
+                datosGestion: [],
                 loading : false,
+                loadingG : false,
                 busqueda:{cartera:'',ubicabilidad:'',estructura:'',mes:''},
+                busquedaGestion:{cartera:'',tipo:'',estructura:'',fechaInicio:'',fechaFin:''},
                 dataGraficaCartera:[],
                 confGraficaCartera:[],
+                dataGraficaGestion:[],
+                confGraficaGestion:[],
+                viewEstrPago:false
             }
         },
         methods:{
@@ -260,6 +381,128 @@
                 }
                 return x1 + x2
             },
+            generarReporteGestion(){
+                this.loadingG=true;
+                this.datosGestion=[];
+                if(this.busquedaGestion.tipo=='pagos'){
+                    this.viewEstrPago=true;
+                }else{
+                    this.viewEstrPago=false;
+                }
+                if(this.busquedaGestion.cartera!='' && this.busquedaGestion.tipo!='' && this.busquedaGestion.estructura!='' && this.busquedaGestion.fechaInicio!='' && this.busquedaGestion.fechaFin!=''){
+                    axios.post("reporteEstructuraGestionCartera",this.busquedaGestion).then(res=>{
+                        if(res.data){
+                            this.datosGestion=res.data;
+                            this.loadingG=false;
+                            this.graficaReporteGestion();
+                        }
+                    })
+                }else{
+                    setTimeout(() => {
+                        this.loadingG=false;
+                        this.datosGestion=[];
+                    }, 500);
+                }
+            },
+            graficaReporteGestion(){
+                var arrayDatos=[];
+                var arrayLabels=[];
+                var ultDatos=0;
+                for(var i=0;i<this.datosGestion.length;i++){
+                    if(i<=6){
+                        arrayDatos.push(this.datosGestion[i].clientes);
+                        arrayLabels.push(this.datosGestion[i].estructura+" - "+this.formatoNumero(this.datosGestion[i].clientes,'C'));
+                    }else{
+                        ultDatos+=parseInt(this.datosGestion[i].clientes);
+                    }
+                }
+                if(ultDatos!=0){
+                    arrayDatos.push(ultDatos);
+                    arrayLabels.push("OTROS - "+this.formatoNumero(ultDatos,'C'));
+                }
+
+                this.dataGraficaGestion = {
+                    labels: arrayLabels,
+                    datasets: [{
+                                label: 'mm',
+                                data: arrayDatos,
+                                backgroundColor: ['#41afa5','rgb(144, 196, 248)','rgb(119, 194, 234)','rgb(224,153,183)','rgb(239,153,120)','rgb(254,246,163)','rgb(226,230,154)','rgb(170,215,210)','rgb(229,229,229)'],
+                                borderColor: ['#41afa5','#ffff'],
+                                borderWidth: 8
+                            }]                
+                };
+
+                this.confGraficaGestion={
+                    title: {
+                        display: true,
+                        text: 'RESULTADOS - REPORTE ESTRUCTURA'
+                    },
+                    // showDatapoints: true,
+                    responsive:true,
+                    legend: {
+                        position: 'right',
+                    },
+                    maintainAspectRatio: false ,
+                    animation: {
+                    duration: 0,
+                    onComplete: function () {
+                      var self = this,
+                          chartInstance = this.chart,
+                          ctx = chartInstance.ctx;
+               
+                      ctx.font = '12px Arial';
+                      ctx.textAlign = "center";
+                      ctx.fillStyle = "#17202A";
+               
+                      Chart.helpers.each(self.data.datasets.forEach(function (dataset, datasetIndex) {
+                          var meta = self.getDatasetMeta(datasetIndex),
+                              total = 0, //total values to compute fraction
+                              labelxy = [],
+                              offset = Math.PI / 2, //start sector from top
+                              radius,
+                              centerx,
+                              centery, 
+                              lastend = 0; //prev arc's end line: starting with 0
+               
+                          for (var val of dataset.data) { total += val; } 
+               
+                          Chart.helpers.each(meta.data.forEach( function (element, index) {
+                              radius = 0.9 * element._model.outerRadius - element._model.innerRadius;
+                              centerx = element._model.x;
+                              centery = element._model.y;
+                              var thispart = dataset.data[index],
+                                  arcsector = Math.PI * (2 * thispart / total);
+                              if (element.hasValue() && dataset.data[index] > 0) {
+                                labelxy.push(lastend + arcsector / 2 + Math.PI + offset);
+                              }
+                              else {
+                                labelxy.push(-1);
+                              }
+                              lastend += arcsector;
+                          }), self)
+               
+                          var lradius = radius * 3 / 4;
+                          for (var idx in labelxy) {
+                            if (labelxy[idx] === -1) continue;
+                            if(dataset.data[idx] >= 1){//para que muestre en la torta los mayores a 1%
+                                var langle = labelxy[idx],
+                                    dx = centerx + lradius * Math.cos(langle),
+                                    dy = centery + lradius * Math.sin(langle),
+                                    val = Math.round(dataset.data[idx] / total * 100);
+                                    console.log(val);
+                                ctx.fillText(val + '%', dx, dy);
+                            }
+                          }
+               
+                      }), self);
+                    }
+               }
+                }
+            },
+            totalG(base) {
+                return this.datosGestion.reduce( (sum,cur) => sum+parseFloat(cur[base]) , 0);
+            },
+            
         },
         components: {
             PieChart,            

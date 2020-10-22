@@ -32,4 +32,16 @@ class EstructuraController extends Controller
             return Estructura::reporteEstructuraGestorCarteraGestion($rq);
         }
     }
+
+    public function reporteEstructuraGestionCartera(Request $rq){
+        $tipo=$rq->tipo;
+        if($tipo=='pagos'){
+            return Estructura::reporteEstructuraCarteraPagos($rq);
+        }else{
+            return Estructura::reporteEstructuraGestionCartera($rq);
+        }
+    }
+    
+
+
 }

@@ -42,6 +42,7 @@ body{
 .bg-blue{
     background-color: rgb(3,42,81);
 }
+
 .bg-celeste{
     background-attachment: rgb(245,249,250);
 }
@@ -980,6 +981,10 @@ background-color: rgb(250, 250, 250);
 .btn-active{
   background-color: rgb(3,42,81);
   color: #ffff;
+}
+.btn-white{
+  background-color: #fff;
+  color:black;
 }
 
 .table-report table td{

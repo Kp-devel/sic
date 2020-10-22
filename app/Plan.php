@@ -43,41 +43,41 @@ class Plan extends Model
         $entidad = implode(',',$rq->entidad);
         $tipoCliente = implode(',',$rq->tipoCliente);
         $sql="";
-
-        if($tramo!=''){
+        
+        if($tramo!='' && $tramo!="'TODOS'"){
             $sql.=" and tramo in ($tramo)";
         }
-        if($departamento!=''){
+        if($departamento!='' && $departamento!="'TODOS'"){
             $sql.=" and dep in ($departamento)";
         }
-        if($prioridad!=''){
+        if($prioridad!='' && $prioridad!="'TODOS'"){
             $sql.=" and prioridad in ($prioridad)";
         }
-        if($situacion!=''){
+        if($situacion!='' && $situacion!="'TODOS'"){
             $sql.=" and dep_ind in ($situacion)";
         }
-        if($call!=''){
+        if($call!='' && $call!="'TODOS'"){
             $sql.=" and cal_nom in ($call)";
         }
-        if($sueldo!=''){
+        if($sueldo!='' && $sueldo!="'TODOS'"){
             $sql.=" and rango_sueldo in ($sueldo)";
         }
-        if($capital!=''){
+        if($capital!='' && $capital!="'TODOS'"){
             $sql.=" and capital in ($capital)";
         }
-        if($deuda!=''){
+        if($deuda!='' && $deuda!="'TODOS'"){
             $sql.=" and saldo_deuda in ($deuda)";
         }
-        if($importe!=''){
+        if($importe!='' && $importe!="'TODOS'"){
             $sql.=" and monto_camp in ($importe)";
         }
-        if($ubicabilidad!=''){
+        if($ubicabilidad!='' && $ubicabilidad!="'TODOS'"){
             $sql.=" and ubicabilidad in ($ubicabilidad)";
         }
-        if($entidad!=''){
+        if($entidad!='' && $entidad!="'TODOS'"){
             $sql.=" and entidad in ($entidad)";
         }
-        if($tipoCliente!=''){
+        if($tipoCliente!='' && $tipoCliente!="'TODOS'"){
             $sql.=" and nuevo in ($tipoCliente)";
         }
 
@@ -94,7 +94,12 @@ class Plan extends Model
                         capital as cap,
                         saldo_deuda as sal,
                         monto_camp as importe,
-                        rango_sueldo,
+                        (CASE 
+                            WHEN rango_sueldo like ('A%') THEN 'AA'
+                            WHEN rango_sueldo like ('B%') THEN 'BB'
+                            WHEN rango_sueldo like ('C%') THEN 'CC'
+                            WHEN rango_sueldo like ('D%') THEN 'DD'
+                        END) AS rango_sueldo,
                         dep_ind,
                         prioridad,
                         if(cal_nom is null,'SIN CALL',cal_nom) as cal_nom,
@@ -110,30 +115,30 @@ class Plan extends Model
                         END) AS dep,
                         if(tramo <=2016,2016,tramo) AS tramo,
                         (CASE 
-                                WHEN capital <500 THEN 'A'
-                                WHEN capital >= 500 and capital < 1000 THEN 'B'
-                                WHEN capital >= 1000 and capital < 3000 THEN 'C'
-                                WHEN capital >= 3000 THEN 'D'
+                                WHEN capital <500 THEN 'AA'
+                                WHEN capital >= 500 and capital < 1000 THEN 'BB'
+                                WHEN capital >= 1000 and capital < 3000 THEN 'CC'
+                                WHEN capital >= 3000 THEN 'DD'
                         END) AS capital,
                         (CASE 
-                                WHEN saldo_deuda <500 THEN 'A'
-                                WHEN saldo_deuda >= 500 and saldo_deuda < 1000 THEN 'B'
-                                WHEN saldo_deuda >= 1000 and saldo_deuda < 3000 THEN 'C'
-                                WHEN saldo_deuda >= 3000 THEN 'D'
+                                WHEN saldo_deuda <500 THEN 'AA'
+                                WHEN saldo_deuda >= 500 and saldo_deuda < 1000 THEN 'BB'
+                                WHEN saldo_deuda >= 1000 and saldo_deuda < 3000 THEN 'CC'
+                                WHEN saldo_deuda >= 3000 THEN 'DD'
                         END) AS saldo_deuda,
                         (CASE 
-                                WHEN monto_camp <500 THEN 'A'
-                                WHEN monto_camp >= 500 and monto_camp < 1000 THEN 'B'
-                                WHEN monto_camp >= 1000 and monto_camp < 3000 THEN 'C'
-                                WHEN monto_camp >= 3000 THEN 'D'
+                                WHEN monto_camp <500 THEN 'AA'
+                                WHEN monto_camp >= 500 and monto_camp < 1000 THEN 'BB'
+                                WHEN monto_camp >= 1000 and monto_camp < 3000 THEN 'CC'
+                                WHEN monto_camp >= 3000 THEN 'DD'
                         END) AS monto_camp,
                         (CASE 
-                                WHEN ges_cli_fec IS NULL OR DATE_FORMAT(ges_cli_fec,'%Y%m')<DATE_FORMAT(NOW(),'%Y%m') THEN 'SG' 
-                                WHEN res_id_FK IN ( 38, 6, 22, 41 ) THEN 'cfrn'
-                                WHEN res_id_FK IN ( 2,37,33,10,1,8,43,39,7,3,5,9,34,17,21,18,28,30,35,36,46,47,48,49 ) THEN 'contacto'
-                                WHEN res_id_FK IN ( 32 ) THEN 'nodisponible'
-                                WHEN res_id_FK IN ( 19,27,12,26,13,4,11,12,20,14,15,16,23,24,29,31 ) THEN 'inubicable'
-                                WHEN res_id_FK IN ( 45,44, 25 ) THEN 'nocontacto'
+                                WHEN ges_cli_fec IS NULL OR DATE_FORMAT(ges_cli_fec,'%Y%m')<DATE_FORMAT(NOW(),'%Y%m') THEN 'Sin Gestión' 
+                                WHEN res_id_FK IN ( 38, 6, 22, 41 ) THEN 'C-F-R-N'
+                                WHEN res_id_FK IN ( 2,37,33,10,1,8,43,39,7,3,5,9,34,17,21,18,28,30,35,36,46,47,48,49 ) THEN 'Contacto'
+                                WHEN res_id_FK IN ( 32 ) THEN 'No Disponible'
+                                WHEN res_id_FK IN ( 19,27,12,26,13,4,11,12,20,14,15,16,23,24,29,31 ) THEN 'Ilocalizado'
+                                WHEN res_id_FK IN ( 45,44, 25 ) THEN 'No Contacto'
                                 ELSE 'NO ENCONTRADO'
                         END) AS ubicabilidad,
                     (CASE 
@@ -142,7 +147,7 @@ class Plan extends Model
                         WHEN entidades like '%3%' or entidades >= 4 THEN 4
                         ELSE 1
                     END) AS entidad,
-                    if(cli_nuev_cod is null,'NO','NUEVO') as nuevo
+                    if(cli_nuev_cod is null,'Otros','Nuevos/Nuevos Castigo') as nuevo
                 FROM
                     indicadores.cartera_detalle cd
                 INNER JOIN creditoy_cobranzas.cliente c ON c.cli_cod = cd.cuenta
@@ -188,61 +193,60 @@ class Plan extends Model
         $tipoCliente = implode(',',$rq->tipoCliente);
         $usuarios = implode(',',$rq->usuarios);
         $sql="";
-
+        
         if($usuarios!=''){
-            $sql.=" and emp_cod in ($usuarios)";
+            $sql.=" and gestor in ($usuarios)";
         }
-        if($tramo!='' || $tramo!='TODOS'){
+        if($tramo!='' && $tramo!="'TODOS'"){
             $sql.=" and tramo in ($tramo)";
         }
-        if($departamento!='' || $departamento!='TODOS'){
+        if($departamento!='' && $departamento!="'TODOS'"){
             $sql.=" and dep in ($departamento)";
         }
-        if($prioridad!='' || $prioridad!='TODOS'){
+        if($prioridad!='' && $prioridad!="'TODOS'"){
             $sql.=" and prioridad in ($prioridad)";
         }
-        if($situacion!='' || $situacion!='TODOS'){
+        if($situacion!='' && $situacion!="'TODOS'"){
             $sql.=" and dep_ind in ($situacion)";
         }
-        if($call!='' || $call!='TODOS'){
+        if($call!='' && $call!="'TODOS'"){
             $sql.=" and cal_nom in ($call)";
         }
-        if($sueldo!='' || $sueldo!='TODOS'){
+        if($sueldo!='' && $sueldo!="'TODOS'"){
             $sql.=" and rango_sueldo in ($sueldo)";
         }
-        if($capital!='' || $capital!='TODOS'){
+        if($capital!='' && $capital!="'TODOS'"){
             $sql.=" and capital in ($capital)";
         }
-        if($deuda!='' || $deuda!='TODOS'){
+        if($deuda!='' && $deuda!="'TODOS'"){
             $sql.=" and saldo_deuda in ($deuda)";
         }
-        if($importe!='' || $importe!='TODOS'){
+        if($importe!='' && $importe!="'TODOS'"){
             $sql.=" and monto_camp in ($importe)";
         }
-        if($ubicabilidad!='' || $ubicabilidad!='TODOS'){
+        if($ubicabilidad!=''&& $ubicabilidad!="'TODOS'"){
             $sql.=" and ubicabilidad in ($ubicabilidad)";
         }
-        if($entidad!='' || $entidad!='TODOS'){
+        if($entidad!='' && $entidad!="'TODOS'"){
             $sql.=" and entidad in ($entidad)";
         }
-        if($tipoCliente!='' || $tipoCliente!='TODOS'){
+        if($tipoCliente!='' && $tipoCliente!="'TODOS'"){
             $sql.=" and nuevo in ($tipoCliente)";
         }
-        
 
-        $detalle="Tramo: ".$tramo.";";
+        $detalle="Tramo: ".str_replace("'","",$tramo).";";
         $detalle.="Departamentos: ".str_replace("'","",$departamento).";";
         $detalle.="Prioridad: ".str_replace("'","",$prioridad).";";
         $detalle.="Situación Laboral: ".str_replace("'","",$situacion).";";
         $detalle.="Call: ".str_replace("'","",$call).";";
-        $detalle.="Rango Sueldo: ".str_replace("'","",$sueldo).";";
-        $detalle.="Rango Capital: ".str_replace("'","",$capital).";";
-        $detalle.="Rango Deuda: ".str_replace("'","",$deuda).";";
-        $detalle.="Rango Importe: ".str_replace("'","",$importe).";";
+        $detalle.="Rango Sueldo: ".str_replace("DD","[3000+>",str_replace("CC","[1000-3000>",str_replace("BB","[500-1000>",str_replace("AA","[0-500>",str_replace("'","",$sueldo))))).";";
+        $detalle.="Rango Capital: ".str_replace("DD","[3000+>",str_replace("CC","[1000-3000>",str_replace("BB","[500-1000>",str_replace("AA","[0-500>",str_replace("'","",$capital))))).";";
+        $detalle.="Rango Deuda: ".str_replace("DD","[3000+>",str_replace("CC","[1000-3000>",str_replace("BB","[500-1000>",str_replace("AA","[0-500>",str_replace("'","",$deuda))))).";";
+        $detalle.="Rango Importe: ".str_replace("DD","[3000+>",str_replace("CC","[1000-3000>",str_replace("BB","[500-1000>",str_replace("AA","[0-500>",str_replace("'","",$importe))))).";";
         $detalle.="Ubicabilidad: ".str_replace("'","",$ubicabilidad).";";
-        $detalle.="Entidades: ".$entidad.";";
+        $detalle.="Entidades: ".str_replace("'","",$entidad).";";
         $detalle.="TipoCliente: ".str_replace("'","",$tipoCliente).";";
-        $detalle.="Usuarios: ".str_replace("'","",$usuarios).";";
+        $detalle.="Usuarios: ".str_replace("'","",$usuarios)."";
 
         DB::connection('mysql')->select(DB::raw("
                 INSERT INTO indicadores.plan(
@@ -273,7 +277,12 @@ class Plan extends Model
                     cuenta,
                         cli_cod,
                         capital as cap,
-                        rango_sueldo,
+                        (CASE 
+                            WHEN rango_sueldo like ('A%') THEN 'AA'
+                            WHEN rango_sueldo like ('B%') THEN 'BB'
+                            WHEN rango_sueldo like ('C%') THEN 'CC'
+                            WHEN rango_sueldo like ('D%') THEN 'DD'
+                        END) AS rango_sueldo,
                         dep_ind,
                         prioridad,
                         if(cal_nom is null,'SIN CALL',cal_nom) as cal_nom,
@@ -289,30 +298,30 @@ class Plan extends Model
                         END) AS dep,
                         if(tramo <=2016,2016,tramo) AS tramo,
                         (CASE 
-                                WHEN capital <500 THEN 'A'
-                                WHEN capital >= 500 and capital < 1000 THEN 'B'
-                                WHEN capital >= 1000 and capital < 3000 THEN 'C'
-                                WHEN capital >= 3000 THEN 'D'
+                                WHEN capital <500 THEN 'AA'
+                                WHEN capital >= 500 and capital < 1000 THEN 'BB'
+                                WHEN capital >= 1000 and capital < 3000 THEN 'CC'
+                                WHEN capital >= 3000 THEN 'DD'
                         END) AS capital,
                         (CASE 
-                                WHEN saldo_deuda <500 THEN 'A'
-                                WHEN saldo_deuda >= 500 and saldo_deuda < 1000 THEN 'B'
-                                WHEN saldo_deuda >= 1000 and saldo_deuda < 3000 THEN 'C'
-                                WHEN saldo_deuda >= 3000 THEN 'D'
+                                WHEN saldo_deuda <500 THEN 'AA'
+                                WHEN saldo_deuda >= 500 and saldo_deuda < 1000 THEN 'BB'
+                                WHEN saldo_deuda >= 1000 and saldo_deuda < 3000 THEN 'CC'
+                                WHEN saldo_deuda >= 3000 THEN 'DD'
                         END) AS saldo_deuda,
                         (CASE 
-                                WHEN monto_camp <500 THEN 'A'
-                                WHEN monto_camp >= 500 and monto_camp < 1000 THEN 'B'
-                                WHEN monto_camp >= 1000 and monto_camp < 3000 THEN 'C'
-                                WHEN monto_camp >= 3000 THEN 'D'
+                                WHEN monto_camp <500 THEN 'AA'
+                                WHEN monto_camp >= 500 and monto_camp < 1000 THEN 'BB'
+                                WHEN monto_camp >= 1000 and monto_camp < 3000 THEN 'CC'
+                                WHEN monto_camp >= 3000 THEN 'DD'
                         END) AS monto_camp,
                         (CASE 
-                                WHEN ges_cli_fec IS NULL OR DATE_FORMAT(ges_cli_fec,'%Y%m')<DATE_FORMAT(NOW(),'%Y%m') THEN 'SG' 
-                                WHEN res_id_FK IN ( 38, 6, 22, 41 ) THEN 'cfrn'
-                                WHEN res_id_FK IN ( 2,37,33,10,1,8,43,39,7,3,5,9,34,17,21,18,28,30,35,36,46,47,48,49 ) THEN 'contacto'
-                                WHEN res_id_FK IN ( 32 ) THEN 'nodisponible'
-                                WHEN res_id_FK IN ( 19,27,12,26,13,4,11,12,20,14,15,16,23,24,29,31 ) THEN 'inubicable'
-                                WHEN res_id_FK IN ( 45,44, 25 ) THEN 'nocontacto'
+                                WHEN ges_cli_fec IS NULL OR DATE_FORMAT(ges_cli_fec,'%Y%m')<DATE_FORMAT(NOW(),'%Y%m') THEN 'Sin Gestión' 
+                                WHEN res_id_FK IN ( 38, 6, 22, 41 ) THEN 'C-F-R-N'
+                                WHEN res_id_FK IN ( 2,37,33,10,1,8,43,39,7,3,5,9,34,17,21,18,28,30,35,36,46,47,48,49 ) THEN 'Contacto'
+                                WHEN res_id_FK IN ( 32 ) THEN 'No Disponible'
+                                WHEN res_id_FK IN ( 19,27,12,26,13,4,11,12,20,14,15,16,23,24,29,31 ) THEN 'Ilocalizado'
+                                WHEN res_id_FK IN ( 45,44, 25 ) THEN 'No Contacto'
                                 ELSE 'NO ENCONTRADO'
                         END) AS ubicabilidad,
                     (CASE 
@@ -321,7 +330,8 @@ class Plan extends Model
                         WHEN entidades like '%3%' or entidades >= 4 THEN 4
                         ELSE 1
                     END) AS entidad,
-                    if(cli_nuev_cod is null,'NO','NUEVO') as nuevo
+                    if(cli_nuev_cod is null,'Otros','Nuevos/Nuevos Castigo') as nuevo,
+                    if(emp_cod is null,'NO ASIGNADO',emp_cod) as gestor
                 FROM
                     indicadores.cartera_detalle cd
                 INNER JOIN creditoy_cobranzas.cliente c ON c.cli_cod = cd.cuenta
