@@ -458,7 +458,9 @@ class Reporte extends Model
         $fechaInicio=$rq->fechaInicio;
         $fechaFin=$rq->fechaFin;
         $sql="";
-
+        if(strpos($id,",")!=false){
+            $id=substr($id,0,strlen($id)-1);
+        }
         if($opcion==0 || $opcion==5){
             $sql=" and res_ubi=0 ";
         }
@@ -579,8 +581,8 @@ class Reporte extends Model
                     and cli_pas=0
                     and car_id_FK=:car
                     and (date(ges_cli_fec) BETWEEN :fecInicio1 and :fecFin1)
-                    and emp_tel_id_FK=emp_id_FK
-                    and emp_id=:id
+                    and if (emp_tip_acc=2, emp_tel_id_FK=emp_id_FK,emp_tel_id_FK=emp_tel_id_FK)
+                    and emp_id in ($id)
                     $sql
                     and res_est=0
                     GROUP BY cli_id,ges_cli_fec
@@ -588,6 +590,121 @@ class Reporte extends Model
                 INNER JOIN detalle_cliente d on t.cli_id=d.cli_id_FK
                 WHERE det_cli_est=0 and det_cli_pas=0
                 GROUP BY cli_id,ges_cli_fec
-        "),array("car"=>$cartera,"id"=>$id,"fecInicio1"=>$fechaInicio,"fecFin1"=>$fechaFin,"fecInicio2"=>$fechaInicio));
+        "),array("car"=>$cartera,"fecInicio1"=>$fechaInicio,"fecFin1"=>$fechaFin,"fecInicio2"=>$fechaInicio));
     }
+
+    public static function resumenGestor($cartera){
+        return DB::connection('mysql')->select(DB::raw("
+                    SELECT
+                        ss.emp_nom AS gestor,
+                        ss.emp_firma as firma,
+                        if(gestiones is null,0,gestiones) as gestiones,
+                        if(gestiones is null,0,cont) as contacto,
+                        if(gestiones is null,0,no_cont) as no_contacto,
+                        if(gestiones is null,0,no_disp) as no_disponible
+                    FROM
+                        sub_empleado ss
+                        LEFT JOIN (SELECT
+                                if(emp_nom is null,'SIN FIRMA',emp_nom) as emp_nom,
+                                emp_firma,
+                                sum(gestiones) as gestiones,
+                                sum(cont) as cont,
+                                sum(no_cont) as no_cont,
+                                sum(no_disp) as no_disp
+                            FROM
+                            (SELECT          	
+                            firma,
+                                fecha,
+                                sum(gestion) as gestiones,
+                                sum(contacto) as cont,
+                                sum(no_contacto) as no_cont,
+                                sum(no_disponible) as no_disp,
+                                sum(pdp) as pdps,
+                                sum(pago) AS pagos
+                            FROM
+                            (SELECT
+                                date(ges_cli_fec) as fecha,
+                                cli_id,
+                                RIGHT(TRIM( TRAILING ' ' FROM  gc.ges_cli_det),3) as firma,
+                                1 as gestion,
+                                if(res_ubi=0,1,0) as contacto,
+                                if(res_ubi=1,1,0) as no_contacto,
+                                if(res_ubi=2,1,0) as no_disponible,
+                                if(res_id in (1,43),ges_cli_com_can,0) as pdp,
+                                if(res_id in (2),ges_cli_conf_can,0) as pago
+                            FROM 
+                                cliente c
+                            INNER JOIN gestion_cliente gc ON gc.cli_id_FK=c.cli_id
+                            INNER JOIN respuesta r ON gc.res_id_FK=r.res_id
+                            WHERE
+                                cli_est=0
+                                and cli_pas=0
+                                and car_id_FK=:car2
+                                and DATE(ges_cli_fec) = date(NOW())
+                            )t
+                            GROUP BY firma
+                        )tt 
+                        LEFT JOIN sub_empleado s ON tt.firma=s.emp_firma AND emp_est=0
+                        GROUP BY emp_nom
+                        ORDER BY gestiones desc 
+                    )e ON e.emp_nom=ss.emp_nom
+                    WHERE ss.emp_est=0
+                    and ss.car_id_FK=:car
+                    ORDER BY gestiones desc
+        "),array("car"=>$cartera,"car2"=>$cartera));
+    }
+
+    public static function resumenGestionesCartera($cartera){
+        return DB::connection('mysql')->select(DB::raw("
+                    SELECT
+                        cartera,
+                        gestiones,
+                        contactos,
+                        no_contacto,
+                        no_disponible,
+                        pdps,
+                        monto_pdps,
+                        confs,
+                        monto_confs
+                    FROM
+                    (SELECT          	
+                            cartera,
+                            sum(gestion) as gestiones,
+                            sum(contacto) as contactos,
+                            sum(no_contacto) as no_contacto,
+                            sum(no_disponible) as no_disponible,
+                            sum(pdp) as pdps,
+                            sum(monto_pdp) AS monto_pdps,
+                            sum(conf) as confs,
+                            sum(monto_conf) AS monto_confs
+                        FROM
+                        (SELECT
+                            car_nom as cartera,
+                            cli_id,
+                            1 as gestion,
+                            if(res_ubi=0,1,0) as contacto,
+                            if(res_ubi=1,1,0) as no_contacto,
+                            if(res_ubi=2,1,0) as no_disponible,
+                            if(res_id in (1,43),1,0) as pdp,
+                            if(res_id in (1,43),ges_cli_com_can,0) as monto_pdp,
+                            if(res_id in (2),1,0) as conf,
+                            if(res_id in (2),ges_cli_conf_can,0) as monto_conf
+                        FROM 
+                            cliente c
+                        INNER JOIN gestion_cliente gc ON gc.cli_id_FK=c.cli_id
+                        INNER JOIN respuesta r ON gc.res_id_FK=r.res_id
+                        INNER JOIN cartera cc ON c.car_id_FK=cc.car_id
+                        WHERE
+                            cli_est=0
+                            and cli_pas=0
+                            and car_id_FK = :car
+                            and DATE(ges_cli_fec) = date(NOW())
+                        )t
+                    GROUP BY cartera
+                )tt
+                ORDER BY gestiones desc
+        "),array("car"=>$cartera));
+    }
+    
+    
 }

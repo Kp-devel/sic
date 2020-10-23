@@ -209,4 +209,27 @@ class HomeController extends Controller
             return view('errors.403');
         }
     }
+
+    public function indresumengestion(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            return view('admin.indicadores.reporteResumenGestion',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
+    
+
+    public function timingyproyectado(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            return view('admin.indicadores.timingyproyectado',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
 }

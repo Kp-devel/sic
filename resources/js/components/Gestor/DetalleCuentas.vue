@@ -11,6 +11,7 @@
                             <td class="align-middle font-11">FECHA DEUDA</td>
                             <td class="align-middle font-11">DIAS</td>
                             <td class="align-middle font-11">TRAMO</td>
+                            <td class="align-middle font-11">PRIORIDAD</td>
                             <td class="align-middle font-11">MONEDA</td>
                             <td class="align-middle font-11">CAPITAL</td>
                             <td class="align-middle font-11">DEUDA</td>
@@ -33,6 +34,7 @@
                             <td>{{item.fecha_deuda}}</td>
                             <td>{{item.dias}}</td>
                             <td>{{item.tramo}}</td>
+                            <td>{{item.prioridad}}</td>
                             <td>{{item.moneda}}</td>
                             <td>{{formatoMonto(item.capital)}}</td>
                             <td>{{formatoMonto(item.deuda)}}</td>

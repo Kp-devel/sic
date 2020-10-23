@@ -140,6 +140,16 @@ Route::group(['middleware' => ['auth']], function(){
 //Reporte cant de gestiones por hora--------------------------------------------------------------------------------------------------------
     Route::get('/reportegestionhora', 'HomeController@indreportegestionhora')->name('reportegestionhora');
     Route::get('cantGestioneHora/{cartera}', 'ReporteController@cantGestioneHora');
+    
+// Reporte gestión--------------------------------------------------------------------------------------------------------------------------
+    Route::get('/resumengestion', 'HomeController@indresumengestion')->name('resumengestion');
+    Route::get('resumenGestionDia/{cartera}', 'ReporteController@resumenGestionDia');
+
+    
+// Timing y Proyectado ---------------------------------------------------------------------------------------------------------------------
+    Route::get('/timingyproyectado', 'HomeController@timingyproyectado')->name('timingyproyectado');
+    Route::get('timingProyectado/{cartera}', 'TimingController@timingProyectado');
+
 
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix

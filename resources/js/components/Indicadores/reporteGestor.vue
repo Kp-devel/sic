@@ -97,20 +97,20 @@
                 <tfoot class="bg-gray-2 font-bold" v-if="datos!=''">
                     <tr>
                         <td colspan="4" class="text-center">TOTAL ({{totalRegistro}})</td>
-                        <td class="text-center">{{formatoNumero(total('clientes'),'C')}}</td>
-                        <td class="text-right">{{formatoNumero(total('deuda'),'M')}}</td>
-                        <td class="text-center">{{formatoNumero(total('gestiones'),'C')}}</td>
-                        <td class="text-center">{{formatoNumero(total('contactos'),'C')}}</td>
-                        <td class="text-center">{{formatoNumero(total('negociaciones'),'C')}}</td>
-                        <td class="text-center">{{formatoNumero(total('nodisponibles'),'C')}}</td>
-                        <td class="text-center">{{formatoNumero(total('nocontactos'),'C')}}</td>
-                        <td class="text-center">{{formatoNumero(total('clientes_gestionados'),'C')}}</td>
-                        <td class="text-center">{{formatoNumero(total('clientes_contacto'),'C')}}</td>
-                        <td class="text-center">{{formatoNumero(total('pdps'),'C')}}</td>
-                        <td class="text-right">{{formatoNumero(total('montopdps'),'M')}}</td>
-                        <td class="text-center">{{formatoNumero(total('nuevos_sin_gestion_mes'),'C')}}</td>
-                        <td class="text-center">{{formatoNumero(total('sin_gestion_mes'),'C')}}</td>
-                        <td class="text-center">{{formatoNumero(((total('clientes')-total('nuevos_sin_gestion_mes'))/total('clientes'))*100,'M')}}%</td>
+                        <td class="text-center align-middle">{{formatoNumero(total('clientes'),'C')}}</td>
+                        <td class="text-right align-middle">{{formatoNumero(total('deuda'),'M')}}</td>
+                        <td class="text-center align-middle"><a href="" @click.prevent="descargarReporte(0,7,total('gestiones'),'gt')" class="btn btn-sm" :class="{'btn-hover':total('gestiones')>0}"><span v-if="viewSpinner=='gt'" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><p class="p-0 m-0" v-else>{{formatoNumero(total('gestiones'),'C')}}</p></a></td>
+                        <td class="text-center align-middle"><a href="" @click.prevent="descargarReporte(0,0,total('contactos'),'ct')" class="btn btn-sm" :class="{'btn-hover':total('contactos')>0}"><span v-if="viewSpinner=='ct'" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><p class="p-0 m-0" v-else>{{formatoNumero(total('contactos'),'C')}}</p></a></td>
+                        <td class="text-center align-middle"><a href="" @click.prevent="descargarReporte(0,3,total('negociaciones'),'nt')" class="btn btn-sm" :class="{'btn-hover':total('negociaciones')>0}"><span v-if="viewSpinner=='nt'" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><p class="p-0 m-0" v-else>{{formatoNumero(total('negociaciones'),'C')}}</p></a></td>
+                        <td class="text-center align-middle"><a href="" @click.prevent="descargarReporte(0,2,total('nodisponibles'),'ndt')" class="btn btn-sm" :class="{'btn-hover':total('nodisponibles')>0}"><span v-if="viewSpinner=='ndt'" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><p class="p-0 m-0" v-else>{{formatoNumero(total('nodisponibles'),'C')}}</p></a></td>
+                        <td class="text-center align-middle"><a href="" @click.prevent="descargarReporte(0,1,total('nocontactos'),'nct')" class="btn btn-sm" :class="{'btn-hover':total('nocontactos')>0}"><span v-if="viewSpinner=='nct'" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><p class="p-0 m-0" v-else>{{formatoNumero(total('nocontactos'),'C')}}</p></a></td>
+                        <td class="text-center align-middle"><a href="" @click.prevent="descargarReporte(0,4,total('clientes_gestionados'),'cgt')" class="btn btn-sm" :class="{'btn-hover':total('clientes_gestionados')>0}"><span v-if="viewSpinner=='cgt'" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><p class="p-0 m-0" v-else>{{formatoNumero(total('clientes_gestionados'),'C')}}</p></a></td>
+                        <td class="text-center align-middle"><a href="" @click.prevent="descargarReporte(0,5,total('clientes_contacto'),'cct')" class="btn btn-sm" :class="{'btn-hover':total('clientes_contacto')>0}"><span v-if="viewSpinner=='cct'" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><p class="p-0 m-0" v-else>{{formatoNumero(total('clientes_contacto'),'C')}}</p></a></td>
+                        <td class="text-center align-middle"><a href="" @click.prevent="descargarReporte(0,6,total('pdps'),'pt')" class="btn btn-sm" :class="{'btn-hover':total('pdps')>0}"><span v-if="viewSpinner=='pt'" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><p class="p-0 m-0" v-else>{{formatoNumero(total('pdps'),'C')}}</p></a></td>
+                        <td class="text-right align-middle">{{formatoNumero(total('montopdps'),'M')}}</td>
+                        <td class="text-center align-middle">{{formatoNumero(total('nuevos_sin_gestion_mes'),'C')}}</td>
+                        <td class="text-center align-middle">{{formatoNumero(total('sin_gestion_mes'),'C')}}</td>
+                        <td class="text-center align-middle">{{formatoNumero(((total('clientes')-total('nuevos_sin_gestion_mes'))/total('clientes'))*100,'M')}}%</td>
                     </tr>
                 </tfoot>
             </table>
@@ -189,6 +189,12 @@
                 return this.datos.reduce( (sum,cur) => sum+parseFloat(cur[base]) , 0);
             },
             descargarReporte(idEmpleado,n,cant,valor){
+                if(idEmpleado==0){
+                    idEmpleado="";
+                    for(var i=0;i<this.datos.length;i++){
+                        idEmpleado+=this.datos[i].id+",";
+                    }
+                }
                 var datos={id:idEmpleado,opcion:n,cartera:this.carteraDescarga,fechaInicio:this.fechaInicioDescarga,fechaFin:this.fechaFinDescarga};
                 if(cant>0 && this.viewSpinner==''){
                     this.viewSpinner=valor;

@@ -21,19 +21,19 @@
                         <table>
                             <tr class="font-12"> 
                                 <td>Código</td>
-                                <td class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.codigo" @keypress="soloNumeros"></td>
+                                <td class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.codigo" @keypress="soloNumeros" v-on:keyup.enter="listCLientes()"></td>
                                 <td class="font-11">DNI/RUC</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.dni" @keypress="soloNumeros"></td>
+                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.dni" @keypress="soloNumeros" v-on:keyup.enter="listCLientes()"></td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>Nombre</td>
-                                <td colspan="3" class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.nombre"></td>
+                                <td colspan="3" class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.nombre" v-on:keyup.enter="listCLientes()"></td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>Teléfono</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.telefono" @keypress="soloNumeros"></td>
+                                <td><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.telefono" @keypress="soloNumeros" v-on:keyup.enter="listCLientes()"></td>
                                 <td class="text-right pr-1">Tramo</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.tramo"></td>
+                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.tramo" v-on:keyup.enter="listCLientes()"></td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>Ult. Gest.</td>
@@ -567,6 +567,10 @@
                 })
             },
             cargarDatosBusqueda(cartera){
+                this.busqueda.entidades='';
+                this.busqueda.score='';
+                this.busqueda.descuento='';
+                this.busqueda.prioridad='';
                 this.entidades=[];
                 this.score=[];
                 this.descuentos=[];
