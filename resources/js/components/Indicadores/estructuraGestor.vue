@@ -209,13 +209,13 @@
                                     <tfoot class="text-center font-bold bg-gray">
                                         <tr>
                                             <td>TOTAL</td>
-                                            <td>{{formatoNumero(total('clientes'),'C')}}</td>
-                                            <td>{{formatoNumero(total('capital'),'M')}}</td>
-                                            <td>{{formatoNumero(total('deuda'),'M')}}</td>
-                                            <td>{{formatoNumero(total('importe'),'M')}}</td>
-                                            <td>{{formatoNumero(total('cantidad'),'C')}}</td>
-                                            <td v-if="titulo_1='gestiones'">{{formatoNumero(total('cantidad')/total('clientes'),'M')}}</td>
-                                            <td v-else>{{formatoNumero(total('total'),'M')}}</td>
+                                            <td>{{formatoNumero(totall('clientes'),'C')}}</td>
+                                            <td>{{formatoNumero(totall('capital'),'M')}}</td>
+                                            <td>{{formatoNumero(totall('deuda'),'M')}}</td>
+                                            <td>{{formatoNumero(totall('importe'),'M')}}</td>
+                                            <td>{{formatoNumero(totall('cantidad'),'C')}}</td>
+                                            <td v-if="titulo_1=='CANT. GESTIONES'">{{formatoNumero(totall('cantidad')/totall('clientes'),'M')}}</td>
+                                            <td v-else>{{formatoNumero(totall('total'),'M')}}</td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -395,7 +395,7 @@
                }
                 }
             },
-            total(base) {
+            totall(base) {
                 return this.datos.reduce( (sum,cur) => sum+parseFloat(cur[base]) , 0);
             },
             formatoNumero(num,tipo){

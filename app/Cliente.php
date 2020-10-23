@@ -86,7 +86,7 @@ class Cliente extends Model
                     cliente c
                 inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
                 inner join cartera ca ON c.car_id_FK=ca.car_id
-                inner join empleado e on c.emp_tel_id_FK=e.emp_id
+                LEFT join empleado e on c.emp_tel_id_FK=e.emp_id
                 left JOIN gestion_cliente g ON c.ges_cli_tel_id_FK=g.ges_cli_id
                 left JOIN respuesta as r on r.res_id=g.res_id_FK
             ";
@@ -115,7 +115,7 @@ class Cliente extends Model
                     cliente as c
                 inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
                 inner join cartera ca ON c.car_id_FK=ca.car_id
-                inner join empleado e on c.emp_tel_id_FK=e.emp_id
+                LEFT join empleado e on c.emp_tel_id_FK=e.emp_id
                 left JOIN gestion_cliente g ON c.ges_cli_tel_id_FK=g.ges_cli_id
                 left JOIN respuesta as r on r.res_id=g.res_id_FK
                 LEFT JOIN local l on c.loc_id_FK=l.loc_id
@@ -151,7 +151,11 @@ class Cliente extends Model
         }
 
         if($nombre!= null){
-            $sql = $sql." and cli_nom like '%$nombre%' ";
+            $nom = explode(' ',$nombre);
+            for($i=0; $i < count($nom); $i++){
+                $sql .= " AND cli_nom like '%".$nom[$i]."%' ";
+            }
+            // $sql = $sql." and cli_nom like '%$nombre%' ";
         }
         // if($telefono!= null){
         //     $sql = $sql." and cli_tel_tel=$telefono ";
@@ -298,7 +302,7 @@ class Cliente extends Model
 
     public static function datosMes(){
         $idEmpleado=auth()->user()->emp_id;
-        $cartera=session()->get('datos')->idcartera;
+        return $cartera=session()->get('datos')->idcartera;
         $sql="SELECT
                     cli_id,
                     if(emp_meta is null,0,emp_meta) as meta,
@@ -348,7 +352,7 @@ class Cliente extends Model
                 GROUP BY pag_cli_cod
             ) p ON c.cli_cod = p.pag_cli_cod
             WHERE
-                    cli_est=0
+                cli_est=0
             and cli_pas=0
             and emp_tel_id_FK=:emp
             -- GROUP BY cli_id
@@ -512,6 +516,7 @@ class Cliente extends Model
                 fecha_deuda,
                 dias,
                 tramo,
+                prioridad,
                 moneda,
                 capital,
                 deuda,
@@ -536,6 +541,7 @@ class Cliente extends Model
                     det_cli_fec_deu as fecha_deuda,
                     det_cli_dia_atr as dias,
                     det_cli_tra as tramo,
+                    det_cli_estado as prioridad,
                     (case 
                             WHEN det_cli_mon =1 THEN 'SOLES'
                             WHEN det_cli_mon =2 THEN 'DOLARES'

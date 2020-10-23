@@ -35,4 +35,10 @@ class ReporteController extends Controller
         return Reporte::cantGestioneHora($cartera);
     }
 
+    public function resumenGestionDia($cartera){
+        $resumen=Reporte::resumenGestor($cartera);
+        $gestiones=Reporte::resumenGestionesCartera($cartera);
+        $datos=["resumen"=>$resumen,"gestiones"=>$gestiones];
+        return $datos;
+    }
 }
