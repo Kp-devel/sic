@@ -6,6 +6,7 @@
                         <label class="font-bold">Cartera</label>
                         <select class="form-control" v-model="busqueda.cartera">
                             <option value="">Seleccionar</option>
+                            <option value="0">TODAS LAS CARTERAS</option>
                             <option v-for="(item,index) in carteras" :key="index" :value="item.id">{{item.cartera}}</option>
                         </select>
                         <small class="text-danger" v-if="mensaje">{{mensaje}}</small>
@@ -22,7 +23,7 @@
                 </div>
             </div><br>
             <div class="row" v-if="viewTable">
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead class="bg-blue-3 text-white text-center">
@@ -42,14 +43,14 @@
                                     <td colspan="5">No se encontraron resultados</td>
                                 </tr>
                                 <tr v-else v-for="(item,index) in gestiones" :key="index" class="text-center">
-                                    <td>{{item.cartera}}</td>
+                                    <td class="text-left">{{item.cartera}}</td>
                                     <td>{{formatoNumero(item.contactos,'C')}}</td>
                                     <td>{{formatoNumero(item.no_disponible,'C')}}</td>
                                     <td>{{formatoNumero(item.no_contacto,'C')}}</td>
                                     <td class="font-bold">{{formatoNumero(item.gestiones,'C')}}</td>
                                 </tr>
                             </tbody>
-                            <!-- <tfoot class="bg-gray-2 text-center font-weight-bold">
+                            <tfoot class="bg-gray-2 text-center font-weight-bold">
                                 <tr>
                                     <td>TOTAL</td>
                                     <td>{{formatoNumero(totalGestiones('contactos'),'C')}}</td>
@@ -57,7 +58,7 @@
                                     <td>{{formatoNumero(totalGestiones('no_contacto'),'C')}}</td>
                                     <td>{{formatoNumero(totalGestiones('gestiones'),'C')}}</td>
                                 </tr>
-                            </tfoot> -->
+                            </tfoot>
                         </table>
                     </div>
                     <div class="table-responsive">
@@ -79,25 +80,35 @@
                                     <td colspan="5">No se encontraron resultados</td>
                                 </tr>
                                 <tr v-else v-for="(item,index) in gestiones" :key="index" class="text-center">
-                                    <td>{{item.cartera}}</td>
+                                    <td class="text-left">{{item.cartera}}</td>
                                     <td>{{formatoNumero(item.pdps,'C')}}</td>
                                     <td>{{formatoNumero(item.monto_pdps,'M')}}</td>
                                     <td>{{formatoNumero(item.confs,'C')}}</td>
                                     <td>{{formatoNumero(item.monto_confs,'M')}}</td>
                                 </tr>
                             </tbody>
+                            <tfoot class="bg-gray-2 text-center font-weight-bold">
+                                <tr>
+                                    <td>TOTAL</td>
+                                    <td>{{formatoNumero(totalGestiones('pdps'),'C')}}</td>
+                                    <td>{{formatoNumero(totalGestiones('monto_pdps'),'M')}}</td>
+                                    <td>{{formatoNumero(totalGestiones('confs'),'C')}}</td>
+                                    <td>{{formatoNumero(totalGestiones('monto_confs'),'M')}}</td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-7">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead class="bg-blue-3 text-white text-center">
                                 <tr>
-                                    <td colspan="5">GESTIONES POR GESTOR</td>
+                                    <td colspan="6">GESTIONES POR GESTOR</td>
                                 </tr>
                                 <tr>
                                     <td class="align-middle">Gestor</td>
+                                    <td class="align-middle">Cartera</td>
                                     <td class="align-middle">Contacto</td>
                                     <td class="align-middle">No Disponible</td>
                                     <td class="align-middle">No Contacto</td>
@@ -106,10 +117,11 @@
                             </thead>
                             <tbody>
                                 <tr class="text-center" v-if="resumen==''">
-                                    <td colspan="5">No se encontraron resultados</td>
+                                    <td colspan="6">No se encontraron resultados</td>
                                 </tr>
                                 <tr v-else v-for="(item,index) in resumen" :key="index">
                                     <td>{{item.gestor}}</td>
+                                    <td>{{item.cartera}}</td>
                                     <td class="text-center">{{formatoNumero(item.contacto,'C')}}</td>
                                     <td class="text-center">{{formatoNumero(item.no_disponible,'C')}}</td>
                                     <td class="text-center">{{formatoNumero(item.no_contacto,'C')}}</td>
@@ -118,7 +130,7 @@
                             </tbody>
                             <tfoot class="bg-gray-2 text-center font-weight-bold">
                                 <tr>
-                                    <td>TOTAL</td>
+                                    <td colspan="2">TOTAL</td>
                                     <td>{{formatoNumero(totalResumen('contacto'),'c')}}</td>
                                     <td>{{formatoNumero(totalResumen('no_disponible'),'c')}}</td>
                                     <td>{{formatoNumero(totalResumen('no_contacto'),'c')}}</td>

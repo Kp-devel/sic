@@ -594,8 +594,20 @@ class Reporte extends Model
     }
 
     public static function resumenGestor($cartera){
+        $carteras=session()->get('datos')->idcartera;
+        $sql1="";$sql2="";
+        if($cartera!=0){
+            $sql1=" and car_id_FK in ($cartera)";
+            $sql2=" and ss.car_id_FK in ($cartera)";
+        }else{
+            if($carteras!=0){
+                $sql1=" and car_id_FK in ($carteras)";
+                $sql2=" and ss.car_id_FK in ($carteras)";
+            }
+        }
         return DB::connection('mysql')->select(DB::raw("
                     SELECT
+                        car_nom as cartera,
                         ss.emp_nom AS gestor,
                         ss.emp_firma as firma,
                         if(gestiones is null,0,gestiones) as gestiones,
@@ -613,7 +625,7 @@ class Reporte extends Model
                                 sum(no_disp) as no_disp
                             FROM
                             (SELECT          	
-                            firma,
+                                firma,
                                 fecha,
                                 sum(gestion) as gestiones,
                                 sum(contacto) as cont,
@@ -639,7 +651,7 @@ class Reporte extends Model
                             WHERE
                                 cli_est=0
                                 and cli_pas=0
-                                and car_id_FK=:car2
+                                $sql1
                                 and DATE(ges_cli_fec) = date(NOW())
                             )t
                             GROUP BY firma
@@ -648,13 +660,24 @@ class Reporte extends Model
                         GROUP BY emp_nom
                         ORDER BY gestiones desc 
                     )e ON e.emp_nom=ss.emp_nom
+                    LEFT JOIN cartera c ON ss.car_id_FK=c.car_id and car_est=0 and car_pas=0
                     WHERE ss.emp_est=0
-                    and ss.car_id_FK=:car
+                    $sql2
                     ORDER BY gestiones desc
-        "),array("car"=>$cartera,"car2"=>$cartera));
+        "));
     }
 
     public static function resumenGestionesCartera($cartera){
+        $carteras=session()->get('datos')->idcartera;
+        $sql="";
+        if($cartera!=0){
+            $sql=" and car_id_FK in ($cartera)";
+        }else{
+            if($carteras!=0){
+                $sql=" and car_id_FK in ($carteras)";
+            }
+        }
+        
         return DB::connection('mysql')->select(DB::raw("
                     SELECT
                         cartera,
@@ -697,13 +720,13 @@ class Reporte extends Model
                         WHERE
                             cli_est=0
                             and cli_pas=0
-                            and car_id_FK = :car
+                            $sql
                             and DATE(ges_cli_fec) = date(NOW())
                         )t
                     GROUP BY cartera
                 )tt
                 ORDER BY gestiones desc
-        "),array("car"=>$cartera));
+        "));
     }
     
     
