@@ -295,12 +295,12 @@
                 if(this.busqueda.tipoAnalisis=='pdps'){
                     this.titulo_1="Cant. PDP";
                     this.titulo_2="Monto PDP";
-                    this.titulo_3="Promedio";
+                    this.titulo_3="Ticket PDP";
                 }
                 if(this.busqueda.tipoAnalisis=='confirmacion'){
                     this.titulo_1="Cant. Conf.";
                     this.titulo_2="Monto Conf.";
-                    this.titulo_3="Promedio";
+                    this.titulo_3="Ticket Conf.";
                 }
                 if(this.busqueda.tipoAnalisis=='gestion'){
                     this.titulo_1="Cant. Gestiones";

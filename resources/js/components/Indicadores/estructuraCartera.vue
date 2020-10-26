@@ -199,6 +199,7 @@
                                             <td class="align-middle" v-if="viewEstrPago">Monto Pago</td>
                                             <td class="align-middle" v-if="viewEstrPago">%<br>Clientes</td>
                                             <td class="align-middle" v-if="viewEstrPago">%<br>Recupero</td>
+                                            <td class="align-middle" v-if="viewEstrPago">Ticket Pago</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -217,6 +218,7 @@
                                             <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.monto_pagos,'M')}}</td>
                                             <td v-if="viewEstrPago" class="bg-green-light-2">{{item.cobertura?formatoNumero(item.cobertura,'M'):0}}%</td>
                                             <td v-if="viewEstrPago" class="bg-green-light-2">{{item.recupero?formatoNumero(item.recupero,'M'):0}}%</td>
+                                            <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.promedio,'M')}}</td>
                                         </tr>                   
                                     </tbody>
                                     <tfoot class="text-center font-bold bg-gray">
@@ -235,6 +237,7 @@
                                             <td v-if="viewEstrPago">{{formatoNumero(totalG('monto_pagos'),'M')}}</td>
                                             <td v-if="viewEstrPago">{{totalG('clientes')?formatoNumero((totalG('clientes_pagos')/totalG('clientes'))*100,'M'):0}}%</td>
                                             <td v-if="viewEstrPago">{{totalG('importe')?formatoNumero((totalG('monto_pagos')/totalG('importe'))*100,'M'):0}}%</td>
+                                            <td v-if="viewEstrPago">{{formatoNumero(totalG('monto_pagos')/totalG('clientes_pagos'),'M')}}</td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -420,12 +423,12 @@
                 if(this.busquedaGestion.tipo=='pdps'){
                     this.titulo_1="PDP";
                     this.titulo_2="Monto PDP";
-                    this.titulo_3="Promedio";
+                    this.titulo_3="Ticket PDP";
                 }
                 if(this.busquedaGestion.tipo=='confirmacion'){
                     this.titulo_1="Conf.";
                     this.titulo_2="Monto Conf.";
-                    this.titulo_3="Promedio";
+                    this.titulo_3="Ticket Conf.";
                 }
                 if(this.busquedaGestion.tipo=='gestion'){
                     this.titulo_1="Cant. Gestiones";
@@ -595,7 +598,7 @@
                 if(this.tipo=="pdps" || this.tipo=="confirmacion"){
                     data.push(["Estructura","Clientes","Capital","Deuda","IC",this.titulo_1,this.titulo_2,this.titulo_3]);
                 }else if(this.tipo=="pagos"){
-                    data.push(["Estructura","Clientes","Capital","Deuda","IC","Clientes C/ Pago","Capital","IC","Monto Pago","% Clientes","% Recupero"]);
+                    data.push(["Estructura","Clientes","Capital","Deuda","IC","Clientes C/ Pago","Capital","IC","Monto Pago","% Clientes","% Recupero","Ticket Pago"]);
                 }else{
                     data.push(["Estructura","Clientes","Capital","Deuda","IC",this.titulo_1,this.titulo_2]);
                 }
@@ -626,7 +629,8 @@
                                   this.formatoNumero(parseFloat(this.datosGestion[i].importe_pagos),'M'),
                                   this.formatoNumero(parseFloat(this.datosGestion[i].monto_pagos),'M'),
                                   this.formatoNumero(parseFloat(this.datosGestion[i].cobertura),'M')+"%",
-                                  this.formatoNumero(parseFloat(this.datosGestion[i].recupero),'M')+"%"
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].recupero),'M')+"%",
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].promedio),'M')
                                 ]);
                         totalClientesPagos+=parseInt(this.datosGestion[i].clientes_pagos);
                         totalCapitalPagos+=parseFloat(this.datosGestion[i].capital_pagos);
@@ -655,7 +659,7 @@
                 if(this.tipo=="pdps" || this.tipo=="confirmacion"){
                     data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalCantidad,'C'),this.formatoNumero(totalTotal,'M'),this.formatoNumero((totalTotal/totalCantidad),'M')]);
                 }else if(this.tipo=="pagos"){
-                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalClientesPagos,'C'),this.formatoNumero(totalCapitalPagos,'M'),this.formatoNumero(totalICPagos,'M'),this.formatoNumero(totalMontoPagos,'M'),this.formatoNumero((totalClientesPagos/totalClientes)*100,'M')+"%",this.formatoNumero((totalMontoPagos/totalIc)*100,'M')+"%"]);
+                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalClientesPagos,'C'),this.formatoNumero(totalCapitalPagos,'M'),this.formatoNumero(totalICPagos,'M'),this.formatoNumero(totalMontoPagos,'M'),this.formatoNumero((totalClientesPagos/totalClientes)*100,'M')+"%",this.formatoNumero((totalMontoPagos/totalIc)*100,'M')+"%",this.formatoNumero((totalMontoPagos/totalClientesPagos),'M')]);
                 }else{
                     data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalCantidad,'C'),this.formatoNumero(totalCantidad/totalClientes,'M')]);
                 }
