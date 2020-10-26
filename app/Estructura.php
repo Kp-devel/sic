@@ -543,7 +543,8 @@ class Estructura extends Model
                     sum(importe_pago) as importe_pagos,
                     sum(monto_pagos) as monto_pagos,
                     (sum(cliente_pago)/count(cartera))*100 as cobertura,
-                    (sum(monto_pagos)/sum(monto_camp))*100 as recupero
+                    (sum(monto_pagos)/sum(monto_camp))*100 as recupero,
+                    sum(monto_pagos)/sum(cliente_pago) as promedio
                 from
                     (SELECT 
                         case when :estr11='ubic' then 
