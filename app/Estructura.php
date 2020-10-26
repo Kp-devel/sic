@@ -431,9 +431,11 @@ class Estructura extends Model
                         sum(monto_camp) as importe,
                         case when :tipo1='pdps' then sum(can_pdp)
                             when :tipo2='confirmacion' then sum(can_conf)
+                            else sum(gestiones)
                         end as cantidad,
                         case when :tipo3='pdps' then sum(monto_pdp)
                             when :tipo4='confirmacion' then sum(monto_conf)
+                            else sum(gestiones)/count(cli_cod)
                         end as total,
                         case when :tipo5='pdps' then sum(monto_pdp)/sum(can_pdp)
                             when :tipo6='confirmacion' then sum(monto_conf)/sum(can_conf)
@@ -456,7 +458,8 @@ class Estructura extends Model
                         monto_pdp,
                         monto_conf,
                         can_pdp,
-                        can_conf
+                        can_conf,
+                        gestiones
                     from
                         (select 
                             cli_cod, 
