@@ -196,7 +196,10 @@ class Estructura extends Model
                         case when :tipo3='pdps' then sum(monto_pdp)
                             when :tipo4='confirmacion' then sum(monto_conf)
                             else sum(gestiones)/count(cli_cod)
-                        end as total
+                        end as total,
+                        case when :tipo5='pdps' then sum(monto_pdp)/sum(can_pdp)
+                            when :tipo6='confirmacion' then sum(monto_conf)/sum(can_conf)
+                        end as promedio
                     from
                         (select 
                             cli_cod, 
@@ -252,7 +255,7 @@ class Estructura extends Model
         "),array('car1' =>$cartera,'car2' =>$cartera,"firma"=>'%'.$firma,"fec"=>$fecInicio,"fecInicio"=>$fecInicio,"fecFin"=>$fecFin,
                 "estr1"=>$estructura,"estr2"=>$estructura,"estr3"=>$estructura,"estr4"=>$estructura,"estr5"=>$estructura,
                 "estr6"=>$estructura,"estr7"=>$estructura,"estr8"=>$estructura,"estr9"=>$estructura,"estr10"=>$estructura,
-                "tipo1"=>$tipo,"tipo2"=>$tipo,"tipo3"=>$tipo,"tipo4"=>$tipo));
+                "tipo1"=>$tipo,"tipo2"=>$tipo,"tipo3"=>$tipo,"tipo4"=>$tipo,"tipo5"=>$tipo,"tipo6"=>$tipo));
     }
 
     public static function reporteEstructuraGestorCarteraTodo(Request $rq){
@@ -431,7 +434,10 @@ class Estructura extends Model
                         end as cantidad,
                         case when :tipo3='pdps' then sum(monto_pdp)
                             when :tipo4='confirmacion' then sum(monto_conf)
-                        end as total
+                        end as total,
+                        case when :tipo5='pdps' then sum(monto_pdp)/sum(can_pdp)
+                            when :tipo6='confirmacion' then sum(monto_conf)/sum(can_conf)
+                        end as promedio
                     FROM
                     (select 
                         case when :estr11='ubic' then 
@@ -508,7 +514,7 @@ class Estructura extends Model
         "),array('car1' =>$cartera,'car2' =>$cartera,"fec"=>$fecInicio,"fecInicio"=>$fecInicio,"fecFin"=>$fecFin,
                 "estr1"=>$estructura,"estr2"=>$estructura,"estr3"=>$estructura,"estr4"=>$estructura,"estr5"=>$estructura,
                 "estr6"=>$estructura,"estr7"=>$estructura,"estr8"=>$estructura,"estr9"=>$estructura,"estr10"=>$estructura,
-                "estr11"=>$estructura,"tipo1"=>$tipo,"tipo2"=>$tipo,"tipo3"=>$tipo,"tipo4"=>$tipo
+                "estr11"=>$estructura,"tipo1"=>$tipo,"tipo2"=>$tipo,"tipo3"=>$tipo,"tipo4"=>$tipo,"tipo5"=>$tipo,"tipo6"=>$tipo
             ));
     }
 
@@ -538,13 +544,19 @@ class Estructura extends Model
                 from
                     (SELECT 
                         case when :estr11='ubic' then 
-                            (CASE WHEN res_id_FK IN ( 38, 6, 22, 41 ) THEN 'CRFN'
-                                WHEN res_id_FK IN ( 2, 37, 33, 10, 1, 8, 43, 39, 7, 3, 5, 9, 34, 17, 21, 18, 28, 30, 35, 36, 46, 47, 48, 49 ) THEN 'CONTACTO'
-                                WHEN res_id_FK IN ( 19, 27, 12, 26, 13, 4, 11, 12, 20, 14, 15, 16, 23, 24, 29, 31 ) THEN 'ILOCALIZADO'
-                                WHEN res_id_FK IN ( 45, 25, 44 ) THEN 'NO CONTACTO'
-                                WHEN res_id_FK IN ( 32 ) THEN 'NO DISPONIBLE'
-                                ELSE 'SIN GESTIÓN'
-                            end)
+                                (CASE WHEN res_id_FK IN ( 38, 6, 22, 41 ) THEN 'CRFN'
+                                    WHEN res_id_FK IN ( 2, 37, 33, 10, 1, 8, 43, 39, 7, 3, 5, 9, 34, 17, 21, 18, 28, 30, 35, 36, 46, 47, 48, 49 ) THEN 'CONTACTO'
+                                    WHEN res_id_FK IN ( 19, 27, 12, 26, 13, 4, 11, 12, 20, 14, 15, 16, 23, 24, 29, 31 ) THEN 'ILOCALIZADO'
+                                    WHEN res_id_FK IN ( 45, 25, 44 ) THEN 'NO CONTACTO'
+                                    WHEN res_id_FK IN ( 32 ) THEN 'NO DISPONIBLE'
+                                    ELSE 'SIN GESTIÓN'
+                                end)
+                            when :estr12='rango_pago' then
+                                (case WHEN monto_pagos<500 THEN 'A: [0-500>'
+                                    WHEN monto_pagos<1000 THEN 'B: [500-1000>'
+                                    WHEN monto_pagos<3000 THEN 'C: [1000-3000>'
+                                    WHEN monto_pagos>=3000 THEN 'D: [3000-+>'
+                                end)
                             else estructura
                         end as estructura,
                         cartera,
@@ -616,7 +628,7 @@ class Estructura extends Model
             "fecInicio2"=>$fecInicio,"fecFin2"=>$fecFin,"fecInicio3"=>$fecInicio,"fecFin3"=>$fecFin,
             "estr1"=>$estructura,"estr2"=>$estructura,"estr3"=>$estructura,"estr4"=>$estructura,
             "estr5"=>$estructura,"estr6"=>$estructura,"estr7"=>$estructura,"estr8"=>$estructura,
-            "estr9"=>$estructura,"estr10"=>$estructura,"estr11"=>$estructura
+            "estr9"=>$estructura,"estr10"=>$estructura,"estr11"=>$estructura,"estr12"=>$estructura
             ));
     }
 }
