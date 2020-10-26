@@ -210,7 +210,7 @@
                                             <td>{{formatoNumero(item.importe,'M')}}</td>
                                             <td v-if="titulo_1!=''">{{formatoNumero(item.cantidad,'C')}}</td>
                                             <td v-if="titulo_1!=''">{{formatoNumero(item.total,'M')}}</td>
-                                            <td v-if="titulo_1!=''">{{formatoNumero(item.promedio,'M')}}</td>
+                                            <td v-if="titulo_3!=''">{{formatoNumero(item.promedio,'M')}}</td>
                                             <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.clientes_pagos,'C')}}</td>
                                             <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.capital_pagos,'M')}}</td>
                                             <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.importe_pagos,'M')}}</td>
@@ -227,8 +227,8 @@
                                             <td>{{formatoNumero(totalG('deuda'),'M')}}</td>
                                             <td>{{formatoNumero(totalG('importe'),'M')}}</td>
                                             <td v-if="titulo_1!=''">{{formatoNumero(totalG('cantidad'),'C')}}</td>
-                                            <td v-if="titulo_1!=''">{{formatoNumero(totalG('total'),'M')}}</td>
-                                            <td v-if="titulo_1!=''">{{formatoNumero((totalG('total')/totalG('cantidad')),'M')}}</td>
+                                            <td v-if="titulo_1!=''">{{titulo_1=='Cant. Gestiones'?formatoNumero(totalG('cantidad')/totalG('clientes'),'M'):formatoNumero(totalG('total'),'M')}}</td>
+                                            <td v-if="titulo_3!=''">{{formatoNumero((totalG('total')/totalG('cantidad')),'M')}}</td>
                                             <td v-if="viewEstrPago">{{formatoNumero(totalG('clientes_pagos'),'C')}}</td>
                                             <td v-if="viewEstrPago">{{formatoNumero(totalG('capital_pagos'),'M')}}</td>
                                             <td v-if="viewEstrPago">{{formatoNumero(totalG('importe_pagos'),'M')}}</td>
@@ -427,6 +427,10 @@
                     this.titulo_2="Monto Conf.";
                     this.titulo_3="Promedio";
                 }
+                if(this.busquedaGestion.tipo=='gestion'){
+                    this.titulo_1="Cant. Gestiones";
+                    this.titulo_2="Intensidad";
+                }
                 if(this.busquedaGestion.tipo=='pagos'){
                     this.viewEstrPago=true;
                 }else{
@@ -593,7 +597,7 @@
                 }else if(this.tipo=="pagos"){
                     data.push(["Estructura","Clientes","Capital","Deuda","IC","Clientes C/ Pago","Capital","IC","Monto Pago","% Clientes","% Recupero"]);
                 }else{
-                    data.push(["Estructura","Clientes","Capital","Deuda","IC"]);
+                    data.push(["Estructura","Clientes","Capital","Deuda","IC",this.titulo_1,this.titulo_2]);
                 }
 
                 for(var i=0;i<this.datosGestion.length;i++){
@@ -604,7 +608,7 @@
                                   this.formatoNumero(parseFloat(this.datosGestion[i].capital),'M'),
                                   this.formatoNumero(parseFloat(this.datosGestion[i].deuda),'M'),
                                   this.formatoNumero(parseFloat(this.datosGestion[i].importe),'M'),
-                                  this.formatoNumero(parseFloat(this.datosGestion[i].cantidad),'C'),
+                                  this.formatoNumero(parseInt(this.datosGestion[i].cantidad),'C'),
                                   this.formatoNumero(parseFloat(this.datosGestion[i].total),'M'),
                                   this.formatoNumero(parseFloat(this.datosGestion[i].promedio),'M')
                                   ]);
@@ -634,8 +638,12 @@
                                   this.formatoNumero(parseInt(this.datosGestion[i].clientes),'C'),
                                   this.formatoNumero(parseFloat(this.datosGestion[i].capital),'M'),
                                   this.formatoNumero(parseFloat(this.datosGestion[i].deuda),'M'),
-                                  this.formatoNumero(parseFloat(this.datosGestion[i].importe),'M')
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].importe),'M'),
+                                  this.formatoNumero(parseInt(this.datosGestion[i].cantidad),'C'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].total),'M')
                                   ]);                        
+                        totalCantidad+=parseInt(this.datosGestion[i].cantidad);
+                        totalTotal+=parseFloat(this.datosGestion[i].total);
                     }
 
                     totalClientes+=parseInt(this.datosGestion[i].clientes);
@@ -649,7 +657,7 @@
                 }else if(this.tipo=="pagos"){
                     data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalClientesPagos,'C'),this.formatoNumero(totalCapitalPagos,'M'),this.formatoNumero(totalICPagos,'M'),this.formatoNumero(totalMontoPagos,'M'),this.formatoNumero((totalClientesPagos/totalClientes)*100,'M')+"%",this.formatoNumero((totalMontoPagos/totalIc)*100,'M')+"%"]);
                 }else{
-                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M')]);
+                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalCantidad,'C'),this.formatoNumero(totalCantidad/totalClientes,'M')]);
                 }
                 let hoja="";
                 this.carteras.forEach(element => {
