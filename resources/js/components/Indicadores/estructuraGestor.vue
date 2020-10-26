@@ -203,6 +203,7 @@
                                             <td>IC</td>
                                             <td>{{titulo_1}}</td>
                                             <td>{{titulo_2}}</td>
+                                            <td v-if="titulo_3!=''">{{titulo_3}}</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -214,6 +215,7 @@
                                             <td>{{formatoNumero(item.importe,'M')}}</td>
                                             <td>{{formatoNumero(item.cantidad,'C')}}</td>
                                             <td>{{formatoNumero(item.total,'M')}}</td>
+                                            <td v-if="titulo_3">{{formatoNumero(item.promedio,'M')}}</td>
                                         </tr>                   
                                     </tbody>
                                     <tfoot class="text-center font-bold bg-gray">
@@ -226,6 +228,7 @@
                                             <td>{{formatoNumero(totall('cantidad'),'C')}}</td>
                                             <td v-if="titulo_1=='Cant. Gestiones'">{{formatoNumero(totall('cantidad')/totall('clientes'),'M')}}</td>
                                             <td v-else>{{formatoNumero(totall('total'),'M')}}</td>
+                                            <td v-if="titulo_3!=''">{{formatoNumero(totall('total')/totall('cantidad'),'M')}}</td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -288,13 +291,16 @@
                 this.datos=[];
                 this.carteraG=this.busqueda.cartera;
                 this.tipo=this.busqueda.tipoAnalisis;
+                this.titulo_3="";
                 if(this.busqueda.tipoAnalisis=='pdps'){
                     this.titulo_1="Cant. PDP";
                     this.titulo_2="Monto PDP";
+                    this.titulo_3="Promedio";
                 }
                 if(this.busqueda.tipoAnalisis=='confirmacion'){
                     this.titulo_1="Cant. Conf.";
                     this.titulo_2="Monto Conf.";
+                    this.titulo_3="Promedio";
                 }
                 if(this.busqueda.tipoAnalisis=='gestion'){
                     this.titulo_1="Cant. Gestiones";
@@ -596,18 +602,34 @@
                 var totalCantidad=0;
                 var totalTotal=0;
                 var totalGestiones=0;
-                data.push(["Estructura","Clientes","Capital","Deuda","IC",this.titulo_1,this.titulo_2]);
+                if(this.tipo=="pdps" || this.tipo=="confirmacion"){
+                    data.push(["Estructura","Clientes","Capital","Deuda","IC",this.titulo_1,this.titulo_2,this.titulo_3]);
+                }else{
+                    data.push(["Estructura","Clientes","Capital","Deuda","IC",this.titulo_1,this.titulo_2]);
+                }
             
                 for(var i=0;i<this.datos.length;i++){
                     // data.push(Object.values(this.datosGestion[i]));
-                    data.push([this.datos[i].estructura,
-                                this.formatoNumero(parseInt(this.datos[i].clientes),'C'),
-                                this.formatoNumero(parseFloat(this.datos[i].capital),'M'),
-                                this.formatoNumero(parseFloat(this.datos[i].deuda),'M'),
-                                this.formatoNumero(parseFloat(this.datos[i].importe),'M'),
-                                this.formatoNumero(parseFloat(this.datos[i].cantidad),'C'),
-                                this.formatoNumero(parseFloat(this.datos[i].total),'M')
-                                ]);
+                    if(this.tipo=="pdps" || this.tipo=="confirmacion"){
+                        data.push([this.datos[i].estructura,
+                                    this.formatoNumero(parseInt(this.datos[i].clientes),'C'),
+                                    this.formatoNumero(parseFloat(this.datos[i].capital),'M'),
+                                    this.formatoNumero(parseFloat(this.datos[i].deuda),'M'),
+                                    this.formatoNumero(parseFloat(this.datos[i].importe),'M'),
+                                    this.formatoNumero(parseFloat(this.datos[i].cantidad),'C'),
+                                    this.formatoNumero(parseFloat(this.datos[i].total),'M'),
+                                    this.formatoNumero(parseFloat(this.datos[i].promedio),'M')
+                                    ]);
+                    }else{
+                        data.push([this.datos[i].estructura,
+                                    this.formatoNumero(parseInt(this.datos[i].clientes),'C'),
+                                    this.formatoNumero(parseFloat(this.datos[i].capital),'M'),
+                                    this.formatoNumero(parseFloat(this.datos[i].deuda),'M'),
+                                    this.formatoNumero(parseFloat(this.datos[i].importe),'M'),
+                                    this.formatoNumero(parseFloat(this.datos[i].cantidad),'C'),
+                                    this.formatoNumero(parseFloat(this.datos[i].total),'M')
+                                    ]);
+                    }
 
                     totalClientes+=parseInt(this.datos[i].clientes);
                     totalCapital+=parseFloat(this.datos[i].capital);
@@ -618,7 +640,7 @@
                 }
 
                 if(this.tipo=="pdps" || this.tipo=="confirmacion"){
-                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalCantidad,'C'),this.formatoNumero(totalTotal,'M')]);
+                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalCantidad,'C'),this.formatoNumero(totalTotal,'M'),this.formatoNumero(totalTotal/totalCantidad,'M')]);
                 }else{
                     data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalCantidad,'C'),this.formatoNumero(totalCantidad/totalClientes,'M')]);
                 }

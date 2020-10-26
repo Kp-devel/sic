@@ -121,6 +121,16 @@
                             </select>
                         </div>
                         <div class="px-2">
+                            <label for="ubic" class="font-bold col-form-label text-dark text-righ">Tipo de Gestion</label>
+                            <select  class="form-control" v-model="busquedaGestion.tipo">
+                                <option value="">Seleccionar</option>
+                                <option class="option" value="gestion">GESTION</option>
+                                <option class="option" value="pdps">PDP</option>
+                                <option class="option" value="confirmacion">CONFIRMACION</option>
+                                <option class="option" value="pagos">PAGOS</option>
+                            </select>
+                        </div>
+                        <div class="px-2">
                             <label for="estructura" class="font-bold col-form-label text-dark text-righ">Estructura</label>
                             <select name="estructura" id="estructura" class="form-control" v-model="busquedaGestion.estructura">
                                 <option selected value="">Seleccionar</option>
@@ -132,19 +142,10 @@
                                 <option class="option" value="prioridad">PRIORIDAD</option>
                                 <option class="option" value="ubic">UBICABILIDAD</option>
                                 <option class="option" value="rango_sueldo">RANGO SUELDO</option>
-                                <option class="option" value="saldo_deuda">RANGO DE DEUDA</option>
+                                <option class="option" value="saldo_deuda">RANGO DEUDA</option>
                                 <option class="option" value="capital">RANGO CAPITAL</option>
                                 <option class="option" value="monto_camp">RANGO IMPORTE CANC.</option>
-                            </select>
-                        </div>
-                        <div class="px-2">
-                            <label for="ubic" class="font-bold col-form-label text-dark text-righ">Tipo de Gestion</label>
-                            <select  class="form-control" v-model="busquedaGestion.tipo">
-                                <option value="">Seleccionar</option>
-                                <option class="option" value="gestion">GESTION</option>
-                                <option class="option" value="pdps">PDP</option>
-                                <option class="option" value="confirmacion">CONFIRMACION</option>
-                                <option class="option" value="pagos">PAGOS</option>
+                                <option class="option" value="rango_pago" v-if="busquedaGestion.tipo=='pagos'">RANGO PAGO</option>
                             </select>
                         </div>
                         <div class="px-2">
@@ -191,6 +192,7 @@
                                             <td class="align-middle">IC</td>
                                             <td class="align-middle" v-if="titulo_1!=''">{{titulo_1}}</td>
                                             <td class="align-middle" v-if="titulo_2!=''">{{titulo_2}}</td>
+                                            <td class="align-middle" v-if="titulo_3!=''">{{titulo_3}}</td>
                                             <td class="align-middle" v-if="viewEstrPago">Clientes<br>C/ Pago</td>
                                             <td class="align-middle" v-if="viewEstrPago">Capital</td>
                                             <td class="align-middle" v-if="viewEstrPago">IC</td>
@@ -208,6 +210,7 @@
                                             <td>{{formatoNumero(item.importe,'M')}}</td>
                                             <td v-if="titulo_1!=''">{{formatoNumero(item.cantidad,'C')}}</td>
                                             <td v-if="titulo_1!=''">{{formatoNumero(item.total,'M')}}</td>
+                                            <td v-if="titulo_1!=''">{{formatoNumero(item.promedio,'M')}}</td>
                                             <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.clientes_pagos,'C')}}</td>
                                             <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.capital_pagos,'M')}}</td>
                                             <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.importe_pagos,'M')}}</td>
@@ -225,6 +228,7 @@
                                             <td>{{formatoNumero(totalG('importe'),'M')}}</td>
                                             <td v-if="titulo_1!=''">{{formatoNumero(totalG('cantidad'),'C')}}</td>
                                             <td v-if="titulo_1!=''">{{formatoNumero(totalG('total'),'M')}}</td>
+                                            <td v-if="titulo_1!=''">{{formatoNumero((totalG('total')/totalG('cantidad')),'M')}}</td>
                                             <td v-if="viewEstrPago">{{formatoNumero(totalG('clientes_pagos'),'C')}}</td>
                                             <td v-if="viewEstrPago">{{formatoNumero(totalG('capital_pagos'),'M')}}</td>
                                             <td v-if="viewEstrPago">{{formatoNumero(totalG('importe_pagos'),'M')}}</td>
@@ -265,6 +269,7 @@
                 viewEstrPago:false,
                 titulo_1:'',
                 titulo_2:'',
+                titulo_3:'',
                 tipo:'',
                 carteraC:'',
                 carteraG:''
@@ -409,15 +414,18 @@
                 this.datosGestion=[];
                 this.titulo_1="";
                 this.titulo_2="";
+                this.titulo_3="";
                 this.tipo=this.busquedaGestion.tipo;
                 this.carteraG=this.busquedaGestion.cartera;
                 if(this.busquedaGestion.tipo=='pdps'){
                     this.titulo_1="PDP";
                     this.titulo_2="Monto PDP";
+                    this.titulo_3="Promedio";
                 }
                 if(this.busquedaGestion.tipo=='confirmacion'){
                     this.titulo_1="Conf.";
                     this.titulo_2="Monto Conf.";
+                    this.titulo_3="Promedio";
                 }
                 if(this.busquedaGestion.tipo=='pagos'){
                     this.viewEstrPago=true;
@@ -581,7 +589,7 @@
                 var totalMontoPagos=0;
                 var totalMontoPagos=0;
                 if(this.tipo=="pdps" || this.tipo=="confirmacion"){
-                    data.push(["Estructura","Clientes","Capital","Deuda","IC",this.titulo_1,this.titulo_2]);
+                    data.push(["Estructura","Clientes","Capital","Deuda","IC",this.titulo_1,this.titulo_2,this.titulo_3]);
                 }else if(this.tipo=="pagos"){
                     data.push(["Estructura","Clientes","Capital","Deuda","IC","Clientes C/ Pago","Capital","IC","Monto Pago","% Clientes","% Recupero"]);
                 }else{
@@ -597,7 +605,8 @@
                                   this.formatoNumero(parseFloat(this.datosGestion[i].deuda),'M'),
                                   this.formatoNumero(parseFloat(this.datosGestion[i].importe),'M'),
                                   this.formatoNumero(parseFloat(this.datosGestion[i].cantidad),'C'),
-                                  this.formatoNumero(parseFloat(this.datosGestion[i].total),'M')
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].total),'M'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].promedio),'M')
                                   ]);
                         totalCantidad+=parseInt(this.datosGestion[i].cantidad);
                         totalTotal+=parseFloat(this.datosGestion[i].total);
@@ -636,7 +645,7 @@
                 }
 
                 if(this.tipo=="pdps" || this.tipo=="confirmacion"){
-                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalCantidad,'C'),this.formatoNumero(totalTotal,'M')]);
+                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalCantidad,'C'),this.formatoNumero(totalTotal,'M'),this.formatoNumero((totalTotal/totalCantidad),'M')]);
                 }else if(this.tipo=="pagos"){
                     data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalClientesPagos,'C'),this.formatoNumero(totalCapitalPagos,'M'),this.formatoNumero(totalICPagos,'M'),this.formatoNumero(totalMontoPagos,'M'),this.formatoNumero((totalClientesPagos/totalClientes)*100,'M')+"%",this.formatoNumero((totalMontoPagos/totalIc)*100,'M')+"%"]);
                 }else{
