@@ -58,6 +58,11 @@
                         </div>
                         <div class="px-2 py-3">
                             <a href="" @click.prevent="generarReporteCartera()" class="btn btn-outline-blue btn-block waves-effect">Generar Reporte</a>
+                            <a href="" v-if="datosCatera!=''" @click.prevent="descargarExcelCartera()" class="btn btn-outline-blue btn-block waves-effect">
+                                <!-- <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> -->
+                                <i class="fa fa-download pr-1"></i>
+                                Descargar Reporte
+                            </a>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -164,6 +169,11 @@
                         </div>
                         <div class="px-2 py-3">
                             <a href="" @click.prevent="generarReporte()" class="btn btn-outline-blue btn-block waves-effect">Generar Reporte</a>
+                            <a href="" v-if="datos!=''" @click.prevent="descargarExcel()" class="btn btn-outline-blue btn-block waves-effect">
+                                <!-- <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> -->
+                                <i class="fa fa-download pr-1"></i>
+                                Descargar Reporte
+                            </a>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -214,7 +224,7 @@
                                             <td>{{formatoNumero(totall('deuda'),'M')}}</td>
                                             <td>{{formatoNumero(totall('importe'),'M')}}</td>
                                             <td>{{formatoNumero(totall('cantidad'),'C')}}</td>
-                                            <td v-if="titulo_1=='CANT. GESTIONES'">{{formatoNumero(totall('cantidad')/totall('clientes'),'M')}}</td>
+                                            <td v-if="titulo_1=='Cant. Gestiones'">{{formatoNumero(totall('cantidad')/totall('clientes'),'M')}}</td>
                                             <td v-else>{{formatoNumero(totall('total'),'M')}}</td>
                                         </tr>
                                     </tfoot>
@@ -230,6 +240,7 @@
 
 <script>
     import PieChart from '../Chart/PieChart.js';
+    import Excel from '../../../../public/js/excel.js';
     export default {
         props:['carteras'],
         data() {
@@ -248,6 +259,9 @@
                 confGraficaCartera:[],
                 titulo_1:'',
                 titulo_2:'',
+                tipo:'',
+                carteraC:'',
+                carteraG:''
             }
         },
         methods:{
@@ -272,17 +286,19 @@
             generarReporte(){
                 this.loading=true;
                 this.datos=[];
+                this.carteraG=this.busqueda.cartera;
+                this.tipo=this.busqueda.tipoAnalisis;
                 if(this.busqueda.tipoAnalisis=='pdps'){
-                    this.titulo_1="CANT. PDP";
-                    this.titulo_2="MONTO PDP";
+                    this.titulo_1="Cant. PDP";
+                    this.titulo_2="Monto PDP";
                 }
                 if(this.busqueda.tipoAnalisis=='confirmacion'){
-                    this.titulo_1="CANT. CONF.";
-                    this.titulo_2="MONTO CONF.";
+                    this.titulo_1="Cant. Conf.";
+                    this.titulo_2="Monto Conf.";
                 }
                 if(this.busqueda.tipoAnalisis=='gestion'){
-                    this.titulo_1="CANT. GESTIONES";
-                    this.titulo_2="INTENSIDAD";
+                    this.titulo_1="Cant. Gestiones";
+                    this.titulo_2="Intensidad";
                 }
                 if(this.busqueda.cartera!='' && this.busqueda.gestor!='' && this.busqueda.estructura!='' 
                     && this.busqueda.tipoAnalisis!='' && this.busqueda.fechaInicio!='' && this.busqueda.fechaFin!=''){
@@ -427,6 +443,7 @@
             generarReporteCartera(){
                 this.loading2=true;
                 this.datosCatera=[];
+                this.carteraC=this.busquedaCartera.cartera;
                 if(this.busquedaCartera.cartera!='' && this.busquedaCartera.ubicabilidad!='' && this.busquedaCartera.estructura!='' && this.busquedaCartera.mes!='' && this.busquedaCartera.gestor!=''){
                     axios.post("reporteEstructuraGestorCartera",this.busquedaCartera).then(res=>{
                         if(res.data){
@@ -540,6 +557,79 @@
             totalC(base) {
                 return this.datosCatera.reduce( (sum,cur) => sum+parseFloat(cur[base]) , 0);
             },
+            descargarExcelCartera(){
+                var data=[];
+                var totalClientes=0;
+                var totalCapital=0;
+                var totalDeuda=0;
+                var totalIc=0;
+                var clientes=0;
+                data.push(["Estructura","Clientes","Capital","Deuda","IC"]);
+                for(var i=0;i<this.datosCatera.length;i++){
+                    // data.push(Object.values(this.datos[i]));
+                    data.push([this.datosCatera[i].estructura,
+                            this.formatoNumero(parseInt(this.datosCatera[i].clientes),'C'),
+                            this.formatoNumero(parseFloat(this.datosCatera[i].capital),'M'),
+                            this.formatoNumero(parseFloat(this.datosCatera[i].deuda),'M'),
+                            this.formatoNumero(parseFloat(this.datosCatera[i].importe),'M')]);
+                    totalClientes+=parseInt(this.datosCatera[i].clientes);
+                    totalCapital+=parseFloat(this.datosCatera[i].capital);
+                    totalDeuda+=parseFloat(this.datosCatera[i].deuda);
+                    totalIc+=parseFloat(this.datosCatera[i].importe);
+                }
+                data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M')]);
+                let hoja="";
+                this.carteras.forEach(element => {
+                    if(this.carteraC==element.id){
+                        hoja=element.cartera;
+                    }
+                });
+                Excel.exportar(data,"Repote_estructura_gestor_cartera",hoja);
+            },
+            descargarExcel(){
+                var data=[];
+                var totalClientes=0;
+                var totalCapital=0;
+                var totalDeuda=0;
+                var totalIc=0;
+                var clientes=0;
+                var totalCantidad=0;
+                var totalTotal=0;
+                var totalGestiones=0;
+                data.push(["Estructura","Clientes","Capital","Deuda","IC",this.titulo_1,this.titulo_2]);
+            
+                for(var i=0;i<this.datos.length;i++){
+                    // data.push(Object.values(this.datosGestion[i]));
+                    data.push([this.datos[i].estructura,
+                                this.formatoNumero(parseInt(this.datos[i].clientes),'C'),
+                                this.formatoNumero(parseFloat(this.datos[i].capital),'M'),
+                                this.formatoNumero(parseFloat(this.datos[i].deuda),'M'),
+                                this.formatoNumero(parseFloat(this.datos[i].importe),'M'),
+                                this.formatoNumero(parseFloat(this.datos[i].cantidad),'C'),
+                                this.formatoNumero(parseFloat(this.datos[i].total),'M')
+                                ]);
+
+                    totalClientes+=parseInt(this.datos[i].clientes);
+                    totalCapital+=parseFloat(this.datos[i].capital);
+                    totalDeuda+=parseFloat(this.datos[i].deuda);
+                    totalIc+=parseFloat(this.datos[i].importe);
+                    totalCantidad+=parseInt(this.datos[i].cantidad);
+                    totalTotal+=parseFloat(this.datos[i].total);   
+                }
+
+                if(this.tipo=="pdps" || this.tipo=="confirmacion"){
+                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalCantidad,'C'),this.formatoNumero(totalTotal,'M')]);
+                }else{
+                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalCantidad,'C'),this.formatoNumero(totalCantidad/totalClientes,'M')]);
+                }
+                let hoja="";
+                this.carteras.forEach(element => {
+                    if(this.carteraG==element.id){
+                        hoja=element.cartera;
+                    }
+                });
+                Excel.exportar(data,"Repote_estructura_gestor_gestion",hoja);
+            }
         },
         components: {
             PieChart,            

@@ -116,11 +116,25 @@ class Reporte extends Model
         $fechaInicio=$rq->fechaInicio;
         $fechaFin=$rq->fechaFin;
         $sql="";
-        $caresp=",".$cartera.",";
         if($call!=''){
             $sql=" and cal_id_FK=$call ";
         }
-
+        $caresp="";
+        $carteras=session()->get('datos')->idcartera;
+        $sqlc="";
+        $sqli="";
+        if($cartera!=0){
+            $caresp=" where carteras like ('%,".$cartera.",%')";
+            $sqlc=" and c.car_id_FK in ($cartera)";
+            $sqli=" and i.car_id_FK in ($cartera)";
+        }else{
+            if($carteras!=0){
+                $caresp=" where carteras like ('%,".$carteras.",%')";
+                $sqlc=" and c.car_id_FK in ($carteras)";
+                $sqli=" and i.car_id_FK in ($carteras)";
+            }
+        }
+        
         return DB::connection('mysql')->select(DB::raw("
                     (SELECT
                         idEmpleado as id,
@@ -200,13 +214,13 @@ class Reporte extends Model
                                 WHERE
                                     cli_est=0
                                 and cli_pas=0
-                                and c.car_id_FK=:car1
+                                $sqlc
                                 GROUP BY cli_cod,g.ges_cli_fec
                             )t
                             INNER JOIN indicadores.cartera_detalle i ON t.cli_cod=i.cuenta
                             WHERE
                                 DATE_FORMAT(fecha,'%Y%m')=DATE_FORMAT(:fecInicio3,'%Y%m')
-                            and i.car_id_fk=:car2
+                            $sqli
                             GROUP BY cli_cod
                         )tt
                         INNER JOIN empleado e ON e.emp_id=tt.idEmpleado
@@ -290,7 +304,7 @@ class Reporte extends Model
                     WHERE
                         cli_est=0
                     and cli_pas=0
-                    and c.car_id_FK=:car3
+                    $sqlc
                     and g.ges_cli_est=0 
                     and (date(g.ges_cli_fec) BETWEEN :fecInicio4 and :fecFin4)
                     and emp_id_FK in (select 
@@ -306,10 +320,11 @@ class Reporte extends Model
                                             AND emp_est = 0
                                             and res_car_id_FK is not null
                                         )ee
-                                        where carteras like ('%$caresp%')
+                                        $caresp
                                     )
                     GROUP BY cli_cod,g.ges_cli_fec,emp_id_FK
                     )t
+                    GROUP BY idEmpleado
                     )tt
                     INNER JOIN empleado e ON e.emp_id=tt.idEmpleado
                     WHERE
@@ -319,8 +334,8 @@ class Reporte extends Model
                     GROUP BY idEmpleado
                     )d 
                 )
-        "),array("car1"=>$cartera,"car2"=>$cartera,"car3"=>$cartera,"fecInicio1"=>$fechaInicio,
-                "fecInicio2"=>$fechaInicio,"fecInicio3"=>$fechaInicio,"fecFin1"=>$fechaFin,
+                
+        "),array("fecInicio1"=>$fechaInicio,"fecInicio2"=>$fechaInicio,"fecInicio3"=>$fechaInicio,"fecFin1"=>$fechaFin,
                 "fecInicio4"=>$fechaInicio,"fecFin4"=>$fechaFin));
     }
 
@@ -337,6 +352,16 @@ class Reporte extends Model
         }
         if($horaInicio!='' && $horaFin!=''){
             $horasql=" and (time(g.ges_cli_fec) BETWEEN '$horaInicio' and '$horaFin')";
+        }
+
+        $carteras=session()->get('datos')->idcartera;
+        $sql2="";
+        if($cartera!=0){
+            $sql2=" and c.car_id_FK in ($cartera) and i.car_id_FK in ($cartera)";
+        }else{
+            if($carteras!=0){
+                $sql2=" and c.car_id_FK in ($carteras) and i.car_id_FK in ($carteras)";
+            }
         }
         
         return DB::connection('mysql')->select(DB::raw("
@@ -368,19 +393,27 @@ class Reporte extends Model
                         WHERE
                             cli_est=0
                         and cli_pas=0
-                        and c.car_id_FK=:car1
-                        and i.car_id_FK=:car2
+                        $sql2
                         and date_format(fecha,'%Y%m')=date_format(:fec2,'%Y%m')
                         and emp_tip_acc=2
                         $sql
                         GROUP BY cli_cod
                     )t
                     GROUP BY gestor
-        "),array("car1"=>$cartera,"car2"=>$cartera,"fec1"=>$fecha,"fec2"=>$fecha));
+        "),array("fec1"=>$fecha,"fec2"=>$fecha));
     }
 
 
     public static function cantGestioneHora($cartera){
+        $carteras=session()->get('datos')->idcartera;
+        $sql="";
+        if($cartera!=0){
+            $sql=" and car_id_FK in ($cartera)";
+        }else{
+            if($carteras!=0){
+                $sql=" and car_id_FK in ($carteras)";
+            }
+        }
         return DB::connection('mysql')->select(DB::raw("
                     SELECT
                         emp_nom as gestor,
@@ -439,16 +472,16 @@ class Reporte extends Model
                         WHERE 
                                 cli_est=0
                             and cli_pas=0
-                            and car_id_FK=:car1
+                            $sql
                         and date(ges_cli_fec)=date(NOW())
                         )t 
                     GROUP BY firma
                     )tt ON tt.firma=RIGHT(s.emp_firma,3)
                     WHERE 
                         emp_est=0
-                    and car_id_FK=:car2
+                    $sql
                     order by total desc
-        "),array("car1"=>$cartera,"car2"=>$cartera));
+        "));
     }
 
     public static function descargarGestionesGestor(Request $rq){
@@ -477,8 +510,18 @@ class Reporte extends Model
             $sql=" and res_id_Fk in (1,43) ";
         }
         
+        $carteras=session()->get('datos')->idcartera;
+        $sqlc="";
+        if($cartera!=0){
+            $sqlc=" and c.car_id_FK in ($cartera)";
+        }else{
+            if($carteras!=0){
+                $sqlc=" and c.car_id_FK in ($carteras)";
+            }
+        }
         return DB::connection('mysql')->select(DB::raw("
                     SELECT
+                        car_nom as 'Cartera',
                         cli_cod as 'Código',
                         cli_nom as 'Nombre',
                         (
@@ -568,18 +611,20 @@ class Reporte extends Model
                         cli_dir_dir,
                         cli_dir_dis,
                         cli_dir_pro,
-                        cli_dir_dep
+                        cli_dir_dep,
+                        car_nom
                     FROM
                         cliente c
                     INNER JOIN gestion_cliente g ON c.cli_id=g.cli_id_FK
                     INNER JOIN empleado e on g.emp_id_FK=e.emp_id
                     LEFT JOIN cliente_direccion_2 cd ON c.cli_id=cd.cli_id_FK and cli_dir_est=0 AND cli_dir_pas=0
                     INNER JOIN respuesta r on g.res_id_FK=r.res_id
+                    INNER JOIN cartera cc on c.car_id_FK=cc.car_id
                     LEFT JOIN motivo_nopago m on g.mot_id_FK=m.mot_id
                     WHERE
                         cli_est=0
                     and cli_pas=0
-                    and car_id_FK=:car
+                    $sqlc
                     and (date(ges_cli_fec) BETWEEN :fecInicio1 and :fecFin1)
                     and if (emp_tip_acc=2, emp_tel_id_FK=emp_id_FK,emp_tel_id_FK=emp_tel_id_FK)
                     and emp_id in ($id)
@@ -590,7 +635,7 @@ class Reporte extends Model
                 INNER JOIN detalle_cliente d on t.cli_id=d.cli_id_FK
                 WHERE det_cli_est=0 and det_cli_pas=0
                 GROUP BY cli_id,ges_cli_fec
-        "),array("car"=>$cartera,"fecInicio1"=>$fechaInicio,"fecFin1"=>$fechaFin,"fecInicio2"=>$fechaInicio));
+        "),array("fecInicio1"=>$fechaInicio,"fecFin1"=>$fechaFin,"fecInicio2"=>$fechaInicio));
     }
 
     public static function resumenGestor($cartera){

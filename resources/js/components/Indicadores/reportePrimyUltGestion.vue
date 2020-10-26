@@ -6,6 +6,7 @@
                     <label for="cartera" class="font-bold col-form-label text-dark text-righ">Nombre de Cartera</label>
                     <select name="cartera" id="cartera" class="form-control" v-model="busqueda.cartera">
                         <option selected value="">Seleccionar</option>
+                        <option value="0">TODAS LAS CARTERAS</option>
                         <option v-for="(item,index) in carteras" :key="index"  class="option" :value="item.id">{{item.cartera}}</option>
                     </select>
                     <small v-if="mensajeCartera" class="text-danger">{{mensajeCartera}}</small>

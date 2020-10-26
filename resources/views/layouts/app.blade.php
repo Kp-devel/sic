@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/style.css?20102') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css?20107') }}" rel="stylesheet">
     <link href="{{ asset('css/waves.css?1') }}" rel="stylesheet">
     <link href="{{ asset('css/toastr.css?1') }}" rel="stylesheet" >
     <link href="{{ asset('css/bootstrap-select.min.css') }}" rel="stylesheet">
@@ -31,12 +31,14 @@
         @endguest
     </div>
 
-    <script src="{{ asset('js/app.js?201010') }}" ></script>
+    <script src="{{ asset('js/app.js?201021') }}" ></script>
     <script src="{{ asset('js/waves.js') }}" ></script>
     <script src="{{ asset('js/toastr.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/bootstrap-select.min.js') }}" ></script>
     <script src="{{ asset('js/chart.min.js') }}" ></script>
-
+    <script src="{{ asset('js/xlsx.core.min.js') }}"type="text/javascript" ></script>
+    <script src="{{ asset('js/Blob.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('js/FileSaver.js') }}" type="text/javascript"></script>
     <!-- <script lang="javascript" src="dist/xlsx.full.min.js"></script> -->
     <!-- <script src="{{ asset('js/echo.js') }}" ></script> -->
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
