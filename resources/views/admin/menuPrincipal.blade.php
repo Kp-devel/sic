@@ -18,7 +18,7 @@
         <div class="collapse navbar-collapse justify-content-end" id="navigation">
                 <ul class="navbar-nav">
                     <li class="nav-item pt-1 px-2 text-right">
-                        <p class="font-12 mb-0"><b>{{auth()->user()->emp_nom}}</b><br>Supervisor</p>
+                        <p class="font-12 mb-0"><b>{{auth()->user()->emp_nom}}</b><br>{{session()->get('datos')->perfil}}</p>
                     </li>
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle px-0" id="dropdown-user" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -51,6 +51,10 @@
         <a href="{{route('sms')}}" class="menu-card p-3">
             <img src="{{asset('img/sms.svg')}}" alt="" class="img-fluid">
             <p class="mb-0 px-1 pt-2 pb-1 font-15">Programación y Envío SMS</p>
+        </a>
+        <a href="{{route('incidencias')}}" class="menu-card p-3">
+            <img src="{{asset('img/incidencias.svg')}}" alt="" class="img-fluid" width="110px" height="60px">
+            <p class="mb-0 px-1 pt-2 pb-1 font-15">Incidencias<br>RRHH</p>
         </a>
     </div>
 </div>

@@ -229,8 +229,8 @@ class Estructura extends Model
                             count(ges_cli_id) as gestiones,
                             sum(ges_cli_com_can) as monto_pdp,
                             sum(ges_cli_conf_can) as monto_conf,
-                            count(ges_cli_com_can) as can_pdp,
-                            count(ges_cli_conf_can) as can_conf,
+                            sum(if(ges_cli_com_can is null || ges_cli_com_can=0,0,1)) as can_pdp,
+                            sum(if(ges_cli_conf_can is null || ges_cli_conf_can=0,0,1)) as can_conf,
                             capital,
                             saldo_deuda,
                             monto_camp
@@ -425,7 +425,13 @@ class Estructura extends Model
                         count(cli_cod) as clientes,
                         sum(capital) as capital,
                         sum(saldo_deuda) as deuda,
-                        sum(monto_camp) as importe
+                        sum(monto_camp) as importe,
+                        case when :tipo1='pdps' then sum(can_pdp)
+                            when :tipo2='confirmacion' then sum(can_conf)
+                        end as cantidad,
+                        case when :tipo3='pdps' then sum(monto_pdp)
+                            when :tipo4='confirmacion' then sum(monto_conf)
+                        end as total
                     FROM
                     (select 
                         case when :estr11='ubic' then 
@@ -440,7 +446,11 @@ class Estructura extends Model
                         cli_cod,
                         capital,
                         saldo_deuda,
-                        monto_camp
+                        monto_camp,
+                        monto_pdp,
+                        monto_conf,
+                        can_pdp,
+                        can_conf
                     from
                         (select 
                             cli_cod, 
@@ -472,6 +482,10 @@ class Estructura extends Model
                             end as estructura,
                             count(ges_cli_id) as gestiones,
                             max(ges_cli_id) as maxid,
+                            sum(ges_cli_com_can) as monto_pdp,
+                            sum(ges_cli_conf_can) as monto_conf,
+                            sum(if(ges_cli_com_can is null || ges_cli_com_can=0,0,1)) as can_pdp,
+		                    sum(if(ges_cli_conf_can is null || ges_cli_conf_can=0,0,1)) as can_conf,
                             capital,
                             saldo_deuda,
                             monto_camp
@@ -494,7 +508,7 @@ class Estructura extends Model
         "),array('car1' =>$cartera,'car2' =>$cartera,"fec"=>$fecInicio,"fecInicio"=>$fecInicio,"fecFin"=>$fecFin,
                 "estr1"=>$estructura,"estr2"=>$estructura,"estr3"=>$estructura,"estr4"=>$estructura,"estr5"=>$estructura,
                 "estr6"=>$estructura,"estr7"=>$estructura,"estr8"=>$estructura,"estr9"=>$estructura,"estr10"=>$estructura,
-                "estr11"=>$estructura
+                "estr11"=>$estructura,"tipo1"=>$tipo,"tipo2"=>$tipo,"tipo3"=>$tipo,"tipo4"=>$tipo
             ));
     }
 

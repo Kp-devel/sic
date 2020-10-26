@@ -150,6 +150,15 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/timingyproyectado', 'HomeController@timingyproyectado')->name('timingyproyectado');
     Route::get('timingProyectado/{cartera}', 'TimingController@timingProyectado');
 
+// incidencias------------------------------------------------------------------------------------------------------------------------
+    Route::get('/incidencias', 'HomeController@incidencias')->name('incidencias');
+    Route::get('/nuevaincidencia', 'HomeController@nuevaincidencia')->name('nuevaincidencia');
+    Route::get('/tiposIncidencias', 'IncidenciaController@tiposIncidencias');
+    Route::post('/insertIncidencia', 'IncidenciaController@insertIncidencia');
+    Route::post('/buscarIncidencias', 'IncidenciaController@buscarIncidencias');
+    
+
+
 
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix
@@ -160,7 +169,7 @@ Route::group(['middleware' => ['auth']], function(){
     
     // empleado
     Route::get('agentesElastix/{cartera}', 'EmpleadoController@agentesElastix')->name('agentesElastix');    
-    
+
 
     
     //errors---------------------------------------------------------------------------

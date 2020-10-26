@@ -321,7 +321,7 @@
                         <div class="container-fluid px-0">
                             <div class="navbar-wrapper d-flex">
                                 <a href="" class="icono-bars waves-effect" @click.prevent="menu()"><i class="fa fa-bars fa-lg"></i></a>
-                                <a href="" v-if="tipoacceso==1" class="icono-bars waves-effect" @click.prevent="menuPrincipal()" title="Menu Principal"><i class="fa fa-home fa-lg"></i></a>
+                                <a href="" v-if="tipoacceso==1 || tipoacceso==5 || tipoacceso==6" class="icono-bars waves-effect" @click.prevent="menuPrincipal()" title="Menu Principal"><i class="fa fa-home fa-lg"></i></a>
                             </div>
                             <button class="navbar-toggler p-0" type="button" data-toggle="collapse" data-target="#navigation"  aria-expanded="false" aria-label="Toggle navigation">
                                  <img src="img/center.jpeg" alt="" width="35px" height="35px" class=" rounded-circle border">

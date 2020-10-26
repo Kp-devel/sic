@@ -51,6 +51,11 @@
                         </div>
                         <div class="px-2 py-3">
                             <a href="" @click.prevent="generarReporteCartera()" class="btn btn-outline-blue btn-block waves-effect">Generar Reporte</a>
+                            <a href="" v-if="datos!=''" @click.prevent="descargarExcelCartera()" class="btn btn-outline-blue btn-block waves-effect">
+                                <!-- <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> -->
+                                <i class="fa fa-download pr-1"></i>
+                                Descargar Reporte
+                            </a>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -152,6 +157,11 @@
                         </div>
                         <div class="px-2 py-3">
                             <a href="" @click.prevent="generarReporteGestion()" class="btn btn-outline-blue btn-block waves-effect">Generar Reporte</a>
+                            <a href="" v-if="datosGestion!=''" @click.prevent="descargarExcel()" class="btn btn-outline-blue btn-block waves-effect">
+                                <!-- <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> -->
+                                <i class="fa fa-download pr-1"></i>
+                                Descargar Reporte
+                            </a>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -168,7 +178,7 @@
                         </div>
                         <div v-else class="">
                             <div class="d-flex justify-content-center chart-container-pastel " >
-                                <PieChart :chart-data="dataGraficaGestion" :options="confGraficaGestion" class="p-0"></PieChart>
+                                <PieChartG :chart-data="dataGraficaGestion" :options="confGraficaGestion" class="p-0"></PieChartG>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-hover">
@@ -179,6 +189,8 @@
                                             <td class="align-middle">Capital</td>
                                             <td class="align-middle">Deuda</td>
                                             <td class="align-middle">IC</td>
+                                            <td class="align-middle" v-if="titulo_1!=''">{{titulo_1}}</td>
+                                            <td class="align-middle" v-if="titulo_2!=''">{{titulo_2}}</td>
                                             <td class="align-middle" v-if="viewEstrPago">Clientes<br>C/ Pago</td>
                                             <td class="align-middle" v-if="viewEstrPago">Capital</td>
                                             <td class="align-middle" v-if="viewEstrPago">IC</td>
@@ -194,6 +206,8 @@
                                             <td>{{formatoNumero(item.capital,'M')}}</td>
                                             <td>{{formatoNumero(item.deuda,'M')}}</td>
                                             <td>{{formatoNumero(item.importe,'M')}}</td>
+                                            <td v-if="titulo_1!=''">{{formatoNumero(item.cantidad,'C')}}</td>
+                                            <td v-if="titulo_1!=''">{{formatoNumero(item.total,'M')}}</td>
                                             <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.clientes_pagos,'C')}}</td>
                                             <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.capital_pagos,'M')}}</td>
                                             <td v-if="viewEstrPago" class="bg-green-light-2">{{formatoNumero(item.importe_pagos,'M')}}</td>
@@ -209,6 +223,8 @@
                                             <td>{{formatoNumero(totalG('capital'),'M')}}</td>
                                             <td>{{formatoNumero(totalG('deuda'),'M')}}</td>
                                             <td>{{formatoNumero(totalG('importe'),'M')}}</td>
+                                            <td v-if="titulo_1!=''">{{formatoNumero(totalG('cantidad'),'C')}}</td>
+                                            <td v-if="titulo_1!=''">{{formatoNumero(totalG('total'),'M')}}</td>
                                             <td v-if="viewEstrPago">{{formatoNumero(totalG('clientes_pagos'),'C')}}</td>
                                             <td v-if="viewEstrPago">{{formatoNumero(totalG('capital_pagos'),'M')}}</td>
                                             <td v-if="viewEstrPago">{{formatoNumero(totalG('importe_pagos'),'M')}}</td>
@@ -230,7 +246,8 @@
 
 <script>
     import PieChart from '../Chart/PieChart.js';
-    // import conf from '../Chart/conf.js';
+    import PieChartG from '../Chart/PieChart.js';
+    import Excel from '../../../../public/js/excel.js';
     export default {
         props:['carteras'],
         data() {
@@ -245,13 +262,19 @@
                 confGraficaCartera:[],
                 dataGraficaGestion:[],
                 confGraficaGestion:[],
-                viewEstrPago:false
+                viewEstrPago:false,
+                titulo_1:'',
+                titulo_2:'',
+                tipo:'',
+                carteraC:'',
+                carteraG:''
             }
         },
         methods:{
             generarReporteCartera(){
                 this.loading=true;
                 this.datos=[];
+                this.carteraC=this.busqueda.cartera;
                 if(this.busqueda.cartera!='' && this.busqueda.ubicabilidad!='' && this.busqueda.estructura!='' && this.busqueda.mes!=''){
                     axios.post("reporteEstructuraCartera",this.busqueda).then(res=>{
                         if(res.data){
@@ -384,6 +407,18 @@
             generarReporteGestion(){
                 this.loadingG=true;
                 this.datosGestion=[];
+                this.titulo_1="";
+                this.titulo_2="";
+                this.tipo=this.busquedaGestion.tipo;
+                this.carteraG=this.busquedaGestion.cartera;
+                if(this.busquedaGestion.tipo=='pdps'){
+                    this.titulo_1="PDP";
+                    this.titulo_2="Monto PDP";
+                }
+                if(this.busquedaGestion.tipo=='confirmacion'){
+                    this.titulo_1="Conf.";
+                    this.titulo_2="Monto Conf.";
+                }
                 if(this.busquedaGestion.tipo=='pagos'){
                     this.viewEstrPago=true;
                 }else{
@@ -502,10 +537,124 @@
             totalG(base) {
                 return this.datosGestion.reduce( (sum,cur) => sum+parseFloat(cur[base]) , 0);
             },
-            
+            descargarExcelCartera(){
+                var data=[];
+                var totalClientes=0;
+                var totalCapital=0;
+                var totalDeuda=0;
+                var totalIc=0;
+                var clientes=0;
+                data.push(["Estructura","Clientes","Capital","Deuda","IC"]);
+                for(var i=0;i<this.datos.length;i++){
+                    // data.push(Object.values(this.datos[i]));
+                    data.push([this.datos[i].estructura,
+                            this.formatoNumero(parseInt(this.datos[i].clientes),'C'),
+                            this.formatoNumero(parseFloat(this.datos[i].capital),'M'),
+                            this.formatoNumero(parseFloat(this.datos[i].deuda),'M'),
+                            this.formatoNumero(parseFloat(this.datos[i].importe),'M')]);
+                    totalClientes+=parseInt(this.datos[i].clientes);
+                    totalCapital+=parseFloat(this.datos[i].capital);
+                    totalDeuda+=parseFloat(this.datos[i].deuda);
+                    totalIc+=parseFloat(this.datos[i].importe);
+                }
+                data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M')]);
+                let hoja="";
+                this.carteras.forEach(element => {
+                    if(this.carteraC==element.id){
+                        hoja=element.cartera;
+                    }
+                });
+                Excel.exportar(data,"Repote_estructura_cartera",hoja);
+            },
+            descargarExcel(){
+                var data=[];
+                var totalClientes=0;
+                var totalCapital=0;
+                var totalDeuda=0;
+                var totalIc=0;
+                var clientes=0;
+                var totalCantidad=0;
+                var totalTotal=0;
+                var totalClientesPagos=0;
+                var totalCapitalPagos=0;
+                var totalICPagos=0;
+                var totalMontoPagos=0;
+                var totalMontoPagos=0;
+                if(this.tipo=="pdps" || this.tipo=="confirmacion"){
+                    data.push(["Estructura","Clientes","Capital","Deuda","IC",this.titulo_1,this.titulo_2]);
+                }else if(this.tipo=="pagos"){
+                    data.push(["Estructura","Clientes","Capital","Deuda","IC","Clientes C/ Pago","Capital","IC","Monto Pago","% Clientes","% Recupero"]);
+                }else{
+                    data.push(["Estructura","Clientes","Capital","Deuda","IC"]);
+                }
+
+                for(var i=0;i<this.datosGestion.length;i++){
+                    // data.push(Object.values(this.datosGestion[i]));
+                    if(this.tipo=="pdps" || this.tipo=="confirmacion"){
+                        data.push([this.datosGestion[i].estructura,
+                                  this.formatoNumero(parseInt(this.datosGestion[i].clientes),'C'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].capital),'M'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].deuda),'M'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].importe),'M'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].cantidad),'C'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].total),'M')
+                                  ]);
+                        totalCantidad+=parseInt(this.datosGestion[i].cantidad);
+                        totalTotal+=parseFloat(this.datosGestion[i].total);
+                       
+                    }else if(this.tipo=="pagos"){
+                        data.push([this.datosGestion[i].estructura,
+                                  this.formatoNumero(parseInt(this.datosGestion[i].clientes),'C'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].capital),'M'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].deuda),'M'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].importe),'M'),
+                                  this.formatoNumero(parseInt(this.datosGestion[i].clientes_pagos),'C'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].capital_pagos),'M'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].importe_pagos),'M'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].monto_pagos),'M'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].cobertura),'M')+"%",
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].recupero),'M')+"%"
+                                ]);
+                        totalClientesPagos+=parseInt(this.datosGestion[i].clientes_pagos);
+                        totalCapitalPagos+=parseFloat(this.datosGestion[i].capital_pagos);
+                        totalICPagos+=parseFloat(this.datosGestion[i].importe_pagos);
+                        totalMontoPagos+=parseFloat(this.datosGestion[i].monto_pagos);
+                        
+                    }else{
+                        data.push([this.datosGestion[i].estructura,
+                                  this.formatoNumero(parseInt(this.datosGestion[i].clientes),'C'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].capital),'M'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].deuda),'M'),
+                                  this.formatoNumero(parseFloat(this.datosGestion[i].importe),'M')
+                                  ]);                        
+                    }
+
+                    totalClientes+=parseInt(this.datosGestion[i].clientes);
+                    totalCapital+=parseFloat(this.datosGestion[i].capital);
+                    totalDeuda+=parseFloat(this.datosGestion[i].deuda);
+                    totalIc+=parseFloat(this.datosGestion[i].importe);
+                }
+
+                if(this.tipo=="pdps" || this.tipo=="confirmacion"){
+                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalCantidad,'C'),this.formatoNumero(totalTotal,'M')]);
+                }else if(this.tipo=="pagos"){
+                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M'),this.formatoNumero(totalClientesPagos,'C'),this.formatoNumero(totalCapitalPagos,'M'),this.formatoNumero(totalICPagos,'M'),this.formatoNumero(totalMontoPagos,'M'),this.formatoNumero((totalClientesPagos/totalClientes)*100,'M')+"%",this.formatoNumero((totalMontoPagos/totalIc)*100,'M')+"%"]);
+                }else{
+                    data.push(["Total",this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalCapital,'M'),this.formatoNumero(totalDeuda,'M'),this.formatoNumero(totalIc,'M')]);
+                }
+                let hoja="";
+                this.carteras.forEach(element => {
+                    if(this.carteraG==element.id){
+                        hoja=element.cartera;
+                    }
+                });
+                Excel.exportar(data,"Repote_estructura_cartera_gestion",hoja);
+            }
         },
         components: {
             PieChart,            
+            PieChartG,      
+            Excel
         }    
     }
 </script>

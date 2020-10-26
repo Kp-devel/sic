@@ -28,7 +28,7 @@
                             <div class="collapse navbar-collapse justify-content-end" id="navigation">
                                     <ul class="navbar-nav">
                                         <li class="nav-item pt-1 px-2 text-right">
-                                            <p class="font-12 mb-0"><b>{{auth()->user()->emp_nom}}</b><br>Supervisor</p>
+                                            <p class="font-12 mb-0"><b>{{auth()->user()->emp_nom}}</b><br>{{session()->get('datos')->perfil}}</p>
                                         </li>
                                         <li class="nav-item dropdown">
                                             <a href="#" class="nav-link dropdown-toggle px-0" id="dropdown-user" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

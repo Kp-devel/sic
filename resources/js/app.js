@@ -31,6 +31,10 @@ Vue.component('reporte-primyult-gestion', require('./components/Indicadores/repo
 Vue.component('reporte-resumen-gestion', require('./components/Indicadores/reporteResumenGestion.vue').default);
 Vue.component('timing-proyectado', require('./components/Indicadores/timingProyectado.vue').default);
 
+// incidencias
+Vue.component('form-incidencia', require('./components/Incidencias/formIncidencia.vue').default);
+Vue.component('list-incidencias', require('./components/Incidencias/listIncidencias.vue').default);
+
 const app = new Vue({
     el: '#app',
 });
