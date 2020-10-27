@@ -41,6 +41,18 @@
         </div>
         <!-- timing y proyectado -->
         <a href="{{route('timingyproyectado')}}" class="px-4 waves-effect {{ request()->is('timingyproyectado') ? 'menu-active' : '' }}"><i class="fa fa-stopwatch pr-2"></i>Timing y Proyectado</a>
+        <!-- analisis de pdps -->
+        <a href="#submenupdp" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseExample" class="d-flex justify-content-between px-4 waves-effect {{ request()->is('smscampanas') ? 'menu-active' : '' }}">
+            <div>
+                <i class="fa fa-handshake pr-2"></i>Análisis de PDPs
+            </div>
+           <i class="fa fa-angle-down pt-1"></i>
+        </a>
+        <div class="collapse" id="submenupdp" class="bg-blue-bold">
+            <a href="{{route('pdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('pdps') ? 'menu-active' : '' }}">PDPS</a>
+            <a href="{{route('estadospdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('estadospdps') ? 'menu-active' : '' }}">Estado de PDPS</a>
+            <a href="{{route('estandarpdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('estandarpdps') ? 'menu-active' : '' }}">Estándar de PDPS</a>
+        </div>
        
         
     </div>
