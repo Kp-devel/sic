@@ -677,7 +677,8 @@ class Reporte extends Model
                                 sum(no_contacto) as no_cont,
                                 sum(no_disponible) as no_disp,
                                 sum(pdp) as pdps,
-                                sum(pago) AS pagos
+                                sum(pago) AS pagos,
+                                t.car_id_FK
                             FROM
                             (SELECT
                                 date(ges_cli_fec) as fecha,
@@ -688,7 +689,8 @@ class Reporte extends Model
                                 if(res_ubi=1,1,0) as no_contacto,
                                 if(res_ubi=2,1,0) as no_disponible,
                                 if(res_id in (1,43),ges_cli_com_can,0) as pdp,
-                                if(res_id in (2),ges_cli_conf_can,0) as pago
+                                if(res_id in (2),ges_cli_conf_can,0) as pago,
+                                car_id_FK
                             FROM 
                                 cliente c
                             INNER JOIN gestion_cliente gc ON gc.cli_id_FK=c.cli_id
@@ -701,7 +703,7 @@ class Reporte extends Model
                             )t
                             GROUP BY firma
                         )tt 
-                        LEFT JOIN sub_empleado s ON tt.firma=s.emp_firma AND emp_est=0
+                        LEFT JOIN sub_empleado s ON tt.firma=s.emp_firma AND emp_est=0 
                         GROUP BY emp_nom
                         ORDER BY gestiones desc 
                     )e ON e.emp_nom=ss.emp_nom

@@ -254,4 +254,37 @@ class HomeController extends Controller
             return view('errors.403');
         }
     }
+
+    public function estadospdps(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1 || $tipo_acceso==5 || $tipo_acceso==6 || $tipo_acceso==7){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            return view('admin.indicadores.estadoPdps',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function estandarpdps(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1 || $tipo_acceso==5 || $tipo_acceso==6 || $tipo_acceso==7){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            return view('admin.indicadores.estandarPdps',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function pdps(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1 || $tipo_acceso==5 || $tipo_acceso==6 || $tipo_acceso==7){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            return view('admin.indicadores.pdps',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
 }
