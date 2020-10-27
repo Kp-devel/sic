@@ -49,8 +49,7 @@
                             <tr v-else v-for="(item,index) in datos" :key="index"> 
                                 <td class="text-center px-2">{{item.fecha}}</td>
                                 <td class="text-center px-2">
-                                    <a v-if="item.cant_cumplidos>0" href="#" id="tooltip"><i class="fa fa-coins text-blue"></i><span class="tooltiptext tooltiptext2 text-center">Cant: {{item.cant_cumplidos}}<br>Monto: S/.{{item.monto_cumplidos}}</span></a>
-                                    {{formatoNumero(Math.round(((item.monto_cumplidos/item.generados)*100)),'C')}}%
+                                    <a  href="#" id="tooltip" class="text-black">{{formatoNumero(Math.round(((item.monto_cumplidos/item.generados)*100)),'C')}}%<span v-if="item.cant_cumplidos>0" class="tooltiptext tooltiptext2 text-center">Cant: {{item.cant_cumplidos}}<br>Monto: S/.{{item.monto_cumplidos}}</span></a>
                                 </td>
                                 <td class="text-center px-2" :class="{'text-danger':item.color==1,'text-blue':item.color==0}">S/. {{formatoNumero(item.generados,'M')}}</td>
                             </tr>
