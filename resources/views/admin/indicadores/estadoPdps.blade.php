@@ -9,8 +9,8 @@
         <div class="d-flex">
             <i class="fa fa-handshake pr-2 fa-lg pt-3 text-green"></i>
             <div>
-                <p class="subheader-title mb-0">Estado de PDPS</p>
-                <p class="mb-0">Cumplido o Caído</p>
+                <p class="subheader-title mb-0">Cumplimiento de PDPS</p>
+                <p class="mb-0">Estados: Cumplido o Caído</p>
             </div>
         </div>
         <div class="py-3">
