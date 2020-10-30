@@ -1,5 +1,5 @@
 <div>
-    <p class="text-white-light mb-0 px-4 pt-4 font-13 py-3">Programación y Envío SMS</p>
+    <p class="text-white-light mb-0 px-4 pt-4 font-13 py-3">Indicadores de Gestión</p>
     <div class="menu-option">
         <!-- Estructuras -->
         <a href="#submenuEstructura" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseExample" class="px-4 d-flex justify-content-between waves-effect {{ request()->is('sms') ? 'menu-active' : '' }}">
@@ -49,6 +49,7 @@
            <i class="fa fa-angle-down pt-1"></i>
         </a>
         <div class="collapse" id="submenupdp" class="bg-blue-bold">
+            <a href="{{route('listadopdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('listadopdps') ? 'menu-active' : '' }}">Listado de PDPS</a>
             <a href="{{route('pdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('pdps') ? 'menu-active' : '' }}">Plazos de Pagos</a>
             <a href="{{route('estadospdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('estadospdps') ? 'menu-active' : '' }}">Cumplimiento de PDPS</a>
             <a href="{{route('estandarpdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('estandarpdps') ? 'menu-active' : '' }}">Estándar de PDPS</a>

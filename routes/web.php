@@ -161,10 +161,14 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/estadospdps', 'HomeController@estadospdps')->name('estadospdps');
     Route::get('/estandarpdps', 'HomeController@estandarpdps')->name('estandarpdps');
     Route::get('/pdps', 'HomeController@pdps')->name('pdps');
+    Route::get('/listadopdps', 'HomeController@listadopdps')->name('listadopdps');
     Route::post('/reporteEstadosPdps', 'PdpsController@reporteEstadosPdps')->name('reporteEstadosPdps');
     Route::post('/reporteEstandarPdps', 'PdpsController@reporteEstandarPdps')->name('reporteEstandarPdps');
     Route::post('/reportePdps', 'PdpsController@reportePdps')->name('reportePdps');
+    Route::post('/listaPdps', 'PdpsController@listaPdps')->name('listaPdps');
+    Route::post('/descargarListaPdps', 'PdpsController@descargarListaPdps')->name('descargarListaPdps');
     
+
 
 
 

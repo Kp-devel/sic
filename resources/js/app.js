@@ -19,6 +19,7 @@ Vue.component('sms-lista-negra-archivo', require('./components/Sms/listaNegraArc
 Vue.component('sms-lista-negra-buscar', require('./components/Sms/listaNegraBuscar.vue').default);
 
 // indicadores
+Vue.component('detalle-cliente-pdps', require('./components/Indicadores/detalleCliente.vue').default);
 Vue.component('estructura-cartera', require('./components/Indicadores/estructuraCartera.vue').default);
 Vue.component('estructura-gestor', require('./components/Indicadores/estructuraGestor.vue').default);
 Vue.component('seguimiento-plan', require('./components/Indicadores/seguimientoPlan.vue').default);
@@ -33,6 +34,7 @@ Vue.component('timing-proyectado', require('./components/Indicadores/timingProye
 Vue.component('estados-pdps', require('./components/Indicadores/pdpsEstados.vue').default);
 Vue.component('estandar-pdps', require('./components/Indicadores/pdpsEstandar.vue').default);
 Vue.component('pdps', require('./components/Indicadores/pdps.vue').default);
+Vue.component('lista-pdps', require('./components/Indicadores/listaPdps.vue').default);
 
 // incidencias
 Vue.component('form-incidencia', require('./components/Incidencias/formIncidencia.vue').default);

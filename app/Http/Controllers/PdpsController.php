@@ -18,4 +18,14 @@ class PdpsController extends Controller
     public function reportePdps(Request $rq){
         return Pdps::reportePdps($rq);
     }
+
+    public function listaPdps(Request $rq){
+        return Pdps::listaPdps($rq);
+    }
+
+    public function descargarListaPdps(Request $rq){
+        return Pdps::descargarListaPdps($rq);
+    }
+
+    
 }

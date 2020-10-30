@@ -94,7 +94,8 @@ class Respuesta extends Model
         $sql="
             SELECT 
                 loc_id as idoficina,
-                concat(loc_cod,'-',loc_nom)  as local
+                concat(loc_cod,'-',loc_nom)  as local,
+                loc_nom as oficina
             FROM local 
             WHERE 
                 loc_pas<>1 
