@@ -18,4 +18,12 @@ class IncidenciaController extends Controller
     public function buscarIncidencias(Request $rq){
         return Incidencia::buscarIncidencias($rq);
     }
+
+    public function editarIncidencia(Request $rq){
+        return Incidencia::editarIncidencia($rq);
+    }
+
+    // public function incListaGestores(){
+    //     return Incidencia::incListaGestores();
+    // }
 }

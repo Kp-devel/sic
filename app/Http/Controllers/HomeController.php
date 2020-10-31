@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Cartera;
+use App\Incidencia;
 
 class HomeController extends Controller
 {
@@ -236,9 +237,13 @@ class HomeController extends Controller
     public function incidencias(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==1 || $tipo_acceso==5 || $tipo_acceso==6 || $tipo_acceso==7){
-            // $carteras=Cartera::listCarterasUsuario();       
-            // $carteras=json_encode($carteras);
-            return view('admin.incidencias.incidencias');
+            $supervisores=Incidencia::incListaSupervisores();       
+            $gestores=Incidencia::incListaGestores();       
+            $incidencias=Incidencia::tiposIncidencias();       
+            $datos=array();
+            $datos=[$supervisores,$gestores,$incidencias];
+            $datos=json_encode($datos);
+            return view('admin.incidencias.incidencias',compact('datos'));
         }else{
             return view('errors.403');
         }

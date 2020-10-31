@@ -30,6 +30,21 @@
                     </select>
                 </div>
             </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="">Hora de Inicio</label>
+                    <input type="time" class="form-control" v-model="registro.horaInicio">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="">Hora de Fin</label>
+                    <input type="time" class="form-control" v-model="registro.horaFin">
+                    <small>*Opcional</small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-3" v-if="registro.incidencia==4">
                 <div class="form-group">
                     <label for="">Fecha de Permiso</label>
@@ -68,7 +83,7 @@
             return {
                 gestores:[],
                 incidencias:[],
-                registro:{gestor:'',incidencia:'',detalle:'',fecha:'',cartera:''},
+                registro:{gestor:'',incidencia:'',detalle:'',fecha:'',cartera:'',horaInicio:'',horaFin:''},
                 spinnerRegistrar:'',
                 errors:[]
             }
@@ -109,6 +124,9 @@
                 }
                 if(!this.registro.detalle){
                     this.errors.push("Escribe un detalle de la incidencia");
+                }
+                if(!this.registro.horaInicio){
+                    this.errors.push("Selecciona una hora de inicio de la incidencia");
                 }
             },
             registrar(){

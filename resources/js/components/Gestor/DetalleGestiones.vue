@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="mr-3">
         <div class="table-responsive" style="height:265px">
             <table class="table table-hover" v-if="gestiones">
                 <thead class="bg-gray">

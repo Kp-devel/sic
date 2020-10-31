@@ -14,7 +14,10 @@
             </div>
         </div>
         <div class="py-3">
-            <list-incidencias />
+            <list-incidencias 
+                :bdatos="{{$datos}}" 
+                :tipoacceso="'{!! ( auth()->user()->emp_tip_acc ?? '' ) !!}'"
+            />
         </div>
     </div>         
 @endsection

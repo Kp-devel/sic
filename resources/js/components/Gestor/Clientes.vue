@@ -389,7 +389,7 @@
                                             <td class="border-0 bg-white rounded-0 px-0">
                                                 <a href="" class="btn-phone" @click.prevent="detalle(item.id)"><i class="fa fa-phone fa-1x"></i></a>
                                             </td>
-                                            <td class="border-0 bg-white rounded-0 px-0"><i class="fa fa-check text-green" v-if="item.fecha_ges==fecha_hoy"></i></td>
+                                            <td class="border-0 bg-white rounded-0 px-0" style="min-width:0.1rem"><i class="fa fa-check text-green" v-if="item.fecha_ges==fecha_hoy"></i></td>
                                         </tr>
                                     </tbody>
                                 </table>

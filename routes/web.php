@@ -156,7 +156,8 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/tiposIncidencias', 'IncidenciaController@tiposIncidencias');
     Route::post('/insertIncidencia', 'IncidenciaController@insertIncidencia');
     Route::post('/buscarIncidencias', 'IncidenciaController@buscarIncidencias');
-    
+    Route::put('/editarIncidencia', 'IncidenciaController@editarIncidencia');
+
 // analisis de pdps-------------------------------------------------------------------------------------------------------------------
     Route::get('/estadospdps', 'HomeController@estadospdps')->name('estadospdps');
     Route::get('/estandarpdps', 'HomeController@estandarpdps')->name('estandarpdps');
