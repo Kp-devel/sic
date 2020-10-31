@@ -14,6 +14,7 @@
                             <td class="align-middle font-11">PRIORIDAD</td>
                             <td class="align-middle font-11">MONEDA</td>
                             <td class="align-middle font-11">CAPITAL</td>
+                            <td class="align-middle font-11">DEUDA SALDO</td>
                             <td class="align-middle font-11">DEUDA</td>
                             <td class="align-middle font-11">DTO.</td>
                             <td class="align-middle font-11 bg-white border-0 rounded-0" style="max-width:7px;"></td>
@@ -37,6 +38,7 @@
                             <td>{{item.prioridad}}</td>
                             <td>{{item.moneda}}</td>
                             <td>{{formatoMonto(item.capital)}}</td>
+                            <td>{{formatoMonto(item.saldo)}}</td>
                             <td>{{formatoMonto(item.deuda)}}</td>
                             <td>{{item.dscto}}</td>
                             <td class="border-0 rounded-0" :class="{'text-danger':item.indicador_dscto==-1,'text-green':item.indicador_dscto==-2,'text-green':item.indicador_dscto==1,'text-black':item.indicador_dscto==0}">{{indicadoresDscto(item.indicador_dscto)}}</td>

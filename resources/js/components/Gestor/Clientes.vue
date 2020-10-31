@@ -30,6 +30,10 @@
                                 <td colspan="3" class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.nombre" v-on:keyup.enter="listCLientes()"></td>
                             </tr>
                             <tr class="font-12"> 
+                                <td>Nro. Producto</td>
+                                <td colspan="3" class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.numproducto" v-on:keyup.enter="listCLientes()" @keypress="soloNumeros"></td>
+                            </tr>
+                            <tr class="font-12"> 
                                 <td>Teléfono</td>
                                 <td><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.telefono" @keypress="soloNumeros" v-on:keyup.enter="listCLientes()"></td>
                                 <td class="text-right pr-1">Tramo</td>
@@ -425,7 +429,7 @@
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 paginate: ['lista'],
                 lista: [],
-                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:'',capital:'',importe:'',oficina:'',descuento:'',prioridad:'',cartera:''},
+                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:'',capital:'',importe:'',oficina:'',descuento:'',prioridad:'',cartera:'',numproducto:''},
                 //codigo:'',
                 loading:false,
                 loading2:false,
@@ -498,6 +502,7 @@
                 this.busqueda.prioridad='';
                 this.busqueda.descuento='';
                 this.busqueda.cartera='';
+                this.busqueda.numproducto='';
                 this.entidades=[];
                 this.score=[];
                 this.descuentos=[];
@@ -534,7 +539,8 @@
                     prioridad:this.busqueda.prioridad,
                     descuento:this.busqueda.descuento,
                     tipo:0,
-                    cartera:this.busqueda.cartera
+                    cartera:this.busqueda.cartera,
+                    numproducto:this.busqueda.numproducto
                 };
             },
             listCLientes(){

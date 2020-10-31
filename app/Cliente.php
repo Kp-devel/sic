@@ -32,8 +32,10 @@ class Cliente extends Model
         $oficina=$rq->oficina;
         $descuento=$rq->descuento;
         $prioridad=$rq->prioridad;
+        $numproducto=$rq->numproducto;
         $carteraBusqueda=$rq->cartera;
         $tipo=$rq->tipo;
+        
         //dd($camp);
         $idEmpleado=auth()->user()->emp_id;
         $cartera=session()->get('datos')->idcartera;
@@ -129,8 +131,12 @@ class Cliente extends Model
                 and det_cli_deu_mor = (SELECT MAX(det_cli_deu_mor) FROM detalle_cliente WHERE det_cli_est = 0 AND det_cli_pas = 0 AND cli_id_FK = c.cli_id)
                 and car_est=0 and car_pas=0
         ";
+
+        $parametros_busquedas=array();
+
         if($acceso==2){
-            $sql.=" and emp_tel_id_FK=$idEmpleado ";
+            $sql.=" and emp_tel_id_FK=:emp ";
+            $parametros_busquedas["emp"]=$idEmpleado;
         }
         /*else{
             if($cartera!=0){
@@ -139,33 +145,45 @@ class Cliente extends Model
         }*/
 
         if($codigo!= null){
-            $sql = $sql." and cli_cod=$codigo ";
+            $sql = $sql." and cli_cod=:cod ";
+            $parametros_busquedas["cod"]=$codigo;
         }
         
         if($carteraBusqueda!= null){
-            $sql = $sql." and car_id_FK=$carteraBusqueda ";
+            $sql = $sql." and car_id_FK=:car ";
+            $parametros_busquedas["car"]=$carteraBusqueda;
         }
 
         if($dni!= null){
-            $sql = $sql." and cli_num_doc=$dni ";
+            $sql = $sql." and cli_num_doc=:dni ";
+            $parametros_busquedas["dni"]=$dni;
         }
 
         if($nombre!= null){
             $nom = explode(' ',$nombre);
             for($i=0; $i < count($nom); $i++){
-                $sql .= " AND cli_nom like '%".$nom[$i]."%' ";
+                $sql .= " AND cli_nom like (:nom_$i) ";
+                $parametros_busquedas["nom_$i"]="%".$nom[$i]."%";
             }
             // $sql = $sql." and cli_nom like '%$nombre%' ";
         }
-        // if($telefono!= null){
-        //     $sql = $sql." and cli_tel_tel=$telefono ";
-        // }
+        
+        if($numproducto!= null){
+            $sql = $sql." and cli_id in (SELECT cli_id_FK FROM detalle_cliente WHERE det_cli_num_doc in (:producto) and det_cli_est = 0 AND det_cli_pas = 0) ";
+            $parametros_busquedas["producto"]=$numproducto;
+        }
+
         if($telefono!= null){
-            $sql = $sql." and cli_id in (select cli_id_FK from cliente_telefono where cli_tel_est=0 and cli_tel_pas=0 and cli_tel_tel=$telefono) ";
+            $sql = $sql." and cli_id in (select cli_id_FK from cliente_telefono where cli_tel_est=0 and cli_tel_pas=0 and cli_tel_tel like (:tel)) ";
+            $parametros_busquedas["tel"]=$telefono."%";
         }
+
         if($tramo!= null){
-            $sql = $sql." and det_cli_tra like '%$tramo%' ";
+            $sql = $sql." and det_cli_tra like (:tramo) ";
+            $parametros_busquedas["tramo"]="%".$tramo."%";
+
         }
+
         if($respuesta!= null){
             if($respuesta==0){
                 $sql = $sql." and res_id_FK IS NULL ";
@@ -174,12 +192,15 @@ class Cliente extends Model
                 $sql = $sql." and (res_id_FK is null or date_format(ges_cli_fec,'%Y%m')<date_format(now(),'%Y%m'))";
             }
             if($respuesta<>0 && $respuesta<>-1){
-                $sql = $sql." and res_id_FK=$respuesta ";
+                $sql = $sql." and res_id_FK=:res ";
+                $parametros_busquedas["res"]=$respuesta;
             }
         }
         if($fec_desde!= "undefined-undefined-" && $fec_hasta!= "undefined-undefined-"){
-            $sql = $sql." and cli_id in (select cli_id_FK as id from compromiso_cliente where date_format(com_cli_fec_pag,'%Y-%m-%d') between '$fec_desde' and '$fec_hasta')
+            $sql = $sql." and cli_id in (select cli_id_FK as id from compromiso_cliente where date_format(com_cli_fec_pag,'%Y-%m-%d') between :fecInicio and :fecFin)
                           and res_id_FK not in (2,38,37) ";
+            $parametros_busquedas["fecInicio"]=$fec_desde;
+            $parametros_busquedas["fecFin"]=$fec_hasta;
         }
         // if($fec_hasta!= "undefined-undefined-"){
         //     $sql = $sql." and date_format(ges_cli_com_fec,'%Y-%m-%d') <='$fec_hasta' ";
@@ -239,35 +260,42 @@ class Cliente extends Model
         }
 
         if($motivo!=null){
-            $sql = $sql." and mot_id_FK=$motivo ";
+            $sql = $sql." and mot_id_FK=:motivo ";
+            $parametros_busquedas["motivo"]=$motivo;
         }
 
         if( $entidades !=null || $score !=null){
             $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
             if($entidades !=null){
-                $sql = $sql." and cli_inf_entidades = '$entidades' ";
+                $sql = $sql." and cli_inf_entidades = :entidad ";
+                $parametros_busquedas["entidad"]=$entidades;
             }
             if( $score !=null){
-                $sql = $sql." and cli_inf_score = '$score' ";
+                $sql = $sql." and cli_inf_score = :score ";
+                $parametros_busquedas["score"]=$score;
             }          
         }
 
         if($oficina!= null){
-            $sql = $sql." and loc_id_FK = $oficina ";
+            $sql = $sql." and c.loc_id_FK = :ofic ";
+            $parametros_busquedas["ofic"]=$oficina;
         }
 
         if($descuento!= null){
             $dto="";
             if($carteraBusqueda==9){
-                $dto=" AND det_cli_dscto like ('$descuento%') ";
+                $dto=" AND det_cli_dscto like (:dscto) ";
+                $parametros_busquedas["dscto"]=$descuento."%";
             }else{
-                $dto=" AND det_cli_dscto_adc like ('$descuento%') ";
+                $dto=" AND det_cli_dscto_adc like (:dscto) ";
+                $parametros_busquedas["dscto"]=$descuento."%";
             }
             $sql = $sql." and (SELECT count(cli_id_FK) FROM detalle_cliente WHERE cli_id_FK = c.cli_id AND det_cli_est = 0 AND det_cli_pas = 0 $dto)>0";
         }
 
         if($prioridad!= null){
-            $sql = $sql." and (SELECT count(cli_id_FK) FROM detalle_cliente WHERE cli_id_FK = c.cli_id AND det_cli_est = 0 AND det_cli_pas = 0 AND det_cli_estado in ('$prioridad'))>0";
+            $sql = $sql." and (SELECT count(cli_id_FK) FROM detalle_cliente WHERE cli_id_FK = c.cli_id AND det_cli_est = 0 AND det_cli_pas = 0 AND det_cli_estado in (:prioridad))>0";
+            $parametros_busquedas["prioridad"]=$prioridad;
         }
         
 
@@ -296,7 +324,7 @@ class Cliente extends Model
             $sql = $sql." order by ges_cli_fec asc,det_cli_deu_mor desc";
         }
 
-        $query=DB::connection('mysql')->select(DB::raw($filtro." ".$sql));
+        $query=DB::connection('mysql')->select(DB::raw($filtro." ".$sql),$parametros_busquedas);
         return $query;
     }
 
@@ -519,6 +547,7 @@ class Cliente extends Model
                 prioridad,
                 moneda,
                 capital,
+                saldo,
                 deuda,
                 dscto,
                 importe_dscto,
@@ -547,6 +576,7 @@ class Cliente extends Model
                             WHEN det_cli_mon =2 THEN 'DOLARES'
                     end) as moneda,
                     det_cli_deu_cap as capital,
+                    det_cli_sal_deu as saldo,
                     det_cli_deu_mor as deuda,
                     det_cli_dscto as dscto,
                     det_cli_imp_dscto as importe_dscto,

@@ -30,6 +30,7 @@ class ClienteController extends Controller
         $oficina=$rq->oficina;
         $descuento=$rq->descuento;
         $prioridad=$rq->prioridad;
+        $numproducto=$rq->numproducto;
         $tipo=$rq->tipo;
         $acceso=auth()->user()->emp_tip_acc;
         if($acceso==2){
@@ -39,7 +40,7 @@ class ClienteController extends Controller
             &&	$respuesta==null &&	$fec_desde=='undefined-undefined-' &&	$fec_hasta=='undefined-undefined-' 
             &&	$ordenar==null   &&	$camp==null &&	$deuda==null &&	$capital==null &&	$importe==null 
             &&	$sueldo==null    &&	$entidades==null &&	$score==null &&	$motivo==null &&	$oficina==null 
-            &&	$descuento==null &&	$prioridad==null){
+            &&	$descuento==null &&	$prioridad==null && $numproducto==null){
                 return [];
             }else{
                 return cliente::listarClientes($rq);
