@@ -363,15 +363,15 @@
                                             <td class="align-middle">MEDIO</td>
                                             <td class="align-middle">PRODUCTO</td>
                                             <td class="align-middle">ULT. RPTA</td>
-                                            <td class="align-middle" v-if="tipoacceso==1">GESTOR TELF.</td>
-                                            <td class="align-middle" v-if="tipoacceso==1">CARTERA</td>
+                                            <td class="align-middle" v-if="tipoacceso!=2">GESTOR TELF.</td>
+                                            <td class="align-middle" v-if="tipoacceso!=2">CARTERA</td>
                                             <td class="border-0 bg-white rounded-0 px-0" style="min-width:5px;"></td>
                                             <td class="border-0 bg-white rounded-0 px-0" style="min-width: 0.1rem;"></td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr class="text-center" v-if="lista=='' && loading==false">
-                                            <td v-if="tipoacceso==1" colspan="11">No hay registros</td>
+                                            <td v-if="tipoacceso!=2" colspan="11">No hay registros</td>
                                             <td v-else colspan="9">No hay registros</td>
                                         </tr>
                                         <tr v-for="(item,index) in paginated('lista')" :key="index" v-else-if="loading==false">
@@ -384,8 +384,8 @@
                                             <td>{{item.telefono}}</td>
                                             <td>{{item.producto}}</td>
                                             <td>{{item.ult_resp}}</td>
-                                            <td v-if="tipoacceso==1">{{item.gestor}}</td>
-                                            <td v-if="tipoacceso==1">{{item.cartera}}</td>
+                                            <td v-if="tipoacceso!=2">{{item.gestor}}</td>
+                                            <td v-if="tipoacceso!=2">{{item.cartera}}</td>
                                             <td class="border-0 bg-white rounded-0 px-0">
                                                 <a href="" class="btn-phone" @click.prevent="detalle(item.id)"><i class="fa fa-phone fa-1x"></i></a>
                                             </td>
