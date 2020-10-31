@@ -38,6 +38,7 @@
             <a href="{{route('reporteprimerayultimagestion')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('reporteprimerayultimagestion') ? 'menu-active' : '' }}">Primera y Última Gestión</a>
             <a href="{{route('reportegestionhora')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('reportegestionhora') ? 'menu-active' : '' }}">Cant. Gestiones por Hora</a>
             <a href="{{route('resumengestion')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('resumengestion') ? 'menu-active' : '' }}">Resumen Gestión Diaria</a>
+            <a href="{{route('resumengestionconsolidada')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('resumengestionconsolidada') ? 'menu-active' : '' }}">Resumen Gestión Consolidada</a>
         </div>
         <!-- timing y proyectado -->
         <a href="{{route('timingyproyectado')}}" class="px-4 waves-effect {{ request()->is('timingyproyectado') ? 'menu-active' : '' }}"><i class="fa fa-stopwatch pr-2"></i>Timing y Proyectado</a>
