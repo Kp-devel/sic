@@ -149,6 +149,8 @@
                 this.registro.incidencia="";
                 this.registro.fecha="";
                 this.registro.detalle="";
+                this.registro.horaInicio="";
+                this.registro.horaFin="";
             }
         },
         components: {

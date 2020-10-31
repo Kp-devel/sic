@@ -237,7 +237,11 @@ class HomeController extends Controller
     public function incidencias(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==1 || $tipo_acceso==5 || $tipo_acceso==6 || $tipo_acceso==7){
-            $supervisores=Incidencia::incListaSupervisores();       
+            if($tipo_acceso==1){
+                $supervisores=array();
+            }else{
+                $supervisores=Incidencia::incListaSupervisores();       
+            }
             $gestores=Incidencia::incListaGestores();       
             $incidencias=Incidencia::tiposIncidencias();       
             $datos=array();

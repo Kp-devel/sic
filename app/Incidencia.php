@@ -120,8 +120,14 @@ class Incidencia extends Model
     }
 
     public static function incListaGestores(){
+        $tipoacceso=auth()->user()->emp_tip_acc;
+        $carteras=session()->get('datos')->idcartera;
+        $sql="";
+        if($tipoacceso==1){ 
+            $sql=" and car_id_FK in ($carteras)";
+        }
         return DB::connection('mysql')->select(DB::raw("
-            select emp_id as id,emp_nom as gestor from sub_empleado where emp_est=0 order by emp_nom asc
+            select emp_id as id,emp_nom as gestor from sub_empleado where emp_est=0 $sql and emp_firma not in ('') order by emp_nom asc
         "));
     }
 

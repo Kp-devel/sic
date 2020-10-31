@@ -10,7 +10,7 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4" v-if="tipoacceso!=1">
                 <div class="form-group">
                     <label for="">Supervisor</label>
                     <select class="form-control" v-model="busqueda.supervisor">
@@ -19,7 +19,7 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4" v-if="gestores!=''">
                 <div class="form-group">
                     <label for="">Gestor</label>
                     <select class="form-control" v-model="busqueda.gestor">
@@ -55,13 +55,13 @@
                     <input type="date" class="form-control w-50" v-model="busqueda.fechaHasta">
                 </div>
             </div>
-            <div class="col-md-4 pt-2">
-                <a href="" @click.prevent="buscar()" class="btn btn-outline-blue mb-4">
-                    <span v-if="spinnerBuscar" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    Buscar
-                </a>
-                <a href="" @click.prevent="limpiar()" class="btn btn-outline-blue mb-4">Limpiar</a>
-            </div>
+        </div>
+        <div class="pt-2">
+            <a href="" @click.prevent="buscar()" class="btn btn-outline-blue mb-4">
+                <span v-if="spinnerBuscar" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Buscar
+            </a>
+            <a href="" @click.prevent="limpiar()" class="btn btn-outline-blue mb-4">Limpiar</a>
         </div>
         <div v-if="viewTabla">
             <div class="table-responsive" >
@@ -82,7 +82,7 @@
                         </thead>
                         <tbody>
                             <tr v-if="datos==''" class="text-center">
-                                <td colspan="8">No se encontraron registros</td>
+                                <td colspan="9">No se encontraron registros</td>
                             </tr>
                             <tr v-else v-for="(item,index) in paginated('datos')" :key="index">
                                 <td class="px-2">{{item.usuario}}</td>
