@@ -6,6 +6,7 @@
                         <label class="font-bold col-form-label text-dark text-righ">Fecha</label>
                         <input type="date" class="form-control" v-model="busqueda.fecha">
                     </div>
+                    <small class="text-danger" v-if="mensaje">{{mensaje}}</small>
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
@@ -17,7 +18,7 @@
                     </div>
                 </div>
                 <div class="col-md-4 my-4 py-1">
-                    <a href="" v-if="data1!=''" @click.prevent="descargarExcel()" class="btn btn-outline-blue btn-block waves-effect">
+                    <a href="" v-if="data1!='' && data2!=''" @click.prevent="descargarExcel()" class="btn btn-outline-blue btn-block waves-effect">
                                 <!-- <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> -->
                     <i class="fa fa-download pr-1"></i>
                         Descargar Reporte
@@ -58,8 +59,8 @@
                                 </tr>
                             </thead>
                             <tbody style="font-size:10px !important;">
-                                <tr class="text-center" v-if="data2==''">
-                                    <td colspan="5">No se encontraron resultados</td>
+                                <tr class="text-center" v-if="data1==''">
+                                    <td colspan="21">No se encontraron resultados</td>
                                 </tr>
                                 <tr v-else v-for="(item,index) in data1" :key="index" class="text-center" style="font-size:10px !important;">
                                     <td class="text-center" style="font-size:10px !important;">{{item.cartera}}</td>
@@ -81,7 +82,9 @@
                                 </tr>
                             </tbody>
                             <thead class="bg-gray-2 text-center font-weight-bold" style="font-size:8px !important;">
-                                <tr style="font-size:10px !important;">
+                                <tr class="text-center" v-if="totales1.clientes==0">
+                                </tr>
+                                <tr style="font-size:10px !important;" v-else>
                                     <td>TOTAL</td>
                                     <td>{{formatoNumero(totales1.clientes,'C')}}</td>
                                     <td>S/.{{formatoNumero2(totales1.capital,'M')}}</td>
@@ -137,7 +140,7 @@
                             </thead>
                             <tbody>
                                 <tr class="text-center" v-if="data2==''">
-                                    <td colspan="5">No se encontraron resultados</td>
+                                    <td colspan="21">No se encontraron resultados</td>
                                 </tr>
                                 <tr v-else v-for="(item,index) in data2" :key="index" class="text-center" style="font-size:10px !important;">
                                     <td class="text-center" style="font-size:10px !important;">{{item.cartera}}</td>
@@ -159,7 +162,9 @@
                                 </tr>
                             </tbody>
                             <thead class="bg-gray-2 text-center font-weight-bold">
-                                <tr style="font-size:10px !important;">
+                                <tr class="text-center" v-if="totales2.clientes==0">
+                                </tr>
+                                <tr style="font-size:10px !important;"  v-else>
                                     <td>TOTAL</td>
                                     <td>{{formatoNumero(totales2.clientes,'C')}}</td>
                                     <td>S/.{{formatoNumero2(totales2.capital,'M')}}</td>
@@ -206,6 +211,8 @@
             generarReporte(){
                 this.viewTable=false;
                 this.spinnerbuscar=true;
+                this.totales1={contador:0,clientes:0,capital:0,deuda:0,importe:0,ct:0,cc:0,uc:0,unc:0,usg:0,it:0,ic:0,monto:0,cumplido:0,caido:0,vigente:0};
+                this.totales2={contador:0,clientes:0,capital:0,deuda:0,importe:0,ct:0,cc:0,uc:0,unc:0,usg:0,it:0,ic:0,monto:0,cumplido:0,caido:0,vigente:0};
                 this.data1=[];
                 this.data2=[];
                 this.mensaje='';
@@ -273,87 +280,93 @@
             descargarExcel(){
                 var data=[];
                 let cantidad=this.data2.length;
-                data.push([this.data1[0].fecha_registro]);
-                data.push(["CARTERA","CLIENTES","CAPITAL","DEUDA","IC","COBERTURA","COBERTURA","UBICABILIDAD","UBICABILIDAD","UBICABILIDAD","INTENSIDAD","INTENSIDAD","PDPS","PDPS","PDPS","PDPS"]);
-                data.push(["CARTERA","CLIENTES","CAPITAL","DEUDA","IC","CARTERA TOTAL","CARTERA CONTACTO","CONTACTO + ND","NO CONTACTO","SIN HISTÓRICO","CARTERA TOTAL","CARTERA CONTACTO","MONTO GENERADO","CUMPLIDO","CAÍDO","VIGENTE"]);
-            
-                for(var i=0;i<this.data1.length;i++){
-                    data.push([this.data1[i].cartera,
-                            this.formatoNumero(parseInt(this.data1[i].clientes),'C'),
-                            this.formatoNumero2(parseFloat(this.data1[i].capital),'M'),
-                            this.formatoNumero2(parseFloat(this.data1[i].deuda),'M'),
-                            this.formatoNumero2(parseFloat(this.data1[i].importe),'M'),
-                            this.decimalAdjust('round',parseFloat(this.data1[i].cob_total),-1)+"%",
-                            this.decimalAdjust('round',parseFloat(this.data1[i].cob_contacto),-1)+"%",
-                            this.decimalAdjust('round',parseFloat(this.data1[i].ubic_contacto),-1)+"%",
-                            this.decimalAdjust('round',parseFloat(this.data1[i].ubic_no_contacto),-1)+"%",
-                            this.decimalAdjust('round',parseFloat(this.data1[i].sin_gestion),-1)+"%",
-                            this.decimalAdjust('round',parseFloat(this.data1[i].int_total),-1),
-                            this.decimalAdjust('round',parseFloat(this.data1[i].int_contacto),-1),
-                            this.formatoNumero2(parseFloat(this.data1[i].monto),'M'),
-                            this.formatoNumero2(parseFloat(this.data1[i].cumplido),'M'),
-                            this.formatoNumero2(parseFloat(this.data1[i].caido),'M'),
-                            this.formatoNumero2(parseFloat(this.data1[i].vigente),'M'),
-                    ]);
-                }
-                data.push(["Total",
-                    this.formatoNumero(this.totales1.clientes,'C'),
-                    this.formatoNumero2(this.totales1.capital,'M'),
-                    this.formatoNumero2(this.totales1.deuda,'M'),
-                    this.formatoNumero2(this.totales1.importe,'M'),
-                    this.decimalAdjust('round',parseFloat(this.totales1.ct/this.totales1.contador),-1)+"%",
-                    this.decimalAdjust('round',parseFloat(this.totales1.cc/this.totales1.contador),-1)+"%",
-                    this.decimalAdjust('round',parseFloat(this.totales1.uc/this.totales1.contador),-1)+"%",
-                    this.decimalAdjust('round',parseFloat(this.totales1.unc/this.totales1.contador),-1)+"%",
-                    this.decimalAdjust('round',parseFloat(this.totales1.usg/this.totales1.contador),-1)+"%",
-                    this.decimalAdjust('round',parseFloat(this.totales1.it/this.totales1.contador),-1),
-                    this.decimalAdjust('round',parseFloat(this.totales1.ic/this.totales1.contador),-1),
-                    this.formatoNumero2(this.totales1.monto,'M'),
-                    this.formatoNumero2(this.totales1.cumplido,'M'),
-                    this.formatoNumero2(this.totales1.caido,'M'),
-                    this.formatoNumero2(this.totales1.vigente,'M'),
-                ]);
-                data.push([""]);
-                data.push([this.data2[0].fecha_registro]);
-                data.push(["CARTERA","CLIENTES","CAPITAL","DEUDA","IC","COBERTURA","COBERTURA","UBICABILIDAD","UBICABILIDAD","UBICABILIDAD","INTENSIDAD","INTENSIDAD","PDPS","PDPS","PDPS","PDPS"]);
-                data.push(["CARTERA","CLIENTES","CAPITAL","DEUDA","IC","CARTERA TOTAL","CARTERA CONTACTO","CONTACTO + ND","NO CONTACTO","SIN HISTÓRICO","CARTERA TOTAL","CARTERA CONTACTO","MONTO GENERADO","CUMPLIDO","CAÍDO","VIGENTE"]);
                 
-                for(var i=0;i<this.data2.length;i++){
-                    data.push([this.data2[i].cartera,
-                            this.formatoNumero(parseInt(this.data2[i].clientes),'C'),
-                            this.formatoNumero2(parseFloat(this.data2[i].capital),'M'),
-                            this.formatoNumero2(parseFloat(this.data2[i].deuda),'M'),
-                            this.formatoNumero2(parseFloat(this.data2[i].importe),'M'),
-                            this.decimalAdjust('round',parseFloat(this.data2[i].cob_total),-1)+"%",
-                            this.decimalAdjust('round',parseFloat(this.data2[i].cob_contacto),-1)+"%",
-                            this.decimalAdjust('round',parseFloat(this.data2[i].ubic_contacto),-1)+"%",
-                            this.decimalAdjust('round',parseFloat(this.data2[i].ubic_no_contacto),-1)+"%",
-                            this.decimalAdjust('round',parseFloat(this.data2[i].sin_gestion),-1)+"%",
-                            this.decimalAdjust('round',parseFloat(this.data2[i].int_total),-1),
-                            this.decimalAdjust('round',parseFloat(this.data2[i].int_contacto),-1),
-                            this.formatoNumero2(parseFloat(this.data2[i].monto),'M'),
-                            this.formatoNumero2(parseFloat(this.data2[i].cumplido),'M'),
-                            this.formatoNumero2(parseFloat(this.data2[i].caido),'M'),
-                            this.formatoNumero2(parseFloat(this.data2[i].vigente),'M'),
+
+                if(this.data1!=''){
+                    data.push([this.data1[0].fecha_registro]);
+                    data.push(["CARTERA","CLIENTES","CAPITAL","DEUDA","IC","COBERTURA","COBERTURA","UBICABILIDAD","UBICABILIDAD","UBICABILIDAD","INTENSIDAD","INTENSIDAD","PDPS","PDPS","PDPS","PDPS"]);
+                    data.push(["CARTERA","CLIENTES","CAPITAL","DEUDA","IC","CARTERA TOTAL","CARTERA CONTACTO","CONTACTO + ND","NO CONTACTO","SIN HISTÓRICO","CARTERA TOTAL","CARTERA CONTACTO","MONTO GENERADO","CUMPLIDO","CAÍDO","VIGENTE"]);
+                    for(var i=0;i<this.data1.length;i++){
+                        data.push([this.data1[i].cartera,
+                                this.formatoNumero(parseInt(this.data1[i].clientes),'C'),
+                                this.formatoNumero2(parseFloat(this.data1[i].capital),'M'),
+                                this.formatoNumero2(parseFloat(this.data1[i].deuda),'M'),
+                                this.formatoNumero2(parseFloat(this.data1[i].importe),'M'),
+                                this.decimalAdjust('round',parseFloat(this.data1[i].cob_total),-1)+"%",
+                                this.decimalAdjust('round',parseFloat(this.data1[i].cob_contacto),-1)+"%",
+                                this.decimalAdjust('round',parseFloat(this.data1[i].ubic_contacto),-1)+"%",
+                                this.decimalAdjust('round',parseFloat(this.data1[i].ubic_no_contacto),-1)+"%",
+                                this.decimalAdjust('round',parseFloat(this.data1[i].sin_gestion),-1)+"%",
+                                this.decimalAdjust('round',parseFloat(this.data1[i].int_total),-1),
+                                this.decimalAdjust('round',parseFloat(this.data1[i].int_contacto),-1),
+                                this.formatoNumero2(parseFloat(this.data1[i].monto),'M'),
+                                this.formatoNumero2(parseFloat(this.data1[i].cumplido),'M'),
+                                this.formatoNumero2(parseFloat(this.data1[i].caido),'M'),
+                                this.formatoNumero2(parseFloat(this.data1[i].vigente),'M'),
+                        ]);
+                    }
+                    data.push(["Total",
+                        this.formatoNumero(this.totales1.clientes,'C'),
+                        this.formatoNumero2(this.totales1.capital,'M'),
+                        this.formatoNumero2(this.totales1.deuda,'M'),
+                        this.formatoNumero2(this.totales1.importe,'M'),
+                        this.decimalAdjust('round',parseFloat(this.totales1.ct/this.totales1.contador),-1)+"%",
+                        this.decimalAdjust('round',parseFloat(this.totales1.cc/this.totales1.contador),-1)+"%",
+                        this.decimalAdjust('round',parseFloat(this.totales1.uc/this.totales1.contador),-1)+"%",
+                        this.decimalAdjust('round',parseFloat(this.totales1.unc/this.totales1.contador),-1)+"%",
+                        this.decimalAdjust('round',parseFloat(this.totales1.usg/this.totales1.contador),-1)+"%",
+                        this.decimalAdjust('round',parseFloat(this.totales1.it/this.totales1.contador),-1),
+                        this.decimalAdjust('round',parseFloat(this.totales1.ic/this.totales1.contador),-1),
+                        this.formatoNumero2(this.totales1.monto,'M'),
+                        this.formatoNumero2(this.totales1.cumplido,'M'),
+                        this.formatoNumero2(this.totales1.caido,'M'),
+                        this.formatoNumero2(this.totales1.vigente,'M'),
                     ]);
                 }
-                data.push(["Total",
-                    this.formatoNumero(this.totales2.clientes,'C'),
-                    this.formatoNumero2(this.totales2.capital,'M'),
-                    this.formatoNumero2(this.totales2.deuda,'M'),
-                    this.formatoNumero2(this.totales2.importe,'M'),
-                    this.decimalAdjust('round',parseFloat(this.totales2.ct/this.totales2.contador),-1)+"%",
-                    this.decimalAdjust('round',parseFloat(this.totales2.cc/this.totales2.contador),-1)+"%",
-                    this.decimalAdjust('round',parseFloat(this.totales2.uc/this.totales2.contador),-1)+"%",
-                    this.decimalAdjust('round',parseFloat(this.totales2.unc/this.totales2.contador),-1)+"%",
-                    this.decimalAdjust('round',parseFloat(this.totales2.usg/this.totales2.contador),-1)+"%",
-                    this.decimalAdjust('round',parseFloat(this.totales2.it/this.totales2.contador),-1),
-                    this.decimalAdjust('round',parseFloat(this.totales2.ic/this.totales2.contador),-1),
-                    this.formatoNumero2(this.totales2.monto,'M'),
-                    this.formatoNumero2(this.totales2.cumplido,'M'),
-                    this.formatoNumero2(this.totales2.caido,'M'),
-                    this.formatoNumero2(this.totales2.vigente,'M'),
-                ]);
+
+                if(this.data2!=''){
+                    data.push([""]);
+                    data.push([this.data2[0].fecha_registro]);
+                    data.push(["CARTERA","CLIENTES","CAPITAL","DEUDA","IC","COBERTURA","COBERTURA","UBICABILIDAD","UBICABILIDAD","UBICABILIDAD","INTENSIDAD","INTENSIDAD","PDPS","PDPS","PDPS","PDPS"]);
+                    data.push(["CARTERA","CLIENTES","CAPITAL","DEUDA","IC","CARTERA TOTAL","CARTERA CONTACTO","CONTACTO + ND","NO CONTACTO","SIN HISTÓRICO","CARTERA TOTAL","CARTERA CONTACTO","MONTO GENERADO","CUMPLIDO","CAÍDO","VIGENTE"]);
+                    
+                    for(var i=0;i<this.data2.length;i++){
+                        data.push([this.data2[i].cartera,
+                                this.formatoNumero(parseInt(this.data2[i].clientes),'C'),
+                                this.formatoNumero2(parseFloat(this.data2[i].capital),'M'),
+                                this.formatoNumero2(parseFloat(this.data2[i].deuda),'M'),
+                                this.formatoNumero2(parseFloat(this.data2[i].importe),'M'),
+                                this.decimalAdjust('round',parseFloat(this.data2[i].cob_total),-1)+"%",
+                                this.decimalAdjust('round',parseFloat(this.data2[i].cob_contacto),-1)+"%",
+                                this.decimalAdjust('round',parseFloat(this.data2[i].ubic_contacto),-1)+"%",
+                                this.decimalAdjust('round',parseFloat(this.data2[i].ubic_no_contacto),-1)+"%",
+                                this.decimalAdjust('round',parseFloat(this.data2[i].sin_gestion),-1)+"%",
+                                this.decimalAdjust('round',parseFloat(this.data2[i].int_total),-1),
+                                this.decimalAdjust('round',parseFloat(this.data2[i].int_contacto),-1),
+                                this.formatoNumero2(parseFloat(this.data2[i].monto),'M'),
+                                this.formatoNumero2(parseFloat(this.data2[i].cumplido),'M'),
+                                this.formatoNumero2(parseFloat(this.data2[i].caido),'M'),
+                                this.formatoNumero2(parseFloat(this.data2[i].vigente),'M'),
+                        ]);
+                    }
+                    data.push(["Total",
+                        this.formatoNumero(this.totales2.clientes,'C'),
+                        this.formatoNumero2(this.totales2.capital,'M'),
+                        this.formatoNumero2(this.totales2.deuda,'M'),
+                        this.formatoNumero2(this.totales2.importe,'M'),
+                        this.decimalAdjust('round',parseFloat(this.totales2.ct/this.totales2.contador),-1)+"%",
+                        this.decimalAdjust('round',parseFloat(this.totales2.cc/this.totales2.contador),-1)+"%",
+                        this.decimalAdjust('round',parseFloat(this.totales2.uc/this.totales2.contador),-1)+"%",
+                        this.decimalAdjust('round',parseFloat(this.totales2.unc/this.totales2.contador),-1)+"%",
+                        this.decimalAdjust('round',parseFloat(this.totales2.usg/this.totales2.contador),-1)+"%",
+                        this.decimalAdjust('round',parseFloat(this.totales2.it/this.totales2.contador),-1),
+                        this.decimalAdjust('round',parseFloat(this.totales2.ic/this.totales2.contador),-1),
+                        this.formatoNumero2(this.totales2.monto,'M'),
+                        this.formatoNumero2(this.totales2.cumplido,'M'),
+                        this.formatoNumero2(this.totales2.caido,'M'),
+                        this.formatoNumero2(this.totales2.vigente,'M'),
+                    ]);
+                }
 
                 Excel.exportar(data,cantidad,"Resumen_Gestión_Consolidada","Gestión_Consolidada");
 
