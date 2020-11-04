@@ -631,14 +631,15 @@
                 axios.get("datosMes").then(res=>{
                     if(res.data){
                         datos=res.data;
-                        
-                        this.dataMes.meta=datos[0].meta;
-                        this.dataMes.recupero=datos[0].recupero;
-                        this.dataMes.fecha_recupero=datos[0].fecha_recupero;
-                        this.dataMes.alcance=((datos[0].recupero/datos[0].meta)*100).toFixed(2);
-                        this.dataMes.efectividad= datos[0].efectividad!=null?datos[0].efectividad:0;
-                        this.dataMes.pdp_caidas=datos[0].pdp_caidos;
-                        this.dataMes.pdp_pendiente=datos[0].pdp_pendiente;
+                        if(datos.length>0){
+                            this.dataMes.meta=datos[0].meta;
+                            this.dataMes.recupero=datos[0].recupero;
+                            this.dataMes.fecha_recupero=datos[0].fecha_recupero;
+                            this.dataMes.alcance=((datos[0].recupero/datos[0].meta)*100).toFixed(2);
+                            this.dataMes.efectividad= datos[0].efectividad!=null?datos[0].efectividad:0;
+                            this.dataMes.pdp_caidas=datos[0].pdp_caidos;
+                            this.dataMes.pdp_pendiente=datos[0].pdp_pendiente;
+                        }
                     }
                 })
             },

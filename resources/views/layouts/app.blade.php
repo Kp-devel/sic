@@ -31,7 +31,7 @@
         @endguest
     </div>
 
-    <script src="{{ asset('js/app.js?2010224') }}" ></script>
+    <script src="{{ asset('js/app.js?2010226') }}" ></script>
     <script src="{{ asset('js/waves.js') }}" ></script>
     <script src="{{ asset('js/toastr.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/bootstrap-select.min.js') }}" ></script>
