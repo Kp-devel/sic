@@ -31,7 +31,7 @@
         @endguest
     </div>
 
-    <script src="{{ asset('js/app.js?04111') }}" ></script>
+    <script src="{{ asset('js/app.js?04113') }}" ></script>
     <script src="{{ asset('js/waves.js') }}" ></script>
     <script src="{{ asset('js/toastr.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/bootstrap-select.min.js?5') }}" ></script>
@@ -41,7 +41,7 @@
     <script src="{{ asset('js/FileSaver.js') }}" type="text/javascript"></script>
     <!-- <script lang="javascript" src="dist/xlsx.full.min.js"></script> -->
     <!-- <script src="{{ asset('js/echo.js') }}" ></script> -->
-    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+    <script src="https://js.pusher.com/7.0/pusher.min.js?5"></script>
     <!-- <script src="https://js.pusher.com/4.1/pusher.min.js"></script> -->
     @yield('scripts')
     <!-- <script src="{{ asset('js/bootstrap-select.min.js') }}" ></script> -->

@@ -776,5 +776,38 @@ class Reporte extends Model
         "));
     }
     
-    
+    public static function resumenGestionesCarteraConsolidado($fecha){
+        //$sql1="";
+        $fec1=date('d', strtotime($fecha));
+        $fec2=date('m-d', strtotime($fecha));
+        //dd($fec2);
+
+        $data1=DB::connection('mysql')->select(DB::raw("
+            select *
+            from indicadores.reporte_gestion
+            where fecha_registro = '$fecha'
+        "));
+
+        if($fec1=='31' || $fec1=='30' || $fec2=='03-29'){
+            $data2=DB::connection('mysql')->select(DB::raw("
+                select *
+                from indicadores.reporte_gestion
+                    where fecha_registro = (
+                    SELECT MAX(fecha_registro)
+                    FROM indicadores.reporte_gestion
+                    where MONTH(fecha_registro) = MONTH(date_add('$fecha', INTERVAL -1 MONTH))
+                )
+            "));
+        }else{
+
+            $data2=DB::connection('mysql')->select(DB::raw("
+                select *
+                from indicadores.reporte_gestion
+                where MONTH(fecha_registro) = MONTH(date_add('$fecha', INTERVAL -1 MONTH))
+                AND DAY(fecha_registro)=day('$fecha')
+            "));
+        }
+
+        return response()->json(['data1' => $data1, 'data2' => $data2]);
+    }    
 }

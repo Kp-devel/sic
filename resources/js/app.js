@@ -30,6 +30,7 @@ Vue.component('reporte-gestor', require('./components/Indicadores/reporteGestor.
 Vue.component('reporte-gestion-hora', require('./components/Indicadores/reporteGestionHora.vue').default);
 Vue.component('reporte-primyult-gestion', require('./components/Indicadores/reportePrimyUltGestion.vue').default);
 Vue.component('reporte-resumen-gestion', require('./components/Indicadores/reporteResumenGestion.vue').default);
+Vue.component('reporte-resumen-gestion-consolidada', require('./components/Indicadores/reporteResumenGestionConsolidada.vue').default);
 Vue.component('timing-proyectado', require('./components/Indicadores/timingProyectado.vue').default);
 Vue.component('estados-pdps', require('./components/Indicadores/pdpsEstados.vue').default);
 Vue.component('estandar-pdps', require('./components/Indicadores/pdpsEstandar.vue').default);

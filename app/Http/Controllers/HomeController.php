@@ -222,7 +222,15 @@ class HomeController extends Controller
         }
     }
     
-
+    public function indresumengestionconsolidada(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==5){
+            return view('admin.indicadores.reporteResumenGestionConsolidada');
+        }else{
+            return view('errors.403');
+        }
+    }
+    
     public function timingyproyectado(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==1 || $tipo_acceso==5 || $tipo_acceso==6 || $tipo_acceso==7){
