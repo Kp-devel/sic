@@ -145,6 +145,10 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/resumengestion', 'HomeController@indresumengestion')->name('resumengestion');
     Route::get('resumenGestionDia/{cartera}', 'ReporteController@resumenGestionDia');
 
+// Reporte gestion Consolidada
+    Route::get('/resumengestionconsolidada', 'HomeController@indresumengestionconsolidada')->name('resumengestionconsolidada');
+    Route::get('resumenGestionConsolidada/{fecha}', 'ReporteController@resumenGestionConsolidada');
+
     
 // Timing y Proyectado ---------------------------------------------------------------------------------------------------------------------
     Route::get('/timingyproyectado', 'HomeController@timingyproyectado')->name('timingyproyectado');

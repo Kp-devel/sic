@@ -41,4 +41,8 @@ class ReporteController extends Controller
         $datos=["resumen"=>$resumen,"gestiones"=>$gestiones];
         return $datos;
     }
+
+    public function resumenGestionConsolidada($fecha){
+        return Reporte::resumenGestionesCarteraConsolidado($fecha);
+    }
 }
