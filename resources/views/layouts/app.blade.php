@@ -31,10 +31,10 @@
         @endguest
     </div>
 
-    <script src="{{ asset('js/app.js?2010226') }}" ></script>
+    <script src="{{ asset('js/app.js?04111') }}" ></script>
     <script src="{{ asset('js/waves.js') }}" ></script>
     <script src="{{ asset('js/toastr.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('js/bootstrap-select.min.js') }}" ></script>
+    <script src="{{ asset('js/bootstrap-select.min.js?5') }}" ></script>
     <script src="{{ asset('js/chart.min.js') }}" ></script>
     <script src="{{ asset('js/xlsx.core.min.js') }}"type="text/javascript" ></script>
     <script src="{{ asset('js/Blob.js') }}" type="text/javascript"></script>

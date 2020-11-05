@@ -39,8 +39,8 @@ window.Pusher = require('pusher-js');
     broadcaster: 'pusher',
     key: process.env.MIX_PUSHER_APP_KEY,
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-    forceTLS: true,
-    // wsHost:window.location.hostname,
+    forceTLS: true,// wsHost:window.location.hostname,
     // wsPort:6001,
     // disableStats:true
+    csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 });
