@@ -1,13 +1,18 @@
 <template>
     <div>       
-        <!-- btn recordatorios -->
-         <div class="panel-top text-center">
-             <!-- fa-sort-down -->
-            <a href="" class="btn-up" data-toggle="modal" data-target="#modal-recordatorio" @click.prevent="verRecordatorios()"><i class="fa fa-clock fa-lg"></i></a>
+        <div>
+            <!-- btn recordatorios -->
+             <div class="panel-top text-center">
+                 <!-- fa-sort-down -->
+                <a href="" class="btn-up" data-toggle="modal" data-target="#modal-recordatorio">
+                    <i class="fa fa-clock fa-lg"></i>
+                    <i v-if="recordatorio!=''" class="fa fa-circle text-danger pt-3 pl-0" style="position:absolute;"></i>
+                </a>
+            </div>
+            <recordatorio v-if="recordatorio" :recordatorio="recordatorio" :telefonos="telRecordatorio" :pdp="pdpsRecordatorio" :cant_contacto="contactoRecordatorio" :gestiones="historicoGestiones"/>
+            <!-- lista de clientes y menu -->
+            <clientes :userlogeado="userlogeado" :tipoacceso="tipoacceso" />   
         </div>
-        <recordatorio />
-        <!-- lista de clientes y menu -->
-        <clientes :userlogeado="userlogeado"/>
         <!-- detalle de cliente -->
         <div v-if="viewDetalleCliente==true" class="bg-white">
              <div class="panelEstandar">
@@ -38,7 +43,7 @@
                             <div class="d-flex">
                                 <p class=" badge bg-blue text-white py-2 px-3 min-w-125 text-left">INFORMACIÓN DEL CLIENTE</p>
                             </div>
-                            <detalleCliente :datos="dataCliente" v-if="dataCliente.length>0" :info="detalleGeneral['infoCliente']" />
+                            <detalleCliente :datos="dataCliente" v-if="dataCliente.length>0" :info="detalleGeneral['infoCliente']" :tipoacceso="tipoacceso" />
                         </div>
                         <!-- panel de historico de gestiones -->
                         <div class="col-md-8">
@@ -89,7 +94,7 @@
     import recordatorio from './Recordatorios';
     
     export default {
-        props:["userlogeado"],
+        props:["userlogeado","idlogeado","tipoacceso"],
         data() {
             return {
                 viewDetalleCliente:false,
@@ -98,11 +103,18 @@
                 dataCliente:[],
                 detalleGeneral:[],
                 idCliente:'',
-                loadCarga:false
+                loadCarga:false,
+                recordatorio:[],
+                telRecordatorio:[],
+                pdpsRecordatorio:[],
+                contactoRecordatorio:[],
+                historicoGestiones:[],
+                idClienteRec:''
+                // viewalerta:'false'
             }
         },
         created(){
-            
+            // this.verRecordatorios();
         },
         methods:{
             cerrarDetalle(){
@@ -114,9 +126,8 @@
                 this.viewTelefonos=true;
                 this.$root.$emit('limpiarFrmTel');
             },
-            verRecordatorios(){
-                this.$root.$emit('listarRecordatorios');
-                //$('#modal-recordatorio').modal();
+            telefonosRecordatorio(tel){
+                this.$root.$emit('telefonosRecordatorio',tel); 
             },
             datosgenerales(id){
                 this.loadCarga=true;
@@ -138,6 +149,46 @@
                 this.datosgenerales(this.idCliente);
                 // $('html, body').animate({scrollTop:0}, 'slow');
             } );
+            // limpiar recordatorios
+            this.$root.$on('limpiarRecordatorio', () => {
+                this.recordatorio=[];
+                this.telRecordatorio=[];
+                this.pdpsRecordatorio=[];
+                this.contactoRecordatorio=[];
+                this.historicoGestiones=[];
+            });
+
+            // websocktes
+            Echo.private('user.'+this.idlogeado)
+            .listen('.evento-recordatorio', (data) => {
+                this.recordatorio=[];
+                this.telRecordatorio=[];
+                this.pdpsRecordatorio=[];
+                this.contactoRecordatorio=[];
+                this.historicoGestiones=[];
+                
+                const currentdate = new Date(); 
+                const hora= currentdate.getHours()<10?'0'+currentdate.getHours():currentdate.getHours();
+                const min= currentdate.getMinutes()<10?'0'+currentdate.getMinutes():currentdate.getMinutes();
+                const sec= currentdate.getSeconds()<10?'0'+currentdate.getSeconds():currentdate.getSeconds();
+                const datetime=hora+":"+min+":"+sec;
+    
+                this.recordatorio.push(data.data['recordatorios']);
+                this.telRecordatorio.push(data.data['telefonos']);   
+                this.pdpsRecordatorio.push(data.data['pdps']);   
+                this.contactoRecordatorio.push(data.data['validar_contacto']);   
+                this.historicoGestiones.push(data.data['gestiones']);
+    
+                // if(this.recordatorio.length>0){
+                //     this.idClienteRec=this.recordatorio[0][0].id;
+                // }
+                //this.$root.$emit('refreshGestiones',this.historicoGestiones);
+                //this.$root.$emit('refreshFrmGestion',this.telRecordatorio,this.pdpsRecordatorio,this.contactoRecordatorio,this.idClienteRec);
+
+                if(datetime>=data.data['recordatorios'].hora_programada && datetime<=data.data['recordatorios'].hora_fin){
+                    toastr.success('Los recordatorios sólo se encuentran disponibles 5min después de su hora programada', 'Tienes un recordatorio activo',{"progressBar": true,"positionClass": "toast-bottom-right",});
+                }
+            });
         },
         components:{
             clientes,

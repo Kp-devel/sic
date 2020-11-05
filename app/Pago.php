@@ -12,7 +12,7 @@ class Pago extends Model
             $sql="
                 select 
                     pag_cli_pro as cuenta,
-                    format(sum(pag_cli_mon),2) as pagos,
+                    format(pag_cli_mon,2) as pagos,
                     pag_cli_fec as fecha
                 from 
                     pago_cliente_2 as p

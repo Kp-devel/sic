@@ -30,9 +30,16 @@ class Cliente extends Model
         $score=$rq->score;
         $motivo=$rq->motivo;
         $oficina=$rq->oficina;
+        $descuento=$rq->descuento;
+        $prioridad=$rq->prioridad;
+        $numproducto=$rq->numproducto;
+        $carteraBusqueda=$rq->cartera;
+        $tipo=$rq->tipo;
+        
         //dd($camp);
         $idEmpleado=auth()->user()->emp_id;
         $cartera=session()->get('datos')->idcartera;
+        $acceso=auth()->user()->emp_tip_acc;
 
         if($camp!= null){
             $fec_actual=date("Y-m-d H:i:s");
@@ -59,53 +66,124 @@ class Cliente extends Model
             $cantidad_cli=0;
         }
 
-        $filtro="
-            SELECT 
-                cli_id as id,
-                cli_cod as codigo,
-                cli_nom as nombre,
-                cli_num_doc as dni,
-                det_cli_deu_cap as capital,
-                det_cli_deu_mor as deuda,
-                det_cli_imp_can as importe,
-                det_cli_pro as producto,
-                if(ges_cli_med is null,'-',ges_cli_med) as telefono,
-                if(res_id_FK is null,'Sin Gestión',res_des) as ult_resp,
-                date(ges_cli_fec) as fecha_ges,
-                cli_ema as email
-            FROM 
-                cliente as c
-            inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
-            left JOIN gestion_cliente g ON c.ges_cli_tel_id_FK=g.ges_cli_id
-            left JOIN respuesta as r on r.res_id=g.res_id_FK
-        ";
-            
+        //tipo=2 expotar, tipo=1 mostrar lista
+        if($tipo==1){
+            $filtro="
+                SELECT 
+                    cli_id as id,
+                    cli_cod as codigo,
+                    cli_nom as nombre,
+                    cli_num_doc as dni,
+                    det_cli_deu_cap as capital,
+                    det_cli_deu_mor as deuda,
+                    det_cli_imp_can as importe,
+                    det_cli_pro as producto,
+                    if(ges_cli_med is null,'-',ges_cli_med) as telefono,
+                    if(res_id_FK is null,'Sin Gestión',res_des) as ult_resp,
+                    date(ges_cli_fec) as fecha_ges,
+                    cli_ema as email,
+                    concat(emp_cod,' - ',emp_nom) as gestor,
+                    car_nom as cartera
+                FROM 
+                    cliente c
+                inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
+                inner join cartera ca ON c.car_id_FK=ca.car_id
+                LEFT join empleado e on c.emp_tel_id_FK=e.emp_id
+                left JOIN gestion_cliente g ON c.ges_cli_tel_id_FK=g.ges_cli_id
+                left JOIN respuesta as r on r.res_id=g.res_id_FK
+            ";
+        }else{
+            $filtro="
+                SELECT 
+                    cli_cod as CODIGO,
+                    cli_nom as NOMBRE,
+                    cli_tip_doc as 'TIPO DOC.',
+                    cli_num_doc as 'NUM. DOC',
+                    format(det_cli_deu_cap,2) as 'DEUDA CAPITAL (S/.)',
+                    format(det_cli_deu_mor,2) as 'SALDO MOROSO TOTAL (S/.)',
+                    format(det_cli_imp_can,2) as 'IMP. CANC. TOTAL (S/.)',
+                    if(ges_cli_med is null,'-',ges_cli_med) as 'TELÉFONO',
+                    det_cli_num_doc as 'NUM. DOC. PRODUCTO',
+                    det_cli_pro as PRODUCTO,
+                    det_cli_tra as TRAMO,
+                    if(res_id_FK is null,'Sin Gestión',res_des) as RESPUESTA,
+                    ges_cli_det as 'ULTIMA GESTIÓN',
+                    date(ges_cli_com_fec) as 'FECHA COMPROMISO',
+                    cli_fec_hor as 'ACTUALIZADO',
+                    concat(loc_cod,' - ',loc_nom) as OFICINA,
+                    concat(emp_cod,' - ',emp_nom) as 'GESTOR TELEFÓNICO',
+                    car_nom as CARTERA
+                FROM 
+                    cliente as c
+                inner JOIN detalle_cliente dc ON c.cli_id = dc.cli_id_FK
+                inner join cartera ca ON c.car_id_FK=ca.car_id
+                LEFT join empleado e on c.emp_tel_id_FK=e.emp_id
+                left JOIN gestion_cliente g ON c.ges_cli_tel_id_FK=g.ges_cli_id
+                left JOIN respuesta as r on r.res_id=g.res_id_FK
+                LEFT JOIN local l on c.loc_id_FK=l.loc_id
+            ";
+        }
+        
         $sql="
             where 
                 cli_est=0 and cli_pas=0 
                 and det_cli_est=0 and det_cli_pas=0
-                and emp_tel_id_FK=$idEmpleado
                 and det_cli_deu_mor = (SELECT MAX(det_cli_deu_mor) FROM detalle_cliente WHERE det_cli_est = 0 AND det_cli_pas = 0 AND cli_id_FK = c.cli_id)
-                    
+                and car_est=0 and car_pas=0
         ";
+
+        $parametros_busquedas=array();
+
+        if($acceso==2){
+            $sql.=" and emp_tel_id_FK=:emp ";
+            $parametros_busquedas["emp"]=$idEmpleado;
+        }
+        /*else{
+            if($cartera!=0){
+                $sql.=" and car_id_FK in ($cartera)";
+            }
+        }*/
+
         if($codigo!= null){
-            $sql = $sql." and cli_cod=$codigo ";
+            $sql = $sql." and cli_cod=:cod ";
+            $parametros_busquedas["cod"]=$codigo;
         }
+        
+        if($carteraBusqueda!= null){
+            $sql = $sql." and car_id_FK=:car ";
+            $parametros_busquedas["car"]=$carteraBusqueda;
+        }
+
         if($dni!= null){
-            $sql = $sql." and cli_num_doc=$dni ";
+            $sql = $sql." and cli_num_doc=:dni ";
+            $parametros_busquedas["dni"]=$dni;
         }
+
         if($nombre!= null){
-            $sql = $sql." and cli_nom like '%$nombre%' ";
+            $nom = explode(' ',$nombre);
+            for($i=0; $i < count($nom); $i++){
+                $sql .= " AND cli_nom like (:nom_$i) ";
+                $parametros_busquedas["nom_$i"]="%".$nom[$i]."%";
+            }
+            // $sql = $sql." and cli_nom like '%$nombre%' ";
         }
-        // if($telefono!= null){
-        //     $sql = $sql." and cli_tel_tel=$telefono ";
-        // }
+        
+        if($numproducto!= null){
+            $sql = $sql." and cli_id in (SELECT cli_id_FK FROM detalle_cliente WHERE det_cli_num_doc in (:producto) and det_cli_est = 0 AND det_cli_pas = 0) ";
+            $parametros_busquedas["producto"]=$numproducto;
+        }
+
         if($telefono!= null){
-            $sql = $sql." and cli_id in (select cli_id_FK from cliente_telefono where cli_tel_est=0 and cli_tel_pas=0 and cli_tel_tel=$telefono) ";
+            $sql = $sql." and cli_id in (select cli_id_FK from cliente_telefono where cli_tel_est=0 and cli_tel_pas=0 and cli_tel_tel like (:tel)) ";
+            $parametros_busquedas["tel"]=$telefono."%";
         }
+
         if($tramo!= null){
-            $sql = $sql." and det_cli_tra like '%$tramo%' ";
+            $sql = $sql." and det_cli_tra like (:tramo) ";
+            $parametros_busquedas["tramo"]="%".$tramo."%";
+
         }
+
         if($respuesta!= null){
             if($respuesta==0){
                 $sql = $sql." and res_id_FK IS NULL ";
@@ -114,11 +192,15 @@ class Cliente extends Model
                 $sql = $sql." and (res_id_FK is null or date_format(ges_cli_fec,'%Y%m')<date_format(now(),'%Y%m'))";
             }
             if($respuesta<>0 && $respuesta<>-1){
-                $sql = $sql." and res_id_FK=$respuesta ";
+                $sql = $sql." and res_id_FK=:res ";
+                $parametros_busquedas["res"]=$respuesta;
             }
         }
         if($fec_desde!= "undefined-undefined-" && $fec_hasta!= "undefined-undefined-"){
-            $sql = $sql." and cli_id in (select cli_id_FK as id from compromiso_cliente where date_format(com_cli_fec_pag,'%Y-%m-%d') between '$fec_desde' and '$fec_hasta')";
+            $sql = $sql." and cli_id in (select cli_id_FK as id from compromiso_cliente where date_format(com_cli_fec_pag,'%Y-%m-%d') between :fecInicio and :fecFin)
+                          and res_id_FK not in (2,38,37) ";
+            $parametros_busquedas["fecInicio"]=$fec_desde;
+            $parametros_busquedas["fecFin"]=$fec_hasta;
         }
         // if($fec_hasta!= "undefined-undefined-"){
         //     $sql = $sql." and date_format(ges_cli_com_fec,'%Y-%m-%d') <='$fec_hasta' ";
@@ -178,22 +260,44 @@ class Cliente extends Model
         }
 
         if($motivo!=null){
-            $sql = $sql." and mot_id_FK=$motivo ";
+            $sql = $sql." and mot_id_FK=:motivo ";
+            $parametros_busquedas["motivo"]=$motivo;
         }
 
         if( $entidades !=null || $score !=null){
             $filtro= $filtro." left join cliente_infAdic as i on c.cli_id=i.cli_id_FK";
             if($entidades !=null){
-                $sql = $sql." and cli_inf_entidades = '$entidades' ";
+                $sql = $sql." and cli_inf_entidades = :entidad ";
+                $parametros_busquedas["entidad"]=$entidades;
             }
             if( $score !=null){
-                $sql = $sql." and cli_inf_score = '$score' ";
+                $sql = $sql." and cli_inf_score = :score ";
+                $parametros_busquedas["score"]=$score;
             }          
         }
 
         if($oficina!= null){
-            $sql = $sql." and loc_id_FK = $oficina ";
+            $sql = $sql." and c.loc_id_FK = :ofic ";
+            $parametros_busquedas["ofic"]=$oficina;
         }
+
+        if($descuento!= null){
+            $dto="";
+            if($carteraBusqueda==9){
+                $dto=" AND det_cli_dscto like (:dscto) ";
+                $parametros_busquedas["dscto"]=$descuento."%";
+            }else{
+                $dto=" AND det_cli_dscto_adc like (:dscto) ";
+                $parametros_busquedas["dscto"]=$descuento."%";
+            }
+            $sql = $sql." and (SELECT count(cli_id_FK) FROM detalle_cliente WHERE cli_id_FK = c.cli_id AND det_cli_est = 0 AND det_cli_pas = 0 $dto)>0";
+        }
+
+        if($prioridad!= null){
+            $sql = $sql." and (SELECT count(cli_id_FK) FROM detalle_cliente WHERE cli_id_FK = c.cli_id AND det_cli_est = 0 AND det_cli_pas = 0 AND det_cli_estado in (:prioridad))>0";
+            $parametros_busquedas["prioridad"]=$prioridad;
+        }
+        
 
         $sql= $sql." GROUP BY cli_id";
 
@@ -207,17 +311,26 @@ class Cliente extends Model
             if($ordenar=='3'){
                 $sql = $sql." order by det_cli_imp_can desc,ges_cli_fec asc";
             }
+            if($ordenar=='4'){
+                $sql = $sql." order by det_cli_deu_cap asc,ges_cli_fec asc ";
+            }
+            if($ordenar=='5'){
+                $sql = $sql." order by det_cli_deu_mor asc,ges_cli_fec asc ";
+            }
+            if($ordenar=='6'){
+                $sql = $sql." order by det_cli_imp_can asc,ges_cli_fec asc";
+            }
         }else{
             $sql = $sql." order by ges_cli_fec asc,det_cli_deu_mor desc";
         }
 
-        $query=DB::connection('mysql')->select(DB::raw($filtro." ".$sql));
+        $query=DB::connection('mysql')->select(DB::raw($filtro." ".$sql),$parametros_busquedas);
         return $query;
     }
 
     public static function datosMes(){
         $idEmpleado=auth()->user()->emp_id;
-        $cartera=session()->get('datos')->idcartera;
+        return $cartera=session()->get('datos')->idcartera;
         $sql="SELECT
                     cli_id,
                     if(emp_meta is null,0,emp_meta) as meta,
@@ -267,7 +380,7 @@ class Cliente extends Model
                 GROUP BY pag_cli_cod
             ) p ON c.cli_cod = p.pag_cli_cod
             WHERE
-                    cli_est=0
+                cli_est=0
             and cli_pas=0
             and emp_tel_id_FK=:emp
             -- GROUP BY cli_id
@@ -431,12 +544,16 @@ class Cliente extends Model
                 fecha_deuda,
                 dias,
                 tramo,
+                prioridad,
                 moneda,
                 capital,
+                saldo,
                 deuda,
                 dscto,
                 importe_dscto,
                 importe,
+                dscto_adc,
+                importe_adc,
                 (case 
                     WHEN dscto_ant IS NULL THEN '-2'
                     WHEN CAST(dscto AS UNSIGNED)=0 THEN '-3'
@@ -453,15 +570,19 @@ class Cliente extends Model
                     det_cli_fec_deu as fecha_deuda,
                     det_cli_dia_atr as dias,
                     det_cli_tra as tramo,
+                    det_cli_estado as prioridad,
                     (case 
                             WHEN det_cli_mon =1 THEN 'SOLES'
                             WHEN det_cli_mon =2 THEN 'DOLARES'
                     end) as moneda,
                     det_cli_deu_cap as capital,
+                    det_cli_sal_deu as saldo,
                     det_cli_deu_mor as deuda,
                     det_cli_dscto as dscto,
                     det_cli_imp_dscto as importe_dscto,
                     det_cli_imp_can as importe,
+                    det_cli_dscto_adc as dscto_adc,
+                    det_cli_imp_can_adc as importe_adc,
                     (SELECT det_dsc_dscto FROM detalle_dscto WHERE det_dsc_fec=DATE_FORMAT(DATE_ADD(DATE(NOW()),INTERVAL -1 MONTH),'%Y%m') AND det_dsc_num_doc=det_cli_num_doc and det_dsc_est=0) as dscto_ant
             FROM 
                     detalle_cliente

@@ -10,7 +10,42 @@ use App\Gestion;
 class ClienteController extends Controller
 {
     public function listaClientes(Request $rq){
-        return cliente::listarClientes($rq);
+        $codigo=$rq->codigo;
+        $dni=$rq->dni;
+        $nombre=$rq->nombre;
+        $telefono=$rq->telefono;
+        $tramo=$rq->tramo;
+        $respuesta=$rq->respuesta;
+        $fec_desde=$rq->fec_desde;
+        $fec_hasta=$rq->fec_hasta;
+        $ordenar=$rq->ordenar;
+        $camp=$rq->camp;
+        $deuda=$rq->deuda;
+        $capital=$rq->capital;
+        $importe=$rq->importe;
+        $sueldo=$rq->sueldo;
+        $entidades=$rq->entidades;
+        $score=$rq->score;
+        $motivo=$rq->motivo;
+        $oficina=$rq->oficina;
+        $descuento=$rq->descuento;
+        $prioridad=$rq->prioridad;
+        $numproducto=$rq->numproducto;
+        $tipo=$rq->tipo;
+        $acceso=auth()->user()->emp_tip_acc;
+        if($acceso==2){
+            return cliente::listarClientes($rq);
+        }else{
+            if($codigo==null &&	$dni==null &&	$nombre==null &&	$telefono==null &&   $tramo==null 
+            &&	$respuesta==null &&	$fec_desde=='undefined-undefined-' &&	$fec_hasta=='undefined-undefined-' 
+            &&	$ordenar==null   &&	$camp==null &&	$deuda==null &&	$capital==null &&	$importe==null 
+            &&	$sueldo==null    &&	$entidades==null &&	$score==null &&	$motivo==null &&	$oficina==null 
+            &&	$descuento==null &&	$prioridad==null && $numproducto==null){
+                return [];
+            }else{
+                return cliente::listarClientes($rq);
+            }
+        }
     }
 
     public function datosMes(){
