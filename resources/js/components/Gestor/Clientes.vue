@@ -183,7 +183,7 @@
                                 </td>
                                 <td colspan="2">
                                     <div class="d-flex justify-content-end" v-if="tipoacceso==2">
-                                        Listar Campaña
+                                        Listar PT
                                         <div class="pt-1">
                                             <input type="checkbox" class="ml-2" v-model="busqueda.camp">
                                         </div>
@@ -225,6 +225,10 @@
                             <tr>
                                 <td class="text-left font-bold">Alcance de Meta</td>
                                 <td class="text-right">{{dataMes.meta!=0?dataMes.alcance:0}}%</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-bold">Cobertura</td>
+                                <td class="text-right">{{dataMes.cobertura!=0?dataMes.cobertura:0}}%</td>
                             </tr>
                             <tr>
                                 <td class="text-left font-bold">Efectividad sobre PDPS</td>
@@ -437,7 +441,7 @@
                 estandar:[],
                 estados:[],
                 fecha_hoy:'',
-                dataMes:{meta:0,recupero:0,alcance:0,efectividad:0,pdp_caidas:0,pdp_pendiente:0,fecha_recupero:''},
+                dataMes:{meta:0,recupero:0,alcance:0,efectividad:0,pdp_caidas:0,pdp_pendiente:0,fecha_recupero:'',cobertura:0},
                 respuestas: [],
                 motivosnopago:[],
                 entidades: [],
@@ -639,6 +643,7 @@
                             this.dataMes.efectividad= datos[0].efectividad!=null?datos[0].efectividad:0;
                             this.dataMes.pdp_caidas=datos[0].pdp_caidos;
                             this.dataMes.pdp_pendiente=datos[0].pdp_pendiente;
+                            this.dataMes.cobertura=datos[0].cobertura;
                         }
                     }
                 })

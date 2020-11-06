@@ -65,8 +65,8 @@
                     </div>
                 </div>
                 <div v-else class="">
-                    <div class="" >
-                        <LineChart :chart-data="dataGrafica" :options="confGrafica" :height="'210px'" class="p-0"></LineChart>
+                    <div class="" style="height:210px;width: content-box;">
+                        <LineChart :chart-data="dataGrafica" :options="confGrafica"  class="p-0" style="height:410px;width: content-box;"></LineChart>
                     </div>
                 </div>
             </div>
@@ -274,6 +274,7 @@
                 
                 this.confGrafica={
                     responsive:true,
+                    maintainAspectRatio: false,
                     legend: {
                         position: 'top',
                     },

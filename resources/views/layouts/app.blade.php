@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/style.css?20109') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css?05111') }}" rel="stylesheet">
     <link href="{{ asset('css/waves.css?1') }}" rel="stylesheet">
     <link href="{{ asset('css/toastr.css?1') }}" rel="stylesheet" >
     <link href="{{ asset('css/bootstrap-select.min.css') }}" rel="stylesheet">
@@ -31,7 +31,7 @@
         @endguest
     </div>
 
-    <script src="{{ asset('js/app.js?04118') }}" ></script>
+    <script src="{{ asset('js/app.js?06112') }}" ></script>
     <script src="{{ asset('js/waves.js') }}" ></script>
     <script src="{{ asset('js/toastr.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/bootstrap-select.min.js?5') }}" ></script>

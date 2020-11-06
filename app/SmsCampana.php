@@ -259,4 +259,10 @@ class SmsCampana extends Model
             Delete from creditoy_sms.blacklist where bl_id=:id
         ",array("id"=>$id));
     }
+
+    public static function validarEnvio($id){
+        return DB::connection('mysql')->select(DB::raw("
+                SELECT count(*) as cantidad FROM creditoy_sms.campana WHERE lote_id_FK=:id and date(camp_fec_reg)=DATE(NOW());
+        "),array("id"=>$id));
+    }
 }

@@ -70,4 +70,8 @@ class SmsCampanaController extends Controller
     public function retirarListaNegra($id){
         return SmsCampana::retirarListaNegra($id);
     }
+
+    public function validarEnvio($id){
+        return SmsCampana::validarEnvio($id);
+    }
 }

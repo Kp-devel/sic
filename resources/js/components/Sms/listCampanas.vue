@@ -7,8 +7,15 @@
                     <p style="font-20px;" class="text-white">Enviando Campaña...</p>
                 </div>
             </div>
-            <div v-else class="d-flex justify-content-center align-items-center" style="margin-top:150px;" >
-                <div class="text-center fadeIn">
+            <div v-else style="margin-top:150px;" class="d-flex justify-content-center align-items-center">
+                <div v-if="viewMensajeValidar" class="text-center fadeIn">
+                    <p class="text-white font-15">La campaña "{{nombreCampana}}" ya se encuentra enviada.<br>¿Desea enviar nuevamente?</p>
+                    <div>
+                        <a href="" @click.prevent="enviar()" class="btn bg-orange px-3">Si</a>
+                        <a href="" @click.prevent="salirModal()" class="btn bg-white px-3">No</a>
+                    </div>
+                </div>
+                <div v-else class="text-center fadeIn">
                     <p><i class="fa fa-thumbs-up fa-4x text-white"></i></p>
                     <p style="font-20px;" class="text-white">Campaña enviada correctamente!</p>
                     <small  class="text-white">Visualiza el avance de tu campaña<br>en el Panel de Incio</small>
@@ -67,7 +74,7 @@
                                         <td class="text-center">{{item.cant_sms}}</td>
                                         <td class="text-center">
                                             <a href="" @click.prevent="modalDetalle(item.id)" class="btn btn-outline-green btn-sm" >Detalle</a>
-                                            <a v-if="item.enviar==0" href="" @click.prevent="enviarCampana(item.id)" class="btn btn-outline-green btn-sm" >Enviar</a>
+                                            <a v-if="item.enviar==0" href="" @click.prevent="enviarCampana(item.id,item.nombre)" class="btn btn-outline-green btn-sm" >Enviar</a>
                                         </td>
                                     </tr>                                        
                                 </tbody>
@@ -181,7 +188,10 @@
                 detalleCondiciones:{nomSpc:'',sms:'',desc:'',cantcli:0,cantsms:0,nomCond:''},
                 viewDetalleCondicion:false,
                 busqueda:{cartera:'',fecha_programada:''},
-                btnbuscar:false
+                btnbuscar:false,
+                viewMensajeValidar:false,
+                idcampana:0,
+                nombreCampana:''
             }
         },
         created(){
@@ -251,17 +261,36 @@
                 this.detalleCondiciones.nomSpc="";
                 this.detalleCondiciones.sms="";
             },
-            enviarCampana(id){
+            enviarCampana(id,nombre){
+                this.idcampana=id;
+                this.nombreCampana=nombre;
                 this.loadCarga=true;
                 $("#modalCarga").modal({backdrop: 'static', keyboard: false});
-                axios.get("enviarCampana/"+id).then(res=>{
+                axios.get("validarEnvio/"+id).then(res=>{
+                    let validar=res.data;
+                    if(validar[0].cantidad==0){
+                        this.viewMensajeValidar=false;
+                        this.enviar();    
+                    }else{
+                        this.loadCarga=false;
+                        this.viewMensajeValidar=true;
+                    }
+                });
+            },
+            enviar(){
+                this.loadCarga=true;
+                axios.get("enviarCampana/"+this.idcampana).then(res=>{
                     if(res.data=="ok"){
                         this.loadCarga=false;
+                        this.viewMensajeValidar=false;
                         setTimeout(() => {
                             $("#modalCarga").modal('hide');
                         }, 1500);
                     }
                 })
+            },
+            salirModal(){
+                $("#modalCarga").modal('hide');
             }
         },
         components: {
