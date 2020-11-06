@@ -95,6 +95,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('insertarListaNegra', 'SmsCampanaController@insertarListaNegra')->name('insertarListaNegra');
     Route::post('buscarListaNegra', 'SmsCampanaController@buscarListaNegra')->name('buscarListaNegra');
     Route::get('retirarListaNegra/{id}', 'SmsCampanaController@retirarListaNegra')->name('retirarListaNegra');
+    Route::get('validarEnvio/{id}', 'SmsCampanaController@validarEnvio')->name('validarEnvio');
     
 
 // indicadores---------------------------------------------------------------------------------

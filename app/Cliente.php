@@ -40,17 +40,15 @@ class Cliente extends Model
         $idEmpleado=auth()->user()->emp_id;
         $cartera=session()->get('datos')->idcartera;
         $acceso=auth()->user()->emp_tip_acc;
-
         if($camp!= null){
-            $fec_actual=date("Y-m-d H:i:s");
-            //fecha_i <= '2020-07-25 16:04:18' and fecha_f >= '2020-07-25 16:50:51'
-            //$fec_actual='2020-07-25 16:04:18';
-        
-            $sql_campana = " select clientes,fecha_i,fecha_f from indicadores.campana
-                        WHERE id_cartera=$cartera and fecha_i <= '$fec_actual' and fecha_f >= '$fec_actual' 
-                        LIMIT 1";
-            
-            $query_campana=DB::connection('mysql')->select(DB::raw($sql_campana));
+            $fec_actual=Carbon::now();
+            $query_campana=DB::connection('mysql')->select(DB::raw("
+                                select clientes
+                                from indicadores.plan
+                                WHERE id_cartera in (:car)
+                                and fecha_i = date(:fec1)
+                                LIMIT 1
+                            "),array("car"=>$cartera,"fec1"=>$fec_actual));
             //dd($query_campana);
             if($query_campana!=[]){
                 foreach($query_campana as $q){
@@ -331,22 +329,24 @@ class Cliente extends Model
     public static function datosMes(){
         $idEmpleado=auth()->user()->emp_id;
         $cartera=session()->get('datos')->idcartera;
-        $sql="SELECT
-                    cli_id,
-                    if(emp_meta is null,0,emp_meta) as meta,
-                    sum(monto_conf) as monto_conf,
-                    max(fecha_conf) as fecha_conf,
-                    sum(monto_pago) as monto_pago,
-                    max(fecha_pago) as fecha_pago,
-                    if(sum(monto_pago)=0,sum(monto_conf),sum(monto_pago)) as recupero,
-                    if(sum(monto_pago)=0,max(fecha_conf),max(fecha_pago)) as fecha_recupero,
-                    sum(monto_pdp) as monto_pdp,
-                    sum(pendiente) as pdp_pendiente,
-                    sum(caidos) as pdp_caidos,
-                    sum(cumplido) as pdp_cumplido,
-                    format((sum(cumplido)/sum(cumplido)+sum(pendiente))*100,0) as efectividad
+        $sql="
+            SELECT
+                cli_id,
+                if(emp_meta is null,0,emp_meta) as meta,
+                sum(monto_conf) as monto_conf,
+                max(fecha_conf) as fecha_conf,
+                sum(if(gestion is null,0,monto_pago)) as monto_pago,
+                max(if(gestion is null,0,fecha_pago)) as fecha_pago,
+                if(sum(if(gestion is null,0,monto_pago))=0,sum(monto_conf),sum(if(gestion is null,0,monto_pago))) as recupero,
+                if(sum(if(gestion is null,0,monto_pago))=0,max(fecha_conf),max(if(gestion is null,0,fecha_pago))) as fecha_recupero,
+                sum(monto_pdp) as monto_pdp,
+                sum(pendiente) as pdp_pendiente,
+                sum(caidos) as pdp_caidos,
+                sum(cumplido) as pdp_cumplido,
+                format((sum(cumplido)/sum(cumplido)+sum(pendiente))*100,0) as efectividad,
+                format((sum(gestion)/count(*))*100,2) as cobertura
             FROM
-                    cliente c
+                cliente c
             LEFT JOIN (
                 SELECT
                     g.cli_id_FK,
@@ -355,14 +355,15 @@ class Cliente extends Model
                     sum(ges_cli_com_can) as monto_pdp,
                     sum(if(com_cli_est <> 0,com_cli_can,0)) as cumplido,
                     sum(if( com_cli_est=0 and DATEDIFF(DATE_FORMAT(now(),'%Y-%m-%d'),DATE_FORMAT(com_cli_fec_pag,'%Y-%m-%d')) <= 0,com_cli_can,0)) as pendiente,
-                    sum(if( com_cli_est=0 and DATEDIFF(DATE_FORMAT(now(),'%Y-%m-%d'),DATE_FORMAT(com_cli_fec_pag,'%Y-%m-%d')) > 0,com_cli_can,0)) as caidos
+                    sum(if( com_cli_est=0 and DATEDIFF(DATE_FORMAT(now(),'%Y-%m-%d'),DATE_FORMAT(com_cli_fec_pag,'%Y-%m-%d')) > 0,com_cli_can,0)) as caidos,
+                    g.emp_id_FK,
+                    1 as gestion
                 FROM
                     gestion_cliente g
                 LEFT JOIN compromiso_cliente cc ON cc.cli_id_FK=g.cli_id_FK and cc.ges_cli_id_FK=g.ges_cli_id and date_format(com_cli_fec_pag,'%Y-%m') = date_format(now(),'%Y-%m')
                 WHERE
                     date_format(ges_cli_fec,'%Y-%m') = date_format(now(),'%Y-%m')
-                    and res_id_FK in (1,2,43)
-                    -- and g.emp_id_FK=2531	
+                    and g.emp_id_FK=:emp2
                     and ges_cli_acc IN (1, 2)
                 GROUP BY cli_id_FK
             )g ON c.cli_id = g.cli_id_FK
@@ -378,14 +379,13 @@ class Cliente extends Model
                     date_format(pag_cli_fec, '%Y-%m') = date_format(now(), '%Y-%m')
                 AND car_id_FK = :car
                 GROUP BY pag_cli_cod
-            ) p ON c.cli_cod = p.pag_cli_cod
+            ) p ON c.cli_cod = p.pag_cli_cod 
             WHERE
                 cli_est=0
             and cli_pas=0
             and emp_tel_id_FK=:emp
-            -- GROUP BY cli_id
         ";
-        $datos=DB::connection('mysql')->select(DB::raw($sql),array("emp"=>$idEmpleado,"car"=>$cartera));
+        $datos=DB::connection('mysql')->select(DB::raw($sql),array("emp"=>$idEmpleado,"emp2"=>$idEmpleado,"car"=>$cartera));
         return $datos;
         // return response()->json(['metas' => $metas, 'datos' => $datos, 'pdp' => $pdp , 'pagos' => $pagos]);
         //return $query;

@@ -480,7 +480,7 @@
                     this.arrayUsuarios.push("'"+this.usuarios[index].usuario+"'");
                     this.totalSelecionado+=parseInt((filas[index].innerHTML).replace(",", ""));
                 }else{
-                    this.totalSelecionado-=parseInt(this.usuarios[index].cantidad);
+                    this.totalSelecionado-=parseInt((filas[index].innerHTML).replace(",", ""));
                     for(var i=0;i<this.arrayUsuarios.length;i++){
                         if(this.arrayUsuarios[i]=="'"+this.usuarios[index].usuario+"'"){
                             this.arrayUsuarios.splice(i,1);
