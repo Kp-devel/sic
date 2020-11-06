@@ -176,9 +176,11 @@ class Plan extends Model
         $nombreCartera = $rq->nombreCartera;
         $nombrePlan=$rq->plan;
         $total=$rq->total;
-        $speech=$rq->speech;
+        $speech=isset($rq->speech)?$rq->speech:'';
         $fechaInicio=$rq->fechaInicio;
         $fechaFin=$rq->fechaFin;
+        $orden=$rq->orden;
+        $cantidad=$rq->cantidad;
         $tramo = implode(',',$rq->tramo);
         $departamento = implode(',',$rq->departamento);
         $prioridad = implode(',',$rq->prioridad);
@@ -193,7 +195,10 @@ class Plan extends Model
         $tipoCliente = implode(',',$rq->tipoCliente);
         $usuarios = implode(',',$rq->usuarios);
         $sql="";
-        
+        $parametros=array();
+        $parametros["car1"]=$cartera;
+        $parametros["car2"]=$cartera;
+
         if($usuarios!=''){
             $sql.=" and gestor in ($usuarios)";
         }
@@ -234,6 +239,29 @@ class Plan extends Model
             $sql.=" and nuevo in ($tipoCliente)";
         }
 
+        if($orden!=''){
+            if($orden==1){
+                $sql.=" order by gestor,cap desc";
+            }
+            if($orden==2){
+                $sql.=" order by gestor,deuda desc";
+            }
+            if($orden==3){
+                $sql.=" order by gestor,importe desc";
+            }
+            if($orden==4){
+                $sql.=" order by gestor,cap asc";
+            }
+            if($orden==5){
+                $sql.=" order by gestor,deuda asc";
+            }
+            if($orden==6){
+                $sql.=" order by gestor,importe asc";
+            }
+        }else{
+            $sql.=" order by gestor";
+        }
+
         $detalle="Tramo: ".str_replace("'","",$tramo).";";
         $detalle.="Departamentos: ".str_replace("'","",$departamento).";";
         $detalle.="Prioridad: ".str_replace("'","",$prioridad).";";
@@ -248,31 +276,25 @@ class Plan extends Model
         $detalle.="TipoCliente: ".str_replace("'","",$tipoCliente).";";
         $detalle.="Usuarios: ".str_replace("'","",$usuarios)."";
 
-        DB::connection('mysql')->select(DB::raw("
-                INSERT INTO indicadores.plan(
-                    id_cartera,
-                    nombre_cartera,
-                    nombre_plan,
-                    clientes,
-                    cant_clientes,
-                    speech,
-                    detalle,
-                    fecha_i,
-                    fecha_f,
-                    fecha_reg
-                )
+        $sqlCantidad='';
+        if($cantidad!=''){
+            $sqlCantidad=" WHERE id<=:cant ";
+            $parametros["cant"]=$cantidad;
+        }
+        
+        $datos=DB::connection('mysql')->select(DB::raw("
                 SELECT
+                    cli_cod as codigos,
+                    gestor
+                FROM 
+                (SELECT
                     car,
                     cartera,
-                    '$nombrePlan',
-                    group_concat(cli_cod),
-                    '$total',
-                    '$speech',
-                    '$detalle',
-                    '$fechaInicio',
-                    '$fechaFin',
-                    now()
-                FROM 
+                    cli_cod,
+                    @ac:=CASE WHEN @ges=gestor THEN @ac + 1 ELSE 1 END AS id,
+                    @ges:=gestor,
+                    gestor
+                FROM
                 (SELECT
                     cuenta,
                         cli_cod,
@@ -309,12 +331,14 @@ class Plan extends Model
                                 WHEN saldo_deuda >= 1000 and saldo_deuda < 3000 THEN 'CC'
                                 WHEN saldo_deuda >= 3000 THEN 'DD'
                         END) AS saldo_deuda,
+                        saldo_deuda as deuda,
                         (CASE 
                                 WHEN monto_camp <500 THEN 'AA'
                                 WHEN monto_camp >= 500 and monto_camp < 1000 THEN 'BB'
                                 WHEN monto_camp >= 1000 and monto_camp < 3000 THEN 'CC'
                                 WHEN monto_camp >= 3000 THEN 'DD'
                         END) AS monto_camp,
+                        monto_camp as importe,
                         (CASE 
                                 WHEN ges_cli_fec IS NULL OR DATE_FORMAT(ges_cli_fec,'%Y%m')<DATE_FORMAT(NOW(),'%Y%m') THEN 'Sin Gestión' 
                                 WHEN res_id_FK IN ( 38, 6, 22, 41 ) THEN 'C-F-R-N'
@@ -348,10 +372,40 @@ class Plan extends Model
                     and date_format(cd.fecha,'%Y%m')=date_format(now(),'%Y%m') 
                 GROUP BY cuenta
                 )t
+            CROSS JOIN (SELECT @ac := 0) AS dummy8
+            CROSS JOIN (
+                SELECT
+                    @ges := emp_cod
+                FROM
+                    creditoy_cobranzas.empleado
+                GROUP BY
+                    emp_cod
+                LIMIT 1
+            ) AS dummy2
             where 
                 1=1
                 $sql
-        "),array("car1"=>$cartera,"car2"=>$cartera));
+        )tt 
+        $sqlCantidad
+        "),$parametros);
+        
+        $codigos="";
+        $array=[];
+        if(count($datos)>0){
+            foreach($datos as $d){
+                $array[] = $d->codigos;
+            }
+            $codigos=implode(',',$array);
+        }
+        
+        DB::connection('mysql')->insert("
+            INSERT INTO indicadores.plan(
+                id_cartera,nombre_cartera,nombre_plan,clientes,cant_clientes,speech,detalle,fecha_i,fecha_f,fecha_reg
+            )
+            VALUES(:idcar,:car,:plan,:cods,:total,:speech,:detalle,:fecInicio,:fecFin,now())
+        ",array("idcar"=>$cartera,"car"=>$nombreCartera,"plan"=>$nombrePlan,"total"=>$total,"cods"=>$codigos,
+                "speech"=>$speech,"detalle"=>$detalle,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
+        
         return "ok";
     }
 
@@ -359,7 +413,7 @@ class Plan extends Model
         return DB::connection('mysql')->select(DB::raw("
                 SELECT 
                     emp_id as id,
-                    concat(emp_cod,' - ',emp_nom) as usuario,
+                    if(emp_cod is null,'NO ASIGNADO',concat(emp_cod,' - ',emp_nom)) as usuario,
                     count(cli_cod) as cantidad
                 FROM
                 (
@@ -370,7 +424,7 @@ class Plan extends Model
                         emp_nom
                     FROM cliente as c
                     INNER JOIN indicadores.cartera_detalle as cd on c.cli_cod =cd.cuenta
-                    INNER JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
+                    LEFT JOIN empleado as e on c.emp_tel_id_FK=e.emp_id
                     where 
                         cli_est=0 and cli_pas=0
                         and c.car_id_fk=:car1
@@ -380,6 +434,7 @@ class Plan extends Model
                     group By cli_cod
                 ) t
                 GROUP BY emp_cod
+                order by emp_cod desc
         "),array("car1"=>$cartera,"car2"=>$cartera));
     }
 
@@ -406,8 +461,8 @@ class Plan extends Model
                 if(g.res_id_FK in (2),g.ges_cli_conf_can,0) as monto_conf,
                 if(g.mot_id_FK in (3),1,0) as mot_np
             FROM
-                gestion_cliente as g
-            inner JOIN cliente as c ON g.cli_id_FK=c.cli_id
+            cliente as c
+            inner JOIN gestion_cliente as g ON g.cli_id_FK=c.cli_id
             inner JOIN gestion_cliente gg ON c.ges_cli_tel_id_FK=gg.ges_cli_id
             WHERE
                     cli_est=0

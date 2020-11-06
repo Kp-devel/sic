@@ -253,7 +253,35 @@
                         </table>
                     </div>
                     <div class="col-md-6">
-                        <table class="table">
+                        <!-- seleccion -->
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="d-flex" style="gap:10px;">
+                                    <div class="form-group" style="width:40%">
+                                        <label for="">Cant. Max. Clientes</label>
+                                        <input type="text" class="form-control" @keypress="soloNumeros" @keyup="total()" v-model="ajustes.cantidad" >
+                                    </div>
+                                    <div class="form-group" style="width:60%">
+                                        <label for="">Ordenar por</label>
+                                        <select class="form-control" v-model="ajustes.orden">
+                                            <option value="">Seleccionar</option>
+                                            <optgroup label="Ascendente">
+                                                <option value="4">Capital</option>
+                                                <option value="5">Deuda</option>
+                                                <option value="6">IC</option>
+                                            </optgroup>
+                                            <optgroup label="Descendente">   
+                                                <option value="1">Capital</option>
+                                                <option value="2">Deuda</option>
+                                                <option value="3">IC</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- tabla de datos -->
+                        <table class="table" id="tablaUsuarios">
                             <tbody>
                                 <tr class="text-center bg-gray font-bold">
                                     <td>Código</td>
@@ -264,7 +292,8 @@
                                 <tr v-for="(item,index) in usuarios" :key="index">
                                     <td class="text-center">{{item.usuario}}</td>
                                     <td class="px-3">{{item.gestor}}</td>
-                                    <td class="text-center">{{formatoNumero(item.cantidad,'C')}}</td>
+                                    <td class="text-center" id="colcant" v-if="ajustes.cantidad==''">{{formatoNumero(item.cantidad,'C')}}</td>
+                                    <td class="text-center" id="colcant" v-else>{{ajustes.cantidad>=item.cantidad?formatoNumero(item.cantidad,'C'):formatoNumero(ajustes.cantidad,'C')}}</td>
                                     <td class="text-center border-0 bg-white">
                                         <div class="form-check">
                                             <input class="form-check-input" name="clientes" type="checkbox" :id="'check'+index" checked @change="seleccionCheck(index)">
@@ -332,7 +361,8 @@
                 usuarios:[],
                 totalSelecionado:0,
                 detalleCondiciones:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:''},
-                totales:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:''}
+                totales:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:''},
+                ajustes:{cantidad:'',orden:''}
             }
         },
         created(){
@@ -340,6 +370,20 @@
         },
         methods:{
             SeleccionarTodo(){
+                this.arrayTramos=[];
+                this.arrayDepartamentos=[];
+                this.arrayPrioridad=[];
+                this.arraySituacion=[];
+                this.arrayCall=[];
+                this.arraySueldos=[];
+                this.arrayCapital=[];
+                this.arrayDeuda=[];
+                this.arrayImporte=[];
+                this.arrayUbicabilidad=[];
+                this.arrayEntidades=[];
+                this.arrayTipo=[];
+                this.arrayUsuarios=[];
+
                 this.tramos.forEach(element => {
                     this.arrayTramos.push(element);
                 });
@@ -431,9 +475,10 @@
                 }
             },
             seleccionCheck(index){
+                const filas=document.querySelectorAll("#tablaUsuarios tbody tr #colcant");
                 if( $('#check'+index).prop('checked') ) {
                     this.arrayUsuarios.push("'"+this.usuarios[index].usuario+"'");
-                    this.totalSelecionado+=parseInt(this.usuarios[index].cantidad);
+                    this.totalSelecionado+=parseInt((filas[index].innerHTML).replace(",", ""));
                 }else{
                     this.totalSelecionado-=parseInt(this.usuarios[index].cantidad);
                     for(var i=0;i<this.arrayUsuarios.length;i++){
@@ -445,6 +490,17 @@
             },
             regresar(){
                 this.viewForm=true;
+            },
+            total() {
+                this.totalSelecionado=0;
+                const filas=document.querySelectorAll("#tablaUsuarios tbody tr #colcant");
+                let i=0;
+                filas.forEach((fila) => {
+                    if( $('#check'+i).prop('checked') ) {
+                        this.totalSelecionado+=parseInt((fila.innerHTML).replace(",", ""));
+                    }
+                    i++;
+                });
             },
             generarPlan(){
                 this.loadingModal=true;
@@ -469,19 +525,9 @@
                     importe:this.arrayImporte.length==this.totales.importe?["'TODOS'"]:this.arrayImporte,
                     ubicabilidad:this.arrayUbicabilidad.length==this.totales.ubicabilidad?["'TODOS'"]:this.arrayUbicabilidad,
                     entidad:this.arrayEntidades.length==this.totales.entidad?["'TODOS'"]:this.arrayEntidades,
-                    tipoCliente:this.arrayTipo.length==this.totales.tipo?["'TODOS'"]:this.arrayTipo
-                    // tramo:this.arrayTramos,
-                    // departamento:this.arrayDepartamentos,
-                    // prioridad:this.arrayPrioridad,
-                    // situacion:this.arraySituacion,
-                    // call:this.arrayCall,
-                    // sueldo:this.arraySueldos,
-                    // deuda:this.arrayDeuda,
-                    // capital:this.arrayCapital,
-                    // importe:this.arrayImporte,
-                    // ubicabilidad:this.arrayUbicabilidad,
-                    // entidad:this.arrayEntidades,
-                    // tipoCliente:this.arrayTipo
+                    tipoCliente:this.arrayTipo.length==this.totales.tipo?["'TODOS'"]:this.arrayTipo,
+                    orden:this.ajustes.orden,
+                    cantidad:this.ajustes.cantidad
                 };
                 axios.post("insertarPlan",parametros).then(res=>{
                     if(res.data=="ok"){
@@ -504,6 +550,9 @@
                 this.datos.total=0;
                 this.datos.nombreCartera='';
                 this.SeleccionarTodo();
+                this.ajustes.orden='';
+                this.ajustes.cantidad='';
+                this.totales
             },
             formatoNumero(num,tipo){
                 if(tipo=='M'){
@@ -521,6 +570,12 @@
                 }
                 return x1 + x2
             },
+            soloNumeros(e){
+                var key = window.event ? e.which : e.keyCode;
+                if (key < 48 || key > 57) {
+                    e.preventDefault();
+                }
+            },   
         },
         components: {
             

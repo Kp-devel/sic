@@ -330,7 +330,7 @@ class Cliente extends Model
 
     public static function datosMes(){
         $idEmpleado=auth()->user()->emp_id;
-        return $cartera=session()->get('datos')->idcartera;
+        $cartera=session()->get('datos')->idcartera;
         $sql="SELECT
                     cli_id,
                     if(emp_meta is null,0,emp_meta) as meta,
