@@ -82,7 +82,7 @@ class Bandeja extends Model
                             time(rep_sms_fec) as hora,
                             0 as estado
                         FROM
-                        creditoy_sms.repositorio_sms r FORCE INDEX(index_gsm) 
+                        creditoy_sms.repositorio_sms r FORCE INDEX(in_gsm) 
                         WHERE
                         rep_sms_gsm in (:num)
                         and (CASE WHEN DAYNAME(date(NOW()))='Monday' THEN date(rep_sms_fec) BETWEEN ADDDATE(date(NOW()),INTERVAL -2 DAY) and ADDDATE(date(NOW()),INTERVAL -1 DAY)
