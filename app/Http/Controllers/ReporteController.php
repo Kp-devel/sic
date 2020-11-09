@@ -45,4 +45,22 @@ class ReporteController extends Controller
     public function resumenGestionConsolidada($fecha){
         return Reporte::resumenGestionesCarteraConsolidado($fecha);
     }
+
+    public function reportecomparativocartera(Request $rq){
+        $comparativo=$rq->comparativo;
+        $cartera=$rq->cartera;
+        if($comparativo=='afecha'){
+            if($cartera=='34' || $cartera=='88' || $cartera=='2' || $cartera=='89' || $cartera=='70' ||  $cartera=='20' || $cartera=='72' || $cartera=='5'){
+                return Reporte::reporteComparativoCarteraPagos($rq);
+            }else{
+                return Reporte::reporteComparativoCarteraCon($rq);
+            }
+        }else{
+            if($cartera=='34' || $cartera=='88' || $cartera=='2' || $cartera=='89' || $cartera=='70' ||  $cartera=='20' || $cartera=='72' || $cartera=='5'){
+                return Reporte::reporteComparativoCarteraPagosCierre($rq);
+            }else{
+                return Reporte::reporteComparativoCarteraConCierre($rq);
+            }
+        }
+    }
 }

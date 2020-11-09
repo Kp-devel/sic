@@ -242,6 +242,17 @@ class HomeController extends Controller
         }
     }
 
+    public function indcomparativocartera(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==1 || $tipo_acceso==5){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            return view('admin.indicadores.comparativoCartera',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
+    
     public function incidencias(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==1 || $tipo_acceso==5 || $tipo_acceso==6 || $tipo_acceso==7){
