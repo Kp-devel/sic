@@ -397,7 +397,12 @@
                                             <td class="border-0 bg-white rounded-0 px-0">
                                                 <a href="" class="btn-phone" @click.prevent="detalle(item.id)"><i class="fa fa-phone fa-1x"></i></a>
                                             </td>
-                                            <td class="border-0 bg-white rounded-0 px-0" style="min-width:0.1rem"><i class="fa fa-check text-green" v-if="item.fecha_ges==fecha_hoy"></i></td>
+                                            <td class="border-0 bg-white rounded-0 px-0" style="min-width:0.1rem" v-if="busqueda.camp==''">
+                                                <i class="fa fa-check text-green" v-if="item.fecha_ges==fecha_hoy"></i>
+                                            </td>
+                                            <td class="border-0 bg-white rounded-0 px-0" style="min-width:0.1rem" v-else>
+                                                <i class="fa fa-check text-green" v-if="item.fecha_ges>=fecha_camp_inicio && item.fecha_ges<=fecha_hoy"></i>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -452,7 +457,8 @@
                 carteras:[],
                 dataBusqueda:{},
                 dataExportar:[],
-                btnExportar:false
+                btnExportar:false,
+                fecha_camp_inicio:''
             }
         },
         created(){
@@ -512,6 +518,16 @@
                 this.descuentos=[];
                 this.prioridad=[];
             },
+            datosPlan(){
+                if(this.busqueda.camp!=''){
+                    axios.get("datosPlanUsuario").then(res=>{
+                        if(res.data){
+                            var datos=res.data;
+                            this.fecha_camp_inicio=datos[0].fechaInicio;
+                        }
+                    })
+                }
+            },
             parametros(){
                 const fechas_i =  this.busqueda.pdp_desde.split('/');                   
                 const nuevaFecha_i = `${fechas_i[2]}-${fechas_i[1]}-${fechas_i[0]}`
@@ -548,17 +564,17 @@
                 };
             },
             listCLientes(){
-                    this.parametros();
-                    this.loading=true;
-                    this.dataBusqueda.tipo=1;
-                    axios.post("listClientes",this.dataBusqueda).then(res=>{
-                        if(res.data){
-                            this.lista=res.data;
-                            this.loading=false;
-                            this.total_clientes=this.lista.length;
-                        }
-                    })
-                //}
+                this.parametros();
+                this.loading=true;
+                this.dataBusqueda.tipo=1;
+                axios.post("listClientes",this.dataBusqueda).then(res=>{
+                    if(res.data){
+                        this.lista=res.data;
+                        this.loading=false;
+                        this.total_clientes=this.lista.length;
+                    }
+                })
+                this.datosPlan();
             },
             listaPanelBusqueda(){    
                 this.respuestas=[];

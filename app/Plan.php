@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class Plan extends Model
 {
@@ -489,4 +490,15 @@ class Plan extends Model
         "),array("id"=>$id));
     }
     
+    public static function datosPlanUsuario(){
+        $cartera=session()->get('datos')->idcartera;
+        $fec_actual=Carbon::now();
+        return DB::connection('mysql')->select(DB::raw("
+                    select fecha_i as fechaInicio 
+                    from indicadores.plan
+                    WHERE id_cartera in (:car)
+                    and fecha_i<=(:fec1) and fecha_f >= date(:fec2)
+                    LIMIT 1
+                "),array("car"=>$cartera,"fec1"=>$fec_actual,"fec2"=>$fec_actual));
+    }
 }

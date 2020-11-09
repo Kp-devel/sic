@@ -46,4 +46,8 @@ class PlanController extends Controller
         }
         return Plan::resultadoPlan($idEmpleado,$clientes,$cartera,$fechaInicio,$fechaFin);
     }
+
+    public function datosPlanUsuario(){
+        return Plan::datosPlanUsuario();
+    }
 }

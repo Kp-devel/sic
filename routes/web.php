@@ -107,6 +107,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/crearplantrabajo', 'HomeController@indcrearplantrabajo')->name('crearplantrabajo');
     Route::get('/seguimientoplantrabajo', 'HomeController@indseguimientoplantrabajo')->name('seguimientoplantrabajo');
     
+    
     // indicadores operativos ---------------------------------------------------------------------------------------------------------------
     Route::post('reporteEstructuraCartera', 'EstructuraController@reporteEstructuraCartera');
     Route::post('reporteEstructuraGestionCartera', 'EstructuraController@reporteEstructuraGestionCartera');
@@ -123,6 +124,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('insertarPlan', 'PlanController@insertarPlan');
     Route::get('usuariosPlan/{id}', 'PlanController@usuariosPlan');
     Route::post('resultadosPlan', 'PlanController@resultadosPlan');
+    Route::get('/datosPlanUsuario', 'PlanController@datosPlanUsuario');
     
     //Reporte general------------------------------------------------------------------------------------------------------------------------
     Route::get('/reportegeneral', 'HomeController@indreportegeneral')->name('reportegeneral');

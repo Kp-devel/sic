@@ -46,9 +46,9 @@ class Cliente extends Model
                                 select clientes
                                 from indicadores.plan
                                 WHERE id_cartera in (:car)
-                                and fecha_i = date(:fec1)
+                                and fecha_i<=(:fec1) and fecha_f >= date(:fec2)
                                 LIMIT 1
-                            "),array("car"=>$cartera,"fec1"=>$fec_actual));
+                            "),array("car"=>$cartera,"fec1"=>$fec_actual,"fec2"=>$fec_actual));
             //dd($query_campana);
             if($query_campana!=[]){
                 foreach($query_campana as $q){
