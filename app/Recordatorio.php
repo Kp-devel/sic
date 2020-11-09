@@ -66,7 +66,7 @@ class Recordatorio extends Model
                 AND ges_rec_est=0 
                 AND ges_rec_pas=0
                 and date(ges_rec_fec_hor)=date(now())
-                and TIME(NOW()) BETWEEN time(ges_rec_fec_hor) AND TIME(DATE_ADD(time(ges_rec_fec_hor),INTERVAL +6 MINUTE))
+                and TIME(NOW()) BETWEEN time(ges_rec_fec_hor) AND TIME(DATE_ADD(time(ges_rec_fec_hor),INTERVAL +11 MINUTE))
                 GROUP BY emp_tel_id_FK,cli_id
                 ORDER BY ges_rec_fec_hor desc
             )t
