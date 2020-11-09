@@ -21,25 +21,29 @@
                         <table>
                             <tr class="font-12"> 
                                 <td>Código</td>
-                                <td class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.codigo" @keypress="soloNumeros"></td>
+                                <td class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.codigo" @keypress="soloNumeros" v-on:keyup.enter="listCLientes()"></td>
                                 <td class="font-11">DNI/RUC</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.dni" @keypress="soloNumeros"></td>
+                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.dni" @keypress="soloNumeros" v-on:keyup.enter="listCLientes()"></td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>Nombre</td>
-                                <td colspan="3" class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.nombre"></td>
+                                <td colspan="3" class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.nombre" v-on:keyup.enter="listCLientes()"></td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>Nro. Producto</td>
+                                <td colspan="3" class="pb-1"><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.numproducto" v-on:keyup.enter="listCLientes()" @keypress="soloNumeros"></td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>Teléfono</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.telefono" @keypress="soloNumeros"></td>
+                                <td><input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.telefono" @keypress="soloNumeros" v-on:keyup.enter="listCLientes()"></td>
                                 <td class="text-right pr-1">Tramo</td>
-                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.tramo"></td>
+                                <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.tramo" v-on:keyup.enter="listCLientes()"></td>
                             </tr>
                             <tr class="font-12"> 
                                 <td>Ult. Gest.</td>
                                 <td colspan="3">
                                     <select class="form-control font-12 form-control-sm " v-model="busqueda.respuesta" @change="busqueda.motivo=''">
-                                        <option value="">Selecionar</option>
+                                        <option value="">Seleccionar</option>
                                         <option value="0">Clientes nuevos sin gestión</option>
                                         <option value="-1">Clientes sin gestión en el mes</option>
                                         <option v-for="(item,index) in respuestas" :key="index" :value="item.res_id">{{item.res_des}}</option>
@@ -50,7 +54,7 @@
                                 <td>Motivo No Pago</td>
                                 <td colspan="3">
                                     <select class="form-control font-12 form-control-sm " v-model="busqueda.motivo">
-                                        <option value="">Selecionar</option>
+                                        <option value="">Seleccionar</option>
                                         <option v-for="(item,index) in motivosnopago" :key="index" :value="item.id">{{item.motivo}}</option>
                                     </select>
                                 </td>
@@ -67,18 +71,11 @@
                                 <td><input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.pdp_hasta" placeholder="dd/mm/aaaa"></td>
                             </tr>
                             <tr class="font-12"> 
-                                <td>Entidades</td>
-                                <td>
-                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.entidades" :disabled="entidades==''">
+                                <td>Oficina</td>
+                                <td colspan="3">
+                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.oficina">
                                         <option value="">Seleccionar</option>
-                                        <option v-for="(item,index) in entidades" :key="index" :value="item.valor">{{item.valor}}</option>
-                                    </select>
-                                </td>
-                                <td class="text-right pr-1">Score</td>
-                                <td>
-                                    <select class="form-control font-12 form-control-sm" :disabled="score==''" v-model="busqueda.score">
-                                        <option value="">Seleccionar</option>
-                                        <option v-for="(item,index) in score" :key="index" :value="item.valor">{{item.valor}}</option>
+                                        <option v-for="(item,index) in oficinas" :key="index" :value="item.idoficina">{{item.local}}</option>
                                     </select>
                                 </td>
                             </tr>
@@ -127,11 +124,43 @@
                                 </td>
                             </tr>
                             <tr class="font-12"> 
-                                <td>Oficina</td>
+                                <td>Cartera</td>
                                 <td colspan="3">
-                                    <select class="form-control font-12 form-control-sm mb-1" v-model="busqueda.oficina">
-                                        <option value="">Selecionar</option>
-                                        <option v-for="(item,index) in oficinas" :key="index" :value="item.idoficina">{{item.local}}</option>
+                                    <select class="form-control font-12 form-control-sm mb-1" v-model="busqueda.cartera" @change="cargarDatosBusqueda(busqueda.cartera)">
+                                        <option value="">Seleccionar</option>
+                                        <option v-for="(item,index) in carteras" :key="index" :value="item.id">{{item.cartera}}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>Entidades</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm" v-model="busqueda.entidades" :disabled="entidades==''">
+                                        <option value="">Seleccionar</option>
+                                        <option v-for="(item,index) in entidades" :key="index" :value="item.valor">{{item.valor}}</option>
+                                    </select>
+                                </td>
+                                <td class="text-right pr-1">Score</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm" :disabled="score==''" v-model="busqueda.score">
+                                        <option value="">Seleccionar</option>
+                                        <option v-for="(item,index) in score" :key="index" :value="item.valor">{{item.valor}}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="font-12"> 
+                                <td>Prioridad</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm mb-1" v-model="busqueda.prioridad" :disabled="prioridad==''">
+                                        <option value="">Seleccionar</option>
+                                        <option v-for="(item,index) in prioridad" :key="index" :value="item.valor">{{item.valor}}</option>
+                                    </select>
+                                </td>
+                                <td class="text-right pr-1">Dscto.</td>
+                                <td>
+                                    <select class="form-control font-12 form-control-sm mb-1" v-model="busqueda.descuento" :disabled="descuentos==''">
+                                        <option value="">Seleccionar</option>
+                                        <option v-for="(item,index) in descuentos" :key="index" :value="item.valor">{{item.valor}}</option>
                                     </select>
                                 </td>
                             </tr>
@@ -140,14 +169,21 @@
                                 <td>
                                     <select class="form-control font-12 form-control-sm" v-model="busqueda.ordenar">
                                         <option value="">Seleccionar</option>
-                                        <option value="1">Capital</option>
-                                        <option value="2">Deuda</option>
-                                        <option value="3">IC</option>
+                                        <optgroup label="Ascendente">
+                                            <option value="4">Capital</option>
+                                            <option value="5">Deuda</option>
+                                            <option value="6">IC</option>
+                                        </optgroup>
+                                        <optgroup label="Descendente">   
+                                            <option value="1">Capital</option>
+                                            <option value="2">Deuda</option>
+                                            <option value="3">IC</option>
+                                        </optgroup>
                                     </select>
                                 </td>
                                 <td colspan="2">
-                                    <div class="d-flex justify-content-end">
-                                        Listar Campaña
+                                    <div class="d-flex justify-content-end" v-if="tipoacceso==2">
+                                        Listar PT
                                         <div class="pt-1">
                                             <input type="checkbox" class="ml-2" v-model="busqueda.camp">
                                         </div>
@@ -155,17 +191,21 @@
                                 </td>
                             </tr>
                             <tr class="font-12"> 
-                                <td colspan="2" class="pt-3">
-                                    <a href="" @click.prevent="listCLientes()" class="btn btn-outline-blue btn-sm btn-block btn-waves">Buscar</a>
-                                </td>
-                                <td colspan="2" class="pt-3">
-                                    <a href="" @click.prevent="limpiar()"  class="btn  btn-sm btn-block btn-waves btn-outline-blue">Limpiar</a>
+                                <td colspan="4" class="pt-3">
+                                    <div class="d-flex w-100 justify-content-between">
+                                            <a href="" @click.prevent="listCLientes()" class="btn px-4 btn-outline-blue btn-sm btn-waves "><i class="text-white pr-1"></i>Buscar<i class="text-white pl-1"></i></a>
+                                            <a href="" @click.prevent="limpiar()"  class="btn  px-4 btn-sm btn-waves btn-outline-blue ">Limpiar</a>
+                                            <a href="" @click.prevent="exportar()"  class="btn btn-sm btn-waves btn-outline-blue" :class="{'px-4':btnExportar==false,'px-3':btnExportar==true}">
+                                                 <span v-if="btnExportar" class="spinner-border spinner-border-sm" style="width: 0.65rem; height: 0.65rem;" role="status" aria-hidden="true"></span>
+                                                 Exportar
+                                            </a>
+                                    </div>
                                 </td>
                             </tr>
                         </table>
                     </div>
                 </div>
-                <div class="datos-mes">
+                <div class="datos-mes" v-if="tipoacceso==2">
                     <div class="d-flex">
                         <div class="pr-1">
                             <i class="rounded-circle fa fa-chart-pie bg-blue text-white p-1"></i>
@@ -185,6 +225,10 @@
                             <tr>
                                 <td class="text-left font-bold">Alcance de Meta</td>
                                 <td class="text-right">{{dataMes.meta!=0?dataMes.alcance:0}}%</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-bold">Cobertura</td>
+                                <td class="text-right">{{dataMes.cobertura!=0?dataMes.cobertura:0}}%</td>
                             </tr>
                             <tr>
                                 <td class="text-left font-bold">Efectividad sobre PDPS</td>
@@ -285,6 +329,7 @@
                         <div class="container-fluid px-0">
                             <div class="navbar-wrapper d-flex">
                                 <a href="" class="icono-bars waves-effect" @click.prevent="menu()"><i class="fa fa-bars fa-lg"></i></a>
+                                <a href="" v-if="tipoacceso==1 || tipoacceso==5 || tipoacceso==6" class="icono-bars waves-effect" @click.prevent="menuPrincipal()" title="Menu Principal"><i class="fa fa-home fa-lg"></i></a>
                             </div>
                             <button class="navbar-toggler p-0" type="button" data-toggle="collapse" data-target="#navigation"  aria-expanded="false" aria-label="Toggle navigation">
                                  <img src="img/center.jpeg" alt="" width="35px" height="35px" class=" rounded-circle border">
@@ -326,13 +371,16 @@
                                             <td class="align-middle">MEDIO</td>
                                             <td class="align-middle">PRODUCTO</td>
                                             <td class="align-middle">ULT. RPTA</td>
-                                            <td class="border-0 bg-white rounded-0" style="min-width:5px;"></td>
-                                            <td class="border-0 bg-white rounded-0" style="min-width:5px;"></td>
+                                            <td class="align-middle" v-if="tipoacceso!=2">GESTOR TELF.</td>
+                                            <td class="align-middle" v-if="tipoacceso!=2">CARTERA</td>
+                                            <td class="border-0 bg-white rounded-0 px-0" style="min-width:5px;"></td>
+                                            <td class="border-0 bg-white rounded-0 px-0" style="min-width: 0.1rem;"></td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr class="text-center" v-if="lista=='' && loading==false">
-                                            <td colspan="9">No hay registros</td>
+                                            <td v-if="tipoacceso!=2" colspan="11">No hay registros</td>
+                                            <td v-else colspan="9">No hay registros</td>
                                         </tr>
                                         <tr v-for="(item,index) in paginated('lista')" :key="index" v-else-if="loading==false">
                                             <td>{{item.codigo}}</td>
@@ -344,10 +392,17 @@
                                             <td>{{item.telefono}}</td>
                                             <td>{{item.producto}}</td>
                                             <td>{{item.ult_resp}}</td>
+                                            <td v-if="tipoacceso!=2">{{item.gestor}}</td>
+                                            <td v-if="tipoacceso!=2">{{item.cartera}}</td>
                                             <td class="border-0 bg-white rounded-0 px-0">
                                                 <a href="" class="btn-phone" @click.prevent="detalle(item.id)"><i class="fa fa-phone fa-1x"></i></a>
                                             </td>
-                                            <td class="border-0 bg-white rounded-0 px-0"><i class="fa fa-check text-green" v-if="item.fecha_ges==fecha_hoy"></i></td>
+                                            <td class="border-0 bg-white rounded-0 px-0" style="min-width:0.1rem" v-if="busqueda.camp==''">
+                                                <i class="fa fa-check text-green" v-if="item.fecha_ges==fecha_hoy"></i>
+                                            </td>
+                                            <td class="border-0 bg-white rounded-0 px-0" style="min-width:0.1rem" v-else>
+                                                <i class="fa fa-check text-green" v-if="item.fecha_ges>=fecha_camp_inicio && item.fecha_ges<=fecha_hoy"></i>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -373,40 +428,44 @@
 
 <script>
     import vuePaginate from '../../../../node_modules/vue-paginate';
+    import XLSX from '../../../../node_modules/xlsx';
     //import detalleCliente from './detalleCliente';
 
     export default {
-        props:["userlogeado"],
+        props:["userlogeado","tipoacceso"],
         data() {
             return {
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 paginate: ['lista'],
                 lista: [],
-                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:'',capital:'',importe:'',oficina:''},
+                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:'',capital:'',importe:'',oficina:'',descuento:'',prioridad:'',cartera:'',numproducto:''},
                 //codigo:'',
                 loading:false,
                 loading2:false,
-                respuestas: [],
-                entidades: [],
-                score: [],
                 firma:{firma:''},
                 estandar:[],
                 estados:[],
-                oficinas:[],
                 fecha_hoy:'',
-                dataMes:{meta:0,recupero:0,alcance:0,efectividad:0,pdp_caidas:0,pdp_pendiente:0,fecha_recupero:''},
-                motivosnopago:[]
+                dataMes:{meta:0,recupero:0,alcance:0,efectividad:0,pdp_caidas:0,pdp_pendiente:0,fecha_recupero:'',cobertura:0},
+                respuestas: [],
+                motivosnopago:[],
+                entidades: [],
+                score: [],
+                oficinas:[],
+                descuentos: [],
+                prioridad: [],
+                carteras:[],
+                dataBusqueda:{},
+                dataExportar:[],
+                btnExportar:false,
+                fecha_camp_inicio:''
             }
         },
         created(){
-             this.listRespuestas(); 
-             this.listMotivosnopago();
+             this.listaPanelBusqueda();
              this.datosMes(); 
              this.estadoCampana();   
              this.diaActual();
-             this.listEntidades();
-             this.listScore();
-             this.listOficinas();
         },
         watch:{
             'busqueda.pdp_desde': function(val){this.busqueda.pdp_desde = this.validarFormatoFecha(val)},
@@ -450,85 +509,128 @@
                 this.busqueda.capital='';
                 this.busqueda.importe='';
                 this.busqueda.oficina='';
+                this.busqueda.prioridad='';
+                this.busqueda.descuento='';
+                this.busqueda.cartera='';
+                this.busqueda.numproducto='';
+                this.entidades=[];
+                this.score=[];
+                this.descuentos=[];
+                this.prioridad=[];
             },
-            listCLientes(){
-                //if(this.busqueda.codigo!="" && this.busqueda.dni!="" && this.busqueda.nombre!=""){
-                    const fechas_i =  this.busqueda.pdp_desde.split('/');                   
-                    const nuevaFecha_i = `${fechas_i[2]}-${fechas_i[1]}-${fechas_i[0]}`
-                    const fec_desde= nuevaFecha_i.split(' ').join('');
-
-                    const fechas_f =  this.busqueda.pdp_hasta.split('/');                   
-                    const nuevaFecha_f = `${fechas_f[2]}-${fechas_f[1]}-${fechas_f[0]}`
-                    const fec_hasta= nuevaFecha_f.split(' ').join('');
-                    
-                    const dataBusqueda = {
-                        codigo : this.busqueda.codigo,
-                        dni : this.busqueda.dni,
-                        nombre : this.busqueda.nombre,
-                        telefono : this.busqueda.telefono,
-                        tramo : this.busqueda.tramo,
-                        respuesta : this.busqueda.respuesta,
-                        fec_desde : fec_desde,
-                        fec_hasta : fec_hasta,
-                        ordenar : this.busqueda.ordenar,
-                        camp : this.busqueda.camp,
-                        deuda : this.busqueda.deuda,
-                        sueldo : this.busqueda.sueldo,
-                        entidades : this.busqueda.entidades,
-                        score : this.busqueda.score,
-                        motivo : this.busqueda.motivo,
-                        capital: this.busqueda.capital,
-                        importe: this.busqueda.importe,
-                        oficina: this.busqueda.oficina
-                    };
-                    this.loading=true;
-                    
-                    axios.post("listClientes",dataBusqueda).then(res=>{
+            datosPlan(){
+                if(this.busqueda.camp!=''){
+                    axios.get("datosPlanUsuario").then(res=>{
                         if(res.data){
-                            this.lista=res.data;
-                            this.loading=false;
-                            this.total_clientes=this.lista.length;
+                            var datos=res.data;
+                            this.fecha_camp_inicio=datos[0].fechaInicio;
                         }
                     })
-                //}
+                }
             },
-            listRespuestas(){    
+            parametros(){
+                const fechas_i =  this.busqueda.pdp_desde.split('/');                   
+                const nuevaFecha_i = `${fechas_i[2]}-${fechas_i[1]}-${fechas_i[0]}`
+                const fec_desde= nuevaFecha_i.split(' ').join('');
+
+                const fechas_f =  this.busqueda.pdp_hasta.split('/');                   
+                const nuevaFecha_f = `${fechas_f[2]}-${fechas_f[1]}-${fechas_f[0]}`
+                const fec_hasta= nuevaFecha_f.split(' ').join('');
+                
+                this.dataBusqueda = {
+                    codigo : this.busqueda.codigo,
+                    dni : this.busqueda.dni,
+                    nombre : this.busqueda.nombre,
+                    telefono : this.busqueda.telefono,
+                    tramo : this.busqueda.tramo,
+                    respuesta : this.busqueda.respuesta,
+                    fec_desde : fec_desde,
+                    fec_hasta : fec_hasta,
+                    ordenar : this.busqueda.ordenar,
+                    camp : this.busqueda.camp,
+                    deuda : this.busqueda.deuda,
+                    sueldo : this.busqueda.sueldo,
+                    entidades : this.busqueda.entidades,
+                    score : this.busqueda.score,
+                    motivo : this.busqueda.motivo,
+                    capital: this.busqueda.capital,
+                    importe: this.busqueda.importe,
+                    oficina: this.busqueda.oficina,
+                    prioridad:this.busqueda.prioridad,
+                    descuento:this.busqueda.descuento,
+                    tipo:0,
+                    cartera:this.busqueda.cartera,
+                    numproducto:this.busqueda.numproducto
+                };
+            },
+            listCLientes(){
+                this.parametros();
+                this.loading=true;
+                this.dataBusqueda.tipo=1;
+                axios.post("listClientes",this.dataBusqueda).then(res=>{
+                    if(res.data){
+                        this.lista=res.data;
+                        this.loading=false;
+                        this.total_clientes=this.lista.length;
+                    }
+                })
+                this.datosPlan();
+            },
+            listaPanelBusqueda(){    
                 this.respuestas=[];
-                axios.get("listRespuestas").then(res=>{
+                axios.get("listasPanelBusqueda").then(res=>{
                     if(res.data){
-                        this.respuestas=res.data;
+                        this.opcionesBusqueda=res.data;
+                        this.respuestas=this.opcionesBusqueda['respuestas'];
+                        this.motivosnopago=this.opcionesBusqueda['motivonopago'];
+                        this.oficinas=this.opcionesBusqueda['oficinas'];
+                        this.carteras=this.opcionesBusqueda['carteras'];
+                        // this.entidades=this.opcionesBusqueda['entidades'];
+                        // this.score=this.opcionesBusqueda['score'];
+                        // this.descuentos=this.opcionesBusqueda['descuentos'];
+                        // this.prioridad=this.opcionesBusqueda['prioridad'];
                     }
                 })
             },
-            listMotivosnopago(){
-                this.motivosnopago=[];
-                axios.get("listaMotivosNoPago").then(res=>{
-                    if(res.data){
-                        this.motivosnopago=res.data;
-                    }
-                })
-            },
-            listEntidades(){
+            cargarDatosBusqueda(cartera){
+                this.busqueda.entidades='';
+                this.busqueda.score='';
+                this.busqueda.descuento='';
+                this.busqueda.prioridad='';
                 this.entidades=[];
-                axios.get("listaEntidades").then(res=>{
-                    if(res.data){
-                        this.entidades=res.data;
-                    }
-                })
-            },
-            listScore(){
                 this.score=[];
-                axios.get("listaScore").then(res=>{
-                    if(res.data){
-                        this.score=res.data;
-                    }
-                })
+                this.descuentos=[];
+                this.prioridad=[];
+                if(cartera!=''){
+                    axios.get("listasBusquedaPorCartera/"+cartera).then(res=>{
+                        if(res.data){
+                            var res=res.data;
+                            this.entidades=res['entidades'];
+                            this.score=res['score'];
+                            this.descuentos=res['descuentos'];
+                            this.prioridad=res['prioridad'];
+                        }
+                    })
+                }else{
+                    this.entidades=[];
+                    this.score=[];
+                    this.descuentos=[];
+                    this.prioridad=[];
+                }
             },
-            listOficinas(){
-                this.oficinas=[];
-                axios.get("listaOficinas").then(res=>{
+            exportar(){
+                this.btnExportar=true;
+                this.parametros();
+                this.dataBusqueda.tipo=2;
+                axios.post("listClientes",this.dataBusqueda).then(res=>{
                     if(res.data){
-                        this.oficinas=res.data;
+                        this.dataExportar=res.data;
+                        let data = XLSX.utils.json_to_sheet(this.dataExportar)
+                        const workbook = XLSX.utils.book_new()
+                        const filename = 'Listado_Clientes'
+                        XLSX.utils.book_append_sheet(workbook, data, filename)
+                        XLSX.writeFile(workbook, `${filename}.xlsx`)
+                        this.btnExportar=false;
                     }
                 })
             },
@@ -549,14 +651,16 @@
                 axios.get("datosMes").then(res=>{
                     if(res.data){
                         datos=res.data;
-                        
-                        this.dataMes.meta=datos[0].meta;
-                        this.dataMes.recupero=datos[0].recupero;
-                        this.dataMes.fecha_recupero=datos[0].fecha_recupero;
-                        this.dataMes.alcance=((datos[0].recupero/datos[0].meta)*100).toFixed(2);
-                        this.dataMes.efectividad= datos[0].efectividad!=null?datos[0].efectividad:0;
-                        this.dataMes.pdp_caidas=datos[0].pdp_caidos;
-                        this.dataMes.pdp_pendiente=datos[0].pdp_pendiente;
+                        if(datos.length>0){
+                            this.dataMes.meta=datos[0].meta;
+                            this.dataMes.recupero=datos[0].recupero;
+                            this.dataMes.fecha_recupero=datos[0].fecha_recupero;
+                            this.dataMes.alcance=((datos[0].recupero/datos[0].meta)*100).toFixed(2);
+                            this.dataMes.efectividad= datos[0].efectividad!=null?datos[0].efectividad:0;
+                            this.dataMes.pdp_caidas=datos[0].pdp_caidos;
+                            this.dataMes.pdp_pendiente=datos[0].pdp_pendiente;
+                            this.dataMes.cobertura=datos[0].cobertura;
+                        }
                     }
                 })
             },
@@ -568,20 +672,6 @@
                     }
                 })
             },
-
-            // buscar(codigo){
-            //     if(codigo!=""){
-            //         this.clientes=[];
-            //         for(var i=0;i<this.temp.length;i++){
-            //             if((this.temp[i].codigo).indexOf(codigo)!==-1){
-            //                 this.clientes.push(this.temp[i]);
-            //             }
-            //         }
-            //     }else{
-            //         this.clientes=this.temp;
-            //     }
-            //     this.total_clientes=this.clientes.length;
-            // },
             detalle(id){
                 let datos=[];
                 $('#contenidoLista').toggleClass('pos_fixed');
@@ -620,18 +710,15 @@
                  $('.content-menu-2').toggleClass('abrir-menu-2');            
                  $('.content-body-2').toggleClass('p-left-menu-2');               
             },
-
+            menuPrincipal(){
+                window.location.href="menu";
+            },
             soloNumeros(e){
                 var key = window.event ? e.which : e.keyCode;
                 if (key < 48 || key > 57) {
                     e.preventDefault();
                 }
             },     
-            // inicioPaginacion() {
-            //     if (this.$refs.paginator) {
-            //         this.$refs.paginator.goToPage(1)
-            //     }
-            // },
             diaActual(){
                 var n=new Date();
                 var hoy=n.getFullYear()+"-"+this.addZero(n.getMonth()+1)+"-"+this.addZero(n.getDate());
@@ -646,14 +733,20 @@
             cerrarsession(){
                 $('#logout-form').submit();
             }
+            // inicioPaginacion() {
+            //     if (this.$refs.paginator) {
+            //         this.$refs.paginator.goToPage(1)
+            //     }
+            // },
         },
         mounted(){
-            this.$root.$on ('verListaClientes',() => {
+            this.$root.$on('verListaClientes',() => {
                 this.listCLientes();
             } );
         },
         components:{
-            vuePaginate
+            vuePaginate,
+            XLSX
         }
     }
 </script>

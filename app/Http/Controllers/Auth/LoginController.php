@@ -24,14 +24,18 @@ class LoginController extends Controller
     {        
         $sql=collect(DB::connection('mysql')->select(DB::raw("
             select 
-                car_id_FK as idcartera 
+                if(emp_tip_acc in (1,5,6,7),e.res_car_id_FK,c.car_id_FK) as idcartera,
+                case when emp_tip_acc=1 then 'Supervisor'
+                     when emp_tip_acc=2 then 'Call'
+                     when emp_tip_acc=5 then 'Administrador'
+                     when emp_tip_acc=6 then 'Sistemas'
+                     when emp_tip_acc=7 then 'RRHH'
+                end as perfil
             from 
                 empleado e
-            LEFT JOIN cliente c ON c.emp_tel_id_FK=e.emp_id
+            LEFT JOIN cliente c ON c.emp_tel_id_FK=e.emp_id AND cli_est=0 and cli_pas=0 
             where 
-                cli_est=0 
-            and cli_pas=0 
-            and emp_tel_id_FK=:id 
+                emp_id=:id
             and emp_est=0
             and emp_pas=0
             LIMIT 1
