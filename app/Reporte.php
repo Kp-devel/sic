@@ -810,4 +810,175 @@ class Reporte extends Model
 
         return response()->json(['data1' => $data1, 'data2' => $data2]);
     }    
+
+    public static function reporteComparativoCarteraPagos(Request $rq){
+        $cartera=$rq->cartera;
+        $metas=DB::select(DB::raw("
+            select month(fecha) as mes, meta,mes_nombre from indicadores.cartera
+            where cartera_id_fk=$cartera
+            and meta>0
+            and year(fecha) = year(now())
+            and month(fecha) BETWEEN month(now()) - 3 and month(now())
+        "));
+
+        $pagos=DB::select(DB::raw("
+        select month(pag_cli_fec) m, (case
+            WHEN month(pag_cli_fec)=1  THEN 'Enero'
+            WHEN month(pag_cli_fec)=2 THEN  'Febrero'
+            WHEN month(pag_cli_fec)=3 THEN 'Marzo' 
+            WHEN month(pag_cli_fec)=4 THEN 'Abril' 
+            WHEN month(pag_cli_fec)=5 THEN 'Mayo'
+            WHEN month(pag_cli_fec)=6 THEN 'Junio'
+            WHEN month(pag_cli_fec)=7 THEN 'Julio'
+            WHEN month(pag_cli_fec)=8 THEN 'Agosto'
+            WHEN month(pag_cli_fec)=9 THEN 'Septiembre'
+            WHEN month(pag_cli_fec)=10 THEN 'Octubre'
+            WHEN month(pag_cli_fec)=11 THEN 'Noviembre'
+            WHEN month(pag_cli_fec)=12 THEN 'Diciembre'
+            END) as mes,
+            meta, 
+            sum(pag_cli_mon) as recupero
+            from pago_cliente_2 as p
+            INNER JOIN indicadores.cartera as c
+            on p.car_id_FK=c.cartera_id_fk
+            where car_id_FK=$cartera
+            and year(pag_cli_fec) = year(now())
+            and day(pag_cli_fec) < day(now())
+            and month(pag_cli_fec) BETWEEN month(now()) - 3 and month(now())
+            and date_format(fecha,'%Y-%m')=date_format(pag_cli_fec,'%Y-%m')
+            GROUP by month(pag_cli_fec),mes,meta
+            order by month(pag_cli_fec)
+        "));
+        return response()->json(['metas' => $metas, 'pagos' => $pagos]);
+    }
+
+    public static function reporteComparativoCarteraCon(Request $rq){
+        $cartera=$rq->cartera;
+
+        $metas=DB::select(DB::raw("
+            select month(fecha) as mes, meta,mes_nombre from indicadores.cartera
+            where cartera_id_fk=$cartera
+            and meta>0
+            and year(fecha) = year(now())
+            and month(fecha) BETWEEN month(now()) - 3 and month(now())
+        "));
+        $pagos=DB::select(DB::raw("
+            select month(ges_cli_conf_fec) m, (case
+                WHEN month(ges_cli_conf_fec)=1  THEN 'Enero'
+                WHEN month(ges_cli_conf_fec)=2 THEN  'Febrero'
+                WHEN month(ges_cli_conf_fec)=3 THEN 'Marzo' 
+                WHEN month(ges_cli_conf_fec)=4 THEN 'Abril' 
+                WHEN month(ges_cli_conf_fec)=5 THEN 'Mayo'
+                WHEN month(ges_cli_conf_fec)=6 THEN 'Junio'
+                WHEN month(ges_cli_conf_fec)=7 THEN 'Julio'
+                WHEN month(ges_cli_conf_fec)=8 THEN 'Agosto'
+                WHEN month(ges_cli_conf_fec)=9 THEN 'Septiembre'
+                WHEN month(ges_cli_conf_fec)=10 THEN 'Octubre'
+                WHEN month(ges_cli_conf_fec)=11 THEN 'Noviembre'
+                WHEN month(ges_cli_conf_fec)=12 THEN 'Diciembre'
+                END) as mes,
+                meta, 
+                sum(ges_cli_conf_can) as recupero
+                from gestion_cliente as g
+                INNER JOIN cliente as c
+                on g.cli_id_FK=c.cli_id
+                INNER JOIN indicadores.cartera as car
+                on c.car_id_FK=car.cartera_id_fk
+                where car_id_FK=$cartera
+                and res_id_fk=2
+                and year(ges_cli_conf_fec) = year(now())
+                and day(ges_cli_conf_fec) < day(now())
+                and month(ges_cli_conf_fec) BETWEEN month(now()) - 3 and month(now())
+                and date_format(fecha,'%Y-%m')=date_format(ges_cli_conf_fec,'%Y-%m')
+                GROUP by month(ges_cli_conf_fec),mes,meta
+                order by month(ges_cli_conf_fec)
+        "));
+        return response()->json(['metas' => $metas, 'pagos' => $pagos]);
+    }
+
+    public static function reporteComparativoCarteraPagosCierre(Request $rq){
+        $cartera=$rq->cartera;
+        $metas=DB::select(DB::raw("
+            select month(fecha) as mes, meta,mes_nombre from indicadores.cartera
+            where cartera_id_fk=$cartera
+            and meta>0
+            and year(fecha) = year(now())
+            and month(fecha) BETWEEN month(now()) - 3 and month(now())-1
+        "));
+
+        $pagos=DB::select(DB::raw("
+        select month(pag_cli_fec) m, (case
+            WHEN month(pag_cli_fec)=1  THEN 'Enero'
+            WHEN month(pag_cli_fec)=2 THEN  'Febrero'
+            WHEN month(pag_cli_fec)=3 THEN 'Marzo' 
+            WHEN month(pag_cli_fec)=4 THEN 'Abril' 
+            WHEN month(pag_cli_fec)=5 THEN 'Mayo'
+            WHEN month(pag_cli_fec)=6 THEN 'Junio'
+            WHEN month(pag_cli_fec)=7 THEN 'Julio'
+            WHEN month(pag_cli_fec)=8 THEN 'Agosto'
+            WHEN month(pag_cli_fec)=9 THEN 'Septiembre'
+            WHEN month(pag_cli_fec)=10 THEN 'Octubre'
+            WHEN month(pag_cli_fec)=11 THEN 'Noviembre'
+            WHEN month(pag_cli_fec)=12 THEN 'Diciembre'
+            END) as mes,
+            meta, 
+            sum(pag_cli_mon) as recupero
+            from pago_cliente_2 as p
+            INNER JOIN indicadores.cartera as c
+            on p.car_id_FK=c.cartera_id_fk
+            where car_id_FK=$cartera
+            and year(pag_cli_fec) = year(now())
+            and month(pag_cli_fec) BETWEEN month(now()) - 3 and month(now())-1
+            and date_format(fecha,'%Y-%m')=date_format(pag_cli_fec,'%Y-%m')
+            GROUP by month(pag_cli_fec),mes,meta
+            order by month(pag_cli_fec)
+        "));
+        return response()->json(['metas' => $metas, 'pagos' => $pagos]);
+        //dd($results1);
+        //return $results1;
+    }
+
+    public static function reporteComparativoCarteraConCierre(Request $rq){
+        $cartera=$rq->cartera;
+        $metas=DB::select(DB::raw("
+            select month(fecha) as mes, meta,mes_nombre from indicadores.cartera
+            where cartera_id_fk=$cartera
+            and meta>0
+            and year(fecha) = year(now())
+            and month(fecha) BETWEEN month(now()) - 3 and month(now())-1
+        "));
+        $pagos=DB::select(DB::raw("
+            select month(ges_cli_conf_fec) m, (case
+                WHEN month(ges_cli_conf_fec)=1  THEN 'Enero'
+                WHEN month(ges_cli_conf_fec)=2 THEN  'Febrero'
+                WHEN month(ges_cli_conf_fec)=3 THEN 'Marzo' 
+                WHEN month(ges_cli_conf_fec)=4 THEN 'Abril' 
+                WHEN month(ges_cli_conf_fec)=5 THEN 'Mayo'
+                WHEN month(ges_cli_conf_fec)=6 THEN 'Junio'
+                WHEN month(ges_cli_conf_fec)=7 THEN 'Julio'
+                WHEN month(ges_cli_conf_fec)=8 THEN 'Agosto'
+                WHEN month(ges_cli_conf_fec)=9 THEN 'Septiembre'
+                WHEN month(ges_cli_conf_fec)=10 THEN 'Octubre'
+                WHEN month(ges_cli_conf_fec)=11 THEN 'Noviembre'
+                WHEN month(ges_cli_conf_fec)=12 THEN 'Diciembre'
+                END) as mes,
+                meta, 
+                sum(ges_cli_conf_can) as recupero
+                from gestion_cliente as g
+                INNER JOIN cliente as c
+                on g.cli_id_FK=c.cli_id
+                INNER JOIN indicadores.cartera as car
+                on c.car_id_FK=car.cartera_id_fk
+                where car_id_FK=$cartera
+                and res_id_fk=2
+                and year(ges_cli_conf_fec) = year(now())
+                and month(ges_cli_conf_fec) BETWEEN month(now()) - 3 and month(now())-1
+                and date_format(fecha,'%Y-%m')=date_format(ges_cli_conf_fec,'%Y-%m')
+                GROUP by month(ges_cli_conf_fec),mes,meta
+                order by month(ges_cli_conf_fec)
+        "));
+        //dd($results1);
+        //return $results1;
+        return response()->json(['metas' => $metas, 'pagos' => $pagos]);
+    }
 }
