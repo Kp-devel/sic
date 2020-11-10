@@ -128,7 +128,8 @@ Route::group(['middleware' => ['auth']], function(){
     
     //Reporte general------------------------------------------------------------------------------------------------------------------------
     Route::get('/reportegeneral', 'HomeController@indreportegeneral')->name('reportegeneral');
-    Route::post('reporteGeneralGestiones', 'ReporteController@reporteGeneralGestiones');
+    Route::get('reporteGeneralGestiones/{cartera}/{fecInicio}/{fechaFin}/{perfil}', 'ReporteController@reporteGeneralGestiones');
+    // Route::post('reporteGeneralGestiones', 'ReporteController@reporteGeneralGestiones');
     
     //Reporte gestión telef por gestor-------------------------------------------------------------------------------------------------------
     Route::get('/reportegestor', 'HomeController@indreportegestor')->name('reportegestor');

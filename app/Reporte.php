@@ -20,25 +20,34 @@ class Reporte extends Model
         "));
     }
 
-    public static function reporteGeneralGestiones(Request $rq){
-        $cartera=$rq->cartera;
-        $perfil=$rq->perfil;
-        $fechaInicio=$rq->fechaInicio;
-        $fechaFin=$rq->fechaFin;
+    public static function reporteGeneralGestiones($cartera,$fecInicio,$fecFin,$perfil){
+        // $cartera=$rq->cartera;
+        // $perfil=$rq->perfil;
+        // $fechaInicio=$rq->fechaInicio;
+        // $fechaFin=$rq->fechaFin;
+        $parametros=array();
+        $parametros['fecInicio']=$fecInicio;
+        $parametros['fecFin']=$fecFin;
         $sql="";
-        if($perfil!=''){
-            $sql=" and emp_tip_acc=$perfil ";
+        if($cartera!=0){
+            $sql.=" and car_id_FK=:car ";
+            $parametros['car']=$cartera;
         }
+        if($perfil!=0){
+            $sql.=" and emp_tip_acc=:per ";
+            $parametros['per']=$perfil;
+        }
+        
         return DB::connection('mysql')->select(DB::raw("
                     SELECT
-                        cli_cod as 'Código',
-                        cli_nom as 'Nombre',
-                        car_nom as 'Cartera',
-                        ges_cli_fec as 'Fecha de Gestión',
-                        hour(ges_cli_fec)	 as 'Hora',
-                        minute(ges_cli_fec)	as 'Minuto',
-                        second(ges_cli_fec)	as 'Segundo',
-                        CONCAT(emp_cod,' - ',emp_nom) as 'Usuario / Gestor',
+                        cli_cod as codigo,
+                        cli_nom as nombre,
+                        car_nom as cartera,
+                        ges_cli_fec as fecha,
+                        hour(ges_cli_fec) as hora,
+                        minute(ges_cli_fec)	as minuto,
+                        second(ges_cli_fec)	as segundo,
+                        CONCAT(emp_cod,' - ',emp_nom) as gestor,
                         CASE
                             WHEN emp_tip_acc = 1 THEN
                                 'ADMINISTRADOR'
@@ -52,8 +61,8 @@ class Reporte extends Model
                                 'SUPERVISOR'
                             ELSE
                                 ''
-                        END AS 'Perfil',
-                        ges_cli_med as 'Medio',
+                        END AS perfil,
+                        ges_cli_med as medio,
                         CASE
                             WHEN ges_cli_acc = 1 THEN
                                 'LLAMADA RECIBIDA'
@@ -71,24 +80,24 @@ class Reporte extends Model
                                 'LLAMADA RECIBIDA - EMAIL'
                             ELSE
                                 ''
-                        END AS 'Acción',
-                        ges_cli_fec_visit as 'Fecha de Visita',
+                        END AS accion,
+                        ges_cli_fec_visit as fecha_visita,
                         CASE WHEN res_ubi=0 THEN 'CONTACTO' 
                                 WHEN res_ubi=1 THEN 'NO CONTACTO' 
                                 WHEN res_ubi=2 THEN 'NO DISPONIBLE'
-                        END AS 'Ubic.',
-                        res_des as 'Rspta.',
-                        mot_res as 'Motivo No Pago',
-                        ges_cli_det as 'Detalle',
-                        ges_cli_com_fec as 'Fecha Compromiso',
-                        ges_cli_com_can as 'Monto Compromiso',
-                        ges_cli_com_mon as 'Moneda',
-                        ges_cli_conf_fec as 'Fecha Confirmacion',
-                        ges_cli_conf_can as 'Monto Confirmacion',
-                        cli_dir_dir as 'Dirección',
-                        cli_dir_dis as 'Distrito',
-                        cli_dir_pro as 'Provincia',
-                        cli_dir_dep as 'Departamento'
+                        END AS ubi,
+                        res_des as rpta,
+                        mot_res as motivo_no_pago,
+                        ges_cli_det as detalle,
+                        DATE_FORMAT(ges_cli_com_fec,'%d/%m/%Y') as fecha_compromiso,
+                        ges_cli_com_can as monto_compromiso,
+                        if(ges_cli_com_can=0,'',if(ges_cli_com_mon=0,'SOLES','DOLARES')) as moneda,
+                        ges_cli_conf_fec as fecha_conf,
+                        ges_cli_conf_can as monto_conf,
+                        cli_dir_dir as direccion,
+                        cli_dir_dis as distrito,
+                        cli_dir_pro as provincia,
+                        cli_dir_dep as departamento
                     FROM
                         cliente c
                     INNER JOIN gestion_cliente g ON c.cli_id=g.cli_id_FK
@@ -100,14 +109,13 @@ class Reporte extends Model
                     WHERE
                         cli_est=0
                     and cli_pas=0
-                    and car_id_FK=:car
                     and (date(ges_cli_fec) BETWEEN :fecInicio and :fecFin)
                     $sql
                     and car_est=0 
                     and car_pas=0
                     and res_est=0
                     GROUP BY ges_cli_id   
-        "),array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
+        "),$parametros);
     }
 
     public static function reporteResumenGestor(Request $rq){
