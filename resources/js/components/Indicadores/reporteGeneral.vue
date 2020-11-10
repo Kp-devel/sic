@@ -5,7 +5,7 @@
                 <div class="px-2">
                     <label for="cartera" class="font-bold col-form-label text-dark text-righ">Nombre de Cartera</label>
                     <select name="cartera" id="cartera" class="form-control" v-model="busqueda.cartera">
-                        <option selected value="">Seleccionar</option>
+                        <option selected value="0">Seleccionar</option>
                         <option v-for="(item,index) in carteras" :key="index"  class="option" :value="item.id">{{item.cartera}}</option>
                     </select>
                     <small v-if="mensajeCartera" class="text-danger">{{mensajeCartera}}</small>
@@ -15,7 +15,7 @@
                 <div class="px-2">
                     <label for="indicador" class="font-bold col-form-label text-dark text-righ">Perfil</label>
                     <select name="indicador" id="indicador" class="form-control" v-model="busqueda.perfil">
-                        <option selected value="">Seleccionar</option>
+                        <option selected value="0">Seleccionar</option>
                         <option class="option" value="1">Administrador</option>
                         <option class="option" value="2">Gestor Telefónico</option>
                     </select>
@@ -52,14 +52,15 @@
 </template>
 
 <script>
-    import XLSX from '../../../../node_modules/xlsx';
+    // import XLSX from '../../../../node_modules/xlsx';
+    // import Excel from '../../../../public/js/excel.js';
     export default {
         props:['carteras'],
         data() {
             return {
                 dataExportar: [],
                 loading : false,
-                busqueda:{cartera:'',perfil:'',fechaInicio:'',fechaFin:''},
+                busqueda:{cartera:'0',perfil:'0',fechaInicio:'',fechaFin:''},
                 mensajeFecInicio:'',
                 mensajeFecFin:'',
                 mensajeCartera:''
@@ -67,33 +68,26 @@
         },
         methods:{
             generarReporte(){
-                this.loading=true;
+                // this.loading=true;
                 this.datos=[];
                 this.mensajeCartera='';
                 this.mensajeFecInicio='';
                 this.mensajeFecFin='';
-                // var fecha=this.fechaInicio.replace('-','')+"_"+this.fechaFin.replace('-','');
-                // console.log(fecha);
-                if(this.busqueda.cartera!='' && this.busqueda.fechaInicio!='' && this.busqueda.fechaFin!=''){
-                    
-                    axios.post("reporteGeneralGestiones",this.busqueda).then(res=>{
-                        if(res.data){
-                            this.dataExportar=res.data;
-                            this.loading=false;
-                            //Pay attention to the returned data here, some need to add data (res.data) to get it, otherwise the excel file that will be downloaded is [object][object]**
-                            /*let blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
-                            let link = document.createElement('a')
-                            link.href = window.URL.createObjectURL(blob)
-                            link.download = 'comisionjv.xlsx'
-                            link.click()*/
-                            let data = XLSX.utils.json_to_sheet(this.dataExportar)
-                            const workbook = XLSX.utils.book_new()
-                            const filename = 'Reporte_General'
-                            XLSX.utils.book_append_sheet(workbook, data, filename)
-                            XLSX.writeFile(workbook, `${filename}.xlsx`)
-                            this.btnExportar=false;
-                        }
-                    })
+                if(this.busqueda.fechaInicio!='' && this.busqueda.fechaFin!=''){
+                    window.location.href="./reporteGeneralGestiones/"+this.busqueda.cartera+"/"+this.busqueda.fechaInicio+"/"+this.busqueda.fechaFin+"/"+this.busqueda.perfil;
+                    // axios.post("reporteGeneralGestiones",this.busqueda).then(res=>{
+                    //     if(res.data){
+                    //         this.dataExportar=res.data;
+                    //         this.loading=false;
+                    //         datos.push(["Código","Nombre","Cartera","Fecha de Gestión","Hora","Minuto","Segundo","Usuario / Gestor","Perfil","Medio","Acción","Fecha de Visita","Ubic.","Rspta.","Motivo No Pago","Detalle","Fecha Compromiso","Monto Compromiso","Moneda","Fecha Confirmación","Monto Confirmación","Dirección","Distrito","Provincia","Departamento"]);
+                    //         if(this.dataExportar!=''){
+                    //             for(let i=0;i<this.dataExportar.length;i++){
+                    //                 datos.push(Object.values(this.dataExportar[i]));
+                    //             }
+                    //         }
+                    //         Excel.exportar(datos,"Repote_General",hoja,1);
+                    //     }
+                    // })
                 }else{
                     this.datos=[];
                     this.loading=false;
@@ -126,7 +120,8 @@
             },
         },
         components: {
-            XLSX
+            // XLSX
+            // Excel
         }    
     }
 </script>

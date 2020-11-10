@@ -13,11 +13,17 @@ class ReporteController extends Controller
         return Reporte::asignacionCall();
     }
 
-    public function reporteGeneralGestiones(Request $rq){
-        //return (new GestionesExport($rq))->download('reporte_general.xlsx');
+    public function reporteGeneralGestiones($cartera,$fecInicio,$fecFin,$perfil){
+        return (new GestionesExport($cartera,$fecInicio,$fecFin,$perfil))->download('reporte_general.xlsx');
         // return Excel::download(new GestionesExport, 'users.xlsx');
-         return Reporte::reporteGeneralGestiones($rq);
+        //  return Reporte::reporteGeneralGestiones($rq);
     }
+
+    // public function reporteGeneralGestiones(Request $rq){
+    //     // return (new GestionesExport($rq))->download('reporte_general.xlsx');
+    //     // return Excel::download(new GestionesExport, 'users.xlsx');
+    //      return Reporte::reporteGeneralGestiones($rq);
+    // }
     
     public function reporteResumenGestor(Request $rq){
         return Reporte::reporteResumenGestor($rq);
