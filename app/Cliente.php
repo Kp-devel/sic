@@ -474,7 +474,7 @@ class Cliente extends Model
                     cli_suel_can as sueldo,
                     cli_ema as email
             from
-                    cliente c
+                cliente c
             left join cliente_infAdic i on c.cli_id=i.cli_id_FK
             left join cliente_direccion_2 d on c.cli_id=d.cli_id_FK
             left join cliente_sueldo s on c.cli_id=s.cli_id_FK
@@ -515,7 +515,8 @@ class Cliente extends Model
                  (case when res_id_FK in (1,43) then ges_cli_com_can
                       when res_id_FK in (2) then ges_cli_conf_can
                  end)as monto_pdp,
-                if(res_id_FK in (1,43,2),1,0) as tolltip
+                if(res_id_FK in (1,43,2),1,0) as tolltip,
+                concat(emp_cod,' - ',emp_nom) as empleado
             FROM 
                 gestion_cliente as gc
             INNER JOIN 

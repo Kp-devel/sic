@@ -8,7 +8,7 @@
                     <td class="font-11 pr-1 text-right">DNI/RUC</td>
                     <td><label class="form-control font-12 form-control-sm mb-1 w-100 h-100">{{formatoVacio(datos[0].dni)}}</label></td>
                 </tr>
-                <tr class="font-12" v-if="tipoacceso==1"> 
+                <tr class="font-12" v-if="tipoacceso!=2"> 
                     <td class="text-right pr-1">Gest. Telf.</td>
                     <td colspan="3"><label class="form-control font-12 form-control-sm mb-1 w-100 h-100">{{formatoVacio(datos[0].gestor)}}</label></td>
                 </tr>
