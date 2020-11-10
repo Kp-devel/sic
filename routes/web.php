@@ -151,10 +151,11 @@ Route::group(['middleware' => ['auth']], function(){
 // Reporte gestion Consolidada
     Route::get('/resumengestionconsolidada', 'HomeController@indresumengestionconsolidada')->name('resumengestionconsolidada');
     Route::get('resumenGestionConsolidada/{fecha}', 'ReporteController@resumenGestionConsolidada');
+
 //Reporte Comparativo
     Route::get('/comparativocartera', 'HomeController@indcomparativocartera')->name('comparativocartera');
     Route::post('reportecomparativocartera', 'ReporteController@reportecomparativocartera');
-    
+
 // Timing y Proyectado ---------------------------------------------------------------------------------------------------------------------
     Route::get('/timingyproyectado', 'HomeController@timingyproyectado')->name('timingyproyectado');
     Route::get('timingProyectado/{cartera}', 'TimingController@timingProyectado');
@@ -177,8 +178,6 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/reportePdps', 'PdpsController@reportePdps')->name('reportePdps');
     Route::post('/listaPdps', 'PdpsController@listaPdps')->name('listaPdps');
     Route::post('/descargarListaPdps', 'PdpsController@descargarListaPdps')->name('descargarListaPdps');
-    
-
 
 
 
