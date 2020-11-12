@@ -32,6 +32,7 @@ class GestionesExport implements FromCollection, WithHeadings,WithColumnFormatti
 
     public function collection()
     {
+        ini_set('memory_limit', '-1');
         $res=Reporte::reporteGeneralGestiones($this->cartera,$this->fecInicio,$this->fecFin,$this->perfil);
         return  collect($res);
     }

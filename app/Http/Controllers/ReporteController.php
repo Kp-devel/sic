@@ -69,4 +69,8 @@ class ReporteController extends Controller
             }
         }
     }
+
+    public function detalleConfirmaciones($cartera){
+        return Reporte::detalleConfirmaciones($cartera);
+    }
 }
