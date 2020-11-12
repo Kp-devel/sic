@@ -47,14 +47,15 @@ class Cliente extends Model
                                 from indicadores.plan
                                 WHERE id_cartera in (:car)
                                 and fecha_i<=(:fec1) and fecha_f >= date(:fec2)
-                                LIMIT 1
+                                -- LIMIT 1
                             "),array("car"=>$cartera,"fec1"=>$fec_actual,"fec2"=>$fec_actual));
             //dd($query_campana);
+            $cadena="";
             if($query_campana!=[]){
                 foreach($query_campana as $q){
-                    $cadena = $q->clientes;
+                    $cadena.=",". $q->clientes;
                 }
-                $cadena_cli=$cadena;
+                $cadena_cli=substr($cadena,1,strlen($cadena));
                 $array=explode(',',$cadena_cli);
                 $cantidad_cli=count($array);
             }else{
@@ -343,7 +344,7 @@ class Cliente extends Model
                 sum(pendiente) as pdp_pendiente,
                 sum(caidos) as pdp_caidos,
                 sum(cumplido) as pdp_cumplido,
-                format((sum(cumplido)/sum(cumplido)+sum(pendiente))*100,0) as efectividad,
+                format((sum(cumplido)/(sum(cumplido)+sum(pendiente)))*100,2) as efectividad,
                 format((sum(gestion)/count(*))*100,2) as cobertura
             FROM
                 cliente c

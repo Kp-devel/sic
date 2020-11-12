@@ -148,7 +148,8 @@ Route::group(['middleware' => ['auth']], function(){
 // Reporte gestión--------------------------------------------------------------------------------------------------------------------------
     Route::get('/resumengestion', 'HomeController@indresumengestion')->name('resumengestion');
     Route::get('resumenGestionDia/{cartera}', 'ReporteController@resumenGestionDia');
-
+    Route::get('detalleConfirmaciones/{cartera}', 'ReporteController@detalleConfirmaciones');
+    
 // Reporte gestion Consolidada
     Route::get('/resumengestionconsolidada', 'HomeController@indresumengestionconsolidada')->name('resumengestionconsolidada');
     Route::get('resumenGestionConsolidada/{fecha}', 'ReporteController@resumenGestionConsolidada');

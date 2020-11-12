@@ -21,17 +21,18 @@ class Reporte extends Model
     }
 
     public static function reporteGeneralGestiones($cartera,$fecInicio,$fecFin,$perfil){
-        // $cartera=$rq->cartera;
-        // $perfil=$rq->perfil;
-        // $fechaInicio=$rq->fechaInicio;
-        // $fechaFin=$rq->fechaFin;
         $parametros=array();
         $parametros['fecInicio']=$fecInicio;
         $parametros['fecFin']=$fecFin;
+        $carteras=session()->get('datos')->idcartera;
         $sql="";
         if($cartera!=0){
             $sql.=" and car_id_FK=:car ";
             $parametros['car']=$cartera;
+        }else{
+            if($carteras!=0){
+                $sql.=" and car_id_FK in ($carteras) ";
+            }
         }
         if($perfil!=0){
             $sql.=" and emp_tip_acc=:per ";
@@ -735,6 +736,7 @@ class Reporte extends Model
         
         return DB::connection('mysql')->select(DB::raw("
                     SELECT
+                        idcartera,
                         cartera,
                         gestiones,
                         contactos,
@@ -747,6 +749,7 @@ class Reporte extends Model
                     FROM
                     (SELECT          	
                             cartera,
+                            idcartera,
                             sum(gestion) as gestiones,
                             sum(contacto) as contactos,
                             sum(no_contacto) as no_contacto,
@@ -758,6 +761,7 @@ class Reporte extends Model
                         FROM
                         (SELECT
                             car_nom as cartera,
+                            car_id as idcartera,
                             cli_id,
                             1 as gestion,
                             if(res_ubi=0,1,0) as contacto,
@@ -988,5 +992,38 @@ class Reporte extends Model
         //dd($results1);
         //return $results1;
         return response()->json(['metas' => $metas, 'pagos' => $pagos]);
+    }
+
+    public static function detalleConfirmaciones($cartera){
+        $carteras=session()->get('datos')->idcartera;
+        $sql="";
+        $parametros=array();
+        if($cartera!=0){
+            $sql=" and car_id_FK in (:car)";
+            $parametros["car"]=$cartera;
+        }else{
+            if($carteras!=0){
+                $sql=" and car_id_FK in (:car)";
+                $parametros["car"]=$carteras;
+            }
+        }
+        
+        return DB::connection('mysql')->select(DB::raw("
+            SELECT
+                ges_cli_conf_fec as fecha,
+                count(ges_cli_conf_can) as cantidad,
+                sum(ges_cli_conf_can) as monto
+            FROM 
+                cliente c
+            INNER JOIN gestion_cliente gc ON gc.cli_id_FK=c.cli_id
+            WHERE
+                cli_est=0
+                and cli_pas=0
+                and res_id_FK=2
+                $sql
+                and DATE(ges_cli_fec) = date(NOW())
+            GROUP BY ges_cli_conf_fec
+            order by ges_cli_conf_fec asc
+        "),$parametros);
     }
 }
