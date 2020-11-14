@@ -25,7 +25,7 @@ class Plan extends Model
                     detalle
                 from indicadores.plan
                 where id_cartera=:car
-                and fecha_i between :fecInicio and :fecFin
+                and date(fecha_i) between :fecInicio and :fecFin
         "),array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
     }
 
@@ -43,8 +43,10 @@ class Plan extends Model
         $ubicabilidad = implode(',',$rq->ubicabilidad);
         $entidad = implode(',',$rq->entidad);
         $tipoCliente = implode(',',$rq->tipoCliente);
+        $score = implode(',',$rq->score);
+        $respuestas = implode(',',$rq->respuestas);
         $sql="";
-        
+        //  return $respuestas." - ".$ubicabilidad;
         if($tramo!='' && $tramo!="'TODOS'"){
             $sql.=" and tramo in ($tramo)";
         }
@@ -75,8 +77,15 @@ class Plan extends Model
         if($ubicabilidad!='' && $ubicabilidad!="'TODOS'"){
             $sql.=" and ubicabilidad in ($ubicabilidad)";
         }
+        if($respuestas!='' && $respuestas!="'TODOS'"){
+            $sql.=" and res_id_FK in ($respuestas)";
+        }
         if($entidad!='' && $entidad!="'TODOS'"){
             $sql.=" and entidad in ($entidad)";
+        }
+        
+        if($score!='' && $score!="'TODOS'"){
+            $sql.=" and score in ($score)";
         }
         if($tipoCliente!='' && $tipoCliente!="'TODOS'"){
             $sql.=" and nuevo in ($tipoCliente)";
@@ -148,7 +157,9 @@ class Plan extends Model
                         WHEN entidades like '%3%' or entidades >= 4 THEN 4
                         ELSE 1
                     END) AS entidad,
-                    if(cli_nuev_cod is null,'Otros','Nuevos/Nuevos Castigo') as nuevo
+                    if(cli_nuev_cod is null,'Otros','Nuevos/Nuevos Castigo') as nuevo,
+                    res_id_FK,
+                    score
                 FROM
                     indicadores.cartera_detalle cd
                 INNER JOIN creditoy_cobranzas.cliente c ON c.cli_cod = cd.cuenta
@@ -194,6 +205,9 @@ class Plan extends Model
         $ubicabilidad = implode(',',$rq->ubicabilidad);
         $entidad = implode(',',$rq->entidad);
         $tipoCliente = implode(',',$rq->tipoCliente);
+        $score = implode(',',$rq->score);
+        $respuestas = implode(',',$rq->respuestas);
+        $respuestasNombres = implode(',',$rq->respuestasNombres);
         $usuarios = implode(',',$rq->usuarios);
         $sql="";
         $parametros=array();
@@ -233,8 +247,14 @@ class Plan extends Model
         if($ubicabilidad!=''&& $ubicabilidad!="'TODOS'"){
             $sql.=" and ubicabilidad in ($ubicabilidad)";
         }
+        if($respuestas!='' && $respuestas!="'TODOS'"){
+            $sql.=" and res_id_FK in ($respuestas)";
+        }
         if($entidad!='' && $entidad!="'TODOS'"){
             $sql.=" and entidad in ($entidad)";
+        }
+        if($score!='' && $score!="'TODOS'"){
+            $sql.=" and score in ($score)";
         }
         if($tipoCliente!='' && $tipoCliente!="'TODOS'"){
             $sql.=" and nuevo in ($tipoCliente)";
@@ -273,10 +293,11 @@ class Plan extends Model
         $detalle.="Rango Deuda: ".str_replace("DD","[3000+>",str_replace("CC","[1000-3000>",str_replace("BB","[500-1000>",str_replace("AA","[0-500>",str_replace("'","",$deuda))))).";";
         $detalle.="Rango Importe: ".str_replace("DD","[3000+>",str_replace("CC","[1000-3000>",str_replace("BB","[500-1000>",str_replace("AA","[0-500>",str_replace("'","",$importe))))).";";
         $detalle.="Ubicabilidad: ".str_replace("'","",$ubicabilidad).";";
+        $detalle.="Respuestas: ".str_replace("'","",$respuestasNombres).";";
         $detalle.="Entidades: ".str_replace("'","",$entidad).";";
+        $detalle.="Score: ".str_replace("'","",$score).";";
         $detalle.="TipoCliente: ".str_replace("'","",$tipoCliente).";";
         $detalle.="Usuarios: ".str_replace("'","",$usuarios)."";
-
         $sqlCantidad='';
         if($cantidad!=''){
             $sqlCantidad=" WHERE id<=:cant ";
@@ -356,7 +377,9 @@ class Plan extends Model
                         ELSE 1
                     END) AS entidad,
                     if(cli_nuev_cod is null,'Otros','Nuevos/Nuevos Castigo') as nuevo,
-                    if(emp_cod is null,'NO ASIGNADO',emp_cod) as gestor
+                    if(emp_cod is null,'NO ASIGNADO',emp_cod) as gestor,
+                    res_id_FK,
+                    score
                 FROM
                     indicadores.cartera_detalle cd
                 INNER JOIN creditoy_cobranzas.cliente c ON c.cli_cod = cd.cuenta
@@ -453,7 +476,7 @@ class Plan extends Model
                 format(sum(gestiones)/if(cliente,count(DISTINCT cliente),0),2) as intensidad
             FROM 
             (SELECT
-                if(gg.res_id_FK in (2,37,33,10,1,8,43,39,7,3,5,9,34,17,21,18,28,30,35,36,46,47,48,49) AND (date_format(gg.ges_cli_fec,'%Y-%m-%d') between :fecInicio1 and :fecFin1),cli_cod,null) as contacto,
+                if(gg.res_id_FK in (2,37,33,10,1,8,43,39,7,3,5,9,34,17,21,18,28,30,35,36,46,47,48,49) AND (gg.ges_cli_fec between :fecInicio1 and :fecFin1),cli_cod,null) as contacto,
                 if(ges_cli_tel_id_FK,1,0) as gestiones,
                 cli_cod as cliente,
                 if(g.res_id_FK in (1,43),1,0) as pdp,
@@ -470,7 +493,7 @@ class Plan extends Model
                 and cli_pas=0
                 and car_id_FK=:car
                 and if(:usuario=0,g.emp_id_FK=g.emp_id_FK,g.emp_id_FK=:emp)
-                AND (date_format(g.ges_cli_fec,'%Y-%m-%d') between :fecInicio2 and :fecFin2)
+                AND (g.ges_cli_fec between :fecInicio2 and :fecFin2)
                 and cli_cod in ($clientes)
             ) t
         "),array("car"=>$cartera,"fecInicio1"=>$fechaInicio,"fecFin1"=>$fechaFin,"fecInicio2"=>$fechaInicio,
@@ -494,10 +517,10 @@ class Plan extends Model
         $cartera=session()->get('datos')->idcartera;
         $fec_actual=Carbon::now();
         return DB::connection('mysql')->select(DB::raw("
-                    select fecha_i as fechaInicio 
+                    select date(fecha_i) as fechaInicio 
                     from indicadores.plan
                     WHERE id_cartera in (:car)
-                    and fecha_i<=(:fec1) and fecha_f >= date(:fec2)
+                    and fecha_i<=:fec1 and fecha_f >= :fec2
                     LIMIT 1
                 "),array("car"=>$cartera,"fec1"=>$fec_actual,"fec2"=>$fec_actual));
     }

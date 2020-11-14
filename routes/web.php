@@ -52,8 +52,8 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('listaMotivosNoPago', 'RespuestaController@listaMotivosNoPago');
     Route::get('listaRespuesta/{ubi}', 'RespuestaController@listaRespuestaUbicabilidad');
     Route::get('listaRespuestaSms/{ubi}', 'RespuestaController@listaRespuestaUbicSms');
+    Route::get('listaScore/{cartera}', 'RespuestaController@listaScore');
     Route::get('listaEntidades', 'RespuestaController@listaEntidades');
-    Route::get('listaScore', 'RespuestaController@listaScore');
     Route::get('listaOficinas', 'RespuestaController@listaOficinas');
     
 // SMS--------------------------------------------------------------------------------------------

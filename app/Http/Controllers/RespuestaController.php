@@ -62,8 +62,8 @@ class RespuestaController extends Controller
         return Respuesta::listaEntidades();
     }
 
-    public function listaScore(){
-        return Respuesta::listaScore();
+    public function listaScore($cartera){
+        return Respuesta::listaScore($cartera);
     }
 
     public function listaOficinas(){

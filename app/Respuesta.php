@@ -159,4 +159,27 @@ class Respuesta extends Model
         return $query;
     }
     
+    public static function listRespuestasUbicabilidad(){
+        return DB::connection('mysql')->select(DB::raw("
+            SELECT 
+                res_id,
+                res_des,
+                (CASE 
+                    WHEN res_id IN ( 38, 6, 22, 41 ) THEN 'C-F-R-N'
+                    WHEN res_id IN ( 2,37,33,10,1,8,43,39,7,3,5,9,34,17,21,18,28,30,35,36,46,47,48,49 ) THEN 'Contacto'
+                    WHEN res_id IN ( 32 ) THEN 'No Disponible'
+                    WHEN res_id IN ( 19,27,12,26,13,4,11,12,20,14,15,16,23,24,29,31 ) THEN 'Ilocalizado'
+                    WHEN res_id IN ( 45,44, 25 ) THEN 'No Contacto'
+                    ELSE 'NO ENCONTRADO'
+                END) AS ubicabilidad
+            from 
+                respuesta
+            WHERE 
+                res_est=0 and res_pas=0
+                and res_id not in (46,39,10,8,7,13)
+                and res_acc like('%2%')
+                order by res_des
+            "));
+    }
+
 }

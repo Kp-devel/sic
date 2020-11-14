@@ -19,7 +19,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="font-bold">Nombre de Cartera</label>
-                            <select class="form-control" v-model="datos.cartera">
+                            <select class="form-control" v-model="datos.cartera" @change="llenarScore(datos.cartera)">
                                 <option value="">Seleccionar</option>
                                 <option v-for="(item,index) in carteras" :key="index" :value="item.id">{{item.cartera}}</option>
                             </select>
@@ -117,14 +117,6 @@
                     </div>
                 </div>
                 <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label for="ubic" class="col-form-label text-dark text-righ"><b>Ubicabilidad</b></label>
-                    <div class="form-check" v-for="(item,index) in ubicabilidad" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayUbicabilidad">{{item.nombre}}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2">
                     <label class="col-form-label text-dark text-righ"><b>Entidades</b></label>
                     <div class="form-check" v-for="(item,index) in entidades" :key="index">
                         <label class="form-check-label">
@@ -132,7 +124,15 @@
                         </label>
                     </div>
                 </div>
-                <div class="col-md-3 col-lg-3 col-xl-3">
+                <div class="col-md-2 col-lg-2 col-xl-2" v-if="score!=''">
+                    <label class="col-form-label text-dark text-righ"><b>Score</b></label>
+                    <div class="form-check" v-for="(item,index) in score" :key="index">
+                        <label class="form-check-label">
+                            <input class="form-check-input" name="score" type="checkbox" :value="item.valor" v-model="arrayScore">{{item.nombre}}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-2 col-lg-2 col-xl-2">
                     <label class="col-form-label text-dark text-righ"><b>Tipo Cliente</b></label>
                     <div class="form-check" v-for="(item,index) in tipoCliente" :key="index">
                         <label class="form-check-label">
@@ -140,18 +140,52 @@
                         </label>
                     </div>
                 </div>
+                <div class="col-md-2 col-lg-2 col-xl-2">
+                    <label for="ubic" class="col-form-label text-dark text-righ"><b>Ubicabilidad</b></label>
+                    <div class="form-check" v-for="(item,index) in ubicabilidad" :key="index" @click="llenarRespuestas(item.valor);cantidadClick++">
+                        <label class="form-check-label">
+                            <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayUbicabilidad">{{item.nombre}}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-8 col-lg-8 col-xl-8">
+                    <label for="ubic" class="col-form-label text-dark text-righ"><b>Respuestas</b></label>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-check" v-for="(item,index) in respuestas" :key="index">
+                                <label class="form-check-label" v-if="index<=6" >
+                                    <input class="form-check-input" name="rptas" type="checkbox" :value="item.valor" v-model="arrayRespuestas" :disabled="item.bloqueo">{{item.nombre}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check" v-for="(item,index) in respuestas" :key="index">
+                                <label class="form-check-label" v-if="index>6 && index<=12">
+                                    <input class="form-check-input" name="rptas" type="checkbox" :value="item.valor" v-model="arrayRespuestas" :disabled="item.bloqueo">{{item.nombre}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check" v-for="(item,index) in respuestas" :key="index" >
+                                <label class="form-check-label" v-if="index>12">
+                                    <input class="form-check-input" name="rptas" type="checkbox" :value="item.valor" v-model="arrayRespuestas" :disabled="item.bloqueo">{{item.nombre}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
                             <label class="font-bold">Horario de Atención Desde</label>
-                            <input type="date" class="form-control" v-model="datos.fechaInicio">
+                            <input type="datetime-local" class="form-control" v-model="datos.fechaInicio">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label class="font-bold">Horario de Atención Hasta</label>
-                            <input type="date" class="form-control" v-model="datos.fechaFin">
+                            <input type="datetime-local" class="form-control" v-model="datos.fechaFin">
                         </div>
                     </div>
             </div>
@@ -326,13 +360,15 @@
 <script>
     
     export default {
-        props:['carteras'],
+        props:['carteras','rpta'],
         data() {
             return {
                 spinnerbuscar:false,
                 viewForm:true,
                 loadingModal:false,
                 datos:{cartera:'',fechaInicio:'',fechaFin:'',nombre:'',speech:'',detalle:'',total:0,nombreCartera:''},
+                score:[],
+                respuestas:[],
                 tramos:[2016,2017,2018,2019,2020],
                 departamentos:[{valor:"'Lambayeque'",nombre:'Lambayeque'},{valor:"'Libertad'",nombre:'Trujillo'},{valor:"'Piura'",nombre:'Piura'},{valor:"'Ancash'",nombre:'Ancash'},{valor:"'Lima'",nombre:'Lima'},{valor:"'Arequipa'",nombre:'Arequipa'},{valor:"'Ica'",nombre:'Ica'},{valor:"'Cajamarca'",nombre:'Cajamarca'},{valor:"'Callao'",nombre:'Callao'},{valor:"'Otros'",nombre:'Otros'}],
                 prioridad:[{valor:"'Sin Dato'",nombre:'Sin Dato'},{valor:"'P1'",nombre:'P1'},{valor:"'P2'",nombre:'P2'},{valor:"'P3'",nombre:'P3'}],
@@ -358,15 +394,20 @@
                 arrayEntidades:[],
                 arrayTipo:[],
                 arrayUsuarios:[],
+                arrayScore:[],
+                arrayRespuestas:[],
+                arrayRespuestasNombres:[],
                 usuarios:[],
                 totalSelecionado:0,
-                detalleCondiciones:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:''},
-                totales:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:''},
-                ajustes:{cantidad:'',orden:''}
+                detalleCondiciones:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:'',score:'',respuesta:'',respuestaNombres:''},
+                totales:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:'',score:'',respuesta:'',respuestaNombres:''},
+                ajustes:{cantidad:'',orden:''},
+                cantidadClick:0,
             }
         },
         created(){
             this.SeleccionarTodo();
+            this.llenarRespuestas('');
         },
         methods:{
             SeleccionarTodo(){
@@ -451,7 +492,9 @@
                     importe:this.arrayImporte.length==this.totales.importe?["'TODOS'"]:this.arrayImporte,
                     ubicabilidad:this.arrayUbicabilidad.length==this.totales.ubicabilidad?["'TODOS'"]:this.arrayUbicabilidad,
                     entidad:this.arrayEntidades.length==this.totales.entidad?["'TODOS'"]:this.arrayEntidades,
-                    tipoCliente:this.arrayTipo.length==this.totales.tipo?["'TODOS'"]:this.arrayTipo
+                    tipoCliente:this.arrayTipo.length==this.totales.tipo?["'TODOS'"]:this.arrayTipo,
+                    score:this.arrayScore.length==this.totales.score?["'TODOS'"]:this.arrayScore,
+                    respuestas:this.arrayRespuestas.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestas
                 };
                 if(this.datos.cartera!='' && this.datos.nombre!='' && this.datos.fechaInicio!='' && this.datos.fechaFin!=''){
                      this.spinnerbuscar=true;
@@ -503,8 +546,16 @@
                 });
             },
             generarPlan(){
+                this.arrayRespuestasNombres=[];
                 this.loadingModal=true;
                 $('#modalCarga').modal({backdrop: 'static', keyboard: false});
+                this.arrayRespuestas.forEach(el => {
+                    this.rpta.forEach(r => {
+                        if(r.res_id==el){
+                            this.arrayRespuestasNombres.push(r.res_des);
+                        }
+                    });
+                });
                 var parametros={
                     cartera:this.datos.cartera,
                     plan:this.datos.nombre,
@@ -526,6 +577,9 @@
                     ubicabilidad:this.arrayUbicabilidad.length==this.totales.ubicabilidad?["'TODOS'"]:this.arrayUbicabilidad,
                     entidad:this.arrayEntidades.length==this.totales.entidad?["'TODOS'"]:this.arrayEntidades,
                     tipoCliente:this.arrayTipo.length==this.totales.tipo?["'TODOS'"]:this.arrayTipo,
+                    score:this.arrayScore.length==this.totales.score?["'TODOS'"]:this.arrayScore,
+                    respuestas:this.arrayRespuestas.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestas,
+                    respuestasNombres:this.arrayRespuestasNombres.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestasNombres,
                     orden:this.ajustes.orden,
                     cantidad:this.ajustes.cantidad
                 };
@@ -552,7 +606,62 @@
                 this.SeleccionarTodo();
                 this.ajustes.orden='';
                 this.ajustes.cantidad='';
-                this.totales
+                this.score=[];
+                this.arrayScore=[];
+                this.totales.score='';
+                this.respuestas=[];
+                this.totales.respuesta='';
+                this.llenarRespuestas('');
+            },
+            llenarRespuestas(ubic){
+                if(ubic==''){
+                    this.rpta.forEach(r => {
+                        this.respuestas.push({valor:r.res_id,nombre:r.res_des,ubicabilidad:r.ubicabilidad,bloqueo:false});
+                    });
+                }else{
+                    if(this.cantidadClick==1){
+                        if(this.arrayUbicabilidad.indexOf(ubic)==-1){
+                            for(let i=0;i<this.respuestas.length;i++){
+                                if("'"+this.respuestas[i].ubicabilidad+"'"===ubic){
+                                    // this.respuestas.splice(i,1);
+                                    this.respuestas[i].bloqueo=false;
+                                }
+                            }
+                        }else{
+                            for(let i=0;i<this.respuestas.length;i++){
+                                if("'"+this.respuestas[i].ubicabilidad+"'"===ubic){
+                                    this.respuestas[i].bloqueo=true;
+                                }
+                            }                   
+                        }
+                    }
+                }
+                this.arrayRespuestas=[];
+                this.totales.respuesta='';
+                this.respuestas.forEach(element => {
+                    if(element.bloqueo==false){
+                        this.arrayRespuestas.push(element.valor);
+                    }
+                });
+                this.totales.respuesta=this.respuestas.length;
+                this.cantidadClick=0;
+            },
+            llenarScore(cartera){
+                this.score=[];
+                this.arrayScore=[];
+                this.totales.score='';
+                axios.get("listaScore/"+cartera).then(res=>{
+                    if(res.data){
+                        var datos=res.data;
+                        datos.forEach(d => {
+                            this.score.push({valor:"'"+d.id+"'",nombre:d.valor});
+                        });
+                        this.score.forEach(element => {
+                            this.arrayScore.push(element.valor);
+                        });
+                        this.totales.score=this.score.length;
+                    }
+                });
             },
             formatoNumero(num,tipo){
                 if(tipo=='M'){
