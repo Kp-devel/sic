@@ -14,7 +14,7 @@
             </div>
         </div>
         <div class="py-3">
-            <form-plan :carteras="{{$carteras}}" />
+            <form-plan :carteras="{{$carteras}}" :rpta="{{$respuestas}}"/>
         </div>
     </div>         
 @endsection

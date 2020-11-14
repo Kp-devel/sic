@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Cartera;
 use App\Incidencia;
+use App\Respuesta;
 
 class HomeController extends Controller
 {
@@ -149,8 +150,10 @@ class HomeController extends Controller
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==1 || $tipo_acceso==5 || $tipo_acceso==6 || $tipo_acceso==7){
             $carteras=Cartera::listCarterasUsuario();       
+            $respuestas=Respuesta::listRespuestasUbicabilidad();
             $carteras=json_encode($carteras);
-            return view('admin.indicadores.crearPlan',compact('carteras'));
+            $respuestas=json_encode($respuestas);
+            return view('admin.indicadores.crearPlan',compact('carteras','respuestas'));
         }else{
             return view('errors.403');
         }
