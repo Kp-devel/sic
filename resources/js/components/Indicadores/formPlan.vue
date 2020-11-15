@@ -142,10 +142,9 @@
                 </div>
                 <div class="col-md-2 col-lg-2 col-xl-2">
                     <label for="ubic" class="col-form-label text-dark text-righ"><b>Ubicabilidad</b></label>
-                    <div class="form-check" v-for="(item,index) in ubicabilidad" :key="index" @click="llenarRespuestas(item.valor);cantidadClick++">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayUbicabilidad">{{item.nombre}}
-                        </label>
+                    <div class="form-check" v-for="(item,index) in ubicabilidad" :key="index">
+                        <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayUbicabilidad" @click="llenarRespuestas(item.valor);cantidadClick++" :id="'ubic'+index">
+                        <label class="form-check-label" :for="'ubic'+index">{{item.nombre}}</label>
                     </div>
                 </div>
                 <div class="col-md-8 col-lg-8 col-xl-8">
@@ -619,7 +618,6 @@
                         this.respuestas.push({valor:r.res_id,nombre:r.res_des,ubicabilidad:r.ubicabilidad,bloqueo:false});
                     });
                 }else{
-                    if(this.cantidadClick==1){
                         if(this.arrayUbicabilidad.indexOf(ubic)==-1){
                             for(let i=0;i<this.respuestas.length;i++){
                                 if("'"+this.respuestas[i].ubicabilidad+"'"===ubic){
@@ -634,7 +632,7 @@
                                 }
                             }                   
                         }
-                    }
+                    
                 }
                 this.arrayRespuestas=[];
                 this.totales.respuesta='';
@@ -644,7 +642,6 @@
                     }
                 });
                 this.totales.respuesta=this.respuestas.length;
-                this.cantidadClick=0;
             },
             llenarScore(cartera){
                 this.score=[];

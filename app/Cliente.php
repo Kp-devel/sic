@@ -329,7 +329,7 @@ class Cliente extends Model
     public static function datosMes(){
         $idEmpleado=auth()->user()->emp_id;
         $cartera=session()->get('datos')->idcartera;
-        $sql="
+        /*$sql="
             SELECT
                 cli_id,
                 if(emp_meta is null,0,emp_meta) as meta,
@@ -384,8 +384,64 @@ class Cliente extends Model
                 cli_est=0
             and cli_pas=0
             and emp_tel_id_FK=:emp
+        ";*/
+        $sql="
+            SELECT
+                cli_id,
+                if(emp_meta is null,0,emp_meta) as meta,
+                sum(monto_conf) as monto_conf,
+                max(fecha_conf) as fecha_conf,
+                (   SELECT
+                        if(sum(pago_cli_mon) is null,0,sum(pago_cli_mon)) as pago
+                    FROM
+                        indicadores.pago_cliente
+                    WHERE car_id=c.car_id_FK
+                    and DATE_FORMAT(pago_cli_fec,'%Y%m')=DATE_FORMAT(NOW(),'%Y%m')
+                    AND pago_gestor=e.emp_cod
+                ) as recupero,
+                (   SELECT
+                        if(day(max(pago_cli_fec)) is null,0,day(max(pago_cli_fec)))
+                    FROM
+                        indicadores.pago_cliente
+                    WHERE car_id=c.car_id_FK
+                    and DATE_FORMAT(pago_cli_fec,'%Y%m')=DATE_FORMAT(NOW(),'%Y%m')
+                    AND pago_gestor=e.emp_cod
+                ) as fecha_recupero,
+                sum(monto_pdp) as monto_pdp,
+                sum(pendiente) as pdp_pendiente,
+                sum(caidos) as pdp_caidos,
+                sum(cumplido) as pdp_cumplido,
+                format((sum(cumplido)/(sum(cumplido)+sum(pendiente)))*100,2) as efectividad,
+                format((sum(gestion)/count(*))*100,2) as cobertura
+            FROM
+                cliente c
+            LEFT JOIN (
+                SELECT
+                    g.cli_id_FK,
+                    sum(ges_cli_conf_can) as monto_conf,
+                    day(max(ges_cli_conf_fec)) as fecha_conf,
+                    sum(ges_cli_com_can) as monto_pdp,
+                    sum(if(com_cli_est <> 0,com_cli_can,0)) as cumplido,
+                    sum(if( com_cli_est=0 and DATEDIFF(DATE_FORMAT(now(),'%Y-%m-%d'),DATE_FORMAT(com_cli_fec_pag,'%Y-%m-%d')) <= 0,com_cli_can,0)) as pendiente,
+                    sum(if( com_cli_est=0 and DATEDIFF(DATE_FORMAT(now(),'%Y-%m-%d'),DATE_FORMAT(com_cli_fec_pag,'%Y-%m-%d')) > 0,com_cli_can,0)) as caidos,
+                    g.emp_id_FK,
+                    1 as gestion
+                FROM
+                    gestion_cliente g
+                LEFT JOIN compromiso_cliente cc ON cc.cli_id_FK=g.cli_id_FK and cc.ges_cli_id_FK=g.ges_cli_id and date_format(com_cli_fec_pag,'%Y-%m') = date_format(now(),'%Y-%m')
+                WHERE
+                    date_format(ges_cli_fec,'%Y-%m') = date_format(now(),'%Y-%m')
+                    and g.emp_id_FK=:emp2
+                    and ges_cli_acc IN (1, 2)
+                GROUP BY cli_id_FK
+            )g ON c.cli_id = g.cli_id_FK
+            INNER JOIN empleado e on c.emp_tel_id_FK=e.emp_id
+            WHERE
+                cli_est=0
+            and cli_pas=0
+            and emp_tel_id_FK=:emp
         ";
-        $datos=DB::connection('mysql')->select(DB::raw($sql),array("emp"=>$idEmpleado,"emp2"=>$idEmpleado,"car"=>$cartera));
+        $datos=DB::connection('mysql')->select(DB::raw($sql),array("emp"=>$idEmpleado,"emp2"=>$idEmpleado));
         return $datos;
         // return response()->json(['metas' => $metas, 'datos' => $datos, 'pdp' => $pdp , 'pagos' => $pagos]);
         //return $query;
