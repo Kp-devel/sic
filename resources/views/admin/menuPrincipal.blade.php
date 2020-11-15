@@ -56,6 +56,10 @@
             <img src="{{asset('img/incidencias.svg')}}" alt="" class="img-fluid" width="110px" height="60px">
             <p class="mb-0 px-1 pt-2 pb-1 font-15">Incidencias<br>RRHH</p>
         </a>
+        <!-- <a href="{{route('incidencias')}}" class="menu-card p-3">
+            <img src="{{asset('img/incidencias.svg')}}" alt="" class="img-fluid" width="110px" height="60px">
+            <p class="mb-0 px-1 pt-2 pb-1 font-15">Mantenimiento<br>de Usuarios</p>
+        </a> -->
     </div>
 </div>
 @endsection

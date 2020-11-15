@@ -463,9 +463,12 @@
         },
         created(){
              this.listaPanelBusqueda();
-             this.datosMes(); 
+             if(this.tipoacceso==2){
+                 this.datosMes(); 
+             }
              this.estadoCampana();   
              this.diaActual();
+            
         },
         watch:{
             'busqueda.pdp_desde': function(val){this.busqueda.pdp_desde = this.validarFormatoFecha(val)},
