@@ -45,8 +45,10 @@ class Plan extends Model
         $tipoCliente = implode(',',$rq->tipoCliente);
         $score = implode(',',$rq->score);
         $respuestas = implode(',',$rq->respuestas);
+        $fechas = implode(',',$rq->fechas);
+        $gestiones = implode(',',$rq->gestiones);
         $sql="";
-        //  return $respuestas." - ".$ubicabilidad;
+        
         if($tramo!='' && $tramo!="'TODOS'"){
             $sql.=" and tramo in ($tramo)";
         }
@@ -89,6 +91,12 @@ class Plan extends Model
         }
         if($tipoCliente!='' && $tipoCliente!="'TODOS'"){
             $sql.=" and nuevo in ($tipoCliente)";
+        }
+        if($fechas!='' && $fechas!="'TODOS'"){
+            $sql.=" and fechas_gestiones in ($fechas)";
+        }
+        if($gestiones!='' && $gestiones!="'TODOS'"){
+            $sql.=" and cant_gestiones in ($gestiones)";
         }
 
         return DB::connection('mysql')->select(DB::raw("
@@ -159,7 +167,25 @@ class Plan extends Model
                     END) AS entidad,
                     if(cli_nuev_cod is null,'Otros','Nuevos/Nuevos Castigo') as nuevo,
                     res_id_FK,
-                    score
+                    score,
+                    (CASE 
+                        WHEN date(ges_cli_fec)=date(now()) THEN 'Hoy' 
+                        WHEN date(ges_cli_fec)=ADDDATE(date(NOW()),INTERVAL -1 DAY) THEN 'Hace 1 día' 
+                        WHEN date(ges_cli_fec)=ADDDATE(date(NOW()),INTERVAL -2 DAY) THEN 'Hace 2 días' 
+                        WHEN date(ges_cli_fec)=ADDDATE(date(NOW()),INTERVAL -3 DAY) THEN 'Hace 3 días' 
+                        WHEN date(ges_cli_fec)<=ADDDATE(date(NOW()),INTERVAL -4 DAY) THEN 'Hace más de 3 días' 
+                    END) AS fechas_gestiones,
+                    (select 
+                        case when count(cli_id_FK)=1 then '1'
+                             when count(cli_id_FK)=2 then '2'
+                             when count(cli_id_FK)=3 then '3'
+                             when count(cli_id_FK)>=4 then '4+'
+                             ELSE '0'
+                        END
+                     from gestion_cliente 
+                     where cli_id_FK=cli_id
+                     and DATE_FORMAT(ges_cli_fec,'%Y%m')=DATE_FORMAT(NOW(),'%Y%m')
+                    ) as cant_gestiones
                 FROM
                     indicadores.cartera_detalle cd
                 INNER JOIN creditoy_cobranzas.cliente c ON c.cli_cod = cd.cuenta
@@ -209,6 +235,8 @@ class Plan extends Model
         $respuestas = implode(',',$rq->respuestas);
         $respuestasNombres = implode(',',$rq->respuestasNombres);
         $usuarios = implode(',',$rq->usuarios);
+        $fechas = implode(',',$rq->fechas);
+        $gestiones = implode(',',$rq->gestiones);
         $sql="";
         $parametros=array();
         $parametros["car1"]=$cartera;
@@ -259,6 +287,12 @@ class Plan extends Model
         if($tipoCliente!='' && $tipoCliente!="'TODOS'"){
             $sql.=" and nuevo in ($tipoCliente)";
         }
+        if($fechas!='' && $fechas!="'TODOS'"){
+            $sql.=" and fechas_gestiones in ($fechas)";
+        }
+        if($gestiones!='' && $gestiones!="'TODOS'"){
+            $sql.=" and cant_gestiones in ($gestiones)";
+        }
 
         if($orden!=''){
             if($orden==1){
@@ -296,7 +330,9 @@ class Plan extends Model
         $detalle.="Respuestas: ".str_replace("'","",$respuestasNombres).";";
         $detalle.="Entidades: ".str_replace("'","",$entidad).";";
         $detalle.="Score: ".str_replace("'","",$score).";";
-        $detalle.="TipoCliente: ".str_replace("'","",$tipoCliente).";";
+        $detalle.="Tipo Cliente: ".str_replace("'","",$tipoCliente).";";
+        $detalle.="Última Gestión: ".str_replace("'","",$fechas).";";
+        $detalle.="Gestiones Mes: ".str_replace("'","",$gestiones).";";
         $detalle.="Usuarios: ".str_replace("'","",$usuarios)."";
         $sqlCantidad='';
         if($cantidad!=''){
@@ -379,7 +415,25 @@ class Plan extends Model
                     if(cli_nuev_cod is null,'Otros','Nuevos/Nuevos Castigo') as nuevo,
                     if(emp_cod is null,'NO ASIGNADO',emp_cod) as gestor,
                     res_id_FK,
-                    score
+                    score,
+                    (CASE 
+                        WHEN date(ges_cli_fec)=date(now()) THEN 'Hoy' 
+                        WHEN date(ges_cli_fec)=ADDDATE(date(NOW()),INTERVAL -1 DAY) THEN 'Hace 1 día' 
+                        WHEN date(ges_cli_fec)=ADDDATE(date(NOW()),INTERVAL -2 DAY) THEN 'Hace 2 días' 
+                        WHEN date(ges_cli_fec)=ADDDATE(date(NOW()),INTERVAL -3 DAY) THEN 'Hace 3 días' 
+                        WHEN date(ges_cli_fec)<=ADDDATE(date(NOW()),INTERVAL -4 DAY) THEN 'Hace más de 3 días' 
+                    END) AS fechas_gestiones,
+                    (select 
+                        case when count(cli_id_FK)=1 then '1'
+                             when count(cli_id_FK)=2 then '2'
+                             when count(cli_id_FK)=3 then '3'
+                             when count(cli_id_FK)>=4 then '4+'
+                             ELSE '0'
+                        END
+                     from gestion_cliente 
+                     where cli_id_FK=cli_id
+                     and DATE_FORMAT(ges_cli_fec,'%Y%m')=DATE_FORMAT(NOW(),'%Y%m')
+                    ) as cant_gestiones
                 FROM
                     indicadores.cartera_detalle cd
                 INNER JOIN creditoy_cobranzas.cliente c ON c.cli_cod = cd.cuenta

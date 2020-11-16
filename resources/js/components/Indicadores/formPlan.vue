@@ -173,6 +173,24 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-2 col-lg-2 col-xl-2">
+                    <label for="ubic" class="col-form-label text-dark text-righ"><b>Gestiones Mes</b></label>
+                    <div class="form-check" v-for="(item,index) in gestiones" :key="index">
+                        <label class="form-check-label">
+                            <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayGestiones">
+                            {{item.nombre}}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3 col-lg-3 col-xl-3">
+                    <label for="ubic" class="col-form-label text-dark text-righ"><b>Última Gestión</b></label>
+                    <div class="form-check" v-for="(item,index) in fechas" :key="index">
+                        <label class="form-check-label">
+                            <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayFechas">
+                            {{item.nombre}}
+                        </label>
+                    </div>
+                </div>
             </div>
             <div class="row">
                     <div class="col-md-3">
@@ -380,6 +398,8 @@
                 ubicabilidad:[{valor:"'C-F-R-N'",nombre:'C-F-R-N'},{valor:"'Contacto'",nombre:'Contacto'},{valor:"'No Disponible'",nombre:'No Disponible'},{valor:"'No Contacto'",nombre:'No Contacto'},{valor:"'Ilocalizado'",nombre:'Ilocalizado'},{valor:"'Sin Gestión'",nombre:'Sin Gestión'}],
                 entidades:[1,2,3,4],
                 tipoCliente:[{valor:"'Nuevos/Nuevos Castigo'",nombre:'Nuevos/Nuevos Castigo'},{valor:"'Otros'",nombre:'Otros'}],
+                fechas:[{valor:"'Hoy'",nombre:'Hoy'},{valor:"'Hace 1 día'",nombre:'Hace 1 día'},{valor:"'Hace 2 días'",nombre:'Hace 2 días'},{valor:"'Hace 3 días'",nombre:'Hace 3 días'},{valor:"'Hace más de 3 días'",nombre:'Hace más de 3 días'}],
+                gestiones:[{valor:"'0'",nombre:'0'},{valor:"'1'",nombre:'1'},{valor:"'2'",nombre:'2'},{valor:"'3'",nombre:'3'},{valor:"'4+'",nombre:'4+'}],
                 arrayTramos:[],
                 arrayDepartamentos:[],
                 arrayPrioridad:[],
@@ -396,10 +416,12 @@
                 arrayScore:[],
                 arrayRespuestas:[],
                 arrayRespuestasNombres:[],
+                arrayFechas:[],
+                arrayGestiones:[],
                 usuarios:[],
                 totalSelecionado:0,
-                detalleCondiciones:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:'',score:'',respuesta:'',respuestaNombres:''},
-                totales:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:'',score:'',respuesta:'',respuestaNombres:''},
+                detalleCondiciones:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:'',score:'',respuesta:'',respuestaNombres:'',fechas:'',gestiones:''},
+                totales:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:'',score:'',respuesta:'',respuestaNombres:'',fechas:'',gestiones:''},
                 ajustes:{cantidad:'',orden:''},
                 cantidadClick:0,
             }
@@ -423,6 +445,8 @@
                 this.arrayEntidades=[];
                 this.arrayTipo=[];
                 this.arrayUsuarios=[];
+                this.arrayFechas=[];
+                this.arrayGestiones=[];
 
                 this.tramos.forEach(element => {
                     this.arrayTramos.push(element);
@@ -460,6 +484,12 @@
                 this.tipoCliente.forEach(element => {
                     this.arrayTipo.push(element.valor);
                 });
+                this.fechas.forEach(element => {
+                    this.arrayFechas.push(element.valor);
+                });
+                this.gestiones.forEach(element => {
+                    this.arrayGestiones.push(element.valor);
+                });
                 this.totales.tramo=this.tramos.length;
                 this.totales.departamento=this.departamentos.length;
                 this.totales.prioridad=this.prioridad.length;
@@ -472,6 +502,8 @@
                 this.totales.ubicabilidad=this.ubicabilidad.length;
                 this.totales.entidad=this.entidades.length;
                 this.totales.tipo=this.tipoCliente.length;
+                this.totales.fechas=this.fechas.length;
+                this.totales.gestiones=this.gestiones.length;
             },
             verResumen(){
                 this.totalSelecionado=0;
@@ -493,7 +525,9 @@
                     entidad:this.arrayEntidades.length==this.totales.entidad?["'TODOS'"]:this.arrayEntidades,
                     tipoCliente:this.arrayTipo.length==this.totales.tipo?["'TODOS'"]:this.arrayTipo,
                     score:this.arrayScore.length==this.totales.score?["'TODOS'"]:this.arrayScore,
-                    respuestas:this.arrayRespuestas.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestas
+                    respuestas:this.arrayRespuestas.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestas,
+                    fechas:this.arrayFechas.length==this.totales.fechas?["'TODOS'"]:this.arrayFechas,
+                    gestiones:this.arrayGestiones.length==this.totales.gestiones?["'TODOS'"]:this.arrayGestiones
                 };
                 if(this.datos.cartera!='' && this.datos.nombre!='' && this.datos.fechaInicio!='' && this.datos.fechaFin!=''){
                      this.spinnerbuscar=true;
@@ -579,6 +613,8 @@
                     score:this.arrayScore.length==this.totales.score?["'TODOS'"]:this.arrayScore,
                     respuestas:this.arrayRespuestas.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestas,
                     respuestasNombres:this.arrayRespuestasNombres.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestasNombres,
+                    fechas:this.arrayFechas.length==this.totales.fechas?["'TODOS'"]:this.arrayFechas,
+                    gestiones:this.arrayGestiones.length==this.totales.gestiones?["'TODOS'"]:this.arrayGestiones,
                     orden:this.ajustes.orden,
                     cantidad:this.ajustes.cantidad
                 };
