@@ -329,4 +329,13 @@ class HomeController extends Controller
             return view('errors.403');
         }
     }
+
+    public function indlistadoactualizaciones(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==5){
+            return view('admin.indicadores.listadoActualizaciones');
+        }else{
+            return view('errors.403');
+        }
+    }
 }
