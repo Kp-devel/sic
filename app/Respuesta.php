@@ -182,4 +182,36 @@ class Respuesta extends Model
             "));
     }
 
+    public static function listaTramo($cartera){
+        // $cartera=session()->get('datos')->idcartera;
+        $sql="
+            SELECT
+                tag_valor as valor
+            FROM
+                creditoy_lotesms.tag_condicion
+            WHERE 
+                car_id_FK in (:car)
+            and tag_tipo='tramo'
+            and tag_est=0
+            group by tag_valor
+        ";
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
+        return $query;
+    }
+
+    public static function listaZona($cartera){
+        $sql="
+            SELECT
+                tag_valor as valor
+            FROM
+                creditoy_lotesms.tag_condicion
+            WHERE 
+                car_id_FK in (:car)
+            and tag_tipo='zona'
+            and tag_est=0
+            group by tag_valor
+        ";
+        $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
+        return $query;
+    }
 }

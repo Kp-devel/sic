@@ -137,32 +137,32 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('reporteResumenGestor', 'ReporteController@reporteResumenGestor');
     Route::post('descargarGestionesGestor', 'ReporteController@descargarGestionesGestor');
         
-//Reporte Primer y Ultima gestion--------------------------------------------------------------------------------------------------------
+    //Reporte Primer y Ultima gestion--------------------------------------------------------------------------------------------------------
     Route::get('/reporteprimerayultimagestion', 'HomeController@indreporteprimyultgestion')->name('reporteprimerayultimagestion');
     Route::post('primerayultimagestion', 'ReporteController@primerayultimagestion');
 
-//Reporte cant de gestiones por hora--------------------------------------------------------------------------------------------------------
+    //Reporte cant de gestiones por hora--------------------------------------------------------------------------------------------------------
     Route::get('/reportegestionhora', 'HomeController@indreportegestionhora')->name('reportegestionhora');
     Route::get('cantGestioneHora/{cartera}', 'ReporteController@cantGestioneHora');
     
-// Reporte gestión--------------------------------------------------------------------------------------------------------------------------
+    // Reporte gestión--------------------------------------------------------------------------------------------------------------------------
     Route::get('/resumengestion', 'HomeController@indresumengestion')->name('resumengestion');
     Route::get('resumenGestionDia/{cartera}', 'ReporteController@resumenGestionDia');
     Route::get('detalleConfirmaciones/{cartera}', 'ReporteController@detalleConfirmaciones');
     
-// Reporte gestion Consolidada
+    // Reporte gestion Consolidada
     Route::get('/resumengestionconsolidada', 'HomeController@indresumengestionconsolidada')->name('resumengestionconsolidada');
     Route::get('resumenGestionConsolidada/{fecha}', 'ReporteController@resumenGestionConsolidada');
 
-//Reporte Comparativo
+    //Reporte Comparativo
     Route::get('/comparativocartera', 'HomeController@indcomparativocartera')->name('comparativocartera');
     Route::post('reportecomparativocartera', 'ReporteController@reportecomparativocartera');
 
-// Timing y Proyectado ---------------------------------------------------------------------------------------------------------------------
+    // Timing y Proyectado ---------------------------------------------------------------------------------------------------------------------
     Route::get('/timingyproyectado', 'HomeController@timingyproyectado')->name('timingyproyectado');
     Route::get('timingProyectado/{cartera}', 'TimingController@timingProyectado');
 
-// incidencias------------------------------------------------------------------------------------------------------------------------
+    // incidencias------------------------------------------------------------------------------------------------------------------------
     Route::get('/incidencias', 'HomeController@incidencias')->name('incidencias');
     Route::get('/nuevaincidencia', 'HomeController@nuevaincidencia')->name('nuevaincidencia');
     Route::get('/tiposIncidencias', 'IncidenciaController@tiposIncidencias');
@@ -170,7 +170,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/buscarIncidencias', 'IncidenciaController@buscarIncidencias');
     Route::put('/editarIncidencia', 'IncidenciaController@editarIncidencia');
 
-// analisis de pdps-------------------------------------------------------------------------------------------------------------------
+    // analisis de pdps-------------------------------------------------------------------------------------------------------------------
     Route::get('/estadospdps', 'HomeController@estadospdps')->name('estadospdps');
     Route::get('/estandarpdps', 'HomeController@estandarpdps')->name('estandarpdps');
     Route::get('/pdps', 'HomeController@pdps')->name('pdps');
@@ -180,6 +180,13 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/reportePdps', 'PdpsController@reportePdps')->name('reportePdps');
     Route::post('/listaPdps', 'PdpsController@listaPdps')->name('listaPdps');
     Route::post('/descargarListaPdps', 'PdpsController@descargarListaPdps')->name('descargarListaPdps');
+
+//PREDICTIVO-----------------------------------------------------------------------------------------------------------------------------
+    Route::get('/predictivo', 'HomeController@predictivo')->name('predictivo');
+    Route::get('/crearpredictivo', 'HomeController@crearpredictivo')->name('crearpredictivo');
+    Route::get('/registrargestiones', 'HomeController@registrargestiones')->name('registrargestiones');
+    Route::get('/condiciones/{cartera}', 'PredictivoController@condiciones')->name('condiciones');
+    
 
 
 
