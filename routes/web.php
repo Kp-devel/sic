@@ -189,6 +189,11 @@ Route::group(['middleware' => ['auth']], function(){
     
 
 
+//actualizaciones
+    Route::get('/listadoactualizaciones', 'HomeController@indlistadoactualizaciones')->name('listadoactualizaciones');
+    Route::post('infoactualizacionpagos', 'ActualizacionController@infoactualizacionpagos');
+    Route::post('infoactualizacioncarteras', 'ActualizacionController@infoactualizacioncarteras');
+
 
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix
