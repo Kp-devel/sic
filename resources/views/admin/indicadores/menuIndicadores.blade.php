@@ -56,7 +56,9 @@
             <a href="{{route('estadospdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('estadospdps') ? 'menu-active' : '' }}">Cumplimiento de PDPS</a>
             <a href="{{route('estandarpdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('estandarpdps') ? 'menu-active' : '' }}">Estándar de PDPS</a>
         </div>
-       
+
+        <!-- Actualizaciones -->
+        <a href="{{route('listadoactualizaciones')}}" class="px-4 waves-effect {{ request()->is('listadoactualizaciones') ? 'menu-active' : '' }}"><i class="fa fa-sync pr-2"></i>Actualizaciones</a>       
         
     </div>
 </div>

@@ -181,12 +181,19 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/listaPdps', 'PdpsController@listaPdps')->name('listaPdps');
     Route::post('/descargarListaPdps', 'PdpsController@descargarListaPdps')->name('descargarListaPdps');
 
+    //actualizaciones
+    Route::get('/listadoactualizaciones', 'HomeController@indlistadoactualizaciones')->name('listadoactualizaciones');
+    Route::post('infoactualizacionpagos', 'ActualizacionController@infoactualizacionpagos');
+    Route::post('infoactualizacioncarteras', 'ActualizacionController@infoactualizacioncarteras');
+
+
 //PREDICTIVO-----------------------------------------------------------------------------------------------------------------------------
     Route::get('/predictivo', 'HomeController@predictivo')->name('predictivo');
     Route::get('/crearpredictivo', 'HomeController@crearpredictivo')->name('crearpredictivo');
     Route::get('/registrargestiones', 'HomeController@registrargestiones')->name('registrargestiones');
     Route::get('/condiciones/{cartera}', 'PredictivoController@condiciones')->name('condiciones');
-    
+
+
 
 
 
