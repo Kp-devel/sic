@@ -195,8 +195,6 @@ Route::group(['middleware' => ['auth']], function(){
 
 
 
-
-
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix
     Route::get('panelcontrolllamadas', 'ControlLLamadaController@panelcontrolllamadas')->name('panelcontrolllamadas');

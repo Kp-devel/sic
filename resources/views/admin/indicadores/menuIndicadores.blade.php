@@ -59,6 +59,6 @@
 
         <!-- Actualizaciones -->
         <a href="{{route('listadoactualizaciones')}}" class="px-4 waves-effect {{ request()->is('listadoactualizaciones') ? 'menu-active' : '' }}"><i class="fa fa-sync pr-2"></i>Actualizaciones</a>       
-        
+
     </div>
 </div>
