@@ -43,6 +43,10 @@ Vue.component('listado-actualizaciones', require('./components/Indicadores/lista
 Vue.component('form-incidencia', require('./components/Incidencias/formIncidencia.vue').default);
 Vue.component('list-incidencias', require('./components/Incidencias/listIncidencias.vue').default);
 
+// predictivo
+Vue.component('form-gestiones', require('./components/Predictivo/formGestiones.vue').default);
+Vue.component('form-predictivo', require('./components/Predictivo/formPredictivo.vue').default);
+
 const app = new Vue({
     el: '#app',
 });
