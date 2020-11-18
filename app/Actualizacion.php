@@ -15,6 +15,7 @@ class Actualizacion extends Model
             where 
                 car_est=0 and car_pas=0 
                 and car_id not in (23,57,86,74,73,84,85,62,63,81,80,91)
+            order by car_nom asc
         "));
 
         $pagos=DB::connection('mysql')->select(DB::raw("
@@ -30,6 +31,7 @@ class Actualizacion extends Model
         $carteras=DB::connection('mysql')->select(DB::raw("
             select car_id,car_nom, 'sincargar' as estado   from creditoy_cobranzas.cartera
             where car_est=0 and car_pas=0 and car_id not in (23,57,86,74,73,91)
+            order by car_nom asc
         "));
 
         $carterasCargadas=DB::connection('mysql')->select(DB::raw("
