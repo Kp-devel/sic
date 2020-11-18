@@ -11,13 +11,16 @@
                             <td class="align-middle font-11">FECHA DEUDA</td>
                             <td class="align-middle font-11">DIAS</td>
                             <td class="align-middle font-11">TRAMO</td>
+                            <td class="align-middle font-11">PRIORIDAD</td>
                             <td class="align-middle font-11">MONEDA</td>
                             <td class="align-middle font-11">CAPITAL</td>
+                            <td class="align-middle font-11">DEUDA SALDO</td>
                             <td class="align-middle font-11">DEUDA</td>
                             <td class="align-middle font-11">DTO.</td>
                             <td class="align-middle font-11 bg-white border-0 rounded-0" style="max-width:7px;"></td>
                             <td class="align-middle font-11">IMP. DTO.</td>
                             <td class="align-middle font-11">IMP. CANC.</td>
+                            <td class="align-middle bg-white border-0 rounded-0 px-0" style="min-width: 0.1rem"></td>
                         </tr>
                     </thead>
                     <tbody class="text-center">
@@ -32,13 +35,18 @@
                             <td>{{item.fecha_deuda}}</td>
                             <td>{{item.dias}}</td>
                             <td>{{item.tramo}}</td>
+                            <td>{{item.prioridad}}</td>
                             <td>{{item.moneda}}</td>
                             <td>{{formatoMonto(item.capital)}}</td>
+                            <td>{{formatoMonto(item.saldo)}}</td>
                             <td>{{formatoMonto(item.deuda)}}</td>
                             <td>{{item.dscto}}</td>
                             <td class="border-0 rounded-0" :class="{'text-danger':item.indicador_dscto==-1,'text-green':item.indicador_dscto==-2,'text-green':item.indicador_dscto==1,'text-black':item.indicador_dscto==0}">{{indicadoresDscto(item.indicador_dscto)}}</td>
                             <td>{{formatoMonto(item.importe_dscto)}}</td>
                             <td>{{formatoMonto(item.importe)}}</td>
+                            <td class="border-0 rounded-0 px-0" style="width:0.5rem" v-if="item.dscto_adc!=''">
+                                <a href="#" id="tooltip"><i class="far fa-star text-blue"></i><span class="tooltiptext text-center">{{item.dscto_adc}} - {{formatoMonto(item.importe_adc)}}</span></a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

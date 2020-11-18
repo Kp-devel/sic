@@ -1,4 +1,4 @@
-@extends('admin.menuAdmin')
+@extends('admin.panel')
 
 @section('panel-contenido')           
     <div class="contenedor">

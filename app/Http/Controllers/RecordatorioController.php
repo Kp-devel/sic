@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Recordatorio;
+use App\Telefono;
+use App\Gestion;
+use App\Cliente;
+use App\Events\WebsocketsRecordatorio;
 
 class RecordatorioController extends Controller
 {
@@ -20,7 +24,31 @@ class RecordatorioController extends Controller
         }
     }
 
+    // public function listarRecordatorio(){
+    //     return Recordatorio::listarRecordatorio();
+    // }
+
     public function listarRecordatorio(){
-        return Recordatorio::listarRecordatorio();
+        $datos=Recordatorio::listarRecordatorio();
+        if(count($datos)>0){
+            for($i=0;$i<count($datos);$i++){
+                // $datosgenerales=[];
+                $telefonos=Telefono::infoTelefonos($datos[$i]->id);
+                $validacion_contacto=Gestion::validarContacto($datos[$i]->id);
+                $validacion_pdp=Gestion::validarPDP($datos[$i]->id);
+                $gestiones=cliente::historicoGestiones($datos[$i]->id);
+                // dd($gestiones);
+                $datosgenerales=['recordatorios'=>$datos[$i],
+                                'telefonos'=>$telefonos,
+                                'validar_contacto'=>$validacion_contacto,
+                                'pdps'=>$validacion_pdp,
+                                'gestiones'=>$gestiones
+                                ];
+                
+                 event(new WebsocketsRecordatorio($datosgenerales));
+            }
+        }
+
     }
+    
 }
