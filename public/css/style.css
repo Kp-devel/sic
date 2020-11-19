@@ -103,7 +103,9 @@ body{
 .font-25{
     font-size: 25px;
 }
-
+.font-30{
+  font-size: 30px;
+}
 /*card  */
 .card-contenedor{
     border-radius: 9px;

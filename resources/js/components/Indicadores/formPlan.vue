@@ -177,7 +177,7 @@
                     <label for="ubic" class="col-form-label text-dark text-righ"><b>Gestiones Mes</b></label>
                     <div class="form-check" v-for="(item,index) in gestiones" :key="index">
                         <label class="form-check-label">
-                            <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayGestiones">
+                            <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayGestiones" :disabled="item.bloqueo">
                             {{item.nombre}}
                         </label>
                     </div>
@@ -399,7 +399,7 @@
                 entidades:[1,2,3,4],
                 tipoCliente:[{valor:"'Nuevos/Nuevos Castigo'",nombre:'Nuevos/Nuevos Castigo'},{valor:"'Otros'",nombre:'Otros'}],
                 fechas:[{valor:"'Hoy'",nombre:'Hoy'},{valor:"'Hace 1 día'",nombre:'Hace 1 día'},{valor:"'Hace 2 días'",nombre:'Hace 2 días'},{valor:"'Hace 3 días'",nombre:'Hace 3 días'},{valor:"'Hace más de 3 días'",nombre:'Hace más de 3 días'}],
-                gestiones:[{valor:"'0'",nombre:'0'},{valor:"'1'",nombre:'1'},{valor:"'2'",nombre:'2'},{valor:"'3'",nombre:'3'},{valor:"'4+'",nombre:'4+'}],
+                gestiones:[{valor:"'0'",nombre:'0',bloqueo:false},{valor:"'1'",nombre:'1',bloqueo:false},{valor:"'2'",nombre:'2',bloqueo:false},{valor:"'3'",nombre:'3',bloqueo:false},{valor:"'4+'",nombre:'4+',bloqueo:false}],
                 arrayTramos:[],
                 arrayDepartamentos:[],
                 arrayPrioridad:[],
@@ -653,23 +653,51 @@
                     this.rpta.forEach(r => {
                         this.respuestas.push({valor:r.res_id,nombre:r.res_des,ubicabilidad:r.ubicabilidad,bloqueo:false});
                     });
-                }else{
-                        if(this.arrayUbicabilidad.indexOf(ubic)==-1){
-                            for(let i=0;i<this.respuestas.length;i++){
-                                if("'"+this.respuestas[i].ubicabilidad+"'"===ubic){
-                                    // this.respuestas.splice(i,1);
-                                    this.respuestas[i].bloqueo=false;
-                                }
+                }else{                    
+                    if(this.arrayUbicabilidad.indexOf(ubic)==-1){
+                        for(let i=0;i<this.respuestas.length;i++){
+                            if("'"+this.respuestas[i].ubicabilidad+"'"===ubic){
+                                // this.respuestas.splice(i,1);
+                                this.respuestas[i].bloqueo=false;
                             }
-                        }else{
-                            for(let i=0;i<this.respuestas.length;i++){
-                                if("'"+this.respuestas[i].ubicabilidad+"'"===ubic){
-                                    this.respuestas[i].bloqueo=true;
-                                }
-                            }                   
                         }
-                    
+                        if(ubic=="'Sin Gestión'" && this.arrayUbicabilidad.length==0){      
+                            this.gestiones[1].bloqueo=true;
+                            this.gestiones[2].bloqueo=true;
+                            this.gestiones[3].bloqueo=true;
+                            this.gestiones[4].bloqueo=true;
+                        }else{
+                            this.gestiones[1].bloqueo=false;
+                            this.gestiones[2].bloqueo=false;
+                            this.gestiones[3].bloqueo=false;
+                            this.gestiones[4].bloqueo=false;
+                        }
+                    }else{
+                        for(let i=0;i<this.respuestas.length;i++){
+                            if("'"+this.respuestas[i].ubicabilidad+"'"===ubic){
+                                this.respuestas[i].bloqueo=true;
+                            }
+                        }                   
+        
+                        if(this.arrayUbicabilidad.length==2){
+                            if(this.arrayUbicabilidad.indexOf("'Sin Gestión'")>-1){
+                                this.gestiones[1].bloqueo=true;
+                                this.gestiones[2].bloqueo=true;
+                                this.gestiones[3].bloqueo=true;
+                                this.gestiones[4].bloqueo=true;
+                            }
+                        }
+
+                        if(ubic=="'Sin Gestión'"){      
+                            this.gestiones[1].bloqueo=false;
+                            this.gestiones[2].bloqueo=false;
+                            this.gestiones[3].bloqueo=false;
+                            this.gestiones[4].bloqueo=false;
+                        }
+                        
+                    }
                 }
+                // respuestas
                 this.arrayRespuestas=[];
                 this.totales.respuesta='';
                 this.respuestas.forEach(element => {
@@ -678,6 +706,15 @@
                     }
                 });
                 this.totales.respuesta=this.respuestas.length;
+                // gestiones
+                this.arrayGestiones=[];
+                this.totales.gestiones='';
+                this.gestiones.forEach(element => {
+                    if(element.bloqueo==false){
+                        this.arrayGestiones.push(element.valor);
+                    }
+                });
+                this.totales.gestiones=this.gestiones.length;
             },
             llenarScore(cartera){
                 this.score=[];

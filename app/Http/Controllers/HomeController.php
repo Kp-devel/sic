@@ -340,7 +340,7 @@ class HomeController extends Controller
     
     public function predictivo(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
-        if($tipo_acceso==6){
+        if($tipo_acceso==1 || $tipo_acceso==6){
             return view('admin.predictivo.predictivo');
         }else{
             return view('errors.403');

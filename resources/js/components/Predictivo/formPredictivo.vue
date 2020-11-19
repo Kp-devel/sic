@@ -153,9 +153,24 @@
                 </div>   
             </div>
         </div>
+        <p class="font-bold text-blue pt-2"><b>Inhibir Clientes</b></p>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" value="1" v-model="detalle.gestion_dia">Clientes Gestionados en el día
+                    </label>
+                </div>
+                <div class="form-group mt-3">
+                    <label class="font-bold">Ingresar Códigos</label>
+                    <textarea class="form-control" rows="3" v-model="detalle.codigos"></textarea>
+                    <small>Ej: 0001526,154821,484848</small>
+                </div>
+            </div>
+        </div>
         <div class="my-3">
-            <a href="" @click.prevent="generarCampana()" class="btn btn-outline-blue">
-                Generar Campaña
+            <a href="" @click.prevent="calcularCampana()" class="btn btn-outline-blue">
+                Calcular Campaña
             </a>
             <a href="" @click.prevent="limpiar()" class="btn btn-outline-blue">Limpiar</a>
         </div>
@@ -170,16 +185,23 @@
             </div>
             <div v-else class="d-flex justify-content-center align-items-center" style="margin-top:150px;" >
                 <div class="text-center" v-if="viewResultados">
-                    <p class="text-white font-25 mb-0">{{resultados}}</p>
-                    <p class="text-white">registro(s)</p>
-                    <a href="" class="btn btn-white" @click.prevent="cancelar()">Cancelar</a>
-                    <a href="" class="btn btn-danger" @click.prevent="registrar()">Registrar Campaña</a>
+                    <p class="text-white font-30 mb-0">{{resultados}}</p>
+                    <p class="text-white">registro(s) aprox.</p>
+                    <a href="" v-if="spinnerRegistrar==false" class="btn btn-white" @click.prevent="cancelar()">Cancelar</a>
+                    <a href="" v-if="resultados!=0" class="btn btn-danger" @click.prevent="registrar()">
+                        <span v-if="spinnerRegistrar" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  
+                        Registrar Campaña
+                    </a>
                 </div>
                 <div class="text-center" v-else>
                     <p><i class="fa fa-thumbs-up fa-3x text-white"></i></p>
-                    <p class="text-white font-20">Campaña Registrada con Éxito!</p>
-                    <a href="" class="btn btn-white" @click.prevent="cancelar()">Cancelar</a>
-                    <a href="" class="btn btn-danger" @click.prevent="descargar()">Descargar Archivo</a>
+                    <p class="text-white font-20 mb-0">Campaña Registrada con Éxito!</p>
+                    <p class="text-white">Asignar registros al usuario {{usuario}}</p>
+                    <a href="" v-if="spinnerDescargar==false" class="btn btn-white" @click.prevent="cancelar()">Cancelar</a>
+                    <a href="" class="btn btn-primary" @click.prevent="descargar()">
+                        <span v-if="spinnerDescargar" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  
+                        Asignar y Descargar Archivo
+                    </a>
                 </div>
             </div>
         </div>
@@ -194,8 +216,8 @@
             return {
                 spinnerRegistrar:false,
                 viewResultados:false,
-                registro:{cartera:'',fechaInicio:'',fechaFin:'',usuario:'',campana:'',detalle:'',codigos:'',numeros:''},
-                detalle:{tipo_cliente:'',tipo_numeros:'',ubicabilidad:[],respuesta:[],capital_i:'',capital_f:'',deuda_i:'',deuda_f:'',importe_i:'',importe_f:'',score:[],entidad:[],zona:[],prioridad:[],tramo:[]},
+                registro:{cartera:'',fechaInicio:'',fechaFin:'',usuario:'',campana:'',detalle:''},
+                detalle:{cartera:'',tipo_cliente:'1',tipo_numeros:'1',ubicabilidad:[],respuesta:[],capital_i:'',capital_f:'',deuda_i:'',deuda_f:'',importe_i:'',importe_f:'',score:[],entidad:[],zona:[],prioridad:[],tramo:[],gestion_dia:'',codigos:''},
                 bloquear:false,
                 respuestas:[],
                 scors:[],
@@ -204,7 +226,10 @@
                 prioridades:[],
                 tramos:[],
                 resultados:0,
-                loadingModal:true
+                loadingModal:true,
+                usuario:'',
+                idCampana:'',
+                spinnerDescargar:false
             }
         },
         methods:{
@@ -239,35 +264,77 @@
                     this.mensaje="Selecciona una cartera";
                 }
             },
-           generarCampana(){
+           calcularCampana(){
                this.loadingModal=true;
+               this.detalle.cartera=this.registro.cartera;
                $('#modalDetalle').modal({backdrop: 'static', keyboard: false});
-               axios.post("",this.registro).then(res=>{
+               axios.post("calcularCampana",this.detalle).then(res=>{
                     if(res.data){
-                        this.resultados=res.data;
+                        this.resultados=res.data[0].cantidad;
                         this.viewResultados=true;
                         this.loadingModal=false;
-                        this.limpiar();
                     }
                 });
            },
            limpiar(){
-            this.registro={cartera:'',fechaInicio:'',fechaFin:'',usuario:'',campana:'',detalle:'',codigos:'',numeros:''};
-            this.detalle={tipo_cliente:'',tipo_numeros:'',ubicabilidad:[],respuesta:[],capital_i:'',capital_f:'',deuda_i:'',deuda_f:'',importe_i:'',importe_f:'',score:[],entidad:[],zona:[],prioridad:[],tramo:[]};
+            this.registro={cartera:'',fechaInicio:'',fechaFin:'',usuario:'',campana:'',detalle:''};
+            this.detalle={cartera:'',tipo_cliente:'1',tipo_numeros:'1',ubicabilidad:[],respuesta:[],capital_i:'',capital_f:'',deuda_i:'',deuda_f:'',importe_i:'',importe_f:'',score:[],entidad:[],zona:[],prioridad:[],tramo:[],gestion_dia:'',codigos:''};
            },
            cancelar(){
                $('#modalDetalle').modal('hide');
                this.viewResultados=false;
            },
            registrar(){
+               this.usuario='';
+               this.idCampana='';
+               var parametros={
+                        cartera:this.registro.cartera,
+                        fechaInicio:this.registro.fechaInicio,
+                        fechaFin:this.registro.fechaFin,
+                        usuario:this.registro.usuario,
+                        campana:this.registro.campana,
+                        tipo_cliente:this.detalle.tipo_cliente,
+                        tipo_numeros:this.detalle.tipo_numeros,
+                        ubicabilidad:this.detalle.ubicabilidad,
+                        respuesta:this.detalle.respuesta,
+                        capital_i:this.detalle.capital_i,
+                        capital_f:this.detalle.capital_f,
+                        deuda_i:this.detalle.deuda_i,
+                        deuda_f:this.detalle.deuda_f,
+                        importe_i:this.detalle.importe_i,
+                        importe_f:this.detalle.importe_f,
+                        score:this.detalle.score,
+                        entidad:this.detalle.entidad,
+                        zona:this.detalle.zona,
+                        prioridad:this.detalle.prioridad,
+                        tramo:this.detalle.tramo,
+                        gestion_dia:this.detalle.gestion_dia,
+                        codigos:this.detalle.codigos,
+                        total:this.resultados
+                    };
                this.spinnerRegistrar=true;
-               axios.post("",this.busqueda).then(res=>{
-                    if(res.data=="ok"){
+               axios.post("crearCampana",parametros).then(res=>{
+                    if(res.data){
+                        var resp=res.data;
+                        resp.forEach(element => {
+                            this.idCampana=element.id;
+                            this.usuario=element.usuario;
+                        });
                         this.spinnerRegistrar=false;
+                        this.loadingModal=false;
                         this.viewResultados=false;
                         this.limpiar();
                     }
                 });
+           },
+           descargar(){
+               this.spinnerDescargar=true;
+               axios.get("asignar/"+this.campana+"/"+this.usuario).then(res=>{
+                    if(res.data=="ok"){
+                        this.spinnerDescargar=false;
+                        window.location.href="./descargarPredictivo/"+this.idCampana;
+                    }
+               });
            }
         },
         updated() {
