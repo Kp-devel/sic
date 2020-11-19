@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\RepositorioExport;
 use Illuminate\Http\Request;
+use App\Predictivo;
 use App\Respuesta;
+use Carbon\Carbon;
 
 class PredictivoController extends Controller
 {
@@ -21,4 +25,25 @@ class PredictivoController extends Controller
             "zonas"=>$zonas
         ];
     }
+
+    public function calcularCampana(Request $rq){
+        return Predictivo::repositorio($rq,0,'');
+    }
+
+    public function crearCampana(Request $rq){
+        $fecha=Carbon::now();
+        Predictivo::crearCampana($rq,$fecha);
+        $datos=Predictivo::IdCampana($rq,$fecha);
+        Predictivo::repositorio($rq,1,$datos[0]->id);
+        return $datos;
+    }
+
+    public function descargar($idCampana){
+        return (new RepositorioExport($idCampana))->download('base_predictivo.csv');        
+    }
+
+    public function asignar($idCampana,$usuario){
+        return Predictivo::asignar($idcampana,$usuario);
+    }
+
 }
