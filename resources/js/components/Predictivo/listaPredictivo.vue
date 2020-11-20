@@ -62,7 +62,7 @@
                                     Opciones
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="z-index:9">
-                                    <a class="dropdown-item" href=""  @click.prevent="modalAsignacionPredictivo(item.id,item.campana,item.usuario)" v-if="item.asignado==0">Asignación Predictivo</a>
+                                    <a class="dropdown-item" href=""  @click.prevent="modalAsignacionPredictivo(item.id,item.campana,item.usuario,item.id_usuario)" v-if="item.asignado==0">Asignación Predictivo</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalAsignacion(item.id,item.campana)" v-if="item.asignado==1">Regresar Asignación</a>
                                     <a class="dropdown-item" href=""  @click.prevent="descargar(item.id)" id="btnDescarga">Descargar CSV</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalGestiones(item.id,item.campana,item.total)">Generar Gestiones</a>
@@ -271,7 +271,7 @@
                 campanas:[],
                 busqueda:{cartera:'',fechaInicio:'',usuario:'',fecha:''},
                 spinnerBuscar:false,
-                detalle:{campana:'',cartera:'',fecha_evento:'',fecha_registro:'',total:'',usuario:'',detalleCampana:[]},
+                detalle:{campana:'',cartera:'',fecha_evento:'',fecha_registro:'',total:'',usuario:'',detalleCampana:[],idusuario:''},
                 spinnerEliminar:false,
                 viewFrmEliminar:true,
                 spinnerAsignar:false,
@@ -379,6 +379,7 @@
                 var parametros={idCampana:this.idCampana,opcion:this.reasignar};
                 axios.post("devolverAsignacion",parametros).then(res=>{
                     if(res.data=="ok"){
+                        this.buscar();
                         this.spinnerAsignar=false;
                         this.viewFrmAsignar=false;
                         setTimeout(() => {
@@ -387,17 +388,19 @@
                     }
                 })
             },
-            modalAsignacionPredictivo(id,nom,usuario){
-               this.viewFrmAsignar=true;
+            modalAsignacionPredictivo(id,nom,usuario,idusuario){
+               this.viewFrmAsignarPredictivo=true;
                this.idCampana=id;
                this.detalle.usuario=usuario;
+               this.detalle.idusuario=idusuario;
                this.detalle.campana=nom;
                $('#modalAsignarPredictivo').modal({backdrop: 'static', keyboard: false});
             },
             asignarPredictivo(){
                 this.spinnerAsignarPredictivo=true;
-                axios.get("asignar/"+this.idCampana+"/"+this.detalle.usuario).then(res=>{
+                axios.get("asignar/"+this.idCampana+"/"+this.detalle.idusuario).then(res=>{
                     if(res.data=="ok"){
+                        this.buscar();
                         this.spinnerAsignarPredictivo=false;
                         this.viewFrmAsignarPredictivo=false;
                         setTimeout(() => {
@@ -428,6 +431,7 @@
                 this.spinnerGestion=true;
                 axios.get("generarGestiones/"+this.idCampana+"/"+this.cantidadRegistrada).then(res=>{
                     if(res.data=="ok"){
+                        this.buscar();
                         this.spinnerGestion=false;
                         this.viewFrmGestion=false;
                         setTimeout(() => {

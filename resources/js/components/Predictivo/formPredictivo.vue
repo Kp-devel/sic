@@ -395,7 +395,7 @@
            },
            descargar(){
                this.spinnerDescargar=true;
-               axios.get("asignar/"+this.campana+"/"+this.usuario).then(res=>{
+               axios.get("asignar/"+this.idCampana+"/"+this.usuario).then(res=>{
                     if(res.data=="ok"){
                         this.spinnerDescargar=false;
                         window.location.href="./descargarPredictivo/"+this.idCampana;
