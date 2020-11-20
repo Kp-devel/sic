@@ -207,8 +207,12 @@ class Predictivo extends Model
         DB::connection('mysql')->update("
             update cliente c
             inner join creditoy_predictivo.repositorio r on c.cli_cod=r.rep_codigo
+            inner join creditoy_predictivo.predictivo p on r.pre_id_FK=p.pre_id 
             set emp_tel_id_FK=(select emp_id from empleado where emp_cod=:usu and emp_est=0 limit 1)
             where pre_id_FK=:id
+            and cli_est=0
+            and cli_pas=0
+            and c.car_id_FK=p.car_id_FK
         ",array("id"=>$idcampana,"usu"=>$usuario));
         return "ok";
     }
@@ -217,7 +221,7 @@ class Predictivo extends Model
         DB::connection('mysql')->update("
             update creditoy_predictivo.predictivo 
             set pre_asignado=:val
-            where pre_id_FK=:id
+            where pre_id=:id
         ",array("id"=>$idcampana,"val"=>$valor));
         return "ok";
     }
@@ -303,6 +307,7 @@ class Predictivo extends Model
                 pre_total as total,
                 concat(pre_fec_inicio,' - ',pre_fec_fin) as fecha_evento,
                 concat(emp_cod,' - ',emp_nom) as usuario,
+                pre_usuario as id_usuario,
                 fecha_add as fecha_registro,
                 pre_asignado as asignado,
                 pre_gest_generadas AS gestiones,

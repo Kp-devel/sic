@@ -42,7 +42,7 @@ class PredictivoController extends Controller
         return (new RepositorioExport($idCampana))->download('base_predictivo.csv');        
     }
 
-    public function asignar($idCampana,$usuario){
+    public function asignar($idcampana,$usuario){
         Predictivo::asignar($idcampana,$usuario);
         Predictivo::validacionAsignacion($idcampana,1);
         return "ok";
