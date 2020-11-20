@@ -43,7 +43,38 @@ class PredictivoController extends Controller
     }
 
     public function asignar($idCampana,$usuario){
-        return Predictivo::asignar($idcampana,$usuario);
+        Predictivo::asignar($idcampana,$usuario);
+        Predictivo::validacionAsignacion($idcampana,1);
+        return "ok";
+    }
+    
+
+    public function listaCampanas(Request $rq){
+        return Predictivo::listaCampanas($rq);
     }
 
+    public function devolverAsignacion(Request $rq){
+        Predictivo::devolverAsignacion($rq);
+        Predictivo::validacionAsignacion($rq->idCampana,0);
+        return "ok";
+    }
+
+    public function eliminarCampana($idCampana){
+        return Predictivo::eliminarCampana($idCampana);
+    }
+    
+    public function datosGestiones($idCampana){
+        return Predictivo::datosGestiones($idCampana);
+    }
+
+    public function generarGestiones($idCampana,$total){
+        Predictivo::generarGestiones($idCampana);
+        Predictivo::actualizarCantidad($idCampana,$total);
+        return "ok";
+    }
+
+    public function actualizarFechaCampana(Request $rq){
+        return Predictivo::actualizarFechaCampana($rq);
+    }
+    
 }

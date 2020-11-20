@@ -191,13 +191,19 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/predictivo', 'HomeController@predictivo')->name('predictivo');
     Route::get('/crearpredictivo', 'HomeController@crearpredictivo')->name('crearpredictivo');
     Route::get('/registrargestiones', 'HomeController@registrargestiones')->name('registrargestiones');
+    Route::get('/campanaspredictivo', 'HomeController@campanaspredictivo')->name('campanaspredictivo');
     Route::get('/condiciones/{cartera}', 'PredictivoController@condiciones')->name('condiciones');
     Route::post('/calcularCampana', 'PredictivoController@calcularCampana')->name('calcularCampana');
     Route::post('/crearCampana', 'PredictivoController@crearCampana')->name('crearCampana');
     Route::get('/descargarPredictivo/{id}', 'PredictivoController@descargar')->name('descargarPredictivo');
     Route::get('/asignar/{id}/{usuario}', 'PredictivoController@asignar')->name('asignar');
+    Route::post('/listaCampanas', 'PredictivoController@listaCampanas')->name('listaCampanas');
+    Route::get('/eliminarCampana/{id}', 'PredictivoController@eliminarCampana')->name('eliminarCampana');
+    Route::post('/devolverAsignacion', 'PredictivoController@devolverAsignacion')->name('devolverAsignacion');
+    Route::get('/datosGestiones/{id}', 'PredictivoController@datosGestiones')->name('datosGestiones');
+    Route::get('/generarGestiones/{id}/{total}', 'PredictivoController@generarGestiones')->name('generarGestiones');
+    Route::post('/actualizarFechaCampana', 'PredictivoController@actualizarFechaCampana')->name('actualizarFechaCampana');
     
-
 
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix

@@ -27,7 +27,8 @@ class Predictivo extends Model
         $tramo=implode("','",$rq->tramo);
         $gestion_dia=$rq->gestion_dia;
         $codigos=$rq->codigos;
-
+        $inhCodigos=$rq->inhCodigos;
+        
         $condicion="";
 
         if($capital_i!='' && $capital_f!=''){
@@ -74,13 +75,18 @@ class Predictivo extends Model
             $condicion.=" and ult_fecha not in (date(now()))";
         }
 
+        if($inhCodigos!=''){
+            $condicion.=" and codigo not in ($inhCodigos)";
+        }
+
+        $sqlcodigos="";
         if($codigos!=''){
-            $condicion.=" and codigo not in ($codigos)";
+            $sqlcodigos=" and cli_cod in ($codigos)";
         }
 
         return DB::connection('mysql')->select(DB::raw("
-            call creditoy_predictivo.DATA_PREDICTIVO(:opt,:car,:cond,:tip_cli,:tip_num,:idcamp)
-        "),array("opt"=>$opcion,"car"=>$cartera,"cond"=>$condicion,"tip_cli"=>$tipo_cliente,"tip_num"=>$tipo_numeros,"idcamp"=>$idcampana));
+            call creditoy_predictivo.DATA_PREDICTIVO(:opt,:car,:cond,:codigos,:tip_cli,:tip_num,:idcamp)
+        "),array("opt"=>$opcion,"car"=>$cartera,"cond"=>$condicion,"codigos"=>$sqlcodigos,"tip_cli"=>$tipo_cliente,"tip_num"=>$tipo_numeros,"idcamp"=>$idcampana));
     }
     
     public static function crearCampana(Request $rq,$fecha){
@@ -108,7 +114,7 @@ class Predictivo extends Model
         $prioridad=implode(',',$rq->prioridad);
         $tramo=implode(',',$rq->tramo);
         $gestion_dia=$rq->gestion_dia;
-        $codigos=$rq->codigos;
+        // $inhCodigos=$rq->inhCodigos;
 
         $detalle="";
 
@@ -156,9 +162,9 @@ class Predictivo extends Model
             $detalle.=" Inhibir: Clientes Gestionados en el día;";
         }
 
-        if($codigos!=''){
-            $detalle.=" Inhibir Códigos: $codigos;";
-        }
+        // if($codigos!=''){
+        //     $detalle.=" Inhibir Códigos: $codigos;";
+        // }
 
         return DB::connection('mysql')->insert("
                 insert into creditoy_predictivo.predictivo (
@@ -170,11 +176,13 @@ class Predictivo extends Model
                     pre_fec_fin,
                     pre_usuario,
                     emp_id_FK,
+                    pre_gest_generadas,
+                    pre_asignado,
                     pre_est,
                     fecha_add,
                     fecha_update
                 )
-                VALUES(:car,:nom,:det,:total,:fecInicio,:fecFin,:usu,:emp,0,:fec,:fec2)
+                VALUES(:car,:nom,:det,:total,:fecInicio,:fecFin,:usu,:emp,0,0,0,:fec,:fec2)
         ",array("car"=>$cartera,"nom"=>$nombre,"det"=>$detalle,"total"=>$total,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin,"usu"=>$usuario,"emp"=>$usu_logeado,"fec"=>$fecha,"fec2"=>$fecha));
     }
 
@@ -205,12 +213,47 @@ class Predictivo extends Model
         return "ok";
     }
 
-    public static function devolverAsignacion($idcampana){
+    public static function validacionAsignacion($idcampana,$valor){
+        DB::connection('mysql')->update("
+            update creditoy_predictivo.predictivo 
+            set pre_asignado=:val
+            where pre_id_FK=:id
+        ",array("id"=>$idcampana,"val"=>$valor));
+        return "ok";
+    }
+
+    public static function devolverAsignacion(Request $rq){
+        $idcampana=$rq->idCampana;
+        $opcion=$rq->opcion;
+        $sql="";
+        if($opcion=='pdps'){
+            $sql=" and (select count(*) 
+                        from gestion_cliente 
+                        where cli_id_FK=c.cli_id 
+                        and res_id_FK in (1,43)
+                        and ges_cli_fec between p.pre_fec_inicio and p.pre_fec_fin
+                    )=0";
+        }
+
+        if($opcion=='pdpstt'){
+            $sql=" and (select count(*) 
+                        from gestion_cliente 
+                        where cli_id_FK=c.cli_id 
+                        and res_id_FK in (1,43,33)
+                        and ges_cli_fec between p.pre_fec_inicio and p.pre_fec_fin
+                    )=0";
+        }
+
         DB::connection('mysql')->update("
             update cliente c
             inner join creditoy_predictivo.repositorio r on c.cli_cod=r.rep_codigo
+            inner join creditoy_predictivo.predictivo p on r.pre_id_FK=p.pre_id
             set emp_tel_id_FK=rep_asignacion
             where pre_id_FK=:id
+            and cli_est=0
+            and cli_pas=0
+            and c.car_id_FK=p.car_id_FK
+            $sql
         ",array("id"=>$idcampana));
         return "ok";
     }
@@ -225,5 +268,155 @@ class Predictivo extends Model
                 creditoy_predictivo.repositorio 
             where pre_id_FK=:id
         "),array("id"=>$idcampana));
+    }
+
+    public static function listaCampanas(Request $rq){
+        $cartera=$rq->cartera;
+        $fechaInicio=$rq->fechaInicio;
+        $usuario=$rq->usuario;
+        $fecha=$rq->fecha;
+        $parametros=array();
+        $sql="";
+        if($cartera!=""){
+            $sql.=" and car_id_FK=:car";
+            $parametros['car']=$cartera;
+        }
+        if($fechaInicio!=""){
+            $sql.=" and date(pre_fec_inicio)=:fecIni";
+            $parametros['fecIni']=$fechaInicio;
+        }
+        if($fecha!=""){
+            $sql.=" and date(fecha_add)=:fec";
+            $parametros['fec']=$fecha;
+        }
+        if($usuario!=""){
+            $sql.=" and pre_usuario=:usu";
+            $parametros['usu']=$usuario;
+        }
+
+        return DB::connection('mysql')->select(DB::raw("
+            select 
+                pre_id as id,
+                car_nom as cartera,
+                pre_nom as campana,
+                pre_detalle as detalle,
+                pre_total as total,
+                concat(pre_fec_inicio,' - ',pre_fec_fin) as fecha_evento,
+                concat(emp_cod,' - ',emp_nom) as usuario,
+                fecha_add as fecha_registro,
+                pre_asignado as asignado,
+                pre_gest_generadas AS gestiones,
+                pre_fec_inicio as fecha_inicio,
+                pre_fec_fin as fecha_fin
+            from
+                creditoy_predictivo.predictivo p
+            INNER JOIN creditoy_cobranzas.cartera c on p.car_id_FK=c.car_id
+            LEFT JOIN creditoy_cobranzas.empleado e on p.pre_usuario=e.emp_cod
+            where
+                pre_est=0
+                $sql
+        "),$parametros);
+    }
+
+    public static function eliminarCampana($idcampana){
+        DB::connection('mysql')->update("
+            update creditoy_predictivo.predictivo
+            set pre_est=1,fecha_update=now()
+            where pre_id=:id
+        ",array("id"=>$idcampana));
+        return "ok";
+    }
+
+    public static function datosGestiones($idCampana){
+        return DB::connection('mysql')->select(DB::raw("
+                    select 
+                        count(rep_numero) as cantidadGestionada
+                    from
+                        creditoy_predictivo.predictivo p
+                    INNER JOIN creditoy_predictivo.repositorio r ON p.pre_id=r.pre_id_FK
+                    INNER JOIN creditoy_cobranzas.empleado e ON p.pre_usuario=e.emp_cod 
+                    INNER JOIN creditoy_cobranzas.cliente c ON r.rep_codigo=c.cli_cod
+                    where
+                            rep_est=0
+                    and pre_id=2
+                    and cli_est=0
+                    and cli_pas=0
+                    and c.car_id_FK=p.car_id_FK
+                    and (
+                        SELECT count(*) 
+                        FROM creditoy_cobranzas.gestion_cliente g	
+                        WHERE
+                            cli_id_FK=c.cli_id
+                        and ges_cli_fec BETWEEN p.pre_fec_inicio and p.pre_fec_fin 
+                        and ges_cli_med=r.rep_numero_sic
+                      and g.emp_id_FK=e.emp_id
+                    )>0                    
+        "),array("id"=>$idCampana));
+    }
+
+    public static function generarGestiones($idCampana){
+        DB::connection('mysql')->insert("
+                INSERT INTO gestion_cliente
+                (
+                    cli_id_FK,
+                    emp_id_FK,
+                    ges_cli_acc,
+                    res_id_FK,
+                    ges_cli_fec,
+                    ges_cli_med,
+                    ges_cli_det
+                )
+                select 
+                        cli_id,
+                        emp_id,
+                        2,
+                        45,
+                        pre_fec_fin,
+                        rep_numero_sic,
+                        'no contesta.'
+                from
+                        creditoy_predictivo.predictivo p
+                INNER JOIN creditoy_predictivo.repositorio r ON p.pre_id=r.pre_id_FK
+                INNER JOIN creditoy_cobranzas.empleado e ON p.pre_usuario=e.emp_cod 
+                INNER JOIN creditoy_cobranzas.cliente c ON r.rep_codigo=c.cli_cod
+                where
+                        rep_est=0
+                and pre_id=:id
+                and cli_est=0
+                and cli_pas=0
+                and c.car_id_FK=p.car_id_FK
+                and (
+                    SELECT count(*) 
+                    FROM creditoy_cobranzas.gestion_cliente g	
+                    WHERE
+                        cli_id_FK=c.cli_id
+                    and ges_cli_fec BETWEEN p.pre_fec_inicio and p.pre_fec_fin 
+                    and ges_cli_med=r.rep_numero_sic
+                    and g.emp_id_FK=e.emp_id
+                )=0        
+        ",array("id"=>$idCampana));
+        return "ok";
+    }
+
+    public static function actualizarCantidad($idCampana,$cantidad){
+        DB::connection('mysql')->update("
+            update creditoy_predictivo.predictivo
+            set pre_gest_generadas=:cant
+            where pre_id=:id
+        ",array("id"=>$idCampana,"cant"=>$cantidad));
+        return "ok";
+    }
+
+    public static function actualizarFechaCampana(Request $rq){
+        $idcampana=$rq->idCampana;
+        $fechaInicio=str_replace('T',' ',$rq->fechaInicio);
+        $fechaFin=str_replace('T',' ',$rq->fechaFin);
+        
+        DB::connection('mysql')->update("
+            update creditoy_predictivo.predictivo
+            set pre_fec_inicio=:fecInicio,pre_fec_fin=:fecFin 
+            where pre_id=:id
+        ",array("id"=>$idcampana,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
+        return "ok";
     }
 }
