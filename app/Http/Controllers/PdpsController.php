@@ -27,5 +27,12 @@ class PdpsController extends Controller
         return Pdps::descargarListaPdps($rq);
     }
 
+    public function comparativaPagosFecha(Request $rq){
+        return Pdps::comparativaPagosFecha($rq);
+    }
+
+    public function comparativaPdpsFecha(Request $rq){
+        return Pdps::comparativaPdpsFecha($rq);
+    }
     
 }

@@ -176,7 +176,7 @@
         </div>
         <!-- inhibir codigos -->
         <div class="">
-            <p class="font-bold text-blue pt-2"><b>Inhibir Clientes</b></p>
+            <p class="font-bold text-blue pt-2"><b>Inhibir</b></p>
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-check">

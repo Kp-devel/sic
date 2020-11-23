@@ -180,7 +180,11 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/reportePdps', 'PdpsController@reportePdps')->name('reportePdps');
     Route::post('/listaPdps', 'PdpsController@listaPdps')->name('listaPdps');
     Route::post('/descargarListaPdps', 'PdpsController@descargarListaPdps')->name('descargarListaPdps');
-
+    Route::get('/comparativapagos', 'HomeController@comparativapagos')->name('comparativapagos');
+    Route::get('/comparativapdps', 'HomeController@comparativapdps')->name('comparativapdps');
+    Route::post('/comparativaPagosFecha', 'PdpsController@comparativaPagosFecha')->name('comparativaPagosFecha');
+    Route::post('/comparativaPdpsFecha', 'PdpsController@comparativaPdpsFecha')->name('comparativaPdpsFecha');
+    
     //actualizaciones
     Route::get('/listadoactualizaciones', 'HomeController@indlistadoactualizaciones')->name('listadoactualizaciones');
     Route::post('infoactualizacionpagos', 'ActualizacionController@infoactualizacionpagos');

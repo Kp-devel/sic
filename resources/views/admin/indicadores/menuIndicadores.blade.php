@@ -55,6 +55,10 @@
             <a href="{{route('pdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('pdps') ? 'menu-active' : '' }}">Plazos de Pagos</a>
             <a href="{{route('estadospdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('estadospdps') ? 'menu-active' : '' }}">Cumplimiento de PDPS</a>
             <a href="{{route('estandarpdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('estandarpdps') ? 'menu-active' : '' }}">Estándar de PDPS</a>
+            @if(auth()->user()->emp_tip_acc==5 || auth()->user()->emp_tip_acc==6)
+            <a href="{{route('comparativapdps')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('comparativapdps') ? 'menu-active' : '' }}">Comparativa de PDPS</a>
+            <a href="{{route('comparativapagos')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('comparativapagos') ? 'menu-active' : '' }}">Comparativa de Pagos</a>
+            @endif
         </div>
 
         <!-- Actualizaciones -->

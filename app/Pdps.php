@@ -400,4 +400,110 @@ class Pdps extends Model
         "));
     }
 
+    public static function comparativaPagosFecha(Request $rq){
+        $fecha=$rq->fecha;
+        return DB::connection('mysql')->select(DB::raw("
+                    SELECT 
+                        cartera,
+                        if(mes_pasado is null,0,mes_pasado) as mes_pasado,
+                        if(mes_actual is null,0,mes_actual) as mes_actual,
+                        if(procesar is null,0,procesar) as procesar,
+                        round((100-(if(mes_pasado is null,0,mes_pasado)/(if(mes_actual is null,0,mes_actual)+if(procesar is null,0,procesar)))*100)) as variacion
+                    FROM
+                    (SELECT
+                        car_nom as cartera,
+                        sum(if(date_format(pag_cli_fec,'%Y%m')=date_format(ADDDATE(:fec8,INTERVAL -1 MONTH),'%Y%m'),pag_cli_mon,0)) as mes_pasado,
+                        sum(if(date_format(pag_cli_fec,'%Y%m')=date_format(:fec7,'%Y%m'),pag_cli_mon,0)) as mes_actual,
+                        (SELECT
+                                sum(ges_cli_conf_can)
+                            FROM
+                                cliente tc
+                            INNER JOIN gestion_cliente g on tc.cli_id=g.cli_id_FK
+                            WHERE tc.cli_est=0
+                            and tc.cli_pas=0
+                            and res_id_FK=2
+                            and date_format(ges_cli_conf_fec,'%Y%m')=date_format(:fec6,'%Y%m')
+                            and day(ges_cli_conf_fec)<=day(:fec5)
+                            AND (
+                                SELECT
+                                    count(*)
+                                FROM
+                                    pago_cliente_2 pp
+                                WHERE
+                                    pp.car_id_FK = tc.car_id_FK
+                                AND pp.pag_cli_cod=tc.cli_cod
+                                and date_format(pp.pag_cli_fec,'%Y%m')=date_format(:fec4,'%Y%m')
+                                and pp.pag_cli_est=0
+                            ) = 0
+                            and tc.car_id_FK=cc.car_id
+                            ) procesar
+                    FROM
+                        pago_cliente_2 p
+                    INNER JOIN cartera cc on p.car_id_FK=cc.car_id
+                    WHERE
+                        pag_cli_est=0
+                    and date_format(pag_cli_fec,'%Y%m') BETWEEN date_format(ADDDATE(:fec2,INTERVAL -1 MONTH),'%Y%m') and date_format(:fec3,'%Y%m')
+                    and day(pag_cli_fec)<=day(:fec1)
+                    and car_est=0
+                    and car_pas=0
+                    AND car_id_FK not in (73)
+                    GROUP BY car_id_FK
+                    ORDER BY car_nom
+                    )t
+        "),array("fec1"=>$fecha,"fec2"=>$fecha,"fec3"=>$fecha,"fec4"=>$fecha,
+                 "fec5"=>$fecha,"fec6"=>$fecha,"fec7"=>$fecha,"fec8"=>$fecha));
+    }
+
+    public static function comparativaPdpsFecha(Request $rq){
+        $fecha=$rq->fecha;
+        return DB::connection('mysql')->select(DB::raw("
+                SELECT
+                    cartera,
+                    cumplidos_pasado,
+                    pendiente_pasado,
+                    caidos_pasado,
+                    monto_pasado,
+                    ROUND((cumplidos_pasado/(cumplidos_pasado+caidos_pasado))*100) as cumplimiento_pasado,
+                    cumplidos_actual,
+                    pendiente_actual,
+                    caidos_actual,
+                    monto_actual,
+                    ROUND((cumplidos_actual/(cumplidos_actual+caidos_actual))*100) as cumplimiento_actual
+                FROM
+                (SELECT
+                        car_nom as cartera,
+                        sum(if(DATE_FORMAT(com_cli_fec_pag,'%Y%m')=DATE_FORMAT(mes_pasado,'%Y%m'),cumplido,0)) as cumplidos_pasado,
+                        sum(if(DATE_FORMAT(com_cli_fec_pag,'%Y%m')=DATE_FORMAT(mes_pasado,'%Y%m') and DATEDIFF(mes_pasado,DATE_FORMAT(com_cli_fec_pag,'%Y-%m-%d')) <= 0,no_cumplido,0)) as pendiente_pasado,
+                        sum(if(DATE_FORMAT(com_cli_fec_pag,'%Y%m')=DATE_FORMAT(mes_pasado,'%Y%m') and DATEDIFF(mes_pasado,DATE_FORMAT(com_cli_fec_pag,'%Y-%m-%d')) > 0,no_cumplido,0)) as caidos_pasado,
+                        sum(if(DATE_FORMAT(com_cli_fec_pag,'%Y%m')=DATE_FORMAT(mes_pasado,'%Y%m'),monto,0)) as monto_pasado,
+                    
+                        sum(if(DATE_FORMAT(com_cli_fec_pag,'%Y%m')=DATE_FORMAT(mes_actual,'%Y%m'),cumplido,0)) as cumplidos_actual,
+                        sum(if(DATE_FORMAT(com_cli_fec_pag,'%Y%m')=DATE_FORMAT(mes_actual,'%Y%m') and DATEDIFF(mes_actual,DATE_FORMAT(com_cli_fec_pag,'%Y-%m-%d')) <= 0,no_cumplido,0)) as pendiente_actual,
+                        sum(if(DATE_FORMAT(com_cli_fec_pag,'%Y%m')=DATE_FORMAT(mes_actual,'%Y%m') and DATEDIFF(mes_actual,DATE_FORMAT(com_cli_fec_pag,'%Y-%m-%d')) > 0,no_cumplido,0)) as caidos_actual,
+                        sum(if(DATE_FORMAT(com_cli_fec_pag,'%Y%m')=DATE_FORMAT(mes_actual,'%Y%m'),monto,0)) as monto_actual
+                FROM
+                (SELECT
+                        car_nom,
+                        com_cli_fec_pag,
+                        DATE_FORMAT(:fec4,'%Y-%m-%d') as mes_actual,
+                        date_format(ADDDATE(:fec3,INTERVAL -1 MONTH),'%Y-%m-%d') as mes_pasado,
+                        if(com_cli_est<>0,com_cli_can,0) as cumplido,
+                        if(com_cli_est=0,com_cli_can,0) as no_cumplido,
+                        com_cli_can as monto
+                    FROM
+                            cliente c
+                    INNER JOIN gestion_cliente g on c.cli_id=g.cli_id_FK
+                    INNER JOIN compromiso_cliente cc on g.ges_cli_id=cc.ges_cli_id_FK
+                    INNER JOIN cartera ca on c.car_id_FK=ca.car_id
+                    WHERE 
+                        DATE_FORMAT(ges_cli_fec,'%Y%m') BETWEEN date_format(ADDDATE(:fec2,INTERVAL -1 MONTH),'%Y%m') AND DATE_FORMAT(date(:fec5),'%Y%m')
+                    and DAY(ges_cli_fec)<=DAY(:fec1)
+                    AND res_id_FK IN (1,43)
+                    AND car_id_FK not in (73)
+                    )t
+                    GROUP BY car_nom
+                    ORDER BY car_nom
+                )tt
+        "),array("fec1"=>$fecha,"fec2"=>$fecha,"fec3"=>$fecha,"fec4"=>$fecha,"fec5"=>$fecha));
+    }
 }
