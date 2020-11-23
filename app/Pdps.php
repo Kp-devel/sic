@@ -403,27 +403,48 @@ class Pdps extends Model
     public static function comparativaPagosFecha(Request $rq){
         $fecha=$rq->fecha;
         return DB::connection('mysql')->select(DB::raw("
-                    SELECT 
+                    SELECT
                         cartera,
                         if(mes_pasado is null,0,mes_pasado) as mes_pasado,
                         if(mes_actual is null,0,mes_actual) as mes_actual,
                         if(procesar is null,0,procesar) as procesar,
                         round((100-(if(mes_pasado is null,0,mes_pasado)/(if(mes_actual is null,0,mes_actual)+if(procesar is null,0,procesar)))*100)) as variacion
                     FROM
+                    (SELECT 
+                        cartera,
+                        if(mes_pasado is null,0,mes_pasado) as mes_pasado,
+                        if(mes_actual is null,0,mes_actual) as mes_actual,
+                        procesar
+                    FROM
                     (SELECT
                         car_nom as cartera,
+                        car_id as idcartera,
                         sum(if(date_format(pag_cli_fec,'%Y%m')=date_format(ADDDATE(:fec8,INTERVAL -1 MONTH),'%Y%m'),pag_cli_mon,0)) as mes_pasado,
-                        sum(if(date_format(pag_cli_fec,'%Y%m')=date_format(:fec7,'%Y%m'),pag_cli_mon,0)) as mes_actual,
-                        (SELECT
-                                sum(ges_cli_conf_can)
+                        sum(if(date_format(pag_cli_fec,'%Y%m')=date_format(:fec7,'%Y%m'),pag_cli_mon,0)) as mes_actual
+                    FROM
+                        pago_cliente_2 p
+                    INNER JOIN cartera cc on p.car_id_FK=cc.car_id
+                    WHERE
+                        pag_cli_est=0
+                    and date_format(pag_cli_fec,'%Y%m') BETWEEN date_format(ADDDATE(:fec5,INTERVAL -1 MONTH),'%Y%m') and date_format(:fec6,'%Y%m')
+                    and day(pag_cli_fec)<=day(:fec4)
+                    and car_est=0
+                    and car_pas=0
+                    GROUP BY car_id_FK
+                    ORDER BY car_nom
+                    )t
+                    LEFT JOIN (SELECT
+                                car_id_FK as icartera,
+                                sum(ges_cli_conf_can) as procesar
                             FROM
-                                cliente tc
-                            INNER JOIN gestion_cliente g on tc.cli_id=g.cli_id_FK
-                            WHERE tc.cli_est=0
+                                gestion_cliente g
+                            INNER JOIN cliente tc on tc.cli_id=g.cli_id_FK
+                            WHERE 
+                                res_id_FK=2
+                            and tc.cli_est=0
                             and tc.cli_pas=0
-                            and res_id_FK=2
-                            and date_format(ges_cli_conf_fec,'%Y%m')=date_format(:fec6,'%Y%m')
-                            and day(ges_cli_conf_fec)<=day(:fec5)
+                            and date_format(ges_cli_conf_fec,'%Y%m')=date_format(:fec3,'%Y%m')
+                            and day(ges_cli_conf_fec)<=day(:fec2)
                             AND (
                                 SELECT
                                     count(*)
@@ -432,24 +453,12 @@ class Pdps extends Model
                                 WHERE
                                     pp.car_id_FK = tc.car_id_FK
                                 AND pp.pag_cli_cod=tc.cli_cod
-                                and date_format(pp.pag_cli_fec,'%Y%m')=date_format(:fec4,'%Y%m')
+                                and date_format(pp.pag_cli_fec,'%Y%m')=date_format(:fec1,'%Y%m')
                                 and pp.pag_cli_est=0
                             ) = 0
-                            and tc.car_id_FK=cc.car_id
-                            ) procesar
-                    FROM
-                        pago_cliente_2 p
-                    INNER JOIN cartera cc on p.car_id_FK=cc.car_id
-                    WHERE
-                        pag_cli_est=0
-                    and date_format(pag_cli_fec,'%Y%m') BETWEEN date_format(ADDDATE(:fec2,INTERVAL -1 MONTH),'%Y%m') and date_format(:fec3,'%Y%m')
-                    and day(pag_cli_fec)<=day(:fec1)
-                    and car_est=0
-                    and car_pas=0
-                    AND car_id_FK not in (73)
-                    GROUP BY car_id_FK
-                    ORDER BY car_nom
-                    )t
+                            GROUP BY car_id_FK
+                        )conf on t.idcartera=conf.icartera
+                    )tt
         "),array("fec1"=>$fecha,"fec2"=>$fecha,"fec3"=>$fecha,"fec4"=>$fecha,
                  "fec5"=>$fecha,"fec6"=>$fecha,"fec7"=>$fecha,"fec8"=>$fecha));
     }
