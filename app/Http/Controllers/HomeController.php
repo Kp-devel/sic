@@ -329,6 +329,24 @@ class HomeController extends Controller
         }
     }
 
+    public function comparativapdps(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==5 || $tipo_acceso==6){
+            return view('admin.indicadores.comparativaPdps');
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function comparativapagos(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==5 || $tipo_acceso==6){
+            return view('admin.indicadores.comparativaPagos');
+        }else{
+            return view('errors.403');
+        }
+    }
+
     public function indlistadoactualizaciones(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==5){

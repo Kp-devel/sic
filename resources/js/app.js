@@ -37,6 +37,8 @@ Vue.component('estados-pdps', require('./components/Indicadores/pdpsEstados.vue'
 Vue.component('estandar-pdps', require('./components/Indicadores/pdpsEstandar.vue').default);
 Vue.component('pdps', require('./components/Indicadores/pdps.vue').default);
 Vue.component('lista-pdps', require('./components/Indicadores/listaPdps.vue').default);
+Vue.component('comparativa-pdps', require('./components/Indicadores/comparativaPdps.vue').default);
+Vue.component('comparativa-pagos', require('./components/Indicadores/comparativaPagos.vue').default);
 Vue.component('listado-actualizaciones', require('./components/Indicadores/listadoActualizaciones.vue').default);
 
 // incidencias
