@@ -147,7 +147,7 @@ class Respuesta extends Model
                 res_des as respuesta
             from respuesta
             WHERE 
-                res_ubi=:ubi
+                res_ubi in ($ubic)
                 and res_est=0 
                 and res_pas=0
                 and res_id NOT IN (1, 43, 2, 6,	12,	13,	19,	22,	27,	28,	37,	38,	41,	46)
@@ -155,7 +155,7 @@ class Respuesta extends Model
             order by res_des 
         ";
 
-        $query=DB::connection('mysql')->select(DB::raw($sql),array("ubi"=>$ubic));
+        $query=DB::connection('mysql')->select(DB::raw($sql));
         return $query;
     }
     

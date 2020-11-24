@@ -65,7 +65,9 @@
                                     <a class="dropdown-item" href=""  @click.prevent="modalAsignacionPredictivo(item.id,item.campana,item.usuario,item.id_usuario)" v-if="item.asignado==0">Asignación Predictivo</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalAsignacion(item.id,item.campana)" v-if="item.asignado==1">Regresar Asignación</a>
                                     <a class="dropdown-item" href=""  @click.prevent="descargar(item.id)" id="btnDescarga">Descargar CSV</a>
+                                    <a class="dropdown-item" href=""  @click.prevent="modalResultados(item.id,item.campana)">Importar Resultados</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalGestiones(item.id,item.campana,item.total)">Generar Gestiones</a>
+                                    <a class="dropdown-item" href=""  @click.prevent="modalReporte(item.id)">Generar Reporte</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalFechas(item.id,item.campana,item.fecha_inicio,item.fecha_fin)">Editar Fecha de Evento</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalEliminar(item.id,item.campana)">Eliminar Campaña</a>
                                 </div>

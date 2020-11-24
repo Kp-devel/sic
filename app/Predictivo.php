@@ -28,6 +28,7 @@ class Predictivo extends Model
         $gestion_dia=$rq->gestion_dia;
         $codigos=$rq->codigos;
         $inhCodigos=$rq->inhCodigos;
+        $inhPaletas=$rq->inhibir_paletas;
         
         $condicion="";
 
@@ -84,9 +85,16 @@ class Predictivo extends Model
             $sqlcodigos=" and cli_cod in ($codigos)";
         }
 
+        $inhibirPaletas="";
+        if($inhPaletas==""){
+            $inhibirPaletas='0';
+        }else{
+            $inhibirPaletas='1';
+        }
+
         return DB::connection('mysql')->select(DB::raw("
-            call creditoy_predictivo.DATA_PREDICTIVO(:opt,:car,:cond,:codigos,:tip_cli,:tip_num,:idcamp)
-        "),array("opt"=>$opcion,"car"=>$cartera,"cond"=>$condicion,"codigos"=>$sqlcodigos,"tip_cli"=>$tipo_cliente,"tip_num"=>$tipo_numeros,"idcamp"=>$idcampana));
+            call creditoy_predictivo.DATA_PREDICTIVO(:opt,:car,:cond,:codigos,:tip_cli,:tip_num,:idcamp,:inhPaletas)
+        "),array("opt"=>$opcion,"car"=>$cartera,"cond"=>$condicion,"codigos"=>$sqlcodigos,"tip_cli"=>$tipo_cliente,"tip_num"=>$tipo_numeros,"idcamp"=>$idcampana,"inhPaletas"=>$inhibirPaletas));
     }
     
     public static function crearCampana(Request $rq,$fecha){
@@ -115,6 +123,7 @@ class Predictivo extends Model
         $tramo=implode(',',$rq->tramo);
         $gestion_dia=$rq->gestion_dia;
         // $inhCodigos=$rq->inhCodigos;
+        $inhPaletas=$rq->inhibir_paletas;
 
         $detalle="";
 
@@ -160,6 +169,10 @@ class Predictivo extends Model
 
         if($gestion_dia!=''){
             $detalle.=" Inhibir: Clientes Gestionados en el día;";
+        }
+
+        if($inhPaletas==1){
+            $detalle.=" Inhibir: Paletas de Gestión;";
         }
 
         // if($codigos!=''){
@@ -229,23 +242,14 @@ class Predictivo extends Model
     public static function devolverAsignacion(Request $rq){
         $idcampana=$rq->idCampana;
         $opcion=$rq->opcion;
-        $sql="";
+        $respuesta="";
+
         if($opcion=='pdps'){
-            $sql=" and (select count(*) 
-                        from gestion_cliente 
-                        where cli_id_FK=c.cli_id 
-                        and res_id_FK in (1,43)
-                        and ges_cli_fec between p.pre_fec_inicio and p.pre_fec_fin
-                    )=0";
+            $respuesta="(1,43)";
         }
 
         if($opcion=='pdpstt'){
-            $sql=" and (select count(*) 
-                        from gestion_cliente 
-                        where cli_id_FK=c.cli_id 
-                        and res_id_FK in (1,43,33)
-                        and ges_cli_fec between p.pre_fec_inicio and p.pre_fec_fin
-                    )=0";
+            $respuesta="(1,43,33)";
         }
 
         DB::connection('mysql')->update("
@@ -257,7 +261,45 @@ class Predictivo extends Model
             and cli_est=0
             and cli_pas=0
             and c.car_id_FK=p.car_id_FK
-            $sql
+            and (select count(*) 
+                    from gestion_cliente 
+                    where cli_id_FK=c.cli_id 
+                    and res_id_FK in $respuesta
+                    and ges_cli_fec between p.pre_fec_inicio and p.pre_fec_fin
+                    and emp_id_FK=(select emp_id from empleado where emp_cod=p.pre_usuario and emp_est=0 limit 1)
+                )=0
+        ",array("id"=>$idcampana));
+        return "ok";
+    }
+
+    public static function AsignarPdpsTT(Request $rq){
+        $idcampana=$rq->idCampana;
+        $opcion=$rq->opcion;
+        $respuesta="";
+
+        if($opcion=='pdps'){
+            $respuesta="(1,43)";
+        }
+
+        if($opcion=='pdpstt'){
+            $respuesta="(1,43,33)";
+        }
+
+        DB::connection('mysql')->update("
+                update cliente c
+                inner join creditoy_predictivo.repositorio r on c.cli_cod=r.rep_codigo
+                inner join creditoy_predictivo.predictivo p on r.pre_id_FK=p.pre_id
+                inner join gestion_cliente g on g.cli_id_FK=c.cli_id
+                LEFT JOIN sub_empleado s on RIGHT(g.ges_cli_det,3)=s.emp_firma and s.emp_est=0
+                LEFT JOIN empleado e on s.encargado=e.emp_cod and e.emp_est=0
+                set emp_tel_id_FK=if(e.emp_id is null,rep_asignacion,e.emp_id)
+                where pre_id_FK=:id
+                and cli_est=0
+                and cli_pas=0
+                and c.car_id_FK=p.car_id_FK
+                and res_id_FK in $respuesta
+                and ges_cli_fec between p.pre_fec_inicio and p.pre_fec_fin
+                and g.emp_id_FK=(select emp_id from empleado where emp_cod=p.pre_usuario and emp_est=0 limit 1)
         ",array("id"=>$idcampana));
         return "ok";
     }
@@ -343,7 +385,7 @@ class Predictivo extends Model
                     INNER JOIN creditoy_cobranzas.cliente c ON r.rep_codigo=c.cli_cod
                     where
                             rep_est=0
-                    and pre_id=2
+                    and pre_id=:id
                     and cli_est=0
                     and cli_pas=0
                     and c.car_id_FK=p.car_id_FK

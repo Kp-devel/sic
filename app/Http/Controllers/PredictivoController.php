@@ -55,6 +55,7 @@ class PredictivoController extends Controller
 
     public function devolverAsignacion(Request $rq){
         Predictivo::devolverAsignacion($rq);
+        Predictivo::AsignarPdpsTT($rq);
         Predictivo::validacionAsignacion($rq->idCampana,0);
         return "ok";
     }
