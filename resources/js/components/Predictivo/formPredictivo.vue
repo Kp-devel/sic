@@ -181,6 +181,11 @@
                 <div class="col-md-12">
                     <div class="form-check">
                         <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" value="1" v-model="detalle.inhibir_paletas">Paletas de Gestión
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label">
                             <input class="form-check-input" type="checkbox" value="1" v-model="detalle.gestion_dia">Clientes Gestionados en el día
                         </label>
                     </div>
@@ -249,7 +254,7 @@
                 spinnerRegistrar:false,
                 viewResultados:false,
                 registro:{cartera:'',fechaInicio:'',fechaFin:'',usuario:'',campana:'',detalle:''},
-                detalle:{cartera:'',tipo_cliente:'1',tipo_numeros:'1',ubicabilidad:[],respuesta:[],capital_i:'',capital_f:'',deuda_i:'',deuda_f:'',importe_i:'',importe_f:'',score:[],entidad:[],zona:[],prioridad:[],tramo:[],gestion_dia:'',codigos:'',inhCodigos:''},
+                detalle:{cartera:'',tipo_cliente:'1',tipo_numeros:'1',ubicabilidad:[],respuesta:[],capital_i:'',capital_f:'',deuda_i:'',deuda_f:'',importe_i:'',importe_f:'',score:[],entidad:[],zona:[],prioridad:[],tramo:[],gestion_dia:'',codigos:'',inhCodigos:'',inhibir_paletas:1},
                 bloquear:false,
                 respuestas:[],
                 scors:[],
@@ -267,10 +272,10 @@
             }
         },
         methods:{
-           listaRespuestas(ubi){
-                this.respuestas=[];
+            listaRespuestas(ubi){
+                this.respuestas="";
                 if(ubi.length!=0){
-                    axios.get("listaRespuesta/"+ubi).then(res=>{
+                    axios.get("listaRespuestaSms/"+ubi).then(res=>{
                         if(res.data){
                             this.respuestas=res.data;
                         }
@@ -343,7 +348,7 @@
            },
            limpiar(){
             this.registro={cartera:'',fechaInicio:'',fechaFin:'',usuario:'',campana:'',detalle:''};
-            this.detalle={cartera:'',tipo_cliente:'1',tipo_numeros:'1',ubicabilidad:[],respuesta:[],capital_i:'',capital_f:'',deuda_i:'',deuda_f:'',importe_i:'',importe_f:'',score:[],entidad:[],zona:[],prioridad:[],tramo:[],gestion_dia:'',codigos:'',inhCodigos:''};
+            this.detalle={cartera:'',tipo_cliente:'1',tipo_numeros:'1',ubicabilidad:[],respuesta:[],capital_i:'',capital_f:'',deuda_i:'',deuda_f:'',importe_i:'',importe_f:'',score:[],entidad:[],zona:[],prioridad:[],tramo:[],gestion_dia:'',codigos:'',inhCodigos:'',inhibir_paletas:1};
             this.errores=[];
            },
            cancelar(){
@@ -376,7 +381,8 @@
                         tramo:this.detalle.tramo,
                         gestion_dia:this.detalle.gestion_dia,
                         codigos:this.detalle.codigos,
-                        total:this.resultados
+                        total:this.resultados,
+                        inhibir_paletas:this.$delete.inhibir_paletas
                     };
                this.spinnerRegistrar=true;
                axios.post("crearCampana",parametros).then(res=>{
@@ -410,7 +416,9 @@
                if(this.tab==2){
                    this.detalle={tipo_cliente:'1',tipo_numeros:'1',ubicabilidad:[],respuesta:[],capital_i:'',capital_f:'',deuda_i:'',deuda_f:'',importe_i:'',importe_f:'',score:[],entidad:[],zona:[],prioridad:[],tramo:[]};
                }
-           }
+               
+           },
+           
         },
         updated() {
             $('.selectpicker').selectpicker('refresh'); 
