@@ -242,14 +242,27 @@ class Predictivo extends Model
     public static function devolverAsignacion(Request $rq){
         $idcampana=$rq->idCampana;
         $opcion=$rq->opcion;
-        $respuesta="";
+        $sql="";
 
         if($opcion=='pdps'){
-            $respuesta="(1,43)";
+            $sql="and (select count(*) 
+                        from gestion_cliente 
+                        where cli_id_FK=c.cli_id 
+                        and res_id_FK in (1,43)
+                        and ges_cli_fec between p.pre_fec_inicio and p.pre_fec_fin
+                        and emp_id_FK=(select emp_id from empleado where emp_cod=p.pre_usuario and emp_est=0 limit 1)
+                      )=0
+        ";
         }
 
         if($opcion=='pdpstt'){
-            $respuesta="(1,43,33)";
+            $sql="and (select count(*) 
+                    from gestion_cliente 
+                    where cli_id_FK=c.cli_id 
+                    and res_id_FK in (1,43,33)
+                    and ges_cli_fec between p.pre_fec_inicio and p.pre_fec_fin
+                    and emp_id_FK=(select emp_id from empleado where emp_cod=p.pre_usuario and emp_est=0 limit 1)
+                )=0";
         }
 
         DB::connection('mysql')->update("
@@ -261,13 +274,7 @@ class Predictivo extends Model
             and cli_est=0
             and cli_pas=0
             and c.car_id_FK=p.car_id_FK
-            and (select count(*) 
-                    from gestion_cliente 
-                    where cli_id_FK=c.cli_id 
-                    and res_id_FK in $respuesta
-                    and ges_cli_fec between p.pre_fec_inicio and p.pre_fec_fin
-                    and emp_id_FK=(select emp_id from empleado where emp_cod=p.pre_usuario and emp_est=0 limit 1)
-                )=0
+            $sql
         ",array("id"=>$idcampana));
         return "ok";
     }
@@ -284,24 +291,24 @@ class Predictivo extends Model
         if($opcion=='pdpstt'){
             $respuesta="(1,43,33)";
         }
-
-        DB::connection('mysql')->update("
-                update cliente c
-                inner join creditoy_predictivo.repositorio r on c.cli_cod=r.rep_codigo
-                inner join creditoy_predictivo.predictivo p on r.pre_id_FK=p.pre_id
-                inner join gestion_cliente g on g.cli_id_FK=c.cli_id
-                LEFT JOIN sub_empleado s on RIGHT(g.ges_cli_det,3)=s.emp_firma and s.emp_est=0
-                LEFT JOIN empleado e on s.encargado=e.emp_cod and e.emp_est=0
-                set emp_tel_id_FK=if(e.emp_id is null,rep_asignacion,e.emp_id)
-                where pre_id_FK=:id
-                and cli_est=0
-                and cli_pas=0
-                and c.car_id_FK=p.car_id_FK
-                and res_id_FK in $respuesta
-                and ges_cli_fec between p.pre_fec_inicio and p.pre_fec_fin
-                and g.emp_id_FK=(select emp_id from empleado where emp_cod=p.pre_usuario and emp_est=0 limit 1)
-        ",array("id"=>$idcampana));
-        return "ok";
+            DB::connection('mysql')->update("
+                    update cliente c
+                    inner join creditoy_predictivo.repositorio r on c.cli_cod=r.rep_codigo
+                    inner join creditoy_predictivo.predictivo p on r.pre_id_FK=p.pre_id
+                    inner join gestion_cliente g on g.cli_id_FK=c.cli_id
+                    LEFT JOIN sub_empleado s on RIGHT(g.ges_cli_det,3)=s.emp_firma and s.emp_est=0
+                    LEFT JOIN empleado e on s.encargado=e.emp_cod and e.emp_est=0
+                    set emp_tel_id_FK=if(e.emp_id is null,rep_asignacion,e.emp_id)
+                    where pre_id_FK=:id
+                    and cli_est=0
+                    and cli_pas=0
+                    and c.car_id_FK=p.car_id_FK
+                    and res_id_FK in $respuesta
+                    and ges_cli_fec between p.pre_fec_inicio and p.pre_fec_fin
+                    and g.emp_id_FK=(select emp_id from empleado where emp_cod=p.pre_usuario and emp_est=0 limit 1)
+            ",array("id"=>$idcampana));
+        
+            return "ok";
     }
 
     public static function listaRepositorio($idcampana){
@@ -465,5 +472,45 @@ class Predictivo extends Model
             where pre_id=:id
         ",array("id"=>$idcampana,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
         return "ok";
+    }
+
+    public static function reporteCampana($idCampana){
+        return DB::connection('mysql')->select(DB::raw("
+                SELECT
+                    CONCAT(emp_cod,' - ',emp_nom) as gestor,
+                    sum(gestion) as total_llamadas,
+                    count(DISTINCT cli_id) as total_clientes,
+                    sum(contacto) as total_contactos,
+                    format((sum(contacto)/count(DISTINCT cli_id))*100,2) as contactabilidad,
+                    sum(cant_pdp) as cant_pdp,
+                    sum(monto_pdp) as monto_pdp
+                FROM
+                (SELECT
+                    cli_id,
+                    emp_tel_id_FK as idEmpleado,
+                    1 as gestion,
+                    if(res_ubi=0,1,0) as contacto,
+                    if(res_id in (1,43),1,0) as cant_pdp,
+                    if(res_id in (1,43),ges_cli_com_can,0) as monto_pdp
+                FROM
+                    creditoy_predictivo.repositorio r
+                INNER JOIN creditoy_predictivo.predictivo p on r.pre_id_FK=p.pre_id
+                INNER JOIN creditoy_cobranzas.cliente c on r.rep_codigo=c.cli_cod
+                INNER JOIN creditoy_cobranzas.gestion_cliente g ON c.cli_id=g.cli_id_FK
+                INNER JOIN creditoy_cobranzas.empleado e ON p.pre_usuario=e.emp_cod
+                INNER JOIN creditoy_cobranzas.respuesta re on g.res_id_FK=re.res_id
+                WHERE
+                    pre_id_FK=:id
+                    and cli_est=0
+                    and cli_pas=0
+                    and c.car_id_FK=p.car_id_FK
+                    and ges_cli_fec BETWEEN p.pre_fec_inicio and p.pre_fec_fin
+                    and g.emp_id_FK=e.emp_id
+                    and emp_est=0
+                )t
+                INNER JOIN empleado ee on t.idEmpleado=ee.emp_id
+                WHERE emp_est=0
+                GROUP BY idEmpleado
+        "),array("id"=>$idCampana));
     }
 }

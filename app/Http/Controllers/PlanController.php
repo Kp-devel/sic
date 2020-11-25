@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Plan;
+use App\Cartera;
+use Carbon\Carbon;
 
 class PlanController extends Controller
 {
@@ -49,5 +51,42 @@ class PlanController extends Controller
 
     public function datosPlanUsuario(){
         return Plan::datosPlanUsuario();
+    }
+
+    public function reportePlan(){
+        return Plan::reportePlan();
+    }
+
+    public function reporteListaPlan(Request $rq){
+        return Plan::reporteListaPlan($rq);
+    }
+
+    public function reporteCumplimiento(Request $rq){
+        $datos=array();
+        $datosAgrupados=array();
+        $dias=[];
+        $fechaInicio = Carbon::parse($rq->fechaInicio);
+        $fecha = Carbon::parse($rq->fechaInicio);
+        $fechaFin = Carbon::parse($rq->fechaFin);
+        $diasDiferencia = ($fechaFin->diffInDays($fechaInicio));
+        $datosPlan=Plan::codigosCarteraPlan($rq);
+        foreach ($datosPlan as $d) {
+            $gestiones=Plan::reporteCantGestiones($d->id_cartera,$d->clientes,$d->fecha_i,$d->fecha_f);
+            array_push($datos,["idCartera"=>$d->id_cartera,"cartera"=>$d->nombre_cartera,"cobertura"=>round(($gestiones[0]->gestionados/$d->cant_clientes)*100),"fecha"=>$d->fecha_i]);
+        }
+        $carteras=Cartera::listCarteras();
+        
+        for($i=0;$i<=$diasDiferencia;$i++){
+            $fecha = Carbon::parse($rq->fechaInicio);
+            if($i==0){
+                $dias[0]=$fechaInicio;
+            }else{
+                $dias[$i]=$fecha->addDays($i);
+            }
+        }
+        // foreach ($dias as $dia) {
+        //     return $dia;
+        // }
+        return $dias;
     }
 }
