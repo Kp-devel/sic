@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RepositorioExport;
+use App\Exports\ReportePredictivoExport;
 use Illuminate\Http\Request;
 use App\Predictivo;
 use App\Respuesta;
@@ -55,8 +56,10 @@ class PredictivoController extends Controller
 
     public function devolverAsignacion(Request $rq){
         Predictivo::devolverAsignacion($rq);
-        Predictivo::AsignarPdpsTT($rq);
         Predictivo::validacionAsignacion($rq->idCampana,0);
+        if($rq->opcion!="todos"){
+            Predictivo::AsignarPdpsTT($rq);
+        }
         return "ok";
     }
 
@@ -76,6 +79,14 @@ class PredictivoController extends Controller
 
     public function actualizarFechaCampana(Request $rq){
         return Predictivo::actualizarFechaCampana($rq);
+    }
+    
+    public function actualizarResultados(Request $rq){
+        
+    }
+
+    public function descargarReporte($idCampana){
+        return Predictivo::reporteCampana($idCampana);
     }
     
 }

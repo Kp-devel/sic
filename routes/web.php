@@ -106,6 +106,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/estructuragestor', 'HomeController@indestructuragestor')->name('estructuragestor');
     Route::get('/crearplantrabajo', 'HomeController@indcrearplantrabajo')->name('crearplantrabajo');
     Route::get('/seguimientoplantrabajo', 'HomeController@indseguimientoplantrabajo')->name('seguimientoplantrabajo');
+    Route::get('/reporteplantrabajo', 'HomeController@indreporteplantrabajo')->name('reporteplantrabajo');
     
     
     // indicadores operativos ---------------------------------------------------------------------------------------------------------------
@@ -125,7 +126,10 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('usuariosPlan/{id}', 'PlanController@usuariosPlan');
     Route::post('resultadosPlan', 'PlanController@resultadosPlan');
     Route::get('/datosPlanUsuario', 'PlanController@datosPlanUsuario');
-    
+    Route::get('/reportePlan', 'PlanController@reportePlan');
+    Route::post('/reporteListaPlan', 'PlanController@reporteListaPlan')->name('reporteListaPlan');
+    Route::post('/reporteCumplimiento', 'PlanController@reporteCumplimiento')->name('reporteCumplimiento');
+
     //Reporte general------------------------------------------------------------------------------------------------------------------------
     Route::get('/reportegeneral', 'HomeController@indreportegeneral')->name('reportegeneral');
     Route::get('reporteGeneralGestiones/{cartera}/{fecInicio}/{fechaFin}/{perfil}', 'ReporteController@reporteGeneralGestiones');
@@ -207,6 +211,9 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/datosGestiones/{id}', 'PredictivoController@datosGestiones')->name('datosGestiones');
     Route::get('/generarGestiones/{id}/{total}', 'PredictivoController@generarGestiones')->name('generarGestiones');
     Route::post('/actualizarFechaCampana', 'PredictivoController@actualizarFechaCampana')->name('actualizarFechaCampana');
+    Route::post('/actualizarResultados', 'PredictivoController@actualizarResultados')->name('actualizarResultados');
+    Route::get('/descargarReportePredictivo/{id}', 'PredictivoController@descargarReporte')->name('descargarReportePredictivo');
+
     
 
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------

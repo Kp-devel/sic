@@ -578,4 +578,83 @@ class Plan extends Model
                     LIMIT 1
                 "),array("car"=>$cartera,"fec1"=>$fec_actual,"fec2"=>$fec_actual));
     }
+
+    public static function reportePlan(){
+        return DB::connection('mysql')->select(DB::raw("
+                    SELECT
+                        car_id as idCartera,
+                        car_nom as cartera,
+                        date(NOW()) as fec1,
+                        ADDDATE(date(NOW()),INTERVAL +1 DAY) as fec2,
+                        ADDDATE(date(NOW()),INTERVAL +2 DAY) as fec3,
+                        if(sum(dia1)>0,'SI','NO') as d1,
+                        if(sum(dia2)>0,'SI','NO') as d2,
+                        if(sum(dia3)>0,'SI','NO') as d3
+                    FROM
+                        creditoy_cobranzas.cartera c
+                        LEFT JOIN
+                            (SELECT
+                                nombre_cartera,
+                                id_cartera,
+                                if(date(fecha_i)=date(NOW()),1,0) as dia1,
+                                if(date(fecha_i)=ADDDATE(date(NOW()),INTERVAL +1 DAY),1,0) as dia2,
+                                if(date(fecha_i)=ADDDATE(date(NOW()),INTERVAL +2 DAY),1,0) as dia3
+                            FROM
+                                indicadores.plan
+                            WHERE date(fecha_i) BETWEEN date(NOW()) and ADDDATE(date(NOW()),INTERVAL +2 DAY)
+                            )t on c.car_id=id_cartera
+                    WHERE
+                    car_est=0
+                    and car_pas=0
+                    GROUP BY car_nom    
+        "));
+    }
+
+    public static function codigosCarteraPlan(Request $rq){
+        $fechaInicio=$rq->fechaInicio;
+        $fechaFin=$rq->fechaFin;   
+        return DB::connection('mysql')->select(DB::raw("
+                    SELECT 
+                        id_plan,
+                        nombre_cartera,
+                        id_cartera,
+                        clientes,
+                        cant_clientes,
+                        fecha_i,
+                        fecha_f
+                    FROM
+                        indicadores.plan
+                    WHERE
+                    date(fecha_i) BETWEEN date(:fecInicio) and date(:fecFin)
+        "), array("fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
+    }
+    
+    public static function reporteCantGestiones($cartera,$codigos,$fechaInicio,$fechaFin){
+        return DB::connection('mysql')->select(DB::raw("
+                SELECT 
+                    count(DISTINCT cli_id) as gestionados
+                FROM
+                    creditoy_cobranzas.cliente c
+                INNER JOIN creditoy_cobranzas.gestion_cliente g ON c.cli_id=g.cli_id_FK
+                WHERE
+                ges_cli_fec BETWEEN :fecInicio and :fecFin 
+                and cli_cod in ($codigos)
+                and car_id_FK=:car
+        "), array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
+    }
+
+    public static function reporteListaPlan(Request $rq){
+        $fecha=$rq->fecha;
+        $cartera=$rq->idCartera;
+        return DB::connection('mysql')->select(DB::raw("
+                    SELECT 
+                        nombre_plan as plan,
+                        cant_clientes as clientes
+                    FROM
+                        indicadores.plan
+                    WHERE
+                        id_cartera = :car
+                    AND date(fecha_i) = date(:fec)
+        "),array("car"=>$cartera,"fec"=>$fecha));
+    }
 }

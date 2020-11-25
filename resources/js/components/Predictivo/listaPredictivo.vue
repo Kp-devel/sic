@@ -64,10 +64,10 @@
                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="z-index:9">
                                     <a class="dropdown-item" href=""  @click.prevent="modalAsignacionPredictivo(item.id,item.campana,item.usuario,item.id_usuario)" v-if="item.asignado==0">Asignación Predictivo</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalAsignacion(item.id,item.campana)" v-if="item.asignado==1">Regresar Asignación</a>
-                                    <a class="dropdown-item" href=""  @click.prevent="descargar(item.id)" id="btnDescarga">Descargar CSV</a>
+                                    <a class="dropdown-item" href=""  @click.prevent="descargarCsv(item.id)" id="btnDescarga">Descargar CSV</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalResultados(item.id,item.campana)">Importar Resultados</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalGestiones(item.id,item.campana,item.total)">Generar Gestiones</a>
-                                    <a class="dropdown-item" href=""  @click.prevent="modalReporte(item.id)">Generar Reporte</a>
+                                    <a class="dropdown-item" href=""  @click.prevent="descargarReporte(item.id)">Generar Reporte</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalFechas(item.id,item.campana,item.fecha_inicio,item.fecha_fin)">Editar Fecha de Evento</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalEliminar(item.id,item.campana)">Eliminar Campaña</a>
                                 </div>
@@ -260,12 +260,37 @@
             </div>
         </div>
 
-        
+        <!-- importar resultados -->
+        <div class="modal fade modal-carga" id="modalResultados" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-blue-3 text-white">
+                        <p class="modal-title text-white">{{this.detalle.campana}}</p>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body px-3 pt-4 pb-5">
+                        <div class="form-group pb-3 text-center">
+                            <input type="text" disabled class="form-control" v-model="actualizarRes.nombreArchivo">
+                            <input type="file" ref="filecsv"  @change="obtenerArchivo" style="display:none;"  accept=".csv">
+                            <a href="" @click.prevent="$refs.filecsv.click()">Subir Archivo</a>
+                        </div>
+                        <a href="" class="btn btn-outline-blue btn-block" @click.prevent="actualizarFechas()">
+                            <span v-if="spinnerResultados" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  
+                            Actualizar Resultados
+                        </a>
+                        <small class="text-success" v-if="mensaje">{{mensaje}}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
 <script>
-    
+    import Excel from '../../../../public/js/excel.js';
     export default {
         props:['carteras'],
         data() {
@@ -284,11 +309,13 @@
                 viewFrmGestion:true,
                 loadGestiones:true,
                 spinnerFechas:false,
+                spinnerResultados:false,
                 idCampana:'',
                 cantidadRegistrada:0,
                 cantidadGestionada:0,
                 reasignar:'todos',
                 actualizar:{fechaInicio:'',fechaFin:'',idCampana:''},
+                actualizarRes:{idCampana:'',archivo:'',nombreArchivo:''},
                 mensaje:''
             }
         },
@@ -344,7 +371,7 @@
                     });
                 }
             },
-            descargar(id){
+            descargarCsv(id){
                 window.location.href="./descargarPredictivo/"+id;
                 // window.load=function() {
                 //     alert('OK');
@@ -459,11 +486,38 @@
                         this.buscar();
                         this.spinnerFechas=false;
                         this.mensaje='Actualización Exitosa!';
-                        setTimeout(() => {
-                            $('#modalEliminar').modal('hide');
-                        },1300);
                     }
                 })
+            },
+            modalResultados(id,nom){
+                this.spinnerResultados=false;
+                this.mensaje='';
+                this.actualizarRes.idCampana=id;
+                this.detalle.campana=nom;
+                this.actualizarRes.nombreArchivo='';
+                $('#modalResultados').modal({backdrop: 'static', keyboard: false});
+            },
+            actualizarResultados(){
+                this.mensaje='';
+                this.spinnerResultados=true;
+                if(this.actualizarRes.nombreArchivo!=""){
+                    let formData= new FormData();
+                    formData.append("idCampana",this.actualizarRes.idCampana);
+                    formData.append("archivo",this.actualizarRes.archivo);
+                    axios.post("actualizarResultados",formData).then(res=>{
+                        if(res.data=="ok"){
+                            this.spinnerResultados=false;
+                            this.mensaje='Actualización Exitosa!';
+                        }
+                    })
+                }else{
+                    this.mensaje="Cargar archivo";
+                }
+            },
+            obtenerArchivo(e){
+                let file=e.target.files;
+                this.actualizarRes.archivo=file[0];
+                this.actualizarRes.nombreArchivo=file[0].name;
             },
             cancelar(i){
                 // asignar
@@ -492,6 +546,40 @@
                 }
                 
             },
+            descargarReporte(id){
+                let data=[];
+                var totalLlamadas=0;
+                var totalClientes=0;
+                var totalContactos=0;
+                var totalPdps=0;
+                var totalMontoPdps=0;
+                // window.location.href="./descargarReportePredictivo/"+id;
+                data.push(["Gestor","Total Llamadas","Total Clientes","Total de Contactos","Contactabilidad","Total PDP","Monto PDP"]);
+
+                axios.get("descargarReportePredictivo/"+id).then(res=>{
+                    if(res.data){
+                        var datos=res.data;
+                        datos.forEach(d => {
+                            data.push([d.gestor,
+                                       this.formatoNumero(parseInt(d.total_llamadas),'C'),
+                                       this.formatoNumero(parseInt(d.total_clientes),'C'),
+                                       this.formatoNumero(parseInt(d.total_contactos),'C'),
+                                       this.formatoNumero(d.contactabilidad,'C')+"%",
+                                       this.formatoNumero(parseInt(d.cant_pdps),'C'),
+                                       this.formatoNumero(parseFloat(d.monto_pdps),'M'),
+                                      ]);
+                            totalLlamadas+=parseInt(d.total_llamadas);
+                            totalClientes+=parseInt(d.total_clientes);
+                            totalContactos+=parseInt(d.total_contactos);
+                            totalPdps+=parseInt(d.cant_pdps);
+                            totalMontoPdps+=parseFloat(d.monto_pdps);
+                        });
+                    }
+                })
+
+                data.push(["Total",totalLlamadas,totalClientes,totalContactos,Math.round((totalContactos/totalClientes)*100)+"%",totalPdps,totalMontoPdps]);
+                Excel.exportar(data,"Repote_predictivo","reporte");
+           },
             formatoNumero(num,tipo){
                 if(tipo=='M'){
                     var nStr=parseFloat(num).toFixed(2);
@@ -511,7 +599,7 @@
         },
         
         components: {
-            
+            // Excel            
         }    
     }
 </script>
