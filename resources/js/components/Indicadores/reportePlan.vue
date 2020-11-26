@@ -32,9 +32,9 @@
                                 </tr>
                                 <tr v-else v-for="(item,index) in datos" :key="index" class="text-center">
                                     <td class="text-left px-3">{{item.cartera}}</td>
-                                    <td><a href="" class="text-black" @click.prevent="listaPlan(1,item.idCartera,item.fec1,item.d1,item.cartera)" :class="{'font-bold':item.d1=='SI'}">{{item.d1}}</a></td>
-                                    <td><a href="" class="text-black" @click.prevent="listaPlan(1,item.idCartera,item.fec2,item.d2,item.cartera)" :class="{'font-bold':item.d2=='SI'}">{{item.d2}}</a></td>
-                                    <td><a href="" class="text-black" @click.prevent="listaPlan(1,item.idCartera,item.fec3,item.d3,item.cartera)" :class="{'font-bold':item.d3=='SI'}">{{item.d3}}</a></td>
+                                    <td><a href="" class="text-black" @click.prevent="listaPlan(item.idCartera,item.fec1,item.d1,item.cartera)" :class="{'font-bold':item.d1=='SI'}">{{item.d1}}</a></td>
+                                    <td><a href="" class="text-black" @click.prevent="listaPlan(item.idCartera,item.fec2,item.d2,item.cartera)" :class="{'font-bold':item.d2=='SI'}">{{item.d2}}</a></td>
+                                    <td><a href="" class="text-black" @click.prevent="listaPlan(item.idCartera,item.fec3,item.d3,item.cartera)" :class="{'font-bold':item.d3=='SI'}">{{item.d3}}</a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -63,12 +63,12 @@
                     </div>
                 </div>
                 <div class="row" v-if="viewTablaCump">
-                    <div class="col-md-6">
+                    <div class="col-md-12 table-responsive">
                         <table class="table table-hover">
                             <thead class="bg-blue-3 text-white text-center">
                                 <tr>
                                     <td>CARTERA</td>
-                                    <td>{{dias.dia1}}</td>
+                                    <td v-for="(item,index) in fechas" :key="index">{{(item).substr(8,2)+"/"+(item).substr(5,2)}}</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -77,8 +77,10 @@
                                 </tr>
                                 <tr v-else v-for="(item,index) in datosCump" :key="index" class="text-center">
                                     <td class="text-left px-3">{{item.cartera}}</td>
-                                    <td><a href="" class="text-black" @click.prevent="listaPlan(2,item.idCartera,item.fecha,'',item.cartera)">{{item.cobertura}}%</a></td>
-                                    <td>{{item.fecha}}</td>
+
+                                    <td v-for="i in cantidad">
+                                        <a href="" class="text-black" @click.prevent="listaPlanCump(item.idCartera,item.cartera,i,item['dia_'+i])">{{item["dia_"+i]}}</a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -146,7 +148,12 @@
                 spinnerBuscar:false,
                 datosCump:[],
                 busqueda:{fechaInicio:'',fechaFin:''},
-                mensajes:{msjInicio:'',msjFin:''}
+                mensajes:{msjInicio:'',msjFin:''},
+                cantidad:0,
+                fechas:[],
+                datosPlanes:[],
+                i:0,
+                opcion:1
             }
         },
         methods:{
@@ -167,24 +174,21 @@
                     }
                 })
             },
-            listaPlan(opcion,idCartera,fecha,dia,cartera){
+            listaPlan(idCartera,fecha,dia,cartera){
                 this.lista=[];
                 this.load=true;
+                this.opcion=1;
                 this.plan.cartera=cartera;
                 this.plan.idCartera=idCartera;
                 this.plan.fecha=fecha;
-                if(opcion==1){
-                    if(dia=="SI"){
-                        axios.post("reporteListaPlan",this.plan).then(res=>{
-                            if(res.data){
-                                this.lista=res.data;
-                                this.load=false;
-                            }
-                        })  
-                        $("#modalLista").modal();   
-                    }
-                }else{
-
+                if(dia=="SI"){
+                    axios.post("reporteListaPlan",this.plan).then(res=>{
+                        if(res.data){
+                            this.lista=res.data;
+                            this.load=false;
+                        }
+                    })  
+                    $("#modalLista").modal();   
                 }
             },
             limpiarCampos(){
@@ -198,12 +202,11 @@
                     this.spinnerBuscar=true;
                     axios.post("reporteCumplimiento",this.busqueda).then(res=>{
                         if(res.data){
-                            this.datosCump=res.data;
-                            // if(this.datosCump.length>0){
-                            //     this.dias.dia1=(this.datos[0].fec1).substr(8,2)+"/"+(this.datos[0].fec1).substr(5,2);
-                            //     this.dias.dia2=(this.datos[0].fec2).substr(8,2)+"/"+(this.datos[0].fec2).substr(5,2);
-                            //     this.dias.dia3=(this.datos[0].fec3).substr(8,2)+"/"+(this.datos[0].fec3).substr(5,2);
-                            // }
+                            let resp=res.data;
+                            this.datosCump=resp["dataFinal"];
+                            this.cantidad=resp["cantidadDias"];
+                            this.fechas=resp["dias"];
+                            this.datosPlanes=resp["datos"];
                             this.spinnerBuscar=false;
                             this.viewTablaCump=true;
                         }
@@ -215,6 +218,20 @@
                     if(!this.busqueda.fechaFin){
                         this.mensajes.msjFin="Ingresar Fecha";
                     }
+                }
+            },
+            listaPlanCump(idCartera,cartera,i,dia){
+                this.lista=[];
+                this.load=false;
+                this.opcion=2;
+                this.plan.cartera=cartera;
+                if(dia!='-'){
+                    this.datosPlanes.forEach(dato => {
+                        if(dato.idCartera==idCartera && dato['dia_'+(i-1)]!=""){
+                            this.lista.push({plan:dato.plan,clientes:dato.clientes,cobertura:dato['dia_'+(i-1)]+"%"});
+                        }
+                    });
+                    $("#modalLista").modal();
                 }
             },
             formatoNumero(num,tipo){

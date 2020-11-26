@@ -63,30 +63,70 @@ class PlanController extends Controller
 
     public function reporteCumplimiento(Request $rq){
         $datos=array();
-        $datosAgrupados=array();
+        $datosGenerales=array();
         $dias=[];
         $fechaInicio = Carbon::parse($rq->fechaInicio);
         $fecha = Carbon::parse($rq->fechaInicio);
         $fechaFin = Carbon::parse($rq->fechaFin);
         $diasDiferencia = ($fechaFin->diffInDays($fechaInicio));
-        $datosPlan=Plan::codigosCarteraPlan($rq);
-        foreach ($datosPlan as $d) {
-            $gestiones=Plan::reporteCantGestiones($d->id_cartera,$d->clientes,$d->fecha_i,$d->fecha_f);
-            array_push($datos,["idCartera"=>$d->id_cartera,"cartera"=>$d->nombre_cartera,"cobertura"=>round(($gestiones[0]->gestionados/$d->cant_clientes)*100),"fecha"=>$d->fecha_i]);
-        }
-        $carteras=Cartera::listCarteras();
-        
         for($i=0;$i<=$diasDiferencia;$i++){
             $fecha = Carbon::parse($rq->fechaInicio);
             if($i==0){
-                $dias[0]=$fechaInicio;
+                $dias[0]=substr($fechaInicio,0,10);
             }else{
-                $dias[$i]=$fecha->addDays($i);
+                $dias[$i]=substr($fecha->addDays($i),0,10);
             }
         }
-        // foreach ($dias as $dia) {
-        //     return $dia;
-        // }
-        return $dias;
+        $datosPlan=Plan::codigosCarteraPlan($rq);
+        foreach ($datosPlan as $d) {
+            $gestiones=Plan::reporteCantGestiones($d->id_cartera,$d->clientes,$d->fecha_i,$d->fecha_f);
+            // array_push($datos,["idCartera"=>$d->id_cartera,"cartera"=>$d->nombre_cartera,"cobertura"=>round(($gestiones[0]->gestionados/$d->cant_clientes)*100),"fecha"=>$d->fecha_i]);
+            $datosAgrupados=array();
+            $datosAgrupados["idCartera"]=$d->id_cartera;
+            $datosAgrupados["cartera"]=$d->nombre_cartera;
+            $datosAgrupados["plan"]=$d->nombre_plan;
+            $datosAgrupados["clientes"]=$d->cant_clientes;
+            $datosAgrupados["fecha"]=substr($d->fecha_i,0,10);
+            for($i=0;$i<count($dias);$i++){
+                if($dias[$i]==substr($d->fecha_i,0,10)){
+                    // $datosAgrupados["idDia"]=$i+1;
+                    $datosAgrupados["dia_$i"]=round(($gestiones[0]->gestionados/$d->cant_clientes)*100);
+                }else{
+                    $datosAgrupados["dia_$i"]="";
+                }
+            }
+
+            array_push($datosGenerales,$datosAgrupados);
+        }
+
+        $carteras=Cartera::listCarteras();
+        $dataFinal=array();
+        foreach ($carteras as $car) {
+            $arrayF=array();
+            $arrayF['cartera']=$car->cartera;
+            $arrayF['idCartera']=$car->id;
+            for($i=0;$i<count($dias);$i++){
+                $d=$i+1;
+                $k=0;
+                $suma=0;
+                foreach ($datosGenerales as $dato) {
+                    if($car->id==$dato['idCartera'] && $dato["dia_$i"]!=''){
+                        $suma+=(int)$dato["dia_$i"];
+                        $k++;
+                    }      
+                }
+                if($k>0){
+                    $arrayF["dia_$d"]=round($suma/$k)."%";
+                }else{
+                    $arrayF["dia_$d"]="-";
+                }
+            }
+            array_push($dataFinal,$arrayF);
+        }
+        return ["dataFinal"=>$dataFinal,
+                "cantidadDias"=>$diasDiferencia+1,
+                "dias"=>$dias,
+                "datos"=>$datosGenerales
+               ];
     }
 }

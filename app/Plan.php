@@ -619,6 +619,7 @@ class Plan extends Model
                         nombre_cartera,
                         id_cartera,
                         clientes,
+                        nombre_plan,
                         cant_clientes,
                         fecha_i,
                         fecha_f
@@ -628,7 +629,7 @@ class Plan extends Model
                     date(fecha_i) BETWEEN date(:fecInicio) and date(:fecFin)
         "), array("fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
     }
-    
+
     public static function reporteCantGestiones($cartera,$codigos,$fechaInicio,$fechaFin){
         return DB::connection('mysql')->select(DB::raw("
                 SELECT 
