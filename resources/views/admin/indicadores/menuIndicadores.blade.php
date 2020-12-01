@@ -24,7 +24,9 @@
         <div class="collapse" id="submenuPlan" class="bg-blue-bold">
             <a href="{{route('crearplantrabajo')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('crearplantrabajo') ? 'menu-active' : '' }}">Crear Plan</a>
             <a href="{{route('seguimientoplantrabajo')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('seguimientoplantrabajo') ? 'menu-active' : '' }}">Seguimiento</a>
+            @if(auth()->user()->emp_tip_acc==5 || auth()->user()->emp_tip_acc==6)
             <a href="{{route('reporteplantrabajo')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('reporteplantrabajo') ? 'menu-active' : '' }}">Información Resumen</a>
+            @endif
         </div>
         <!-- Reportes -->
         <a href="#submenureporte" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseExample" class="d-flex justify-content-between px-4 waves-effect {{ request()->is('smscampanas') ? 'menu-active' : '' }}">

@@ -88,7 +88,7 @@
                                     <tbody>
                                         <tr v-for="(item,index) in datos" :key="index" class="text-center">
                                             <td>{{item.estructura}}</td>
-                                            <td>{{formatoNumero(item.clientes,'C')}}</td>
+                                            <td><a href="" class="text-black" @click.prevent="descargarCodigosCartera(item.estructura)">{{formatoNumero(item.clientes,'C')}}</a></td>
                                             <td>{{formatoNumero(item.capital,'M')}}</td>
                                             <td>{{formatoNumero(item.deuda,'M')}}</td>
                                             <td>{{formatoNumero(item.importe,'M')}}</td>
@@ -205,7 +205,7 @@
                                     <tbody>
                                         <tr v-for="(item,index) in datosGestion" :key="index" class="text-center">
                                             <td>{{item.estructura}}</td>
-                                            <td>{{formatoNumero(item.clientes,'C')}}</td>
+                                            <td><a href="" class="text-black" @click.prevent="descargarCodigosGestion(item.estructura)">{{formatoNumero(item.clientes,'C')}}</a></td>
                                             <td>{{formatoNumero(item.capital,'M')}}</td>
                                             <td>{{formatoNumero(item.deuda,'M')}}</td>
                                             <td>{{formatoNumero(item.importe,'M')}}</td>
@@ -275,7 +275,9 @@
                 titulo_3:'',
                 tipo:'',
                 carteraC:'',
-                carteraG:''
+                carteraG:'',
+                datosDescargabusqueda:{cartera:'',ubicabilidad:'',estructura:'',mes:''},
+                datosDescargabusquedaGestion:{cartera:'',tipo:'',estructura:'',fechaInicio:'',fechaFin:''},
             }
         },
         methods:{
@@ -297,6 +299,10 @@
                         this.datos=[];
                     }, 500);
                 }
+                this.datosDescargabusqueda.cartera=this.busqueda.cartera;
+                this.datosDescargabusqueda.ubicabilidad=this.busqueda.ubicabilidad;
+                this.datosDescargabusqueda.estructura=this.busqueda.estructura;
+                this.datosDescargabusqueda.mes=this.busqueda.mes;
             },
             graficaReporteCartera(){
                 var arrayDatos=[];
@@ -453,6 +459,11 @@
                         this.datosGestion=[];
                     }, 500);
                 }
+                this.datosDescargabusquedaGestion.cartera=this.busquedaGestion.cartera;
+                this.datosDescargabusquedaGestion.tipo=this.busquedaGestion.tipo;
+                this.datosDescargabusquedaGestion.estructura=this.busquedaGestion.estructura;
+                this.datosDescargabusquedaGestion.fechaInicio=this.busquedaGestion.fechaInicio;
+                this.datosDescargabusquedaGestion.fechaFin=this.busquedaGestion.fechaFin;
             },
             graficaReporteGestion(){
                 var arrayDatos=[];
@@ -670,6 +681,12 @@
                     }
                 });
                 Excel.exportar(data,"Repote_estructura_cartera_gestion",hoja);
+            },
+            descargarCodigosCartera(valor){
+                window.location.href="descargarEstructuraCarteraCartera/"+this.datosDescargabusqueda.cartera+"/"+this.datosDescargabusqueda.ubicabilidad+"/"+this.datosDescargabusqueda.estructura+"/"+valor+"/"+this.datosDescargabusqueda.mes;
+            },
+            descargarCodigosGestion(valor){
+                window.location.href="descargarEstructuraCarteraGestion/"+this.datosDescargabusquedaGestion.cartera+"/"+this.datosDescargabusquedaGestion.tipo+"/"+this.datosDescargabusquedaGestion.estructura+"/"+valor+"/"+this.datosDescargabusquedaGestion.fechaInicio+"/"+this.datosDescargabusquedaGestion.fechaFin;
             }
         },
         components: {

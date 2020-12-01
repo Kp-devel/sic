@@ -21,7 +21,7 @@ class Campana extends Model
                 WHEN fecha_i < date(now()) or fecha_f < date(now()) THEN 'CC'
             end) as estado
             from indicadores.campana 
-            where id_cartera=:car
+            where id_cartera in (:car)
                 and date(now()) BETWEEN fecha_i and fecha_f
             ORDER BY fecha_i asc
             limit 1

@@ -86,7 +86,9 @@ class PredictivoController extends Controller
     }
 
     public function descargarReporte($idCampana){
-        return Predictivo::reporteCampana($idCampana);
+        $gestor=Predictivo::reporteCampanaGestor($idCampana);
+        $respuestas=Predictivo::reporteCampanaPaletas($idCampana);
+        return ["rep_gestor"=>$gestor,"rep_respuestas"=>$respuestas];
     }
     
 }

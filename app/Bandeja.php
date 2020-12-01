@@ -43,7 +43,7 @@ class Bandeja extends Model
                         cli_est=0
                     and cli_pas=0
                     and ca.car_id in (SELECt car_id_FK from creditoy_lotesms.empleado WHERE emp_est=0 and usu_FK=:usu)
-                    and (CASE WHEN DAYNAME(date(NOW()))='Monday' THEN date(rep_sms_fec) BETWEEN ADDDATE(date(NOW()),INTERVAL -2 DAY) and ADDDATE(date(NOW()),INTERVAL -1 DAY)
+                    and (CASE WHEN DAYNAME(date(NOW()))='Monday' THEN fecha BETWEEN date_format(ADDDATE(date(NOW()),INTERVAL -2 DAY),'%d/%m/%Y') and date_format(ADDDATE(date(NOW()),INTERVAL -1 DAY),'%d/%m/%Y')
                             ELSE date(rep_sms_fec)= ADDDATE(date(NOW()),INTERVAL -1 DAY)
                         END)
                     and car_est=0
@@ -121,19 +121,18 @@ class Bandeja extends Model
                         creditoy_sms.bandeja b
                     WHERE
                         (CASE WHEN DAYNAME(date(NOW()))='Monday' THEN left(ban_fec_re,10) BETWEEN date_format(ADDDATE(date(NOW()),INTERVAL -2 DAY),'%m/%d/%Y') and date_format(ADDDATE(date(NOW()),INTERVAL -1 DAY),'%m/%d/%Y')
-                                                        ELSE left(ban_fec_re,10)= date_format(ADDDATE(date(NOW()),INTERVAL -1 DAY),'%m/%d/%Y')
+                            ELSE left(ban_fec_re,10)= date_format(ADDDATE(date(NOW()),INTERVAL -1 DAY),'%m/%d/%Y')
                         END)
                     and ban_gsm like ('+51%')
                     and ban_body not in ('')
                     )t
                     left JOIN creditoy_sms.repositorio_sms r ON t.numero=r.rep_sms_gsm
-                    and
-                        (CASE WHEN DAYNAME(date(NOW()))='Monday' THEN date(rep_sms_fec) BETWEEN ADDDATE(date(NOW()),INTERVAL -2 DAY) and ADDDATE(date(NOW()),INTERVAL -1 DAY)
-                                                ELSE date(rep_sms_fec)= ADDDATE(date(NOW()),INTERVAL -1 DAY)
+                    and (CASE WHEN DAYNAME(date(NOW()))='Monday' THEN fecha BETWEEN date_format(ADDDATE(date(NOW()),INTERVAL -2 DAY),'%d/%m/%Y') and date_format(ADDDATE(date(NOW()),INTERVAL -1 DAY),'%d/%m/%Y')
+                            ELSE date(rep_sms_fec)= ADDDATE(date(NOW()),INTERVAL -1 DAY)
                         END)
                     GROUP BY numero
                     )tt
-                    where rep_sms_gsm is null    
+                    where rep_sms_gsm is null
         "));
     }
 }
