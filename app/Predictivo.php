@@ -427,7 +427,7 @@ class Predictivo extends Model
                         45,
                         pre_fec_fin,
                         rep_numero_sic,
-                        'no contesta.'
+                        'no contesta - PREDICTIVO'
                 from
                         creditoy_predictivo.predictivo p
                 INNER JOIN creditoy_predictivo.repositorio r ON p.pre_id=r.pre_id_FK
@@ -474,14 +474,14 @@ class Predictivo extends Model
         return "ok";
     }
 
-    public static function reporteCampana($idCampana){
+    public static function reporteCampanaGestor($idCampana){
         return DB::connection('mysql')->select(DB::raw("
                 SELECT
                     CONCAT(emp_cod,' - ',emp_nom) as gestor,
                     sum(gestion) as total_llamadas,
                     count(DISTINCT cli_id) as total_clientes,
                     sum(contacto) as total_contactos,
-                    format((sum(contacto)/count(DISTINCT cli_id))*100,2) as contactabilidad,
+                    format((sum(contacto)/sum(gestion))*100,2) as contactabilidad,
                     sum(cant_pdp) as cant_pdp,
                     sum(monto_pdp) as monto_pdp
                 FROM
@@ -507,10 +507,46 @@ class Predictivo extends Model
                     and ges_cli_fec BETWEEN p.pre_fec_inicio and p.pre_fec_fin
                     and g.emp_id_FK=e.emp_id
                     and emp_est=0
+                    and emp_tel_id_FK not in (e.emp_id)
                 )t
                 INNER JOIN empleado ee on t.idEmpleado=ee.emp_id
                 WHERE emp_est=0
                 GROUP BY idEmpleado
+        "),array("id"=>$idCampana));
+    }
+
+    public static function reporteCampanaPaletas($idCampana){
+        return DB::connection('mysql')->select(DB::raw("
+                    SELECT
+                        IF(ubicabilidad IS NULL,'INTENTOS MARCADOR',ubicabilidad) as ubicabilidad,
+                        respuesta,
+                        if(respuesta='Clientes con Intento de Marcado',sum(intento_llamada),sum(llamada)) as clientes
+                    FROM
+                    (SELECT
+                        if(res_des is null,'Clientes con Intento de Marcado',res_des) as respuesta,
+                        CASE when res_ubi=0 then 'CONTACTO'
+                                when res_ubi=1 then 'NO CONTACTO'
+                                when res_ubi=2 then 'NO DISPONIBLE'
+                        END as ubicabilidad,
+                        if(res_id_FK is null || ges_cli_det='no contesta - PREDICTIVO',1,0) as intento_llamada,
+                        if(res_id_FK is not null and ges_cli_det not in('no contesta - PREDICTIVO'),1,0) as llamada
+                    FROM
+                            creditoy_predictivo.repositorio r
+                    INNER JOIN creditoy_predictivo.predictivo p on r.pre_id_FK=p.pre_id
+                    INNER JOIN creditoy_cobranzas.cliente c on r.rep_codigo=c.cli_cod
+                    LEFT JOIN creditoy_cobranzas.gestion_cliente g ON c.cli_id=g.cli_id_FK and ges_cli_fec BETWEEN p.pre_fec_inicio and p.pre_fec_fin 
+                    LEFT JOIN creditoy_cobranzas.empleado e ON p.pre_usuario=e.emp_cod and emp_est=0 and g.emp_id_FK=e.emp_id
+                    LEFT JOIN creditoy_cobranzas.respuesta re on g.res_id_FK=re.res_id
+                    WHERE
+                            pre_id_FK=:id
+                            and cli_est=0
+                            and cli_pas=0
+                            and c.car_id_FK=p.car_id_FK		
+                        AND (r.rep_estado_llamada NOT IN ('') OR r.rep_estado_llamada IS NOT NULL)
+                    GROUP BY cli_cod
+                    )t	
+                    GROUP BY respuesta
+                    ORDER BY ubicabilidad
         "),array("id"=>$idCampana));
     }
 }

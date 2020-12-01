@@ -109,17 +109,30 @@ function s2ab(s) {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports.exportar=function (data,titulo,titulo_hoja,tipo){
+module.exports.exportar=function (data,titulo,titulo_hoja,tipo,paginas,data2,titulo_hoja2){
 	/* original data */
 	// var data = [[1,2,3,4,5],["Sample", "Sample", "Sample", "Sample",4125.55],["foo","bar","Hello","0.3"], ["baz", null, "qux"]]
+	var wb = new Workbook();
+	
+	// hoja 1--------------------------------------------------------------------------
 	var ws_name = "REPORTE "+titulo_hoja;
-	 
-	var wb = new Workbook(), ws = sheet_from_array_of_arrays(data,tipo);
+	var ws = sheet_from_array_of_arrays(data,tipo);
 	 
 	/* add worksheet to workbook */
 	wb.SheetNames.push(ws_name);
 	wb.Sheets[ws_name] = ws;
 	var wbout = XLSX.write(wb, {bookType:'xlsx', bookSST:true, type: 'binary'});
+	//----------------------------------------------------------------------------------
+
+	// hoja2----------------------------------------------------------------------------
+	if(paginas==2){
+		var wss_name = "REPORTE "+titulo_hoja2;
+		var wss = sheet_from_array_of_arrays(data2,tipo);
+		wb.SheetNames.push(wss_name);
+		wb.Sheets[wss_name] = wss;
+		var wbout = XLSX.write(wb, {bookType:'xlsx', bookSST:true, type: 'binary'});
+	}
+	//-----------------------------------------------------------------------------------
 
 	saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), titulo+".xlsx")
 }

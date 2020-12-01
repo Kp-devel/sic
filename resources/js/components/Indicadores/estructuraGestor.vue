@@ -95,7 +95,7 @@
                                     <tbody>
                                         <tr v-for="(item,index) in datosCatera" :key="index" class="text-center">
                                             <td>{{item.estructura}}</td>
-                                            <td>{{formatoNumero(item.clientes,'C')}}</td>
+                                            <td><a href="" class="text-black" @click.prevent="descargarCodigosCartera(item.estructura)">{{formatoNumero(item.clientes,'C')}}</a></td>
                                             <td>{{formatoNumero(item.capital,'M')}}</td>
                                             <td>{{formatoNumero(item.deuda,'M')}}</td>
                                             <td>{{formatoNumero(item.importe,'M')}}</td>
@@ -209,7 +209,7 @@
                                     <tbody>
                                         <tr v-for="(item,index) in datos" :key="index" class="text-center">
                                             <td>{{item.estructura}}</td>
-                                            <td>{{formatoNumero(item.clientes,'C')}}</td>
+                                            <td><a href="" class="text-black" @click.prevent="descargarCodigosGestion(item.estructura)">{{formatoNumero(item.clientes,'C')}}</a></td>
                                             <td>{{formatoNumero(item.capital,'M')}}</td>
                                             <td>{{formatoNumero(item.deuda,'M')}}</td>
                                             <td>{{formatoNumero(item.importe,'M')}}</td>
@@ -255,7 +255,9 @@
                 loading : false,
                 loading2 : false,
                 busqueda:{cartera:'',gestor:'',tipoAnalisis:'',estructura:'',fechaInicio:'',fechaFin:''},
+                datosDescargabusqueda:{cartera:'',gestor:'',tipoAnalisis:'',estructura:'',fechaInicio:'',fechaFin:''},
                 busquedaCartera:{cartera:'',gestor:'',ubicabilidad:'',estructura:'',mes:''},
+                datosDescargabusquedaCartera:{cartera:'',gestor:'',ubicabilidad:'',estructura:'',mes:''},
                 dataGrafica:[],
                 confGrafica:[],
                 dataGraficaCartera:[],
@@ -321,6 +323,12 @@
                         this.datos=[];
                     }, 500);
                 }
+                this.datosDescargabusqueda.cartera=this.busqueda.cartera;
+                this.datosDescargabusqueda.tipo=this.busqueda.tipo;
+                this.datosDescargabusqueda.estructura=this.busqueda.estructura;
+                this.datosDescargabusqueda.gestor=this.busqueda.gestor;
+                this.datosDescargabusqueda.fechaInicio=this.busqueda.fechaInicio;
+                this.datosDescargabusqueda.fechaFin=this.busqueda.fechaFin;
             },
             graficaReporte(){
                 var arrayDatos=[];
@@ -464,6 +472,11 @@
                         this.datosCatera=[];
                     }, 500);
                 }
+                this.datosDescargabusquedaCartera.cartera=this.busquedaCartera.cartera;
+                this.datosDescargabusquedaCartera.ubicabilidad=this.busquedaCartera.ubicabilidad;
+                this.datosDescargabusquedaCartera.estructura=this.busquedaCartera.estructura;
+                this.datosDescargabusquedaCartera.mes=this.busquedaCartera.mes;
+                this.datosDescargabusquedaCartera.gestor=this.busquedaCartera.gestor;
             },
             graficaReporteCartera(){
                 var arrayDatos=[];
@@ -651,6 +664,12 @@
                     }
                 });
                 Excel.exportar(data,"Repote_estructura_gestor_gestion",hoja);
+            },
+            descargarCodigosCartera(valor){
+                window.location.href="descargarEstructuraGestorCartera/"+this.datosDescargabusquedaCartera.cartera+"/"+this.datosDescargabusquedaCartera.ubicabilidad+"/"+this.datosDescargabusquedaCartera.estructura+"/"+valor+"/"+this.datosDescargabusquedaCartera.mes+"/"+this.datosDescargabusquedaCartera.gestor;
+            },
+            descargarCodigosGestion(valor){
+                window.location.href="descargarEstructuraGestorGestion/"+this.datosDescargabusqueda.cartera+"/"+this.datosDescargabusqueda.tipo+"/"+this.datosDescargabusqueda.estructura+"/"+valor+"/"+this.datosDescargabusqueda.fechaInicio+"/"+this.datosDescargabusqueda.fechaFin+"/"+this.datosDescargabusqueda.gestor;
             }
         },
         components: {

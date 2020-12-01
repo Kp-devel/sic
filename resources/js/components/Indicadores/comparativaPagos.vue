@@ -29,8 +29,8 @@
                 <thead class="bg-blue-3 text-white text-center">
                     <tr>
                         <td rowspan="2" class="align-middle">CARTERA</td>
-                        <td>OCTUBRE</td>
-                        <td colspan="2">NOVIEMBRE</td>
+                        <td>{{mes_anterior}}</td>
+                        <td colspan="2">{{mes_actual}}</td>
                         <td rowspan="2" class="align-middle">VARIACIÓN</td>
                     </tr>
                     <tr>
@@ -76,7 +76,12 @@
                 spinnerBuscar:false,
                 spinnerDescargar:false,
                 mensaje:'',
-                viewTabla:false
+                viewTabla:false,
+                mes_anterior:'',
+                mes_actual:'',
+                meses:[{num:"01",mes:"ENERO"},{num:"02",mes:"FEBRERO"},{num:"03",mes:"MARZO"},{num:'04',mes:"ABRIL"},{num:'05',mes:"MAYO"},
+                      {num:"06",mes:"JUNIO"},{num:"07",mes:"JULIO"},{num:'08',mes:"AGOSTO"},{num:'09',mes:"SETIEMBRE"},{num:'10',mes:"OCTUBRE"},
+                      {num:"11",mes:"NOVIEMBRE"},{num:"12",mes:"DICIEMBRE"}]
             }
         },
         methods:{
@@ -88,6 +93,16 @@
                     axios.post("comparativaPagosFecha",this.busqueda).then(res=>{
                         if(res.data){
                             this.datos=res.data;
+                            for(var i=0;i<this.meses.length;i++){
+                                if(this.meses[i].num==(this.busqueda.fecha).substr(5,2)){
+                                    this.mes_actual=this.meses[i].mes;
+                                    if(this.meses[i].mes=="Enero"){
+                                        this.mes_anterior="Diciembre";
+                                    }else{
+                                        this.mes_anterior=this.meses[i-1].mes;
+                                    }
+                                }
+                            }
                             this.spinnerBuscar=false;
                             this.viewTabla=true;
                         }

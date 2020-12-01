@@ -67,7 +67,7 @@
                                     <a class="dropdown-item" href=""  @click.prevent="descargarCsv(item.id)" id="btnDescarga">Descargar CSV</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalResultados(item.id,item.campana)">Importar Resultados</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalGestiones(item.id,item.campana,item.total)">Generar Gestiones</a>
-                                    <a class="dropdown-item" href=""  @click.prevent="descargarReporte(item.id)">Generar Reporte</a>
+                                    <a class="dropdown-item" href=""  @click.prevent="descargarReporte(item.id)">Descargar Reporte</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalFechas(item.id,item.campana,item.fecha_inicio,item.fecha_fin)">Editar Fecha de Evento</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalEliminar(item.id,item.campana)">Eliminar Campaña</a>
                                 </div>
@@ -548,37 +548,103 @@
             },
             descargarReporte(id){
                 let data=[];
+                let data2=[];
                 var totalLlamadas=0;
                 var totalClientes=0;
                 var totalContactos=0;
                 var totalPdps=0;
                 var totalMontoPdps=0;
                 // window.location.href="./descargarReportePredictivo/"+id;
-                data.push(["Gestor","Total Llamadas","Total Clientes","Total de Contactos","Contactabilidad","Total PDP","Monto PDP"]);
 
                 axios.get("descargarReportePredictivo/"+id).then(res=>{
                     if(res.data){
                         var datos=res.data;
-                        datos.forEach(d => {
+                        var datosGestor=datos['rep_gestor'];
+                        var datosRespuestas=datos['rep_respuestas'];
+                        // reporte por gestor
+                        data.push(["Gestor","Total Llamadas","Total Clientes","Total de Contactos","Contactabilidad","Total PDP","Monto PDP"]);
+                        datosGestor.forEach(d => {
                             data.push([d.gestor,
                                        this.formatoNumero(parseInt(d.total_llamadas),'C'),
                                        this.formatoNumero(parseInt(d.total_clientes),'C'),
                                        this.formatoNumero(parseInt(d.total_contactos),'C'),
                                        this.formatoNumero(d.contactabilidad,'C')+"%",
-                                       this.formatoNumero(parseInt(d.cant_pdps),'C'),
-                                       this.formatoNumero(parseFloat(d.monto_pdps),'M'),
+                                       this.formatoNumero(parseInt(d.cant_pdp),'C'),
+                                       this.formatoNumero(parseFloat(d.monto_pdp),'M'),
                                       ]);
                             totalLlamadas+=parseInt(d.total_llamadas);
                             totalClientes+=parseInt(d.total_clientes);
                             totalContactos+=parseInt(d.total_contactos);
-                            totalPdps+=parseInt(d.cant_pdps);
-                            totalMontoPdps+=parseFloat(d.monto_pdps);
+                            totalPdps+=parseInt(d.cant_pdp);
+                            totalMontoPdps+=parseFloat(d.monto_pdp);
                         });
+                        data.push(["Total",this.formatoNumero(totalLlamadas,'C'),this.formatoNumero(totalClientes,'C'),this.formatoNumero(totalContactos,'C'),Math.round((totalContactos/totalClientes)*100)+"%",this.formatoNumero(totalPdps,'C'),this.formatoNumero(totalMontoPdps,'M')]);
+
+                        // reporte por respuestas
+                        data2.push(["Ubicabilidad - Respuesta","Clientes","%"]);
+                        
+                        let totalContacto=0;
+                        datosRespuestas.forEach(d => {
+                            if(d.ubicabilidad=='CONTACTO'){
+                                totalContacto+=parseInt(d.clientes);
+                            }
+                        });
+                        data2.push(["CONTACTO",this.formatoNumero(totalContacto),""]);
+                        datosRespuestas.forEach(d => {
+                            if(d.ubicabilidad=='CONTACTO'){
+                                data2.push([d.respuesta,this.formatoNumero(d.clientes,'C')])
+                            }
+                        });
+
+                        let totalNocontacto=0;
+                        datosRespuestas.forEach(d => {
+                            if(d.ubicabilidad=='NO CONTACTO'){
+                                totalNocontacto+=parseInt(d.clientes);
+                            }
+                        });
+                        data2.push(["NO CONTACTO",this.formatoNumero(totalNocontacto,'C'),""]);
+                        datosRespuestas.forEach(d => {
+                            if(d.ubicabilidad=='NO CONTACTO'){
+                                data2.push([d.respuesta,this.formatoNumero(d.clientes,'C')])
+                            }
+                        });
+
+                        let totalNodisponible=0;
+                        datosRespuestas.forEach(d => {
+                            if(d.ubicabilidad=='NO DISPONIBLE'){
+                                totalNodisponible+=parseInt(d.clientes);
+                            }
+                        });
+                        data2.push(["NO DISPONIBLE",this.formatoNumero(totalNodisponible,'C'),""]);
+                        datosRespuestas.forEach(d => {
+                            if(d.ubicabilidad=='NO DISPONIBLE'){
+                                data2.push([d.respuesta,this.formatoNumero(d.clientes,'C')])
+                            }
+                        });
+
+
+                        let totalIntentos=0;
+                        datosRespuestas.forEach(d => {
+                            if(d.ubicabilidad=='INTENTOS MARCADOR'){
+                                totalIntentos+=parseInt(d.clientes);
+                            }
+                        });
+                        data2.push(["INTENTOS MARCADOR",this.formatoNumero(totalIntentos,'C'),""]);
+                        datosRespuestas.forEach(d => {
+                            if(d.ubicabilidad=='INTENTOS MARCADOR'){
+                                data2.push([d.respuesta,this.formatoNumero(d.clientes,'C')])
+                            }
+                        });
+                        let total=0
+                        datosRespuestas.forEach(d => {
+                            total+=parseInt(d.clientes);
+                        });
+                        data2.push(["TOTAL",this.formatoNumero(total,'C'),""]);
+                        
+                        Excel.exportar(data,"Repote_predictivo","POR GESTOR","",2,data2,"POR RESPUESTAS");
                     }
                 })
 
-                data.push(["Total",totalLlamadas,totalClientes,totalContactos,Math.round((totalContactos/totalClientes)*100)+"%",totalPdps,totalMontoPdps]);
-                Excel.exportar(data,"Repote_predictivo","reporte");
            },
             formatoNumero(num,tipo){
                 if(tipo=='M'){

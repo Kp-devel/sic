@@ -43,16 +43,18 @@ class Cliente extends Model
         if($camp!= null){
             $fec_actual=Carbon::now();
             $query_campana=DB::connection('mysql')->select(DB::raw("
-                                select clientes
+                                select clientes,id_cartera
                                 from indicadores.plan
                                 WHERE id_cartera in (:car)
                                 and fecha_i<=:fec1 and fecha_f >= :fec2
                             "),array("car"=>$cartera,"fec1"=>$fec_actual,"fec2"=>$fec_actual));
             //dd($query_campana);
             $cadena="";
+            $carteraPlan="";
             if($query_campana!=[]){
                 foreach($query_campana as $q){
                     $cadena.=",". $q->clientes;
+                    $carteraPlan.=",". $q->id_cartera;
                 }
                 $cadena_cli=substr($cadena,1,strlen($cadena));
                 $array=explode(',',$cadena_cli);
@@ -205,7 +207,7 @@ class Cliente extends Model
         // }
  
         if( $cantidad_cli>0){
-            $sql = $sql." and cli_cod in ($cadena_cli) ";
+            $sql = $sql." and cli_cod in ($cadena_cli) and car_id_FK in (".substr($carteraPlan,1,strlen($carteraPlan)).") ";
         } else if($cantidad_cli == 0 ) {
             $sql = $sql . "and 1 = 1" ;
         } else if ( $cantidad_cli == - 1 ) {

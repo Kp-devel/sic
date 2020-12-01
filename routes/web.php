@@ -118,6 +118,10 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('listaAsignacion', 'IndicadorController@asignacion');
     Route::post('listaEstructuras', 'IndicadorController@estructuras');
     Route::post('reporteIndicadoresOperativos', 'IndicadorController@reporteIndicadoresOperativos');
+    Route::get('descargarEstructuraCarteraCartera/{cartera}/{ubicabilidad}/{estructura}/{valor}/{mes}', 'EstructuraController@descargarEstructuraCarteraCartera');
+    Route::get('descargarEstructuraCarteraGestion/{cartera}/{tipo}/{estructura}/{valor}/{fecInicio}/{fecFin}', 'EstructuraController@descargarEstructuraCarteraGestion');
+    Route::get('descargarEstructuraGestorCartera/{cartera}/{ubicabilidad}/{estructura}/{valor}/{mes}/{gestor}', 'EstructuraController@descargarEstructuraGestorCartera');
+    Route::get('descargarEstructuraGestorGestion/{cartera}/{tipo}/{estructura}/{valor}/{fecInicio}/{fecFin}/{gestor}', 'EstructuraController@descargarEstructuraGestorGestion');
     
     //Plan de Trabajo-----------------------------------------------------------------------------------------------------------------------
     Route::post('listaPlanes', 'PlanController@listaPlanes');
