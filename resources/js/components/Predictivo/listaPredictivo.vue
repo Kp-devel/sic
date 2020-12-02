@@ -218,7 +218,7 @@
                     </div>
                     <p class="text-white font-20">¿Desea generar gestiones con respuesta "Teléfono No Contesta"<br>a los clientes sin gestión de la Campaña<br>"{{detalle.campana}}"?</p>
                     <a href="" v-if="spinnerGestion==false" class="btn btn-white" @click.prevent="cancelar(3)">No</a>
-                    <a href="" class="btn btn-danger" @click.prevent="generarGestiones()">
+                    <a href="" v-if="cantidadRegistrada>0" class="btn btn-danger" @click.prevent="generarGestiones()">
                         <span v-if="spinnerGestion" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  
                         Sí, registrar gestiones
                     </a><br><br>
@@ -273,10 +273,10 @@
                     <div class="modal-body px-3 pt-4 pb-5">
                         <div class="form-group pb-3 text-center">
                             <input type="text" disabled class="form-control" v-model="actualizarRes.nombreArchivo">
-                            <input type="file" ref="filecsv"  @change="obtenerArchivo" style="display:none;"  accept=".csv">
+                            <input type="file" ref="filecsv"  @change="obtenerArchivo" style="display:none;"  accept=".xlsx">
                             <a href="" @click.prevent="$refs.filecsv.click()">Subir Archivo</a>
                         </div>
-                        <a href="" class="btn btn-outline-blue btn-block" @click.prevent="actualizarFechas()">
+                        <a href="" class="btn btn-outline-blue btn-block" @click.prevent="cargarResultados()">
                             <span v-if="spinnerResultados" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  
                             Actualizar Resultados
                         </a>
@@ -313,6 +313,7 @@
                 idCampana:'',
                 cantidadRegistrada:0,
                 cantidadGestionada:0,
+                cantidadConResultados:0,
                 reasignar:'todos',
                 actualizar:{fechaInicio:'',fechaFin:'',idCampana:''},
                 actualizarRes:{idCampana:'',archivo:'',nombreArchivo:''},
@@ -447,9 +448,15 @@
                axios.get("datosGestiones/"+this.idCampana).then(res=>{
                    if(res.data){
                        var datos=res.data;
-                       if(datos.length>0){
-                           this.cantidadGestionada=datos[0].cantidadGestionada;
-                           this.cantidadRegistrada=total-this.cantidadGestionada;
+                       if(datos['cantGestiones'].length>0){
+                           this.cantidadGestionada=datos['cantGestiones'][0].cantidadGestionada;
+                       }
+                       if(datos['cantResultados'].length>0){
+                           this.cantidadConResultados=datos['cantResultados'][0].cantidad;
+                       }
+                       this.cantidadRegistrada=this.cantidadConResultados-this.cantidadGestionada;
+                       if(this.cantidadRegistrada<0){
+                           this.cantidadRegistrada=0;
                        }
                        this.loadGestiones=false;
                    }
@@ -497,17 +504,17 @@
                 this.actualizarRes.nombreArchivo='';
                 $('#modalResultados').modal({backdrop: 'static', keyboard: false});
             },
-            actualizarResultados(){
+            cargarResultados(){
                 this.mensaje='';
                 this.spinnerResultados=true;
                 if(this.actualizarRes.nombreArchivo!=""){
                     let formData= new FormData();
                     formData.append("idCampana",this.actualizarRes.idCampana);
                     formData.append("archivo",this.actualizarRes.archivo);
-                    axios.post("actualizarResultados",formData).then(res=>{
+                    axios.post("cargarResultadosPredictivo",formData).then(res=>{
                         if(res.data=="ok"){
                             this.spinnerResultados=false;
-                            this.mensaje='Actualización Exitosa!';
+                            this.mensaje='Se cargaron los datos con exito!';
                         }
                     })
                 }else{

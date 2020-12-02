@@ -408,6 +408,19 @@ class Predictivo extends Model
         "),array("id"=>$idCampana));
     }
 
+    public static function datosConResultados($idCampana){
+        return DB::connection('mysql')->select(DB::raw("
+                    select 
+                        count(rep_numero) as cantidad
+                    from
+                        creditoy_predictivo.repositorio
+                    where
+                        rep_est=0
+                    and pre_id_FK=:id       
+                    and rep_estado_llamada not in ('')
+        "),array("id"=>$idCampana));
+    }
+
     public static function generarGestiones($idCampana){
         DB::connection('mysql')->insert("
                 INSERT INTO gestion_cliente
@@ -439,6 +452,7 @@ class Predictivo extends Model
                 and cli_est=0
                 and cli_pas=0
                 and c.car_id_FK=p.car_id_FK
+                and rep_estado_llamada not in ('')
                 and (
                     SELECT count(*) 
                     FROM creditoy_cobranzas.gestion_cliente g	
@@ -548,5 +562,15 @@ class Predictivo extends Model
                     GROUP BY respuesta
                     ORDER BY ubicabilidad
         "),array("id"=>$idCampana));
+    }
+
+    public static function actualizarResultados($idCampana,$resultado,$numero,$codigo){
+        DB::connection('mysql')->update("
+            update creditoy_predictivo.repositorio
+            set rep_estado_llamada=:res
+            where pre_id_FK=:id
+            and rep_numero=:num
+            and rep_codigo=:cod
+        ",array("id"=>$idCampana,"res"=>$resultado,"num"=>$numero,"cod"=>$codigo));
     }
 }
