@@ -215,9 +215,8 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/datosGestiones/{id}', 'PredictivoController@datosGestiones')->name('datosGestiones');
     Route::get('/generarGestiones/{id}/{total}', 'PredictivoController@generarGestiones')->name('generarGestiones');
     Route::post('/actualizarFechaCampana', 'PredictivoController@actualizarFechaCampana')->name('actualizarFechaCampana');
-    Route::post('/actualizarResultados', 'PredictivoController@actualizarResultados')->name('actualizarResultados');
     Route::get('/descargarReportePredictivo/{id}', 'PredictivoController@descargarReporte')->name('descargarReportePredictivo');
-
+    Route::post('/cargarResultadosPredictivo', 'PredictivoController@cargarResultadosPredictivo')->name('cargarResultadosPredictivo');
     
 
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------

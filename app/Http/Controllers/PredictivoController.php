@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Predictivo;
 use App\Respuesta;
 use Carbon\Carbon;
+use App\Imports\ResultadosPredictivoImport;
 
 class PredictivoController extends Controller
 {
@@ -68,7 +69,9 @@ class PredictivoController extends Controller
     }
     
     public function datosGestiones($idCampana){
-        return Predictivo::datosGestiones($idCampana);
+        $datosGestiones=Predictivo::datosGestiones($idCampana);
+        $datosResultados=Predictivo::datosConResultados($idCampana);
+        return ["cantGestiones"=>$datosGestiones,"cantResultados"=>$datosResultados];
     }
 
     public function generarGestiones($idCampana,$total){
@@ -81,9 +84,6 @@ class PredictivoController extends Controller
         return Predictivo::actualizarFechaCampana($rq);
     }
     
-    public function actualizarResultados(Request $rq){
-        
-    }
 
     public function descargarReporte($idCampana){
         $gestor=Predictivo::reporteCampanaGestor($idCampana);
@@ -91,4 +91,17 @@ class PredictivoController extends Controller
         return ["rep_gestor"=>$gestor,"rep_respuestas"=>$respuestas];
     }
     
+    public function cargarResultadosPredictivo(Request $rq){
+        // ini_set('max_execution_time', 1600);
+        $idCampana=$rq->idCampana;
+        $file=$rq->file('archivo');
+        if ($file == null) {    
+            return "error";       
+        }else {
+            Excel::import(new ResultadosPredictivoImport($idCampana), $file);
+            return "ok";
+        }
+    }
+
+
 }
