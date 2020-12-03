@@ -367,7 +367,7 @@ class HomeController extends Controller
     
     public function predictivo(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
-        if($tipo_acceso==5 || $tipo_acceso==6){
+        if($tipo_acceso==6){
             return view('admin.predictivo.predictivo');
         }else{
             return view('errors.403');
@@ -377,7 +377,7 @@ class HomeController extends Controller
 
     public function registrargestiones(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
-        if($tipo_acceso==5 || $tipo_acceso==6 || $tipo_acceso==7){
+        if($tipo_acceso==6){
             $carteras=Cartera::listCarterasUsuario();       
             $carteras=json_encode($carteras);
             return view('admin.predictivo.frmGestiones',compact('carteras'));
@@ -388,7 +388,7 @@ class HomeController extends Controller
 
     public function crearpredictivo(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
-        if($tipo_acceso==5 || $tipo_acceso==6 || $tipo_acceso==7){
+        if($tipo_acceso==6){
             $carteras=Cartera::listCarterasUsuario();       
             $carteras=json_encode($carteras);
             return view('admin.predictivo.frmPredictivo',compact('carteras'));
@@ -399,7 +399,7 @@ class HomeController extends Controller
 
     public function campanaspredictivo(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
-        if($tipo_acceso==5 || $tipo_acceso==6 || $tipo_acceso==7){
+        if($tipo_acceso==6){
             $carteras=Cartera::listCarterasUsuario();       
             $carteras=json_encode($carteras);
             return view('admin.predictivo.listaPredictivo',compact('carteras'));
@@ -407,5 +407,13 @@ class HomeController extends Controller
             return view('errors.403');
         }
     }
-    
+
+    public function mantenimiento(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            return view('admin.mantenimiento.mantenimiento');
+        }else{
+            return view('errors.403');
+        }
+    }
 }
