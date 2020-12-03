@@ -111,7 +111,7 @@
                         <td class="text-right align-middle">{{formatoNumero(total('montopdps'),'M')}}</td>
                         <td class="text-center align-middle">{{formatoNumero(total('nuevos_sin_gestion_mes'),'C')}}</td>
                         <td class="text-center align-middle">{{formatoNumero(total('sin_gestion_mes'),'C')}}</td>
-                        <td class="text-center align-middle">{{formatoNumero(((total('clientes')-total('nuevos_sin_gestion_mes'))/total('clientes'))*100,'M')}}%</td>
+                        <td class="text-center align-middle">{{formatoNumero(((total('clientes')-total('sin_gestion_mes'))/total('clientes'))*100,'M')}}%</td>
                     </tr>
                 </tfoot>
             </table>

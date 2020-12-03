@@ -218,6 +218,9 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/descargarReportePredictivo/{id}', 'PredictivoController@descargarReporte')->name('descargarReportePredictivo');
     Route::post('/cargarResultadosPredictivo', 'PredictivoController@cargarResultadosPredictivo')->name('cargarResultadosPredictivo');
     
+//MANTENIMIENTO -------------------------------------------------------------------------------------------------------------------------
+    Route::get('/mantenimiento', 'HomeController@mantenimiento')->name('mantenimiento');
+
 
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix
