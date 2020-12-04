@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Plan;
 use App\Cartera;
 use Carbon\Carbon;
+use App\Imports\CodigosPlanTrabajoImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PlanController extends Controller
 {
@@ -129,4 +131,28 @@ class PlanController extends Controller
                 "datos"=>$datosGenerales
                ];
     }
+
+    public function resumenPlanArchivo(Request $rq){
+        $cartera=$rq->cartera;
+        $file=$rq->file('archivo');
+        if ($file == null) {    
+            return "error";       
+        }else {
+            $datos=Excel::toArray(new CodigosPlanTrabajoImport(), $file);
+            $codigos=$datos[0];
+            return Plan::resumenPlanArchivo($cartera,$codigos);
+        }
+    }
+
+    public function insertarPlanArchivo(Request $rq){
+        $file=$rq->file('archivo');
+        if ($file == null) {    
+            return "error";       
+        }else {
+            $datos=Excel::toArray(new CodigosPlanTrabajoImport(), $file);
+            $codigos=$datos[0];
+            return Plan::insertarPlanArchivo($rq,$codigos);
+        }
+    }
+
 }

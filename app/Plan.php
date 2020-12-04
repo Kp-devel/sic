@@ -658,4 +658,53 @@ class Plan extends Model
                     AND date(fecha_i) = date(:fec)
         "),array("car"=>$cartera,"fec"=>$fecha));
     }
+
+    public static function resumenPlanArchivo($cartera,$codigos){
+        $codigo="";
+        for($i=1;$i<count($codigos);$i++) {
+            $codigo.=",".$codigos[$i][0];
+        }
+        $codigo=substr($codigo,1,strlen($codigo));
+        return DB::connection('mysql')->select(DB::raw("
+                SELECT
+                    if(emp_tel_id_FK>0,emp_nom,'NO ASIGNADO') as gestor,
+                    if(emp_cod is null,'NO ASIGNADO',emp_cod) as usuario,
+                    count(emp_tel_id_FK) as cantidad
+                FROM
+                    creditoy_cobranzas.cliente c
+                LEFT JOIN creditoy_cobranzas.empleado e on c.emp_tel_id_FK=e.emp_id
+                WHERE
+                cli_est=0
+                and cli_pas=0
+                and car_id_FK=:car
+                and cli_cod in ($codigo)
+                GROUP BY emp_tel_id_FK            
+        "),array("car"=>$cartera));
+    }
+
+    public static function insertarPlanArchivo(Request $rq,$codigos){
+        $cartera = $rq->cartera;        
+        $nombreCartera = $rq->nombreCartera;
+        $nombrePlan=$rq->plan;
+        $total=$rq->total;
+        $speech=isset($rq->speech)?$rq->speech:'';
+        $fechaInicio=$rq->fechaInicio;
+        $fechaFin=$rq->fechaFin;
+        $usuarios = implode(',',$rq->usuarios);
+        $detalle="Usuarios: ".str_replace("'","",$usuarios)."";
+        $codigo="";
+        for($i=1;$i<count($codigos);$i++) {
+            $codigo.=",".$codigos[$i][0];
+        }
+        $codigo=substr($codigo,1,strlen($codigo));
+        DB::connection('mysql')->insert("
+            INSERT INTO indicadores.plan(
+                id_cartera,nombre_cartera,nombre_plan,clientes,cant_clientes,speech,detalle,fecha_i,fecha_f,fecha_reg
+            )
+            VALUES(:idcar,:car,:plan,:cods,:total,:speech,:detalle,:fecInicio,:fecFin,now())
+        ",array("idcar"=>$cartera,"car"=>$nombreCartera,"plan"=>$nombrePlan,"total"=>$total,"cods"=>$codigo,
+                "speech"=>$speech,"detalle"=>$detalle,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
+        
+        return "ok";
+    }
 }

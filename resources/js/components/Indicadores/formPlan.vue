@@ -32,164 +32,177 @@
                         </div>
                     </div>
             </div>
-            <div class="row mb-4">
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label for="tramo" class="col-form-label text-dark text-righ"><b>Tramo</b></label>
-                    <div class="form-check" v-for="(item,index) in tramos" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="tramos" type="checkbox" :value="item" checked v-model="arrayTramos">{{item}}
-                        </label>
-                    </div>
+            <nav class="mt-3">
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a @click="seleccionTab(1)" class="nav-item nav-link active text-dark" id="nav-criterios-tab" data-toggle="tab" href="#nav-criterios" role="tab" aria-controls="nav-home" aria-selected="true"><i class="fa fa-filter pr-1"></i>Selección de Criterios</a>
+                    <a @click="seleccionTab(2)" class="nav-item nav-link text-dark" id="nav-codigos-tab" data-toggle="tab" href="#nav-codigos" role="tab" aria-controls="nav-profile" aria-selected="false"><i class="fa fa-file-alt pr-1"></i>Cargar Archivo</a>
                 </div>
-                <div class="col-md-4 col-lg-4 col-xl-4">
-                    <label for="dep" class="col-form-label text-dark text-center"><b>Departamento</b></label>
-                    <div class="row px-0">
-                        <div class="col-xs-6 col-md-6 col-lg-6 mr-0 pr-0">
-                            <div class="form-check" v-for="(item,index) in departamentos" :key="index" v-if="index<=4">
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active py-3" id="nav-criterios" role="tabpanel" aria-labelledby="nav-cartera-tab">            
+                    <div class="row mb-4">
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                            <label for="tramo" class="col-form-label text-dark text-righ"><b>Tramo</b></label>
+                            <div class="form-check" v-for="(item,index) in tramos" :key="index">
                                 <label class="form-check-label">
-                                    <input class="form-check-input" name="deps" type="checkbox" :value="item.valor" v-model="arrayDepartamentos">{{item.nombre}}
+                                    <input class="form-check-input" name="tramos" type="checkbox" :value="item" checked v-model="arrayTramos">{{item}}
                                 </label>
                             </div>
                         </div>
-                        <div class="col-xs-6 col-md-6 col-lg-6 mr-0 pr-0">
-                            <div class="form-check" v-for="(item,index) in departamentos" :key="index" v-if="index>4">
+                        <div class="col-md-4 col-lg-4 col-xl-4">
+                            <label for="dep" class="col-form-label text-dark text-center"><b>Departamento</b></label>
+                            <div class="row px-0">
+                                <div class="col-xs-6 col-md-6 col-lg-6 mr-0 pr-0">
+                                    <div class="form-check" v-for="(item,index) in departamentos" :key="index" v-if="index<=4">
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" name="deps" type="checkbox" :value="item.valor" v-model="arrayDepartamentos">{{item.nombre}}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-md-6 col-lg-6 mr-0 pr-0">
+                                    <div class="form-check" v-for="(item,index) in departamentos" :key="index" v-if="index>4">
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" name="deps" type="checkbox" :value="item.valor" v-model="arrayDepartamentos">{{item.nombre}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                            <label for="pri" class="col-form-label text-dark text-righ"><b>Prioridad</b></label>
+                            <div class="form-check" v-for="(item,index) in prioridad" :key="index">
                                 <label class="form-check-label">
-                                    <input class="form-check-input" name="deps" type="checkbox" :value="item.valor" v-model="arrayDepartamentos">{{item.nombre}}
+                                    <input class="form-check-input" name="prioridades" type="checkbox" :value="item.valor" v-model="arrayPrioridad">{{item.nombre}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                            <label for="situacion" class="col-form-label text-dark text-righ"><b>Situación Laboral</b></label>
+                            <div class="form-check" v-for="(item,index) in situacion_laboral" :key="index">
+                                <label class="form-check-label">
+                                    <input class="form-check-input " name="situaciones" type="checkbox" :value="item.valor" v-model="arraySituacion">{{item.nombre}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                            <label for="call" class="col-form-label text-dark text-righ"><b>Call</b></label>
+                            <div class="form-check" v-for="(item,index) in call" :key="index">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name="calls" type="checkbox" :value="item.valor" v-model="arrayCall">{{item.nombre}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                            <label for="sueldo" class="col-form-label text-dark text-righ"><b>Rango Sueldo</b></label>
+                            <div class="form-check" v-for="(item,index) in sueldos" :key="index">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name="sueldos" type="checkbox" :value="item.valor" v-model="arraySueldos">{{item.nombre}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                            <label for="capital" class="col-form-label text-dark text-center"><b>Rango Capital</b></label>
+                            <div class="form-check" v-for="(item,index) in capital" :key="index">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name="capitales" type="checkbox" :value="item.valor" v-model="arrayCapital">{{item.nombre}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                            <label for="deuda" class="col-form-label text-dark text-righ"><b>Rango Deuda</b></label>
+                            <div class="form-check" v-for="(item,index) in deuda" :key="index">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name="deudas" type="checkbox" :value="item.valor" v-model="arrayDeuda">{{item.nombre}}
+                                </label>
+                            </div>   
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                            <label for="importe" class="col-form-label text-dark text-righ"><b>Rango IC</b></label>
+                            <div class="form-check" v-for="(item,index) in importe" :key="index">
+                                <label class="form-check-label" >
+                                    <input class="form-check-input" name="importes" type="checkbox" :value="item.valor" v-model="arrayImporte">{{item.nombre}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                            <label class="col-form-label text-dark text-righ"><b>Entidades</b></label>
+                            <div class="form-check" v-for="(item,index) in entidades" :key="index">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name="entidades" type="checkbox" :value="item" v-model="arrayEntidades">{{item}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2" v-if="score!=''">
+                            <label class="col-form-label text-dark text-righ"><b>Score</b></label>
+                            <div class="form-check" v-for="(item,index) in score" :key="index">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name="score" type="checkbox" :value="item.valor" v-model="arrayScore">{{item.nombre}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                            <label class="col-form-label text-dark text-righ"><b>Tipo Cliente</b></label>
+                            <div class="form-check" v-for="(item,index) in tipoCliente" :key="index">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name="clientes" type="checkbox" :value="item.valor" v-model="arrayTipo">{{item.nombre}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                            <label for="ubic" class="col-form-label text-dark text-righ"><b>Ubicabilidad</b></label>
+                            <div class="form-check" v-for="(item,index) in ubicabilidad" :key="index">
+                                <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayUbicabilidad" @click="llenarRespuestas(item.valor);cantidadClick++" :id="'ubic'+index">
+                                <label class="form-check-label" :for="'ubic'+index">{{item.nombre}}</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8 col-lg-8 col-xl-8">
+                            <label for="ubic" class="col-form-label text-dark text-righ"><b>Respuestas</b></label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check" v-for="(item,index) in respuestas" :key="index">
+                                        <label class="form-check-label" v-if="index<=6" >
+                                            <input class="form-check-input" name="rptas" type="checkbox" :value="item.valor" v-model="arrayRespuestas" :disabled="item.bloqueo">{{item.nombre}}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check" v-for="(item,index) in respuestas" :key="index">
+                                        <label class="form-check-label" v-if="index>6 && index<=12">
+                                            <input class="form-check-input" name="rptas" type="checkbox" :value="item.valor" v-model="arrayRespuestas" :disabled="item.bloqueo">{{item.nombre}}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check" v-for="(item,index) in respuestas" :key="index" >
+                                        <label class="form-check-label" v-if="index>12">
+                                            <input class="form-check-input" name="rptas" type="checkbox" :value="item.valor" v-model="arrayRespuestas" :disabled="item.bloqueo">{{item.nombre}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                            <label for="ubic" class="col-form-label text-dark text-righ"><b>Gestiones Mes</b></label>
+                            <div class="form-check" v-for="(item,index) in gestiones" :key="index">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayGestiones" :disabled="item.bloqueo">
+                                    {{item.nombre}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3 col-xl-3">
+                            <label for="ubic" class="col-form-label text-dark text-righ"><b>Última Gestión</b></label>
+                            <div class="form-check" v-for="(item,index) in fechas" :key="index">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayFechas">
+                                    {{item.nombre}}
                                 </label>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label for="pri" class="col-form-label text-dark text-righ"><b>Prioridad</b></label>
-                    <div class="form-check" v-for="(item,index) in prioridad" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="prioridades" type="checkbox" :value="item.valor" v-model="arrayPrioridad">{{item.nombre}}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label for="situacion" class="col-form-label text-dark text-righ"><b>Situación Laboral</b></label>
-                    <div class="form-check" v-for="(item,index) in situacion_laboral" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input " name="situaciones" type="checkbox" :value="item.valor" v-model="arraySituacion">{{item.nombre}}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label for="call" class="col-form-label text-dark text-righ"><b>Call</b></label>
-                    <div class="form-check" v-for="(item,index) in call" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="calls" type="checkbox" :value="item.valor" v-model="arrayCall">{{item.nombre}}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label for="sueldo" class="col-form-label text-dark text-righ"><b>Rango Sueldo</b></label>
-                    <div class="form-check" v-for="(item,index) in sueldos" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="sueldos" type="checkbox" :value="item.valor" v-model="arraySueldos">{{item.nombre}}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label for="capital" class="col-form-label text-dark text-center"><b>Rango Capital</b></label>
-                    <div class="form-check" v-for="(item,index) in capital" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="capitales" type="checkbox" :value="item.valor" v-model="arrayCapital">{{item.nombre}}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label for="deuda" class="col-form-label text-dark text-righ"><b>Rango Deuda</b></label>
-                    <div class="form-check" v-for="(item,index) in deuda" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="deudas" type="checkbox" :value="item.valor" v-model="arrayDeuda">{{item.nombre}}
-                        </label>
-                    </div>   
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label for="importe" class="col-form-label text-dark text-righ"><b>Rango IC</b></label>
-                    <div class="form-check" v-for="(item,index) in importe" :key="index">
-                        <label class="form-check-label" >
-                            <input class="form-check-input" name="importes" type="checkbox" :value="item.valor" v-model="arrayImporte">{{item.nombre}}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label class="col-form-label text-dark text-righ"><b>Entidades</b></label>
-                    <div class="form-check" v-for="(item,index) in entidades" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="entidades" type="checkbox" :value="item" v-model="arrayEntidades">{{item}}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2" v-if="score!=''">
-                    <label class="col-form-label text-dark text-righ"><b>Score</b></label>
-                    <div class="form-check" v-for="(item,index) in score" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="score" type="checkbox" :value="item.valor" v-model="arrayScore">{{item.nombre}}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label class="col-form-label text-dark text-righ"><b>Tipo Cliente</b></label>
-                    <div class="form-check" v-for="(item,index) in tipoCliente" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="clientes" type="checkbox" :value="item.valor" v-model="arrayTipo">{{item.nombre}}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label for="ubic" class="col-form-label text-dark text-righ"><b>Ubicabilidad</b></label>
-                    <div class="form-check" v-for="(item,index) in ubicabilidad" :key="index">
-                        <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayUbicabilidad" @click="llenarRespuestas(item.valor);cantidadClick++" :id="'ubic'+index">
-                        <label class="form-check-label" :for="'ubic'+index">{{item.nombre}}</label>
-                    </div>
-                </div>
-                <div class="col-md-8 col-lg-8 col-xl-8">
-                    <label for="ubic" class="col-form-label text-dark text-righ"><b>Respuestas</b></label>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-check" v-for="(item,index) in respuestas" :key="index">
-                                <label class="form-check-label" v-if="index<=6" >
-                                    <input class="form-check-input" name="rptas" type="checkbox" :value="item.valor" v-model="arrayRespuestas" :disabled="item.bloqueo">{{item.nombre}}
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-check" v-for="(item,index) in respuestas" :key="index">
-                                <label class="form-check-label" v-if="index>6 && index<=12">
-                                    <input class="form-check-input" name="rptas" type="checkbox" :value="item.valor" v-model="arrayRespuestas" :disabled="item.bloqueo">{{item.nombre}}
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-check" v-for="(item,index) in respuestas" :key="index" >
-                                <label class="form-check-label" v-if="index>12">
-                                    <input class="form-check-input" name="rptas" type="checkbox" :value="item.valor" v-model="arrayRespuestas" :disabled="item.bloqueo">{{item.nombre}}
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                    <label for="ubic" class="col-form-label text-dark text-righ"><b>Gestiones Mes</b></label>
-                    <div class="form-check" v-for="(item,index) in gestiones" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayGestiones" :disabled="item.bloqueo">
-                            {{item.nombre}}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-3 col-lg-3 col-xl-3">
-                    <label for="ubic" class="col-form-label text-dark text-righ"><b>Última Gestión</b></label>
-                    <div class="form-check" v-for="(item,index) in fechas" :key="index">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name="ubics" type="checkbox" :value="item.valor" v-model="arrayFechas">
-                            {{item.nombre}}
-                        </label>
-                    </div>
+                <div class="tab-pane fade pb-5" id="nav-codigos" role="tabpanel" aria-labelledby="nav-cartera-tab">
+                    <input type="file" class="form-control" accept=".xlsx" @change="obtenerArchivo">
                 </div>
             </div>
             <div class="row">
@@ -305,7 +318,7 @@
                     </div>
                     <div class="col-md-6">
                         <!-- seleccion -->
-                        <div class="row">
+                        <div class="row" v-if="opcionTab==1">
                             <div class="col-md-10">
                                 <div class="d-flex" style="gap:10px;">
                                     <div class="form-group" style="width:40%">
@@ -346,7 +359,7 @@
                                     <td class="text-center" id="colcant" v-if="ajustes.cantidad==''">{{formatoNumero(item.cantidad,'C')}}</td>
                                     <td class="text-center" id="colcant" v-else>{{ajustes.cantidad>=item.cantidad?formatoNumero(item.cantidad,'C'):formatoNumero(ajustes.cantidad,'C')}}</td>
                                     <td class="text-center border-0 bg-white">
-                                        <div class="form-check">
+                                        <div class="form-check" v-if="opcionTab==1">
                                             <input class="form-check-input" name="clientes" type="checkbox" :id="'check'+index" checked @change="seleccionCheck(index)">
                                         </div>
                                     </td>
@@ -424,6 +437,8 @@
                 totales:{tramo:'',departamento:'',prioridad:'',situacion:'',call:'',sueldo:'',capital:'',deuda:'',importe:'',ubicabilidad:'',entidad:'',tipo:'',score:'',respuesta:'',respuestaNombres:'',fechas:'',gestiones:''},
                 ajustes:{cantidad:'',orden:''},
                 cantidadClick:0,
+                opcionTab:1,
+                archivo:''
             }
         },
         created(){
@@ -506,48 +521,77 @@
                 this.totales.gestiones=this.gestiones.length;
             },
             verResumen(){
-                this.totalSelecionado=0;
-                this.datos.total=0;
-                this.arrayUsuarios=[];
-                this.usuarios=[];
-                var parametros={
-                    cartera:this.datos.cartera,
-                    tramo:this.arrayTramos.length==this.totales.tramo?["'TODOS'"]:this.arrayTramos,
-                    departamento:this.arrayDepartamentos.length==this.totales.departamento?["'TODOS'"]:this.arrayDepartamentos,
-                    prioridad:this.arrayPrioridad.length==this.totales.prioridad?["'TODOS'"]:this.arrayPrioridad,
-                    situacion:this.arraySituacion.length==this.totales.situacion?["'TODOS'"]:this.arraySituacion,
-                    call:this.arrayCall.length==this.totales.call?["'TODOS'"]:this.arrayCall,
-                    sueldo:this.arraySueldos.length==this.totales.sueldo?["'TODOS'"]:this.arraySueldos,
-                    deuda:this.arrayDeuda.length==this.totales.deuda?["'TODOS'"]:this.arrayDeuda,
-                    capital:this.arrayCapital.length==this.totales.capital?["'TODOS'"]:this.arrayCapital,
-                    importe:this.arrayImporte.length==this.totales.importe?["'TODOS'"]:this.arrayImporte,
-                    ubicabilidad:this.arrayUbicabilidad.length==this.totales.ubicabilidad?["'TODOS'"]:this.arrayUbicabilidad,
-                    entidad:this.arrayEntidades.length==this.totales.entidad?["'TODOS'"]:this.arrayEntidades,
-                    tipoCliente:this.arrayTipo.length==this.totales.tipo?["'TODOS'"]:this.arrayTipo,
-                    score:this.arrayScore.length==this.totales.score?["'TODOS'"]:this.arrayScore,
-                    respuestas:this.arrayRespuestas.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestas,
-                    fechas:this.arrayFechas.length==this.totales.fechas?["'TODOS'"]:this.arrayFechas,
-                    gestiones:this.arrayGestiones.length==this.totales.gestiones?["'TODOS'"]:this.arrayGestiones
-                };
                 if(this.datos.cartera!='' && this.datos.nombre!='' && this.datos.fechaInicio!='' && this.datos.fechaFin!=''){
-                     this.spinnerbuscar=true;
-                    axios.post("resumenPlan",parametros).then(res=>{
-                        if(res.data){
-                            this.usuarios=res.data;
-                            this.spinnerbuscar=false;
-                            for(var i=0;i<this.carteras.length;i++){
-                                if(this.datos.cartera==this.carteras[i].id){
-                                    this.datos.nombreCartera=this.carteras[i].cartera;
+                    if(this.opcionTab==1){
+                        this.totalSelecionado=0;
+                        this.datos.total=0;
+                        this.arrayUsuarios=[];
+                        this.usuarios=[];
+                        var parametros={
+                            cartera:this.datos.cartera,
+                            tramo:this.arrayTramos.length==this.totales.tramo?["'TODOS'"]:this.arrayTramos,
+                            departamento:this.arrayDepartamentos.length==this.totales.departamento?["'TODOS'"]:this.arrayDepartamentos,
+                            prioridad:this.arrayPrioridad.length==this.totales.prioridad?["'TODOS'"]:this.arrayPrioridad,
+                            situacion:this.arraySituacion.length==this.totales.situacion?["'TODOS'"]:this.arraySituacion,
+                            call:this.arrayCall.length==this.totales.call?["'TODOS'"]:this.arrayCall,
+                            sueldo:this.arraySueldos.length==this.totales.sueldo?["'TODOS'"]:this.arraySueldos,
+                            deuda:this.arrayDeuda.length==this.totales.deuda?["'TODOS'"]:this.arrayDeuda,
+                            capital:this.arrayCapital.length==this.totales.capital?["'TODOS'"]:this.arrayCapital,
+                            importe:this.arrayImporte.length==this.totales.importe?["'TODOS'"]:this.arrayImporte,
+                            ubicabilidad:this.arrayUbicabilidad.length==this.totales.ubicabilidad?["'TODOS'"]:this.arrayUbicabilidad,
+                            entidad:this.arrayEntidades.length==this.totales.entidad?["'TODOS'"]:this.arrayEntidades,
+                            tipoCliente:this.arrayTipo.length==this.totales.tipo?["'TODOS'"]:this.arrayTipo,
+                            score:this.arrayScore.length==this.totales.score?["'TODOS'"]:this.arrayScore,
+                            respuestas:this.arrayRespuestas.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestas,
+                            fechas:this.arrayFechas.length==this.totales.fechas?["'TODOS'"]:this.arrayFechas,
+                            gestiones:this.arrayGestiones.length==this.totales.gestiones?["'TODOS'"]:this.arrayGestiones
+                        };
+                        
+                        this.spinnerbuscar=true;
+                        axios.post("resumenPlan",parametros).then(res=>{
+                            if(res.data){
+                                this.usuarios=res.data;
+                                this.spinnerbuscar=false;
+                                for(var i=0;i<this.carteras.length;i++){
+                                    if(this.datos.cartera==this.carteras[i].id){
+                                        this.datos.nombreCartera=this.carteras[i].cartera;
+                                    }
                                 }
+                                for(var i=0;i<this.usuarios.length;i++){
+                                    this.datos.total+=parseInt(this.usuarios[i].cantidad);
+                                    this.arrayUsuarios.push("'"+this.usuarios[i].usuario+"'");
+                                }
+                                this.totalSelecionado=this.datos.total;
+                                this.viewForm=false;
                             }
-                            for(var i=0;i<this.usuarios.length;i++){
-                                this.datos.total+=parseInt(this.usuarios[i].cantidad);
-                                this.arrayUsuarios.push("'"+this.usuarios[i].usuario+"'");
-                            }
-                            this.totalSelecionado=this.datos.total;
-                            this.viewForm=false;
+                        })       
+                    }
+
+                    if(this.opcionTab==2){
+                        if(this.archivo!=""){
+                            this.spinnerbuscar=true;
+                            let formData= new FormData();
+                            formData.append("cartera",this.datos.cartera);
+                            formData.append("archivo",this.archivo);
+                            axios.post("resumenPlanArchivo",formData).then(res=>{
+                                if(res.data){
+                                    this.usuarios=res.data;
+                                    this.spinnerbuscar=false;
+                                    for(var i=0;i<this.carteras.length;i++){
+                                        if(this.datos.cartera==this.carteras[i].id){
+                                            this.datos.nombreCartera=this.carteras[i].cartera;
+                                        }
+                                    }
+                                    for(var i=0;i<this.usuarios.length;i++){
+                                        this.datos.total+=parseInt(this.usuarios[i].cantidad);
+                                        this.arrayUsuarios.push("'"+this.usuarios[i].usuario+"'");
+                                    }
+                                    this.totalSelecionado=this.datos.total;
+                                    this.viewForm=false;
+                                }
+                            });
                         }
-                    })
+                    }
                 }
             },
             seleccionCheck(index){
@@ -579,54 +623,78 @@
                 });
             },
             generarPlan(){
-                this.arrayRespuestasNombres=[];
                 this.loadingModal=true;
                 $('#modalCarga').modal({backdrop: 'static', keyboard: false});
-                this.arrayRespuestas.forEach(el => {
-                    this.rpta.forEach(r => {
-                        if(r.res_id==el){
-                            this.arrayRespuestasNombres.push(r.res_des);
+                if(this.opcionTab==1){
+                    this.arrayRespuestasNombres=[];
+                    this.arrayRespuestas.forEach(el => {
+                        this.rpta.forEach(r => {
+                            if(r.res_id==el){
+                                this.arrayRespuestasNombres.push(r.res_des);
+                            }
+                        });
+                    });
+                    var parametros={
+                        cartera:this.datos.cartera,
+                        plan:this.datos.nombre,
+                        nombreCartera:this.datos.nombreCartera,
+                        total:this.totalSelecionado,
+                        speech:this.datos.speech,
+                        fechaInicio:this.datos.fechaInicio,
+                        fechaFin:this.datos.fechaFin,
+                        usuarios:this.arrayUsuarios,
+                        tramo:this.arrayTramos.length==this.totales.tramo?["'TODOS'"]:this.arrayTramos,
+                        departamento:this.arrayDepartamentos.length==this.totales.departamento?["'TODOS'"]:this.arrayDepartamentos,
+                        prioridad:this.arrayPrioridad.length==this.totales.prioridad?["'TODOS'"]:this.arrayPrioridad,
+                        situacion:this.arraySituacion.length==this.totales.situacion?["'TODOS'"]:this.arraySituacion,
+                        call:this.arrayCall.length==this.totales.call?["'TODOS'"]:this.arrayCall,
+                        sueldo:this.arraySueldos.length==this.totales.sueldo?["'TODOS'"]:this.arraySueldos,
+                        deuda:this.arrayDeuda.length==this.totales.deuda?["'TODOS'"]:this.arrayDeuda,
+                        capital:this.arrayCapital.length==this.totales.capital?["'TODOS'"]:this.arrayCapital,
+                        importe:this.arrayImporte.length==this.totales.importe?["'TODOS'"]:this.arrayImporte,
+                        ubicabilidad:this.arrayUbicabilidad.length==this.totales.ubicabilidad?["'TODOS'"]:this.arrayUbicabilidad,
+                        entidad:this.arrayEntidades.length==this.totales.entidad?["'TODOS'"]:this.arrayEntidades,
+                        tipoCliente:this.arrayTipo.length==this.totales.tipo?["'TODOS'"]:this.arrayTipo,
+                        score:this.arrayScore.length==this.totales.score?["'TODOS'"]:this.arrayScore,
+                        respuestas:this.arrayRespuestas.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestas,
+                        respuestasNombres:this.arrayRespuestasNombres.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestasNombres,
+                        fechas:this.arrayFechas.length==this.totales.fechas?["'TODOS'"]:this.arrayFechas,
+                        gestiones:this.arrayGestiones.length==this.totales.gestiones?["'TODOS'"]:this.arrayGestiones,
+                        orden:this.ajustes.orden,
+                        cantidad:this.ajustes.cantidad
+                    };
+                    axios.post("insertarPlan",parametros).then(res=>{
+                        if(res.data=="ok"){
+                            this.loadingModal=false;
+                            this.limpiarCampos();
+                            this.viewForm=true;
+                            setTimeout(() => $('#modalCarga').modal('hide'), 400);
+                            toastr.info('Plan de trabajo registrado con éxito', 'Registro Exitoso!',{"progressBar": true,"positionClass": "toast-bottom-right",});
                         }
                     });
-                });
-                var parametros={
-                    cartera:this.datos.cartera,
-                    plan:this.datos.nombre,
-                    nombreCartera:this.datos.nombreCartera,
-                    total:this.totalSelecionado,
-                    speech:this.datos.speech,
-                    fechaInicio:this.datos.fechaInicio,
-                    fechaFin:this.datos.fechaFin,
-                    usuarios:this.arrayUsuarios,
-                    tramo:this.arrayTramos.length==this.totales.tramo?["'TODOS'"]:this.arrayTramos,
-                    departamento:this.arrayDepartamentos.length==this.totales.departamento?["'TODOS'"]:this.arrayDepartamentos,
-                    prioridad:this.arrayPrioridad.length==this.totales.prioridad?["'TODOS'"]:this.arrayPrioridad,
-                    situacion:this.arraySituacion.length==this.totales.situacion?["'TODOS'"]:this.arraySituacion,
-                    call:this.arrayCall.length==this.totales.call?["'TODOS'"]:this.arrayCall,
-                    sueldo:this.arraySueldos.length==this.totales.sueldo?["'TODOS'"]:this.arraySueldos,
-                    deuda:this.arrayDeuda.length==this.totales.deuda?["'TODOS'"]:this.arrayDeuda,
-                    capital:this.arrayCapital.length==this.totales.capital?["'TODOS'"]:this.arrayCapital,
-                    importe:this.arrayImporte.length==this.totales.importe?["'TODOS'"]:this.arrayImporte,
-                    ubicabilidad:this.arrayUbicabilidad.length==this.totales.ubicabilidad?["'TODOS'"]:this.arrayUbicabilidad,
-                    entidad:this.arrayEntidades.length==this.totales.entidad?["'TODOS'"]:this.arrayEntidades,
-                    tipoCliente:this.arrayTipo.length==this.totales.tipo?["'TODOS'"]:this.arrayTipo,
-                    score:this.arrayScore.length==this.totales.score?["'TODOS'"]:this.arrayScore,
-                    respuestas:this.arrayRespuestas.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestas,
-                    respuestasNombres:this.arrayRespuestasNombres.length==this.totales.respuesta?["'TODOS'"]:this.arrayRespuestasNombres,
-                    fechas:this.arrayFechas.length==this.totales.fechas?["'TODOS'"]:this.arrayFechas,
-                    gestiones:this.arrayGestiones.length==this.totales.gestiones?["'TODOS'"]:this.arrayGestiones,
-                    orden:this.ajustes.orden,
-                    cantidad:this.ajustes.cantidad
-                };
-                axios.post("insertarPlan",parametros).then(res=>{
-                    if(res.data=="ok"){
-                        this.loadingModal=false;
-                        this.limpiarCampos();
-                        this.viewForm=true;
-                        setTimeout(() => $('#modalCarga').modal('hide'), 400);
-                        toastr.info('Plan de trabajo registrado con éxito', 'Registro Exitoso!',{"progressBar": true,"positionClass": "toast-bottom-right",});
-                    }
-                });
+                }
+                if(this.opcionTab==2){
+                    let formData= new FormData();
+                    formData.append("cartera",this.datos.cartera);
+                    formData.append("archivo",this.archivo);
+                    formData.append("plan",this.datos.nombre);
+                    formData.append("nombreCartera",this.datos.nombreCartera);
+                    formData.append("total",this.totalSelecionado);
+                    formData.append("speech",this.datos.speech);
+                    formData.append("fechaInicio",this.datos.fechaInicio);
+                    formData.append("fechaFin",this.datos.fechaFin);
+                    formData.append("usuarios[]",this.arrayUsuarios);
+                    axios.post("insertarPlanArchivo",formData).then(res=>{
+                        if(res.data=="ok"){
+                            this.loadingModal=false;
+                            this.limpiarCampos();
+                            this.archivo='';
+                            this.viewForm=true;
+                            setTimeout(() => $('#modalCarga').modal('hide'), 400);
+                            toastr.info('Plan de trabajo registrado con éxito', 'Registro Exitoso!',{"progressBar": true,"positionClass": "toast-bottom-right",});
+                        }
+                    });
+                }
             },
             limpiarCampos(){
                 this.datos.cartera='';
@@ -732,6 +800,13 @@
                         this.totales.score=this.score.length;
                     }
                 });
+            },
+            seleccionTab(i){
+                this.opcionTab=i;
+            },
+            obtenerArchivo(e){
+                let file=e.target.files;
+                this.archivo=file[0];
             },
             formatoNumero(num,tipo){
                 if(tipo=='M'){
