@@ -43,6 +43,7 @@
             <a href="{{route('resumengestion')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('resumengestion') ? 'menu-active' : '' }}">Resumen Gestión Diaria</a>
             <a href="{{route('resumengestionconsolidada')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('resumengestionconsolidada') ? 'menu-active' : '' }}">Resumen Gestión Consolidada</a>
             <a href="{{route('comparativocartera')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('comparativocartera') ? 'menu-active' : '' }}">Comparativo</a>
+            <a href="{{route('reporteestandar')}}" class="bg-blue-bold text- px-5 waves-effect {{ request()->is('reporteestandar') ? 'menu-active' : '' }}">Reporte Estándar</a>
         </div>
         <!-- timing y proyectado -->
         <a href="{{route('timingyproyectado')}}" class="px-4 waves-effect {{ request()->is('timingyproyectado') ? 'menu-active' : '' }}"><i class="fa fa-stopwatch pr-2"></i>Timing y Proyectado</a>

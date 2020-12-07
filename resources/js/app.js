@@ -33,6 +33,7 @@ Vue.component('reporte-primyult-gestion', require('./components/Indicadores/repo
 Vue.component('reporte-resumen-gestion', require('./components/Indicadores/reporteResumenGestion.vue').default);
 Vue.component('reporte-resumen-gestion-consolidada', require('./components/Indicadores/reporteResumenGestionConsolidada.vue').default);
 Vue.component('comparativo-cartera', require('./components/Indicadores/comparativoCartera.vue').default);
+Vue.component('reporte-estandar', require('./components/Indicadores/reporteEstandar.vue').default);
 Vue.component('timing-proyectado', require('./components/Indicadores/timingProyectado.vue').default);
 Vue.component('estados-pdps', require('./components/Indicadores/pdpsEstados.vue').default);
 Vue.component('estandar-pdps', require('./components/Indicadores/pdpsEstandar.vue').default);

@@ -1026,4 +1026,47 @@ class Reporte extends Model
             order by ges_cli_conf_fec asc
         "),$parametros);
     }
+
+    public static function reporteEstandarCartera(Request $rq){
+        $cartera=$rq->cartera;
+        $fechaInicio=$rq->fechaInicio;
+        $fechaFin=$rq->fechaFin;
+        return DB::connection('mysql')->select(DB::raw("
+                select 
+                    gestores,
+                    if(gestor_conf=-1,0,gestor_conf) as gestor_conf,
+                    if(gestor_comp=-1,0,gestor_comp) as gestor_comp,
+                    if(contacto is null,0,contacto) as contacto,
+                    if(pdp is null,0,pdp) as pdp,
+                    if(conf is null,0,conf) as conf
+                from
+                (SELECT
+                    count(DISTINCT firma) as gestores,
+                    count(DISTINCT firma_conf)-1 as gestor_conf,
+                    count(DISTINCT firma_comp)-1 as gestor_comp,
+                    count(ges_cli_id) as contacto,
+                    sum(ges_cli_com_can) as pdp,
+                    sum(ges_cli_conf_can) as conf
+                FROM
+                (SELECT
+                    ges_cli_id,
+                    ges_cli_conf_can,
+                    if(ges_cli_conf_can<=0,'',RIGHT(TRIM( TRAILING ' ' FROM  ges_cli_det),3)) as firma_conf,
+                    ges_cli_com_can,
+                    if(ges_cli_com_can<=0,'',RIGHT(TRIM( TRAILING ' ' FROM  ges_cli_det),3)) as firma_comp,
+                    RIGHT(TRIM( TRAILING ' ' FROM  ges_cli_det),3) as firma
+                FROM
+                    creditoy_cobranzas.cliente c
+                INNER JOIN creditoy_cobranzas.gestion_cliente g on c.cli_id=g.cli_id_FK
+                INNER JOIN creditoy_cobranzas.respuesta r on g.res_id_FK=r.res_id
+                WHERE 
+                    car_id_FK=:car
+                and ges_cli_fec BETWEEN :fecInicio and :fecFin
+                and res_ubi=0
+                )t
+                LEFT JOIN creditoy_cobranzas.sub_empleado s ON t.firma=s.emp_firma       
+                )tt
+        "),array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
+    }
 }
+

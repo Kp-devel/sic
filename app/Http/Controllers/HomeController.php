@@ -252,6 +252,18 @@ class HomeController extends Controller
             return view('errors.403');
         }
     }
+
+    public function indreporteestandar(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==5 || $tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            return view('admin.indicadores.reporteEstandar',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
+    
     
     public function timingyproyectado(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
