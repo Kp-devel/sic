@@ -22,7 +22,7 @@
                             <tr class="font-12"> 
                                 <td class="text-right pr-1">Ubicabilidad</td>
                                 <td class="pb-2">
-                                    <select class="form-control font-12 form-control-sm" v-model="ubicabilidad" @change="obtenerRespuestas()" :disabled="datos.telefono==''">
+                                    <select class="form-control font-12 form-control-sm" v-model="ubicabilidad" @change="obtenerRespuestas()">
                                         <option value="">Seleccionar</option>
                                         <option value="0">Contacto</option>
                                         <option value="1">No Contacto</option>
@@ -224,9 +224,9 @@
             },
             validacion(){
                 this.errorsDatos=[];
-                if(!this.datos.telefono){
-                    this.errorsDatos.push("Selecciona un número de teléfono");
-                }
+                // if(!this.datos.telefono){
+                //     this.errorsDatos.push("Selecciona un número de teléfono");
+                // }
                 if(!this.ubicabilidad){
                     this.errorsDatos.push("Selecciona una ubicabilidad");
                 }

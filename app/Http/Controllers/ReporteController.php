@@ -73,4 +73,8 @@ class ReporteController extends Controller
     public function detalleConfirmaciones($cartera){
         return Reporte::detalleConfirmaciones($cartera);
     }
+
+    public function reporteEstandarCartera(Request $rq){
+        return Reporte::reporteEstandarCartera($rq);
+    }
 }

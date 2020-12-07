@@ -14,7 +14,7 @@ class GestionController extends Controller
         $detalle=$rq->detalle;
         $monto=$rq->montoPDP;
         $fechapc=$rq->fechaPDP;
-        $tel=$rq->telefono;
+        $tel=isset($rq->telefono)?$rq->telefono:0;
         $resp=$rq->respuesta;
         $rec=$rq->rec;
         $fechaRec=$rq->fechaRec;
@@ -22,7 +22,7 @@ class GestionController extends Controller
         $id=$rq->id;
         $fechaGestion=Carbon::now();
 
-        if($tel!="" && $detalle!="" && $resp!="" && $id!=""){
+        if( $detalle!="" && $resp!="" && $id!=""){
             
             $validacion=Gestion::validarDetalleIdentico($rq);
 

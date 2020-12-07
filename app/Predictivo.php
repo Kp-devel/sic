@@ -548,16 +548,15 @@ class Predictivo extends Model
                             creditoy_predictivo.repositorio r
                     INNER JOIN creditoy_predictivo.predictivo p on r.pre_id_FK=p.pre_id
                     INNER JOIN creditoy_cobranzas.cliente c on r.rep_codigo=c.cli_cod
-                    LEFT JOIN creditoy_cobranzas.gestion_cliente g ON c.cli_id=g.cli_id_FK and ges_cli_fec BETWEEN p.pre_fec_inicio and p.pre_fec_fin 
-                    LEFT JOIN creditoy_cobranzas.empleado e ON p.pre_usuario=e.emp_cod and emp_est=0 and g.emp_id_FK=e.emp_id
+                    LEFT JOIN creditoy_cobranzas.empleado e ON p.pre_usuario=e.emp_cod and emp_est=0 
+                    LEFT JOIN creditoy_cobranzas.gestion_cliente g ON c.cli_id=g.cli_id_FK and ges_cli_fec BETWEEN p.pre_fec_inicio and p.pre_fec_fin and g.emp_id_FK=e.emp_id and rep_numero_sic=ges_cli_med
                     LEFT JOIN creditoy_cobranzas.respuesta re on g.res_id_FK=re.res_id
                     WHERE
                             pre_id_FK=:id
                             and cli_est=0
                             and cli_pas=0
-                            and c.car_id_FK=p.car_id_FK		
-                        AND (r.rep_estado_llamada NOT IN ('') OR r.rep_estado_llamada IS NOT NULL)
-                    GROUP BY cli_cod
+                            and c.car_id_FK=p.car_id_FK
+                            and rep_estado_llamada not in ('')
                     )t	
                     GROUP BY respuesta
                     ORDER BY ubicabilidad
@@ -573,4 +572,10 @@ class Predictivo extends Model
             and rep_codigo=:cod
         ",array("id"=>$idCampana,"res"=>$resultado,"num"=>$numero,"cod"=>$codigo));
     }
+
+
+
+
 }
+
+

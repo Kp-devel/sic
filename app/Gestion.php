@@ -14,7 +14,7 @@ class Gestion extends Model
         $monto=isset($rq->montoPDP)?$rq->montoPDP:'';
         $fechapc=isset($rq->fechaPDP)?$rq->fechaPDP:'';
         $moneda=$rq->moneda;
-        $tel=$rq->telefono;
+        $tel=isset($rq->telefono)?$rq->telefono:'0';
         $resp=$rq->respuesta;
         $id=$rq->id;
         $idEmpleado=auth()->user()->emp_id;

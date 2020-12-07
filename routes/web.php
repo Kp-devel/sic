@@ -168,6 +168,11 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/comparativocartera', 'HomeController@indcomparativocartera')->name('comparativocartera');
     Route::post('reportecomparativocartera', 'ReporteController@reportecomparativocartera');
 
+    //Reporte estandar
+    Route::get('/reporteestandar', 'HomeController@indreporteestandar')->name('reporteestandar');
+    Route::post('/reporteEstandarCartera', 'ReporteController@reporteEstandarCartera')->name('reporteEstandarCartera');
+    
+
     // Timing y Proyectado ---------------------------------------------------------------------------------------------------------------------
     Route::get('/timingyproyectado', 'HomeController@timingyproyectado')->name('timingyproyectado');
     Route::get('timingProyectado/{cartera}', 'TimingController@timingProyectado');
