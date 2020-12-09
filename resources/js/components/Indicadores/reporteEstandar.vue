@@ -28,68 +28,71 @@
                 </a>
             </div>
         </div>
-        <div class="row py-3" v-if="viewTabla">
-            <div class="col-md-3">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <tr>
-                            <td colspan="2" class="bg-blue-3 text-white text-center">CONTACTOS</td>
-                        </tr>
-                        <tr>
-                            <td class="bg-gray px-2">{{this.resultados.gestores}} Gestores</td>
-                            <td class="text-center">{{formatoNumero(this.resultados.estandar,'C')}}</td>
-                        </tr>  
-                        <tr>
-                            <td class="bg-gray px-2">Resultados</td>
-                            <td class="text-center">{{formatoNumero(this.resultados.cantidad,'C')}}</td>
-                        </tr>  
-                        <tr>
-                            <td class="bg-gray px-2">Desfase</td>
-                            <td class="text-center">{{formatoNumero(this.resultados.estandar-this.resultados.cantidad,'C')}}</td>
-                        </tr>  
-                    </table>
+        <div v-if="viewTabla" v-for="(item,index) in datos" :key="index">
+            <p class="font-bold mb-0" v-if="item.cartera">{{item.cartera}}</p>
+            <div class="row py-3">
+                <div class="col-md-3">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <tr>
+                                <td colspan="2" class="bg-blue-3 text-white text-center">CONTACTOS</td>
+                            </tr>
+                            <tr>
+                                <td class="bg-gray px-2">{{item.gestores}} Gestores</td>
+                                <td class="text-center">{{formatoNumero(item.estandar_contacto,'C')}}</td>
+                            </tr>  
+                            <tr>
+                                <td class="bg-gray px-2">Resultados</td>
+                                <td class="text-center">{{formatoNumero(item.contacto,'C')}}</td>
+                            </tr>  
+                            <tr>
+                                <td class="bg-gray px-2">Desfase</td>
+                                <td class="text-center">{{formatoNumero(item.estandar_contacto-item.contacto,'C')}}</td>
+                            </tr>  
+                        </table>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <tr>
-                            <td colspan="2" class="bg-blue-3 text-white text-center">PDPS</td>
-                        </tr>
-                        <tr>
-                            <td class="bg-gray px-2">{{this.resultados.gestoresPdps}} Gestores</td>
-                            <td class="text-center">{{formatoNumero(this.resultados.estandarPdps,'M')}}</td>
-                        </tr>  
-                        <tr>
-                            <td class="bg-gray px-2">Resultados</td>
-                            <td class="text-center">{{formatoNumero(this.resultados.pdps,'M')}}</td>
-                        </tr>  
-                        <tr>
-                            <td class="bg-gray px-2">Desfase</td>
-                            <td class="text-center">{{formatoNumero(this.resultados.estandarPdps-this.resultados.pdps,'M')}}</td>
-                        </tr>  
-                    </table>
+                <div class="col-md-3">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <tr>
+                                <td colspan="2" class="bg-blue-3 text-white text-center">PDPS</td>
+                            </tr>
+                            <tr>
+                                <td class="bg-gray px-2">{{item.gestores}} Gestores</td>
+                                <td class="text-center">{{formatoNumero(item.estandar_pdp,'M')}}</td>
+                            </tr>  
+                            <tr>
+                                <td class="bg-gray px-2">Resultados</td>
+                                <td class="text-center">{{formatoNumero(item.pdps,'M')}}</td>
+                            </tr>  
+                            <tr>
+                                <td class="bg-gray px-2">Desfase</td>
+                                <td class="text-center">{{formatoNumero(item.estandar_pdp-item.pdps,'M')}}</td>
+                            </tr>  
+                        </table>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <tr>
-                            <td colspan="2" class="bg-blue-3 text-white text-center">CONFIRMACIONES</td>
-                        </tr>
-                        <tr>
-                            <td class="bg-gray px-2">{{this.resultados.gestoresConf}} Gestores</td>
-                            <td class="text-center">{{formatoNumero(this.resultados.estandarConf,'M')}}</td>
-                        </tr>  
-                        <tr>
-                            <td class="bg-gray px-2">Resultados</td>
-                            <td class="text-center">{{formatoNumero(this.resultados.conf,'M')}}</td>
-                        </tr>  
-                        <tr>
-                            <td class="bg-gray px-2">Desfase</td>
-                            <td class="text-center">{{formatoNumero(this.resultados.estandarConf-this.resultados.conf,'M')}}</td>
-                        </tr>  
-                    </table>
+                <div class="col-md-3">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <tr>
+                                <td colspan="2" class="bg-blue-3 text-white text-center">CONFIRMACIONES</td>
+                            </tr>
+                            <tr>
+                                <td class="bg-gray px-2">{{item.gestores}} Gestores</td>
+                                <td class="text-center">{{formatoNumero(item.estandar_conf?item.estandar_conf:0,'M')}}</td>
+                            </tr>  
+                            <tr>
+                                <td class="bg-gray px-2">Resultados</td>
+                                <td class="text-center">{{formatoNumero(item.conf,'M')}}</td>
+                            </tr>  
+                            <tr>
+                                <td class="bg-gray px-2">Desfase</td>
+                                <td class="text-center">{{formatoNumero(item.estandar_conf-item.conf,'M')}}</td>
+                            </tr>  
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -107,7 +110,7 @@
                 viewTabla:false,
                 mensajes:{cartera:'',fecha:''},
                 spinnerBuscar:false,
-                resultados:{gestores:0,cantidad:0,estandar:0,gestoresPdps:0,pdps:0,estandarPdps:0,gestoresConf:0,conf:0,estandarConf:0}
+                // resultados:{gestores:0,cantidad:0,estandar:0,gestoresPdps:0,pdps:0,estandarPdps:0,gestoresConf:0,conf:0,estandarConf:0}
             }
         },
         methods:{
@@ -119,14 +122,6 @@
                     axios.post("reporteEstandarCartera",this.busqueda).then(res=>{
                         if(res.data){
                             this.datos=res.data;
-                            this.datos.forEach(d => {
-                                this.resultados.cantidad=d.contacto;
-                                this.resultados.gestores=d.gestores;
-                                this.resultados.gestoresConf=d.gestor_conf;
-                                this.resultados.gestoresPdps=d.gestor_comp;
-                                this.resultados.pdps=d.pdp;
-                                this.resultados.conf=d.conf;
-                            });
                             this.spinnerBuscar=false;
                             this.viewTabla=true;
                         }
