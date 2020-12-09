@@ -1032,41 +1032,90 @@ class Reporte extends Model
         $fechaInicio=$rq->fechaInicio;
         $fechaFin=$rq->fechaFin;
         return DB::connection('mysql')->select(DB::raw("
-                select 
-                    gestores,
-                    if(gestor_conf=-1,0,gestor_conf) as gestor_conf,
-                    if(gestor_comp=-1,0,gestor_comp) as gestor_comp,
-                    if(contacto is null,0,contacto) as contacto,
-                    if(pdp is null,0,pdp) as pdp,
-                    if(conf is null,0,conf) as conf
-                from
-                (SELECT
-                    count(DISTINCT firma) as gestores,
-                    count(DISTINCT firma_conf)-1 as gestor_conf,
-                    count(DISTINCT firma_comp)-1 as gestor_comp,
-                    count(ges_cli_id) as contacto,
-                    sum(ges_cli_com_can) as pdp,
-                    sum(ges_cli_conf_can) as conf
-                FROM
-                (SELECT
-                    ges_cli_id,
-                    ges_cli_conf_can,
-                    if(ges_cli_conf_can<=0,'',RIGHT(TRIM( TRAILING ' ' FROM  ges_cli_det),3)) as firma_conf,
-                    ges_cli_com_can,
-                    if(ges_cli_com_can<=0,'',RIGHT(TRIM( TRAILING ' ' FROM  ges_cli_det),3)) as firma_comp,
-                    RIGHT(TRIM( TRAILING ' ' FROM  ges_cli_det),3) as firma
-                FROM
-                    creditoy_cobranzas.cliente c
-                INNER JOIN creditoy_cobranzas.gestion_cliente g on c.cli_id=g.cli_id_FK
-                INNER JOIN creditoy_cobranzas.respuesta r on g.res_id_FK=r.res_id
-                WHERE 
-                    car_id_FK=:car
-                and ges_cli_fec BETWEEN :fecInicio and :fecFin
-                and res_ubi=0
-                )t
-                LEFT JOIN creditoy_cobranzas.sub_empleado s ON t.firma=s.emp_firma       
-                )tt
-        "),array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
+                    SELECT
+                        (
+                            SELECT
+                                    count(DISTINCT emp_tel_id_FK)
+                            FROM
+                                    creditoy_cobranzas.cliente cc
+                            INNER JOIN creditoy_cobranzas.empleado ee on cc.emp_tel_id_FK=ee.emp_id
+                            WHERE cli_est=0 and cli_pas=0 and 
+                            (case when cc.car_id_FK=34 and cal_id_FK=1 then  341=ttt.cartera
+                                  when cc.car_id_FK=34 and cal_id_FK=2 then  342=ttt.cartera
+                                  ELSE cc.car_id_FK=ttt.cartera
+                            END)
+                            and emp_tip_acc=2
+                            and emp_ges=1
+                        ) gestores,
+                        case when cartera=341 then 'CALL 01'
+                                when cartera=342 then 'CALL 02'
+                                ELSE ''
+                        END as cartera,
+                        contacto,
+                        pdps,
+                        conf,
+                        estandar_contacto,
+                        estandar_pdp,
+                        (
+                            SELECT
+                                if(proyectado_ideal is null,0,proyectado_ideal)
+                            FROM
+                                creditoy_reporte.proyectado p
+                            WHERE
+                                p.cartera = idcartera
+                            AND p.fecha = date(:fecFin2)
+                            AND estado = 0
+                        ) estandar_conf
+                    FROM
+                    (SELECT
+                        cartera,
+                        idcartera,
+                        if(contacto is null,0,contacto) as contacto,
+                        if(pdp is null,0,pdp) as pdps,
+                        if(conf is null,0,conf) as conf,
+                        car_est_contacto as estandar_contacto,
+                        car_est_pdp as estandar_pdp,
+                        car_est_conf as estandar_conf
+                        -- round(car_est_contacto/11) as estandar_contacto,
+                        -- round(car_est_pdp/11) as estandar_pdp,
+                        -- round(car_est_conf/11) as estandar_conf,
+                        -- left(TIMEDIFF('2020-12-07 19:00:00','2020-12-07 08:00:00'),2) as horas
+                    FROM
+                        (SELECT
+                                        (case when idcartera=34 and idcall=1 THEN 341
+                                                when idcartera=34 and idcall=2 THEN 342
+                                                ELSE idcartera
+                                        END )as cartera,	
+                                        idcartera,
+                                        count(ges_cli_id) as contacto,
+                                        sum(ges_cli_com_can) as pdp,
+                                        sum(ges_cli_conf_can) as conf
+                                FROM
+                                (
+                                        SELECT 
+                                                car_id_FK as idcartera,	
+                                                if(car_id_FK=34,cal_id_FK,'') as idcall,
+                                                ges_cli_id,
+                                                ges_cli_com_can,
+                                                ges_cli_conf_can
+                                        FROM
+                                                        creditoy_cobranzas.cliente c
+                                        INNER JOIN creditoy_cobranzas.gestion_cliente g on c.cli_id=g.cli_id_FK
+                                        INNER JOIN creditoy_cobranzas.empleado e ON g.emp_id_FK=e.emp_id
+                                        INNER JOIN creditoy_cobranzas.respuesta r on g.res_id_FK=r.res_id
+                                        WHERE 
+                                                car_id_FK=:car
+                                        and ges_cli_fec BETWEEN :fecInicio and :fecFin
+                                        and res_ubi=0
+                                        and emp_est=0
+                                        and emp_tip_acc=2
+                                        and emp_ges=1
+                                )tt
+                                GROUP BY idcartera,idcall
+                        )t 
+                    LEFT JOIN creditoy_reporte.cartera_estandar ec on ec.car_id_FK=t.cartera
+                    )ttt
+       "),array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin,"fecFin2"=>$fechaFin));
     }
 }
 
