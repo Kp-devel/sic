@@ -571,7 +571,7 @@ class Plan extends Model
         $cartera=session()->get('datos')->idcartera;
         $fec_actual=Carbon::now();
         return DB::connection('mysql')->select(DB::raw("
-                    select date(fecha_i) as fechaInicio 
+                    select fecha_i as fechaInicio,fecha_f as fechaFin
                     from indicadores.plan
                     WHERE id_cartera in (:car)
                     and fecha_i<=:fec1 and fecha_f >= :fec2
