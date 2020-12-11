@@ -398,7 +398,7 @@
                                                 <a href="" class="btn-phone" @click.prevent="detalle(item.id)"><i class="fa fa-phone fa-1x"></i></a>
                                             </td>
                                             <td class="border-0 bg-white rounded-0 px-0" style="min-width:0.1rem" v-if="busqueda.camp==''">
-                                                <i class="fa fa-check text-green" v-if="item.fecha_ges==fecha_hoy"></i>
+                                                <i class="fa fa-check text-green" v-if="item.fecha_gestion==fecha_hoy"></i>
                                             </td>
                                             <td class="border-0 bg-white rounded-0 px-0" style="min-width:0.1rem" v-else>
                                                 <i class="fa fa-check text-green" v-if="item.fecha_ges>=fecha_camp_inicio && item.fecha_ges<=fecha_camp_fin"></i>

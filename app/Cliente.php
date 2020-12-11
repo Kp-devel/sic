@@ -81,6 +81,7 @@ class Cliente extends Model
                     if(ges_cli_med is null,'-',ges_cli_med) as telefono,
                     if(res_id_FK is null,'Sin Gestión',res_des) as ult_resp,
                     ges_cli_fec as fecha_ges,
+                    date(ges_cli_fec) as fecha_gestion,
                     cli_ema as email,
                     concat(emp_cod,' - ',emp_nom) as gestor,
                     car_nom as cartera
