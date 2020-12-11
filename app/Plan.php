@@ -530,7 +530,7 @@ class Plan extends Model
                 format(sum(gestiones)/if(cliente,count(DISTINCT cliente),0),2) as intensidad
             FROM 
             (SELECT
-                if(gg.res_id_FK in (2,37,33,10,1,8,43,39,7,3,5,9,34,17,21,18,28,30,35,36,46,47,48,49,26) AND (gg.ges_cli_fec between :fecInicio1 and :fecFin1),cli_cod,null) as contacto,
+                if(gg.res_id_FK in (2,37,33,10,1,8,43,39,7,3,5,9,34,17,21,18,28,30,35,36,46,47,48,49) AND (gg.ges_cli_fec between :fecInicio1 and :fecFin1),cli_cod,null) as contacto,
                 if(ges_cli_tel_id_FK,1,0) as gestiones,
                 cli_cod as cliente,
                 if(g.res_id_FK in (1,43),1,0) as pdp,

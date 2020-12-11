@@ -52,6 +52,10 @@ Vue.component('form-gestiones', require('./components/Predictivo/formGestiones.v
 Vue.component('form-predictivo', require('./components/Predictivo/formPredictivo.vue').default);
 Vue.component('lista-predictivo', require('./components/Predictivo/listaPredictivo.vue').default);
 
+// mantenimiento
+Vue.component('form-empleado', require('./components/Mantenimiento/formEmpleado.vue').default);
+Vue.component('lista-empleados', require('./components/Mantenimiento/listaEmpleado.vue').default);
+
 const app = new Vue({
     el: '#app',
 });
