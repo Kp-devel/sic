@@ -523,7 +523,7 @@ class Predictivo extends Model
                     and emp_est=0
                     and emp_tel_id_FK not in (e.emp_id)
                 )t
-                INNER JOIN empleado ee on t.idEmpleado=ee.emp_id
+                LEFT JOIN empleado ee on t.idEmpleado=ee.emp_id
                 WHERE emp_est=0
                 GROUP BY idEmpleado
         "),array("id"=>$idCampana));
@@ -535,31 +535,90 @@ class Predictivo extends Model
                         IF(ubicabilidad IS NULL,'INTENTOS MARCADOR',ubicabilidad) as ubicabilidad,
                         respuesta,
                         if(respuesta='Clientes con Intento de Marcado',sum(intento_llamada),sum(llamada)) as clientes
+                    from
+                    (
+                    SELECT
+                        IF(ubicabilidad IS NULL,'INTENTOS MARCADOR',ubicabilidad) as ubicabilidad,
+                        codigo,
+                        respuesta,
+                        PRIORIDAD,
+                        if(PRIORIDAD=32,1,0) as intento_llamada,
+                        if(PRIORIDAD<>32,1,0) as llamada,
+                        @ac:=CASE WHEN @rng=codigo THEN @ac + 1  ELSE 1 END AS AC,
+                        @rng:=codigo
                     FROM
-                    (SELECT
-                        if(res_des is null,'Clientes con Intento de Marcado',res_des) as respuesta,
-                        CASE when res_ubi=0 then 'CONTACTO'
-                                when res_ubi=1 then 'NO CONTACTO'
-                                when res_ubi=2 then 'NO DISPONIBLE'
-                        END as ubicabilidad,
-                        if(res_id_FK is null || ges_cli_det='no contesta - PREDICTIVO',1,0) as intento_llamada,
-                        if(res_id_FK is not null and ges_cli_det not in('no contesta - PREDICTIVO'),1,0) as llamada
-                    FROM
-                            creditoy_predictivo.repositorio r
-                    INNER JOIN creditoy_predictivo.predictivo p on r.pre_id_FK=p.pre_id
-                    INNER JOIN creditoy_cobranzas.cliente c on r.rep_codigo=c.cli_cod
-                    LEFT JOIN creditoy_cobranzas.empleado e ON p.pre_usuario=e.emp_cod and emp_est=0 
-                    LEFT JOIN creditoy_cobranzas.gestion_cliente g ON c.cli_id=g.cli_id_FK and ges_cli_fec BETWEEN p.pre_fec_inicio and p.pre_fec_fin and g.emp_id_FK=e.emp_id and rep_numero_sic=ges_cli_med
-                    LEFT JOIN creditoy_cobranzas.respuesta re on g.res_id_FK=re.res_id
-                    WHERE
+                        (SELECT
+                                cli_cod as codigo,
+                                if(res_des is null,'Clientes con Intento de Marcado',res_des) as respuesta,
+                                CASE when res_ubi=0 then 'CONTACTO'
+                                                when res_ubi=1 then 'NO CONTACTO'
+                                                when res_ubi=2 then 'NO DISPONIBLE'
+                                END as ubicabilidad,
+                                CASE
+                                    when g.res_id_FK=38 then 1
+                                    when g.res_id_FK=41 then 2
+                                    when g.res_id_FK=2 then 3
+                                    when g.res_id_FK=1 then 4
+                                    when g.res_id_FK=43 then 5
+                                    when g.res_id_FK=37 then 6
+                                    when g.res_id_FK=33 then 7
+                                    when g.res_id_FK=36 then 8
+                                    when g.res_id_FK=10 then 9
+                                    when g.res_id_FK=8 then 10
+                                    when g.res_id_FK=7 then 11
+                                    when g.res_id_FK=39 then 12
+                                    when g.res_id_FK=22 then 13
+                                    when g.res_id_FK=6 then 14
+                                    when g.res_id_FK=34 then 15
+                                    when g.res_id_FK=35 then 16
+                                    when g.res_id_FK=17 then 17
+                                    when g.res_id_FK=21 then 18
+                                    when g.res_id_FK=32 then 19
+                                    when g.res_id_FK=19 then 20
+                                    when g.res_id_FK=26 then 21
+                                    when g.res_id_FK=27 then 22
+                                    when g.res_id_FK=13 then 23
+                                    when g.res_id_FK=12 then 24
+                                    when g.res_id_FK=15 then 25
+                                    when g.res_id_FK=16 then 26
+                                    when g.res_id_FK=14 then 27
+                                    when g.res_id_FK=45 then 28
+                                    when g.res_id_FK=44 then 29
+                                    when g.res_id_FK=4 then 30
+                                    when g.res_id_FK=11 then 31
+                                    else 32
+                                END AS PRIORIDAD,
+                                res_id_FK
+                        FROM
+                                        creditoy_predictivo.repositorio r
+                        INNER JOIN creditoy_predictivo.predictivo p on r.pre_id_FK=p.pre_id
+                        INNER JOIN creditoy_cobranzas.cliente c on r.rep_codigo=c.cli_cod
+                        LEFT JOIN creditoy_cobranzas.empleado e ON p.pre_usuario=e.emp_cod and emp_est=0 
+                        LEFT JOIN creditoy_cobranzas.gestion_cliente g ON c.cli_id=g.cli_id_FK and ges_cli_fec BETWEEN p.pre_fec_inicio and p.pre_fec_fin and g.emp_id_FK=e.emp_id and rep_numero_sic=ges_cli_med
+                        LEFT JOIN creditoy_cobranzas.respuesta re on g.res_id_FK=re.res_id
+                        WHERE
                             pre_id_FK=:id
                             and cli_est=0
                             and cli_pas=0
                             and c.car_id_FK=p.car_id_FK
                             and rep_estado_llamada not in ('')
-                    )t	
+                        order by codigo,PRIORIDAD asc
+                        )t		
+                        CROSS JOIN (SELECT @ac:= 0) AS dummy
+                        CROSS JOIN (
+                            SELECT
+                                @rng := rep_codigo
+                            FROM
+                                creditoy_predictivo.repositorio
+                            GROUP BY
+                                rep_codigo
+                            LIMIT 1
+                        ) AS dummy2
+                    )tt
+                    where
+                        AC=1
                     GROUP BY respuesta
-                    ORDER BY ubicabilidad
+                    ORDER BY ubicabilidad    
         "),array("id"=>$idCampana));
     }
 

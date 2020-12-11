@@ -56,6 +56,7 @@
                                 <td>
                                     <a href="" class="btn btn-outline-blue btn-sm" @click.prevent="detallePlan(index)" role="button" data-toggle="modal" data-target="#modalDetalle">Detalle</a>
                                     <a href="" class="btn btn-outline-blue btn-sm" @click.prevent="resultadosPlan(index)" role="button" data-toggle="modal" data-target="#modalResultados">Resultados</a>
+                                    <a href="" class="btn btn-outline-blue btn-sm" @click.prevent="modalFechas(item.id,item.nombre,item.fecha,item.fechaFin)" role="button" data-toggle="modal" data-target="#modalEditar"><i class="fa fa-edit fa-sm"></i></a>
                                 </td>
                             </tr>
                         </tbody>
@@ -165,6 +166,35 @@
                     </div>
                 </div>
             </div>
+
+            <!-- modal actualizacion de fechas -->
+        <div class="modal fade modal-carga" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-blue-3 text-white">
+                        <p class="modal-title text-white">{{actualizar.plan}}</p>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body px-3 pt-4 pb-5">
+                        <div class="form-group">
+                            <label for="">Fecha de Evento - Inicio</label>
+                            <input type="datetime-local" class="form-control" v-model="actualizar.fechaInicio">
+                        </div>
+                        <div class="form-group">
+                            <label for="">Fecha de Evento - Fin</label>
+                            <input type="datetime-local" class="form-control" v-model="actualizar.fechaFin">
+                        </div>
+                        <a href="" class="btn btn-outline-blue btn-block" @click.prevent="actualizarFechas()">
+                            <span v-if="spinnerFechas" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  
+                            Actualizar
+                        </a>
+                        <small class="text-success" v-if="mensaje">{{mensaje}}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -182,7 +212,10 @@
                 detalle:{cartera:'',clientes:'',fecha:'',detalle:[],speech:''},
                 resultados:{cobertura:'',contactabilidad:'',pdps:'',confirmaciones:'',intensidad:'',negociacion:'',campana:'',total:''},
                 idcampana:0,
-                gestor:''
+                gestor:'',
+                actualizar:{fechaInicio:'',fechaFin:'',idCampana:'',plan:''},
+                spinnerFechas:false,
+                mensaje:''
             }
         },
         methods:{
@@ -262,6 +295,26 @@
                 this.resultados.confirmaciones='0; S/.0.00';
                 this.resultados.intensidad='0';
                 this.resultados.negociacion='0; 0%';
+            },
+            modalFechas(id,nom,inicio,fin){
+                this.spinnerFechas=false;
+                this.mensaje='';
+                this.actualizar.idCampana=id;
+                this.actualizar.plan=nom;
+                this.actualizar.fechaInicio=(inicio).replace(" ","T");
+                this.actualizar.fechaFin=(fin).replace(" ","T");
+                $('#modalFechas').modal({backdrop: 'static', keyboard: false});
+            },
+            actualizarFechas(){
+                this.mensaje='';
+                this.spinnerFechas=true;
+                axios.post("actualizarFechaPlan",this.actualizar).then(res=>{
+                    if(res.data=="ok"){
+                        this.generarReporte();
+                        this.spinnerFechas=false;
+                        this.mensaje='Actualización Exitosa!';
+                    }
+                })
             },
             formatoNumero(num,tipo){
                 if(tipo=='M'){

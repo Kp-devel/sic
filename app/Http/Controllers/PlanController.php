@@ -155,4 +155,7 @@ class PlanController extends Controller
         }
     }
 
+    public function actualizarFechaPlan(Request $rq){
+        return Plan::actualizarFechaPlan($rq);
+    }
 }

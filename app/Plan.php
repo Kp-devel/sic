@@ -707,4 +707,17 @@ class Plan extends Model
         
         return "ok";
     }
+
+    public static function actualizarFechaPlan(Request $rq){
+        $idcampana=$rq->idCampana;
+        $fechaInicio=str_replace('T',' ',$rq->fechaInicio);
+        $fechaFin=str_replace('T',' ',$rq->fechaFin);
+        
+        DB::connection('mysql')->update("
+            update indicadores.plan
+            set fecha_i=:fecInicio,fecha_f=:fecFin 
+            where id_plan=:id
+        ",array("id"=>$idcampana,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
+        return "ok";
+    }
 }
