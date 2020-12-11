@@ -214,4 +214,18 @@ class Respuesta extends Model
         $query=DB::connection('mysql')->select(DB::raw($sql),array("car"=>$cartera));
         return $query;
     }
+
+    public static function listaCall(){
+        $sql="
+                SELECT 
+                    cal_id as id,
+                    cal_nom as calll
+                FROM
+                    creditoy_cobranzas.call_telefonica
+                WHERE cal_est=0
+                and cal_pas=0
+        ";
+        $query=DB::connection('mysql')->select(DB::raw($sql));
+        return $query;
+    }
 }

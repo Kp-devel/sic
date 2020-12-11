@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Cartera;
 use App\Incidencia;
 use App\Respuesta;
+use App\Empleado;
 
 class HomeController extends Controller
 {
@@ -424,6 +425,38 @@ class HomeController extends Controller
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==6){
             return view('admin.mantenimiento.mantenimiento');
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function registrarempleado(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();  
+            $locales=Respuesta::listaOficinas();
+            $calls=Respuesta::listaCall();
+            $carteras=json_encode($carteras);
+            $locales=json_encode($locales);
+            $calls=json_encode($calls);
+            $codAleatorio='';
+            while($codigo = rand(999,9999)){
+                $res=Empleado::codigoEmpleado($codigo);
+                if(count($res)>0){
+                    $codAleatorio=$codigo;
+                    break;
+                }
+            }
+            return view('admin.mantenimiento.formEmpleado',compact('carteras','locales','calls','codAleatorio'));
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function listaempleado(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            return view('admin.mantenimiento.listaEmpleado');
         }else{
             return view('errors.403');
         }

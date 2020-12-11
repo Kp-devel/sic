@@ -227,6 +227,11 @@ Route::group(['middleware' => ['auth']], function(){
     
 //MANTENIMIENTO -------------------------------------------------------------------------------------------------------------------------
     Route::get('/mantenimiento', 'HomeController@mantenimiento')->name('mantenimiento');
+    Route::get('/registrarempleado', 'HomeController@registrarempleado')->name('registrarempleado');
+    Route::post('/insertarEmpleado', 'EmpleadoController@insertarEmpleado')->name('insertarEmpleado');
+    Route::get('/codigoEmpleado', 'EmpleadoController@codigoEmpleado')->name('codigoEmpleado');    
+    Route::get('/listaempleado', 'HomeController@listaempleado')->name('listaempleado');
+    Route::post('/listEmpleados', 'EmpleadoController@listEmpleados')->name('listEmpleados');
 
 
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------
