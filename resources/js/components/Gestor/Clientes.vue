@@ -401,7 +401,7 @@
                                                 <i class="fa fa-check text-green" v-if="item.fecha_ges==fecha_hoy"></i>
                                             </td>
                                             <td class="border-0 bg-white rounded-0 px-0" style="min-width:0.1rem" v-else>
-                                                <i class="fa fa-check text-green" v-if="item.fecha_ges>=fecha_camp_inicio && item.fecha_ges<=fecha_hoy"></i>
+                                                <i class="fa fa-check text-green" v-if="item.fecha_ges>=fecha_camp_inicio && item.fecha_ges<=fecha_camp_fin"></i>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -458,7 +458,8 @@
                 dataBusqueda:{},
                 dataExportar:[],
                 btnExportar:false,
-                fecha_camp_inicio:''
+                fecha_camp_inicio:'',
+                fecha_camp_fin:''
             }
         },
         created(){
@@ -526,7 +527,10 @@
                     axios.get("datosPlanUsuario").then(res=>{
                         if(res.data){
                             var datos=res.data;
-                            this.fecha_camp_inicio=datos[0].fechaInicio;
+                            if(datos!=''){
+                                this.fecha_camp_inicio=datos[0].fechaInicio;
+                                this.fecha_camp_fin=datos[0].fechaFin;
+                            }
                         }
                     })
                 }

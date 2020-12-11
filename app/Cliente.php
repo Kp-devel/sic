@@ -80,7 +80,7 @@ class Cliente extends Model
                     det_cli_pro as producto,
                     if(ges_cli_med is null,'-',ges_cli_med) as telefono,
                     if(res_id_FK is null,'Sin Gestión',res_des) as ult_resp,
-                    date(ges_cli_fec) as fecha_ges,
+                    ges_cli_fec as fecha_ges,
                     cli_ema as email,
                     concat(emp_cod,' - ',emp_nom) as gestor,
                     car_nom as cartera
