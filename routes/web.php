@@ -135,7 +135,8 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/reporteCumplimiento', 'PlanController@reporteCumplimiento')->name('reporteCumplimiento');
     Route::post('resumenPlanArchivo', 'PlanController@resumenPlanArchivo');
     Route::post('insertarPlanArchivo', 'PlanController@insertarPlanArchivo');
-    
+    Route::post('actualizarFechaPlan', 'PlanController@actualizarFechaPlan');
+        
     //Reporte general------------------------------------------------------------------------------------------------------------------------
     Route::get('/reportegeneral', 'HomeController@indreportegeneral')->name('reportegeneral');
     Route::get('reporteGeneralGestiones/{cartera}/{fecInicio}/{fechaFin}/{perfil}', 'ReporteController@reporteGeneralGestiones');
