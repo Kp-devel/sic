@@ -14,7 +14,11 @@
             </div>
         </div>
         <div class="py-3">
-            <lista-empleados/>
+            <lista-empleados
+            :carteras="{{$carteras}}"
+            :locales="{{$locales}}"
+            :calls="{{$calls}}"
+            />
         </div>
     </div>         
 @endsection

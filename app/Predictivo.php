@@ -433,21 +433,47 @@ class Predictivo extends Model
                     ges_cli_med,
                     ges_cli_det
                 )
-                select 
-                        cli_id,
-                        emp_id,
-                        2,
-                        45,
-                        pre_fec_fin,
-                        rep_numero_sic,
-                        'no contesta - PREDICTIVO'
+                SELECT
+                    idcliente,
+                    emp_id,
+                    2,
+                    rspta,
+                    pre_fec_fin,
+                    numero,
+                    detalle
+                FROM
+                (SELECT
+                    cli_id as idcliente,
+                    emp_id,
+                    2,
+                    case WHEN maxid is null or res_ubi=1 THEN 45
+                        WHEN res_ubi in (0,2) THEN 32
+                    END as rspta,
+                    pre_fec_fin,
+                    case WHEN maxid is null or res_ubi=1 THEN rep_numero_sic
+                        WHEN res_ubi in (0,2) THEN ges_cli_med
+                    END as numero,
+                    'no contesta - PREDICTIVO' as detalle
+                FROM
+                (select 
+                    cli_id,
+                    emp_id,
+                    pre_fec_fin,
+                    rep_numero_sic,
+                    (
+                        SELECT max(ges_cli_id) as max
+                        FROM creditoy_cobranzas.gestion_cliente g	
+                        WHERE
+                                cli_id_FK=c.cli_id
+                        and ges_cli_fec BETWEEN p.pre_fec_inicio and p.pre_fec_fin 
+                    ) as maxid
                 from
-                        creditoy_predictivo.predictivo p
+                    creditoy_predictivo.predictivo p
                 INNER JOIN creditoy_predictivo.repositorio r ON p.pre_id=r.pre_id_FK
                 INNER JOIN creditoy_cobranzas.empleado e ON p.pre_usuario=e.emp_cod 
                 INNER JOIN creditoy_cobranzas.cliente c ON r.rep_codigo=c.cli_cod
                 where
-                        rep_est=0
+                    rep_est=0
                 and pre_id=:id
                 and cli_est=0
                 and cli_pas=0
@@ -457,11 +483,16 @@ class Predictivo extends Model
                     SELECT count(*) 
                     FROM creditoy_cobranzas.gestion_cliente g	
                     WHERE
-                        cli_id_FK=c.cli_id
+                            cli_id_FK=c.cli_id
                     and ges_cli_fec BETWEEN p.pre_fec_inicio and p.pre_fec_fin 
                     and ges_cli_med=r.rep_numero_sic
                     and g.emp_id_FK=e.emp_id
-                )=0        
+                )=0
+              )t
+            LEFT JOIN gestion_cliente g on t.maxid=g.ges_cli_id
+            left JOIN respuesta r on g.res_id_FK=r.res_id
+            )tt
+            GROUP BY idcliente,numero
         ",array("id"=>$idCampana));
         return "ok";
     }
@@ -631,10 +662,6 @@ class Predictivo extends Model
             and rep_codigo=:cod
         ",array("id"=>$idCampana,"res"=>$resultado,"num"=>$numero,"cod"=>$codigo));
     }
-
-
-
-
 }
 
 

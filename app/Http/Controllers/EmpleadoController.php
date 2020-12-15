@@ -10,7 +10,7 @@ class EmpleadoController extends Controller
     public function codigoEmpleado(){
         while($codigo = rand(999,9999)){
             $res=Empleado::codigoEmpleado($codigo);
-            if(count($res)>0){
+            if(count($res)==0){
                 return $codigo;
                 break;
             }
@@ -25,6 +25,14 @@ class EmpleadoController extends Controller
         if($rq->codigo!='' || $rq->nombre!='' || $rq->perfil!=''){
             return Empleado::listEmpleados($rq);
         }
+    }
+
+    public function updateEmpleado(Request $rq){
+        return Empleado::updateEmpleado($rq);
+    }
+
+    public function updateClave(Request $rq){
+        return Empleado::updateClave($rq);
     }
 
     public function agentesElastix($cartera){
