@@ -233,6 +233,8 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/codigoEmpleado', 'EmpleadoController@codigoEmpleado')->name('codigoEmpleado');    
     Route::get('/listaempleado', 'HomeController@listaempleado')->name('listaempleado');
     Route::post('/listEmpleados', 'EmpleadoController@listEmpleados')->name('listEmpleados');
+    Route::post('/updateEmpleado', 'EmpleadoController@updateEmpleado')->name('updateEmpleado');
+    Route::post('/updateClave', 'EmpleadoController@updateClave')->name('updateClave');
 
 
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------

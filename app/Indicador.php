@@ -895,7 +895,7 @@ class Indicador extends Model
                     FROM pago_cliente_2 as p
                     INNER JOIN cliente AS c ON c.cli_cod = p.pag_cli_cod
                     INNER JOIN gestion_cliente AS ge ON ge.cli_id_FK = c.cli_id
-                    INNER JOIN indicadores.cartera_detalle AS cd ON p.pag_cli_cod = cd.cuenta            
+                    INNER JOIN indicadores.cartera_detalle AS cd ON p.pag_cli_cod = cd.cuenta
                     $sqlInner
                     WHERE 
                            c.car_id_fk = :car1
