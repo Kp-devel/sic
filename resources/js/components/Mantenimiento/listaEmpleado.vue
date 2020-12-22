@@ -160,7 +160,7 @@
                         </div>
                         <div class="form-group">
                             <label for="">Clave</label>
-                            <input type="password" class="form-control" v-model="actualizar.clave">
+                            <input type="password" class="form-control" v-model="actualizar.clave" v-on:keyup.enter="actualizarClave()">
                         </div>
                         <a href="" class="btn btn-outline-blue btn-block" @click.prevent="actualizarClave()">
                             <span v-if="spinnerActualizar" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  

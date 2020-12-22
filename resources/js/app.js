@@ -51,10 +51,17 @@ Vue.component('list-incidencias', require('./components/Incidencias/listIncidenc
 Vue.component('form-gestiones', require('./components/Predictivo/formGestiones.vue').default);
 Vue.component('form-predictivo', require('./components/Predictivo/formPredictivo.vue').default);
 Vue.component('lista-predictivo', require('./components/Predictivo/listaPredictivo.vue').default);
+Vue.component('form-ivr', require('./components/Predictivo/formIvr.vue').default);
+Vue.component('lista-ivr', require('./components/Predictivo/listaIvr.vue').default);
 
 // mantenimiento
 Vue.component('form-empleado', require('./components/Mantenimiento/formEmpleado.vue').default);
+Vue.component('form-gestor', require('./components/Mantenimiento/formGestor.vue').default);
 Vue.component('lista-empleados', require('./components/Mantenimiento/listaEmpleado.vue').default);
+Vue.component('lista-gestores', require('./components/Mantenimiento/listaGestores.vue').default);
+
+// reportes
+Vue.component('reporte-confirmaciones', require('./components/Reportes/reportConfirmaciones.vue').default);
 
 const app = new Vue({
     el: '#app',

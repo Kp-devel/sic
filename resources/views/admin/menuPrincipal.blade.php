@@ -57,14 +57,22 @@
             <p class="mb-0 px-1 pt-2 pb-1 font-15">Incidencias<br>RRHH</p>
         </a>
         @if(auth()->user()->emp_tip_acc==6)
-        <a href="{{route('mantenimiento')}}" class="menu-card p-3">
-            <img src="{{asset('img/mantenimiento.svg')}}" alt="" class="img-fluid" width="140px" height="60px">
-            <p class="mb-0 px-1 pt-2 pb-1 font-15">Mantenimiento<br></p>
-        </a>
-        <a href="{{route('predictivo')}}" class="menu-card p-3">
-            <img src="{{asset('img/predictivo.svg')}}" alt="" class="img-fluid" width="105px" height="60px">
-            <p class="mb-0 px-1 pt-2 pb-1 font-15">Predictivo<br>Call Center</p>
-        </a>
+            <a href="{{route('mantenimiento')}}" class="menu-card p-3">
+                <img src="{{asset('img/mantenimiento.svg')}}" alt="" class="img-fluid" width="140px" height="60px">
+                <p class="mb-0 px-1 pt-2 pb-1 font215">Mantenimiento<br></p>
+            </a>
+            <!-- <a href="{{route('mantenimiento')}}" class="menu-card p-3">
+                <img src="{{asset('img/asignacion.svg')}}" alt="" class="img-fluid" width="100px" height="60px">
+                <p class="mb-0 px-1 pt-2 pb-1 font-15">Asignación<br>de Usuarios</p>
+            </a> -->
+            <!-- <a href="{{route('reporteconfirmaciones')}}" class="menu-card p-3">
+                <img src="{{asset('img/reportes.svg')}}" alt="" class="img-fluid" width="110px" height="60px">
+                <p class="mb-0 px-1 pt-2 pb-1 font-15">Reportes<br>Generales</p>
+            </a> -->
+            <a href="{{route('predictivo')}}" class="menu-card p-3">
+                <img src="{{asset('img/predictivo.svg')}}" alt="" class="img-fluid" width="105px" height="60px">
+                <p class="mb-0 px-1 pt-2 pb-1 font-15">Predictivo e<br>IVR - Elastix</p>
+            </a>
         @endif
     </div>
 </div>

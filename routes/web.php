@@ -225,17 +225,35 @@ Route::group(['middleware' => ['auth']], function(){
     Route::post('/actualizarFechaCampana', 'PredictivoController@actualizarFechaCampana')->name('actualizarFechaCampana');
     Route::get('/descargarReportePredictivo/{id}', 'PredictivoController@descargarReporte')->name('descargarReportePredictivo');
     Route::post('/cargarResultadosPredictivo', 'PredictivoController@cargarResultadosPredictivo')->name('cargarResultadosPredictivo');
+    Route::get('/crearivr', 'HomeController@crearivr')->name('crearivr');
+    Route::get('/campanasivr', 'HomeController@campanasivr')->name('campanasivr');
     
 //MANTENIMIENTO -------------------------------------------------------------------------------------------------------------------------
     Route::get('/mantenimiento', 'HomeController@mantenimiento')->name('mantenimiento');
-    Route::get('/registrarempleado', 'HomeController@registrarempleado')->name('registrarempleado');
+    Route::get('/registrarusuario', 'HomeController@registrarusuario')->name('registrarusuario');
     Route::post('/insertarEmpleado', 'EmpleadoController@insertarEmpleado')->name('insertarEmpleado');
     Route::get('/codigoEmpleado', 'EmpleadoController@codigoEmpleado')->name('codigoEmpleado');    
-    Route::get('/listaempleado', 'HomeController@listaempleado')->name('listaempleado');
+    Route::get('/listausuarios', 'HomeController@listausuarios')->name('listausuarios');
     Route::post('/listEmpleados', 'EmpleadoController@listEmpleados')->name('listEmpleados');
     Route::post('/updateEmpleado', 'EmpleadoController@updateEmpleado')->name('updateEmpleado');
     Route::post('/updateClave', 'EmpleadoController@updateClave')->name('updateClave');
+    Route::get('/registrargestor', 'HomeController@registrargestor')->name('registrargestor');
+    Route::get('/listagestores', 'HomeController@listagestores')->name('listagestores');
+    Route::post('/insertarGestor', 'EmpleadoController@insertarGestor')->name('insertarGestor');
+    Route::post('/listGestores', 'EmpleadoController@listGestores')->name('listGestores');
+    Route::post('/updateFirma', 'EmpleadoController@updateFirma')->name('updateFirma');
+    Route::post('/updateGestor', 'EmpleadoController@updateGestor')->name('updateGestor');
+    Route::get('/listGestoresActivos', 'EmpleadoController@listGestoresActivos')->name('listGestoresActivos');
+    Route::get('/historialLaboral/{firma}', 'EmpleadoController@historialLaboral')->name('historialLaboral');
+    Route::post('/registroHistorialLaboral', 'EmpleadoController@registroHistorialLaboral')->name('registroHistorialLaboral');
+    Route::post('/updateUsuario', 'EmpleadoController@updateUsuario')->name('updateUsuario');
+    
 
+//REPORTES SISTEMAS ---------------------------------------------------------------------------------------------------------------------- 
+    Route::get('/reportesgenerales', 'HomeController@reportesgenerales')->name('reportesgenerales');
+    Route::get('/reporteconfirmaciones', 'HomeController@reporteconfirmaciones')->name('reporteconfirmaciones');
+    Route::get('/generarReporteConfirmaciones/{cartera}/{estructura}/{calls}/{tipoFecha}/{fechaInicio}/{fechaFin}/{columnas}', 'ReporteController@generarReporteConfirmaciones')->name('generarReporteConfirmaciones');
+    
 
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix

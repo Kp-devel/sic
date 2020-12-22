@@ -45,9 +45,9 @@ class Cliente extends Model
             $query_campana=DB::connection('mysql')->select(DB::raw("
                                 select clientes,id_cartera
                                 from indicadores.plan
-                                WHERE id_cartera in (:car)
+                                WHERE id_cartera in ($cartera)
                                 and fecha_i<=:fec1 and fecha_f >= :fec2
-                            "),array("car"=>$cartera,"fec1"=>$fec_actual,"fec2"=>$fec_actual));
+                            "),array("fec1"=>$fec_actual,"fec2"=>$fec_actual));
             //dd($query_campana);
             $cadena="";
             $carteraPlan="";
@@ -397,7 +397,7 @@ class Cliente extends Model
                 (   SELECT
                         if(sum(pago_cli_mon) is null,0,sum(pago_cli_mon)) as pago
                     FROM
-                        indicadores.pago_cliente
+                        indicadores.pago
                     WHERE car_id=c.car_id_FK
                     and DATE_FORMAT(pago_cli_fec,'%Y%m')=DATE_FORMAT(NOW(),'%Y%m')
                     AND pago_gestor=e.emp_cod

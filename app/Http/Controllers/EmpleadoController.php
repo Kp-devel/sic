@@ -35,6 +35,49 @@ class EmpleadoController extends Controller
         return Empleado::updateClave($rq);
     }
 
+    public function insertarGestor(Request $rq){
+        return Empleado::insertarGestor($rq);
+    }
+
+    public function listGestores(Request $rq){
+        return Empleado::listGestores($rq);
+    }
+
+    public function listGestoresActivos(){
+        return Empleado::listGestoresActivos();
+    }
+
+    public function updateFirma(Request $rq){
+        return Empleado::updateFirma($rq);
+    }
+
+    public function updateGestor(Request $rq){
+        return Empleado::updateGestor($rq);
+    }
+
+    public function historialLaboral($firma){
+        return Empleado::historialLaboral($firma);
+    }
+
+    public function registroHistorialLaboral(Request $rq){
+        $tipo=$rq->tipoBtn;
+        if($tipo==1){
+            return Empleado::insertHistorialLaboral($rq);
+        }
+        if($tipo==2){
+            return Empleado::updateHistorialLaboral($rq);
+        }
+    }
+
+    public function listEmpleadosActivos(){
+        return Empleado::listEmpleadosActivos();
+    }
+
+    public function updateUsuario(Request $rq){
+        return Empleado::updateUsuario($rq);
+    }
+    
+
     public function agentesElastix($cartera){
         return Empleado::agentesElastix($cartera);
     }

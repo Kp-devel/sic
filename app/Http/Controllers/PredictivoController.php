@@ -103,5 +103,8 @@ class PredictivoController extends Controller
         }
     }
 
+    public function crearIvrCodigo(Request $rq){
+        return Predictivo::crearIvrCodigo($rq);
+    }
 
 }
