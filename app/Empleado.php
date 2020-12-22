@@ -179,8 +179,8 @@ class Empleado extends Model
             $parametros["mod"]=$modalidad;
         }
         if($firma!=''){
-            $sql.=" and s.emp_firma=:firma ";
-            $parametros["firma"]=$firma;
+            $sql.=" and s.emp_firma like (:firma) ";
+            $parametros["firma"]="%".$firma."%";
         }
         // if($dni!=''){
         //     $sql.=" and s.emp_dni=:dni ";
