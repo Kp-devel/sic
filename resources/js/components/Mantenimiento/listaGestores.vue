@@ -92,15 +92,16 @@
                             <td class="text-left px-2">{{item.usuario}}</td>
                             <td class="text-center"><span class="badge p-2" :class="{'badge-success':item.idestado==0,'badge-danger':item.idestado!=0}">{{item.estado}}</span></td>
                             <td class="text-center">
-                                <a href="" class="btn btn-outline-blue btn-sm" @click.prevent="modalFirma(item.id,item.firma,item.nombre)" title="Agregar Firma"><i class="fa fa-signature fa-sm"></i></a>
+                                <!-- <a href="" class="btn btn-outline-blue btn-sm" @click.prevent="modalFirma(item.id,item.firma,item.nombre)" title="Agregar Firma"><i class="fa fa-signature fa-sm"></i></a> -->
                                 <!-- <a href="" class="btn btn-outline-blue btn-sm" @click.prevent="modalEditar(item.id,item.dni,item.nombre,item.firma,item.modalidad,item.usuario,item.cartera)" title="Actualizar Datos"><i class="fa fa-edit fa-sm"></i></a> -->
                                 <div class="btn-group" role="group">
                                 <button id="btnGroupDrop1" type="button" class="btn btn-outline-blue dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Opciones
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="z-index:9">
-                                    <a class="dropdown-item" href=""  @click.prevent="modalEditar(item.id,item.nombre,item.dni,item.modalidad,item.idcartera,item.firma)">Editar Datos</a>
+                                    <a class="dropdown-item" href=""  @click.prevent="modalFirma(item.id,item.firma,item.nombre)">Asignar Firma</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalAsignar(item.id,item.nombre,item.codigousuario)">Asignar Usuario</a>
+                                    <a class="dropdown-item" href=""  @click.prevent="modalEditar(item.id,item.nombre,item.dni,item.modalidad,item.idcartera,item.firma)">Editar Datos</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalLaboral(item.firma,item.nombre)">Historial Laboral</a>
                                 </div>
                             </div>
@@ -458,6 +459,8 @@
                 this.registroLaboral.id=id;
                 this.tituloBtn='Actualizar';
                 this.registroLaboral.tipoBtn=2;
+                this.mensajes.cartera='';
+                this.mensajes.fechaIngreso='';
             },
             limpiarDatosHistorial(){
                 this.registroLaboral.fechaIngreso='';
