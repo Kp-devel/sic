@@ -1118,5 +1118,178 @@ class Reporte extends Model
                     )ttt
        "),array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin,"fecFin2"=>$fechaFin,"fecFin3"=>$fechaFin));
     }
+
+
+    // reportes sistemas-------------------------------------------------------------------------------------------------
+    public static function generarReporteConfirmaciones(Request $rq){
+        $cartera=$rq->cartera;
+        $estructura=$rq->estructura;
+        $calls=explode(",",$rq->calls);
+        $tipoFecha=$rq->tipoFecha;
+        $fechaInicio=$rq->fechaInicio;
+        $fechaFin=$rq->fechaFin;
+        $columnas=explode(",",$rq->columnas);
+        
+        $sqlTipoFecha="";
+        if($tipoFecha==1){
+            $sqlTipoFecha="ges_cli_conf_fec";
+        }
+        if($tipoFecha==2){
+            $sqlTipoFecha="ges_cli_fec";
+        }
+
+        $sqlEstructura="";
+        $sqlEstructuraCant="";
+        $sqlEstructuraMonto="";
+        if($estructura==2){
+            if($calls!=''){
+                for($i=0;$i<count($calls);$i++){
+                    $sqlEstructura.=" if(cal_id=".$calls[$i].",1,0) as cant$i, if(cal_id=".$calls[$i].",ges_cli_conf_can,0) as monto$i,";
+                    $sqlEstructuraCant.=" sum(cant$i) as cant$i,";
+                    $sqlEstructuraMonto.=" sum(monto$i) as monto$i,";
+                }
+            }
+        }
+
+        $sqlColumnas='';
+        if($columnas!=''){
+            for($i=0;$i<count($columnas);$i++){
+                if($columnas[$i]==1){
+                    $sqlColumnas.="fecha,";
+                }
+                if($columnas[$i]==2 && $estructura==2){
+                    $sqlColumnas.=$sqlEstructuraCant."count(*) as cantTotal,";
+                }
+                if($columnas[$i]==3 && $estructura==2){
+                    $sqlColumnas.=$sqlEstructuraMonto."sum(ges_cli_conf_can) as montoTotal, ";
+                }
+                if($columnas[$i]==2 && $estructura==1){
+                    $sqlColumnas.="count(*) as cantTotal, ";
+                }
+                if($columnas[$i]==3 && $estructura==1){
+                    $sqlColumnas.="sum(ges_cli_conf_can) as montoTotal, ";
+                }
+            }
+        }
+
+        return DB::select(DB::raw("
+            SELECT 
+                $sqlColumnas
+                1
+            FROM
+                (SELECT
+                    car_nom as cartera,
+                    date($sqlTipoFecha) as fecha,
+                    $sqlEstructura
+                    ges_cli_conf_can
+                FROM
+                    cliente c 
+                INNER JOIN gestion_cliente g on c.cli_id=g.cli_id_FK
+                INNER JOIN cartera a on c.car_id_FK=a.car_id
+                LEFT JOIN empleado e on c.emp_tel_id_FK=e.emp_id
+                LEFT JOIN call_telefonica l on e.cal_id_FK=l.cal_id
+                WHERE
+                    cli_est=0
+                    and cli_pas=0
+                    and car_id_FK in (:car)
+                    and res_id_FK=2
+                    and date($sqlTipoFecha) BETWEEN :fecInicio and :fecFin
+                )t
+                GROUP BY cartera,fecha
+      "),array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));  
+    }
+
+    public static function reporteDataConfirmaciones(Request $rq){
+        $cartera=$rq->cartera;
+        $fechaInicio=$rq->fechaInicio;
+        $fechaFin=$rq->fechaFin;
+        $tipoFecha=$rq->tipoFecha;
+        $sqlTipoFecha="";
+        if($tipoFecha==1){
+            $sqlTipoFecha="date(ges_cli_conf_fec)";
+        }
+        if($tipoFecha==2){
+            $sqlTipoFecha="date(ges_cli_fec)";
+        }
+        return DB::connection('mysql')->select(DB::raw("
+                    SELECT
+                        cli_cod as codigo,
+                        cli_nom as nombre,
+                        car_nom as cartera,
+                        ges_cli_fec as fecha,
+                        hour(ges_cli_fec) as hora,
+                        minute(ges_cli_fec)	as minuto,
+                        second(ges_cli_fec)	as segundo,
+                        CONCAT(emp_cod,' - ',emp_nom) as gestor,
+                        CASE
+                            WHEN emp_tip_acc = 1 THEN
+                                'ADMINISTRADOR'
+                            WHEN emp_tip_acc = 2 THEN
+                                'G. TELEFONICO'
+                            WHEN emp_tip_acc = 3 THEN
+                                'G. DOMICILIARIO'
+                            WHEN emp_tip_acc = 4 THEN
+                                'DIGITADOR'
+                            WHEN emp_tip_acc = 5 THEN
+                                'SUPERVISOR'
+                            ELSE
+                                ''
+                        END AS perfil,
+                        ges_cli_med as medio,
+                        CASE
+                            WHEN ges_cli_acc = 1 THEN
+                                'LLAMADA RECIBIDA'
+                            WHEN ges_cli_acc = 2 THEN
+                                'LLAMADA SALIENTE'
+                            WHEN ges_cli_acc = 3 THEN
+                                'RECIBIR VISITA'
+                            WHEN ges_cli_acc = 4 THEN
+                                'REALIZAR VISITA'
+                            WHEN ges_cli_acc = 5 THEN
+                                'LLAMADA RECIBIDA - SMS'
+                            WHEN ges_cli_acc = 6 THEN
+                                'LLAMADA RECIBIDA - IVR'
+                            WHEN ges_cli_acc = 7 THEN
+                                'LLAMADA RECIBIDA - EMAIL'
+                            ELSE
+                                ''
+                        END AS accion,
+                        ges_cli_fec_visit as fecha_visita,
+                        CASE WHEN res_ubi=0 THEN 'CONTACTO' 
+                                WHEN res_ubi=1 THEN 'NO CONTACTO' 
+                                WHEN res_ubi=2 THEN 'NO DISPONIBLE'
+                        END AS ubi,
+                        res_des as rpta,
+                        mot_res as motivo_no_pago,
+                        ges_cli_det as detalle,
+                        DATE_FORMAT(ges_cli_com_fec,'%d/%m/%Y') as fecha_compromiso,
+                        ges_cli_com_can as monto_compromiso,
+                        if(ges_cli_com_can=0,'',if(ges_cli_com_mon=0,'SOLES','DOLARES')) as moneda,
+                        ges_cli_conf_fec as fecha_conf,
+                        ges_cli_conf_can as monto_conf,
+                        cli_dir_dir as direccion,
+                        cli_dir_dis as distrito,
+                        cli_dir_pro as provincia,
+                        cli_dir_dep as departamento
+                    FROM
+                        cliente c
+                    INNER JOIN gestion_cliente g ON c.cli_id=g.cli_id_FK
+                    LEFT JOIN empleado e on g.emp_id_FK=e.emp_id
+                    INNER JOIN cartera ca on c.car_id_FK=ca.car_id
+                    LEFT JOIN cliente_direccion_2 cd ON c.cli_id=cd.cli_id_FK and cli_dir_est=0 AND cli_dir_pas=0
+                    INNER JOIN respuesta r on g.res_id_FK=r.res_id
+                    LEFT JOIN motivo_nopago m on g.mot_id_FK=m.mot_id
+                    WHERE
+                        cli_est=0
+                    and cli_pas=0
+                    and ($sqlTipoFecha BETWEEN :fecInicio and :fecFin)
+                    and car_id_FK=:car 
+                    and res_id_FK=2
+                    and car_est=0 
+                    and car_pas=0
+                    and res_est=0
+                    GROUP BY ges_cli_id   
+        "),array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
+    }
 }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Reporte;
 use App\Exports\GestionesExport;
+use App\Exports\ReporteConfirmacionesExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReporteController extends Controller
@@ -77,4 +78,12 @@ class ReporteController extends Controller
     public function reporteEstandarCartera(Request $rq){
         return Reporte::reporteEstandarCartera($rq);
     }
+
+
+    // reportes sistemas
+    public function generarReporteConfirmaciones($cartera,$estructura,$calls,$tipoFecha,$fechaInicio,$fechaFin,$columnas){
+        $rq = new Request(array('cartera'=>$cartera,'estructura'=>$estructura,'calls'=>$calls,'tipoFecha'=>$tipoFecha,'fechaInicio'=>$fechaInicio,'fechaFin'=>$fechaFin,'columnas'=>$columnas));
+        return (new ReporteConfirmacionesExport($rq))->download('reporte_confirmaciones.xlsx');
+    }
+    
 }

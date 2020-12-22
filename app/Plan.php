@@ -573,10 +573,10 @@ class Plan extends Model
         return DB::connection('mysql')->select(DB::raw("
                     select fecha_i as fechaInicio,fecha_f as fechaFin
                     from indicadores.plan
-                    WHERE id_cartera in (:car)
+                    WHERE id_cartera in ($cartera)
                     and fecha_i<=:fec1 and fecha_f >= :fec2
                     LIMIT 1
-                "),array("car"=>$cartera,"fec1"=>$fec_actual,"fec2"=>$fec_actual));
+                "),array("fec1"=>$fec_actual,"fec2"=>$fec_actual));
     }
 
     public static function reportePlan(){

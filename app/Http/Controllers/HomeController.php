@@ -421,6 +421,29 @@ class HomeController extends Controller
         }
     }
 
+    public function crearivr(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            return view('admin.predictivo.frmIvr',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function campanasivr(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            return view('admin.predictivo.listaIvr',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
+
+
     public function mantenimiento(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==6){
@@ -430,7 +453,7 @@ class HomeController extends Controller
         }
     }
 
-    public function registrarempleado(){
+    public function registrarusuario(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==6){
             $carteras=Cartera::listCarterasUsuario();  
@@ -453,7 +476,7 @@ class HomeController extends Controller
         }
     }
 
-    public function listaempleado(){
+    public function listausuarios(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==6){
             $carteras=Cartera::listCarterasUsuario();  
@@ -467,4 +490,53 @@ class HomeController extends Controller
             return view('errors.403');
         }
     }
+
+    public function registrargestor(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();  
+            $carteras=json_encode($carteras);
+            return view('admin.mantenimiento.formGestor',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function listagestores(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();  
+            $gestores=Empleado::listGestoresActivos();
+            $usuarios=Empleado::listEmpleadosActivos();
+            $carteras=json_encode($carteras);
+            $gestores=json_encode($gestores);
+            $usuarios=json_encode($usuarios);
+            return view('admin.mantenimiento.listaGestores',compact('carteras','usuarios','gestores'));
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function reportesgenerales(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            return view('admin.reportes.reportesgenerales');
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function reporteconfirmaciones(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();       
+            $calls=Respuesta::listaCall();
+            $carteras=json_encode($carteras);
+            $calls=json_encode($calls);
+            return view('admin.reportes.reporteConfirmaciones',compact('carteras','calls'));
+        }else{
+            return view('errors.403');
+        }
+    }
+
 }

@@ -212,17 +212,22 @@
                             <p class="text-white">Cant. Gestiones<br>Registradas</p>
                         </div>
                         <div>
-                            <p class="font-bold mb-0 font-25 text-danger">{{formatoNumero(cantidadRegistrada,'C')}}</p>
-                            <p class="text-white">Cant. Registros<br>Sin Gestión</p>
+                            <p class="font-bold mb-0 font-25 text-danger">{{formatoNumero(cantidadConResultados,'C')}}</p>
+                            <p class="text-white">Cant. Gestiones<br>a Registrar</p>
                         </div>
                     </div>
-                    <p class="text-white font-20">¿Desea generar gestiones con respuesta "Teléfono No Contesta"<br>a los clientes sin gestión de la Campaña<br>"{{detalle.campana}}"?</p>
-                    <a href="" v-if="spinnerGestion==false" class="btn btn-white" @click.prevent="cancelar(3)">No</a>
-                    <a href="" v-if="cantidadRegistrada>0" class="btn btn-danger" @click.prevent="generarGestiones()">
-                        <span v-if="spinnerGestion" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  
-                        Sí, registrar gestiones
-                    </a><br><br>
-                    <small class="text-white">Tener en cuenta la fecha y hora (Inicio-Fin) de la campaña</small>
+                    <div v-if="cantidadConResultados>0">
+                        <p class="text-white font-20">¿Desea generar gestiones con respuesta "Teléfono No Contesta"<br>a los clientes sin gestión de la Campaña<br>"{{detalle.campana}}"?</p>
+                        <a href="" v-if="spinnerGestion==false" class="btn btn-white" @click.prevent="cancelar(3)">No</a>
+                        <a href="" class="btn btn-danger" @click.prevent="generarGestiones()">
+                            <span v-if="spinnerGestion" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  
+                            Sí, registrar gestiones
+                        </a><br><br>
+                        <small class="text-white">Tener en cuenta la fecha y hora (Inicio-Fin) de la campaña</small>
+                    </div>
+                    <div v-else class="pt-2">
+                        <a href="" class="btn btn-white" @click.prevent="cancelar(3)">Cancelar</a>
+                    </div>
                 </div>
                 <div class="text-center" v-else>
                     <p><i class="fa fa-check-circle fa-3x text-white"></i></p>
@@ -453,10 +458,6 @@
                        }
                        if(datos['cantResultados'].length>0){
                            this.cantidadConResultados=datos['cantResultados'][0].cantidad;
-                       }
-                       this.cantidadRegistrada=this.cantidadConResultados-this.cantidadGestionada;
-                       if(this.cantidadRegistrada<0){
-                           this.cantidadRegistrada=0;
                        }
                        this.loadGestiones=false;
                    }
