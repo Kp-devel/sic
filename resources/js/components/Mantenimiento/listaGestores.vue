@@ -102,7 +102,7 @@
                                     <a class="dropdown-item" href=""  @click.prevent="modalFirma(item.id,item.firma,item.nombre)">Asignar Firma</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalAsignar(item.id,item.nombre,item.codigousuario)">Asignar Usuario</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalEditar(item.id,item.nombre,item.dni,item.modalidad,item.idcartera,item.firma)">Editar Datos</a>
-                                    <a class="dropdown-item" href=""  @click.prevent="modalLaboral(item.firma,item.nombre)">Historial Laboral</a>
+                                    <a class="dropdown-item" href=""  @click.prevent="modalLaboral(item.firma,item.nombre)" v-if="item.firma!=''">Historial Laboral</a>
                                 </div>
                             </div>
                             </td>

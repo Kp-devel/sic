@@ -23,58 +23,139 @@ class TablaConfirmacionesSheet implements FromCollection, WithHeadings,WithColum
 {
     
     use Exportable;
-
     
+    private $cantRegistro=0;
+    private $cantColumnas=0;
+    private $abc=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 
     public function __construct(Request $rq)
     {
         $this->rq = $rq;
-        $this->cantRegistros=0;
     }
 
     public function collection()
     {
         ini_set('memory_limit', '-1');
-        $res=Reporte::generarReporteConfirmaciones($this->rq);
+        $res=Reporte::generarTablaConfirmaciones($this->rq);
         $this->cantRegistros=count($res);
-        // $tabla=array();
-        // for($i=0;count($res);$i++){
-        //     array_push($tabla,$res[$i]);
-        // }
+        $columnas=explode(",",$this->rq->columnas);
+        $calls=explode(",",$this->rq->calls);
+        if($this->rq->estructura=='1'){
+            $this->cantColumnas=count($columnas);
+        }else{
+            $this->cantColumnas=(count($columnas)*count($calls))+count($columnas);
+        }
         return  collect($res);
     }
 
     public function headings(): array
     {
-        return [
-            "Fecha",
-            "Cantidad",
-            "Monto"
-        ];
+        $titulos1=['A'=>''];
+        $titulos2=['A'=>'Fecha'];
+        $callNom=['','CALL 01','CALL 02','NEGOCIADOR(A)','CALL03'];
+        $columnas=explode(",",$this->rq->columnas);
+        $calls=explode(",",$this->rq->calls);
+        $cantColumnas=0;
+
+        if($this->rq->estructura=='1'){
+            $cantColumnas=count($columnas);
+        }else{
+            $cantColumnas=(count($columnas)*count($calls))+count($columnas);
+        }
+        
+        if(count($columnas)==1){
+            if($columnas[0]==2){
+                for($i=1;$i<=$cantColumnas;$i++){
+                    $titulos2[$this->abc[$i]]='Cantidad';
+                }
+            }
+            if($columnas[0]==3){
+                for($i=1;$i<=$cantColumnas;$i++){
+                    $titulos2[$this->abc[$i]]='Monto';
+                }
+            }
+            $k=0;
+            for($i=1;$i<=$cantColumnas;$i++){
+                if(count($calls)>0){
+                    if($i==$cantColumnas){
+                        $titulos1[$this->abc[$i]]='TOTAL';
+                    }else{
+                        $titulos1[$this->abc[$i]]=$callNom[$calls[$k]];
+                        $k++;
+                    }
+                }
+            }
+        }
+        
+        if(count($columnas)>1){
+            $k=0;
+            for($i=1;$i<=$cantColumnas;$i++){
+                if($i%2==0){
+                    $titulos1[$this->abc[$i]]='';
+                    $titulos2[$this->abc[$i]]='Monto';
+                }else{
+                    $titulos2[$this->abc[$i]]='Cantidad';
+                    if(count($calls)>0){
+                        if($i==$cantColumnas-1){
+                            $titulos1[$this->abc[$i]]='TOTAL';
+                        }else{
+                            $titulos1[$this->abc[$i]]=$callNom[$calls[$k]];
+                            $k++;
+                        }
+                    }else{
+                        $titulos1[$this->abc[$i]]='';
+                    }
+                }
+            }
+        }
+
+        $head=[$titulos1,$titulos2];
+        return $head;
     }
     
     public function columnFormats(): array
     {
-        return [
-            // 'A' => '@',
-            'A' => 'dd/mm/yy',
-            'B' => '0',
-            'C' => '#,##0.00'
-        ];
+        $formato=['A' => 'dd/mm/yy'];
+        $columnas=explode(",",$this->rq->columnas);
+        if(count($columnas)==1){
+            if($columnas[0]==2){
+                for($i=1;$i<=$this->cantColumnas;$i++){
+                    $formato[$this->abc[$i]]='0';
+                }
+            }else{
+                for($i=1;$i<=$this->cantColumnas;$i++){
+                    $formato[$this->abc[$i]]='#,##0.00';
+                }
+            }
+        }
+        
+        if(count($columnas)>1){
+            for($i=1;$i<=$this->cantColumnas;$i++){
+                if($i%2==0){
+                    $formato[$this->abc[$i]]='#,##0.00';
+                }else{
+                    $formato[$this->abc[$i]]='0';
+                }
+            }
+        }
+        
+        return $formato;
     }
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:Y1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:Y1')->getFont()->getColor()->setARGB("f5f5f5");
+        // head ..bg y color
+        $sheet->getStyle('A1:'.$this->abc[$this->cantColumnas].'2')->getFont()->setBold(true);
+        $sheet->getStyle('A1:'.$this->abc[$this->cantColumnas].'2')->getFont()->getColor()->setARGB("f5f5f5");
         $background = array(
             'fill' => array(
                 'fillType' => Fill::FILL_SOLID,
                 'startColor' => array('argb' => '04407d'),
             )
         );
-        $sheet ->getStyle('A1:Y1')->applyFromArray($background);
+        $sheet ->getStyle('A1:'.$this->abc[$this->cantColumnas].'2')->applyFromArray($background);
 
+        // borders
         $borders = array(
             'borders' => array(
                 'outline' => array(
@@ -83,11 +164,25 @@ class TablaConfirmacionesSheet implements FromCollection, WithHeadings,WithColum
                 ),
             ),
         );
-        for($i=0;$i<=$this->cantRegistros;$i++){
-            $sheet ->getStyle('A'.$i)->applyFromArray($borders);
-            $sheet ->getStyle('B'.$i)->applyFromArray($borders);
-            $sheet ->getStyle('C'.$i)->applyFromArray($borders);
-            $sheet ->getStyle('D'.$i)->applyFromArray($borders);
+
+        for($i=0;$i<=$this->cantRegistros+2;$i++){
+            for($j=0;$j<=$this->cantColumnas;$j++){
+                $sheet ->getStyle($this->abc[$j].$i)->applyFromArray($borders);
+            }
+            if($i==$this->cantRegistros+2){
+                $sheet->getStyle("A$i:Y$i")->getFont()->setBold(true);
+            }
         }
+
+        // combinar celdas
+        $columnas=explode(",",$this->rq->columnas);
+        if(count($columnas)>1){
+            for($i=1;$i<=$this->cantColumnas;$i++){
+                if($i%2!=0){
+                    $sheet->mergeCells(''.$this->abc[$i].'1:'.$this->abc[$i+1].'1');
+                }
+            }
+        }
+        
     }
 }

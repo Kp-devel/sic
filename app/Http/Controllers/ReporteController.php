@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Reporte;
 use App\Exports\GestionesExport;
 use App\Exports\ReporteConfirmacionesExport;
+use App\Exports\ReportePdpsExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReporteController extends Controller
@@ -85,5 +86,9 @@ class ReporteController extends Controller
         $rq = new Request(array('cartera'=>$cartera,'estructura'=>$estructura,'calls'=>$calls,'tipoFecha'=>$tipoFecha,'fechaInicio'=>$fechaInicio,'fechaFin'=>$fechaFin,'columnas'=>$columnas));
         return (new ReporteConfirmacionesExport($rq))->download('reporte_confirmaciones.xlsx');
     }
-    
+     
+    public function generarReportePdps($cartera,$estructura,$calls,$tipoFecha,$fechaInicio,$fechaFin,$columnas){
+        $rq = new Request(array('cartera'=>$cartera,'estructura'=>$estructura,'calls'=>$calls,'tipoFecha'=>$tipoFecha,'fechaInicio'=>$fechaInicio,'fechaFin'=>$fechaFin,'columnas'=>$columnas));
+        return (new ReportePdpsExport($rq))->download('reporte_pdps.xlsx');
+    }
 }

@@ -43,6 +43,7 @@ class DataConfirmacionesSheet implements FromCollection, WithHeadings,WithColumn
     {
         return [
             "Código",
+            "Call",
             "Nombre",
             "Cartera",
             "Fecha de Gestión",
@@ -74,27 +75,21 @@ class DataConfirmacionesSheet implements FromCollection, WithHeadings,WithColumn
     {
         return [
             'A' => '@',
-            'J' => '@',
-            'E' => '@',
-            'F' => '0',
-            'G' => '@',
-            'D' => 'm/d/yy h:mm',
-            'L' => 'yyyy-mm-dd',
-            'Q' => 'yyyy-mm-dd',
-            'T' => 'yyyy-mm-dd',
-            'R' => '0.00',
-            'U' => '0.00'
+            'K' => '@',
+            'F' => '@',
+            'G' => '0',
+            'H' => '@',
+            'E' => 'm/d/yy h:mm',
+            'M' => 'yyyy-mm-dd',
+            'R' => 'yyyy-mm-dd',
+            'U' => 'yyyy-mm-dd',
+            'S' => '0.00',
+            'V' => '0.00'
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:Y1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:Y1')->applyFromArray(array(
-            'fill' => array(
-                'type'  => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                'color' => array('rgb' => '#07417a')
-            )
-        ));        
+        $sheet->getStyle('A1:Z1')->getFont()->setBold(true);   
     }
 }

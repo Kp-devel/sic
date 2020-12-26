@@ -405,7 +405,7 @@ class Cliente extends Model
                 (   SELECT
                         if(day(max(pago_cli_fec)) is null,0,day(max(pago_cli_fec)))
                     FROM
-                        indicadores.pago_cliente
+                        indicadores.pago
                     WHERE car_id=c.car_id_FK
                     and DATE_FORMAT(pago_cli_fec,'%Y%m')=DATE_FORMAT(NOW(),'%Y%m')
                     AND pago_gestor=e.emp_cod

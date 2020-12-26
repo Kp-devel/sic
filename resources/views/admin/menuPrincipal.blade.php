@@ -38,7 +38,30 @@
     </div>
 </nav>
 <div class="menu-admin text-center p-4">
-    <p class="font-bold font-18 text-blue mb-0">Menú Principal</p><hr style="width:70px;border:1px solid;" class="text-blue">
+    <!-- menu sistemas -->
+    @if(auth()->user()->emp_tip_acc==6)
+    <p class="font-bold font-18 text-blue mb-0">Menú Sistemas</p><hr style="width:70px;border:1px solid;" class="text-blue">
+    <div class="d-flex justify-content-center px-4 py-3 flex-wrap">
+            <a href="{{route('mantenimiento')}}" class="menu-card p-3">
+                <img src="{{asset('img/mantenimiento.svg')}}" alt="" class="img-fluid" width="140px" height="60px">
+                <p class="mb-0 px-1 pt-2 pb-1 font215">Mantenimiento<br></p>
+            </a>
+            <!-- <a href="{{route('mantenimiento')}}" class="menu-card p-3">
+                <img src="{{asset('img/asignacion.svg')}}" alt="" class="img-fluid" width="100px" height="60px">
+                <p class="mb-0 px-1 pt-2 pb-1 font-15">Asignación<br>de Usuarios</p>
+            </a> -->
+            <a href="{{route('reportesgenerales')}}" class="menu-card p-3">
+                <img src="{{asset('img/reportes.svg')}}" alt="" class="img-fluid" width="110px" height="60px">
+                <p class="mb-0 px-1 pt-2 pb-1 font-15">Reportes<br>Generales</p>
+            </a>
+            <a href="{{route('predictivo')}}" class="menu-card p-3">
+                <img src="{{asset('img/predictivo.svg')}}" alt="" class="img-fluid" width="105px" height="60px">
+                <p class="mb-0 px-1 pt-2 pb-1 font-15">Predictivo e<br>IVR - Elastix</p>
+            </a>
+    </div>
+    @endif
+    <!-- menu otros perfiles -->
+    <p class="font-bold font-18 text-blue mb-0 mt-4">Menú Principal</p><hr style="width:70px;border:1px solid;" class="text-blue">
     <div class="d-flex justify-content-center px-4 py-3 flex-wrap">
         <a href="{{route('clientes')}}" class="menu-card p-3">
             <img src="{{asset('img/buscar.svg')}}" alt="" class="img-fluid mt-2">
@@ -56,24 +79,6 @@
             <img src="{{asset('img/incidencias.svg')}}" alt="" class="img-fluid" width="110px" height="60px">
             <p class="mb-0 px-1 pt-2 pb-1 font-15">Incidencias<br>RRHH</p>
         </a>
-        @if(auth()->user()->emp_tip_acc==6)
-            <a href="{{route('mantenimiento')}}" class="menu-card p-3">
-                <img src="{{asset('img/mantenimiento.svg')}}" alt="" class="img-fluid" width="140px" height="60px">
-                <p class="mb-0 px-1 pt-2 pb-1 font215">Mantenimiento<br></p>
-            </a>
-            <!-- <a href="{{route('mantenimiento')}}" class="menu-card p-3">
-                <img src="{{asset('img/asignacion.svg')}}" alt="" class="img-fluid" width="100px" height="60px">
-                <p class="mb-0 px-1 pt-2 pb-1 font-15">Asignación<br>de Usuarios</p>
-            </a> -->
-            <!-- <a href="{{route('reporteconfirmaciones')}}" class="menu-card p-3">
-                <img src="{{asset('img/reportes.svg')}}" alt="" class="img-fluid" width="110px" height="60px">
-                <p class="mb-0 px-1 pt-2 pb-1 font-15">Reportes<br>Generales</p>
-            </a> -->
-            <a href="{{route('predictivo')}}" class="menu-card p-3">
-                <img src="{{asset('img/predictivo.svg')}}" alt="" class="img-fluid" width="105px" height="60px">
-                <p class="mb-0 px-1 pt-2 pb-1 font-15">Predictivo e<br>IVR - Elastix</p>
-            </a>
-        @endif
     </div>
 </div>
 @endsection
