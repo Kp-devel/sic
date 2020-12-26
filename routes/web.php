@@ -253,7 +253,9 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/reportesgenerales', 'HomeController@reportesgenerales')->name('reportesgenerales');
     Route::get('/reporteconfirmaciones', 'HomeController@reporteconfirmaciones')->name('reporteconfirmaciones');
     Route::get('/generarReporteConfirmaciones/{cartera}/{estructura}/{calls}/{tipoFecha}/{fechaInicio}/{fechaFin}/{columnas}', 'ReporteController@generarReporteConfirmaciones')->name('generarReporteConfirmaciones');
-    
+    Route::get('/generarReportePdps/{cartera}/{estructura}/{calls}/{tipoFecha}/{fechaInicio}/{fechaFin}/{columnas}', 'ReporteController@generarReportePdps')->name('generarReportePdps');
+    Route::get('/reportepdps', 'HomeController@reportepdps')->name('reportepdps');
+        
 
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix

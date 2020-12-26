@@ -12,7 +12,7 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="">Estructura</label>
-                    <select class="selectpicker form-control" v-model="busqueda.estructura">
+                    <select class="selectpicker form-control" v-model="busqueda.estructura" @change="limpiarCall(busqueda.estructura)">
                         <option value="1">General</option>
                         <option value="2" selected>Por Call</option>
                     </select>
@@ -51,7 +51,7 @@
                 <div class="form-group">
                     <label for="">Columnas a mostrar</label>
                     <select class="selectpicker form-control" multiple v-model="busqueda.columnas">
-                        <option value="1">Fecha</option>
+                        <!-- <option value="1">Fecha</option> -->
                         <option value="2">Cantidad</option>
                         <option value="3" selected>Monto</option>
                     </select>
@@ -98,7 +98,7 @@
         data() {
             return {
                 spinnerBuscar:false,
-                busqueda:{cartera:'',estructura:'1',calls:[],tipoFecha:'1',fechaInicio:'',fechaFin:'',columnas:[1,2,3]},
+                busqueda:{cartera:'',estructura:'1',calls:[],tipoFecha:'1',fechaInicio:'',fechaFin:'',columnas:[2,3]},
                 viewTabla:false,
                 datos:[],
                 view:{cantidad:'',monto:''},
@@ -171,6 +171,11 @@
                 }
                 if( this.busqueda.columnas.length==0 ){
                     this.errores.push("Seleccionar al menos una columna");
+                }
+            },
+            limpiarCall(estructura){
+                if(estructura==1){
+                    this.busqueda.calls=[];
                 }
             }
         },

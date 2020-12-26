@@ -539,4 +539,17 @@ class HomeController extends Controller
         }
     }
 
+    public function reportepdps(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();       
+            $calls=Respuesta::listaCall();
+            $carteras=json_encode($carteras);
+            $calls=json_encode($calls);
+            return view('admin.reportes.reportePdps',compact('carteras','calls'));
+        }else{
+            return view('errors.403');
+        }
+    }
+
 }

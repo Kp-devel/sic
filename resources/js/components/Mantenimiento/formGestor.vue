@@ -20,21 +20,12 @@
         <div class="mb-3">
             <p class="font-bold text-blue mb-0">Datos Laborales</p>
             <div class="row">
-                <div class="col-md-3">
+                <!-- <div class="col-md-3">
                     <div class="form-group">
                         <label for="">Fecha de Ingreso</label>
                         <input type="date" class="form-control" v-model="registro.fecha_ingreso">
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="">Cartera a trabajar</label>
-                        <select class="form-control selectpicker"  v-model="registro.cartera"  title="Seleccionar">
-                            <option v-for="(item,index) in carteras" :key="index" :value="item.id">{{item.cartera}}</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-5"></div>
+                </div> -->
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="">Modalidad</label>
@@ -46,6 +37,16 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="">Cartera a trabajar</label>
+                        <select class="form-control selectpicker"  v-model="registro.cartera"  title="Seleccionar">
+                            <option v-for="(item,index) in carteras" :key="index" :value="item.id">{{item.cartera}}</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- <div class="col-md-5"></div> -->
+                
             </div>
         </div>
         <div class="row" v-if="errors!=''">
