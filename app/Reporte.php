@@ -1162,7 +1162,7 @@ class Reporte extends Model
                 }
             }
         }
-
+        
         $sqlColumnas="";
         if($columnas!=''){
             if($estructura==2){
@@ -1183,13 +1183,26 @@ class Reporte extends Model
             $sqlCall=" and e.cal_id_FK in ($idcalls) ";
         }
 
+        $sqlGroup="";
+        $sqlSelect="";
+        $sqlCartera="";
+        if($cartera=="0"){
+            $sqlGroup=" cartera ";
+            $sqlSelect=" cartera, ";
+            $sqlCartera=" and car_id_FK not in (:car) ";
+        }else{
+            $sqlGroup=" fecha ";
+            $sqlSelect=" if(fecha is null,'TOTAL',fecha) as fecha, ";
+            $sqlCartera=" and car_id_FK in (:car) ";
+        }
+
 
         return DB::select(DB::raw("
             SELECT
                 *
             FROM(
                 SELECT 
-                    if(fecha is null,'TOTAL',fecha) as fecha,
+                    $sqlSelect
                     $sqlColumnas
                     ''
                 FROM
@@ -1201,16 +1214,16 @@ class Reporte extends Model
                     FROM
                     gestion_cliente g
                     INNER JOIN cliente c on c.cli_id=g.cli_id_FK
-                    INNER JOIN cartera a on c.car_id_FK=a.car_id
+                    INNER JOIN cartera a on c.car_id_FK=a.car_id and car_est=0
                     LEFT JOIN empleado e on c.emp_tel_id_FK=e.emp_id 
                     LEFT JOIN call_telefonica l on e.cal_id_FK=l.cal_id
                     WHERE
                         date($sqlTipoFecha) BETWEEN :fecInicio and :fecFin
-                        and car_id_FK in (:car)
+                        $sqlCartera
                         and res_id_FK=2
                         $sqlCall
                 )t
-                GROUP BY fecha WITH ROLLUP
+                GROUP BY $sqlGroup WITH ROLLUP
             )tt
             
       "),array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));  
@@ -1233,6 +1246,14 @@ class Reporte extends Model
         if($idcalls!="0"){
             $sqlCall=" and ee.cal_id_FK in ($idcalls) ";
         }
+
+        $sqlCartera="";
+        if($cartera=="0"){
+            $sqlCartera=" and car_id_FK <> :car  ";
+        }else{
+            $sqlCartera=" and car_id_FK=:car  ";
+        }
+
         return DB::connection('mysql')->select(DB::raw("
                     SELECT
                         cli_cod as codigo,
@@ -1306,7 +1327,7 @@ class Reporte extends Model
                     LEFT JOIN call_telefonica l on ee.cal_id_FK=l.cal_id
                     WHERE
                         ($sqlTipoFecha BETWEEN :fecInicio and :fecFin)
-                    and car_id_FK=:car 
+                    $sqlCartera
                     and res_id_FK=2
                     $sqlCall
                     GROUP BY ges_cli_id   
@@ -1375,13 +1396,25 @@ class Reporte extends Model
             $sqlCall=" and e.cal_id_FK in ($idcalls) ";
         }
 
+        $sqlGroup="";
+        $sqlSelect="";
+        $sqlCartera="";
+        if($cartera=="0"){
+            $sqlGroup=" cartera ";
+            $sqlSelect=" cartera, ";
+            $sqlCartera=" and car_id_FK not in (:car) ";
+        }else{
+            $sqlGroup=" fecha ";
+            $sqlSelect=" if(fecha is null,'TOTAL',fecha) as fecha, ";
+            $sqlCartera=" and car_id_FK in (:car) ";
+        }
 
         return DB::select(DB::raw("
             SELECT
                 *
             FROM(
                 SELECT 
-                    if(fecha is null,'TOTAL',fecha) as fecha,
+                    $sqlSelect
                     $sqlColumnas
                     ''
                 FROM
@@ -1398,11 +1431,11 @@ class Reporte extends Model
                     LEFT JOIN call_telefonica l on e.cal_id_FK=l.cal_id
                     WHERE
                         date($sqlTipoFecha) BETWEEN :fecInicio and :fecFin
-                        and car_id_FK in (:car)
+                        $sqlCartera
                         and res_id_FK in (1,43)
                         $sqlCall
                 )t
-                GROUP BY fecha WITH ROLLUP
+                GROUP BY $sqlGroup WITH ROLLUP
             )tt
             
       "),array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));  
@@ -1425,6 +1458,14 @@ class Reporte extends Model
         if($idcalls!="0"){
             $sqlCall=" and ee.cal_id_FK in ($idcalls) ";
         }
+
+        $sqlCartera="";
+        if($cartera=="0"){
+            $sqlCartera=" and car_id_FK <> :car  ";
+        }else{
+            $sqlCartera=" and car_id_FK=:car  ";
+        }
+        
         return DB::connection('mysql')->select(DB::raw("
                     SELECT
                         cli_cod as codigo,
@@ -1498,7 +1539,7 @@ class Reporte extends Model
                     LEFT JOIN call_telefonica l on ee.cal_id_FK=l.cal_id
                     WHERE
                         ($sqlTipoFecha BETWEEN :fecInicio and :fecFin)
-                    and car_id_FK=:car 
+                    $sqlCartera 
                     and res_id_FK in (1,43)
                     $sqlCall
                     GROUP BY ges_cli_id   
