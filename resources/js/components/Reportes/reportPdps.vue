@@ -5,6 +5,7 @@
                 <div class="form-group">
                     <label for="">Seleccionar Cartera</label>
                     <select class="selectpicker form-control" v-model="busqueda.cartera" title="Seleccionar">
+                        <option value="0">TODAS LAS CARTERAS</option>
                         <option v-for="(item,index) in carteras" :key="index" :value="item.id">{{item.cartera}}</option>
                     </select>
                 </div>
@@ -12,7 +13,7 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="">Estructura</label>
-                    <select class="selectpicker form-control" v-model="busqueda.estructura" @change="limpiarCall(busqueda.estructura)">
+                    <select class="selectpicker form-control" v-model="busqueda.estructura" @change="limpiarCall(busqueda.estructura)" :disabled="busqueda.cartera==0">
                         <option value="1">General</option>
                         <option value="2" selected>Por Call</option>
                     </select>

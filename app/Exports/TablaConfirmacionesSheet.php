@@ -51,11 +51,17 @@ class TablaConfirmacionesSheet implements FromCollection, WithHeadings,WithColum
     public function headings(): array
     {
         $titulos1=['A'=>''];
-        $titulos2=['A'=>'Fecha'];
+        $titulos2=[];
         $callNom=['','CALL 01','CALL 02','NEGOCIADOR(A)','CALL03'];
         $columnas=explode(",",$this->rq->columnas);
         $calls=explode(",",$this->rq->calls);
         $cantColumnas=0;
+
+        if($this->rq->cartera=='0'){
+            $titulos2['A']='Cartera';
+        }else{
+            $titulos2['A']='Fecha';
+        }
 
         if($this->rq->estructura=='1'){
             $cantColumnas=count($columnas);
