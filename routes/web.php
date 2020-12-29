@@ -255,8 +255,12 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/generarReporteConfirmaciones/{cartera}/{estructura}/{calls}/{tipoFecha}/{fechaInicio}/{fechaFin}/{columnas}', 'ReporteController@generarReporteConfirmaciones')->name('generarReporteConfirmaciones');
     Route::get('/generarReportePdps/{cartera}/{estructura}/{calls}/{tipoFecha}/{fechaInicio}/{fechaFin}/{columnas}', 'ReporteController@generarReportePdps')->name('generarReportePdps');
     Route::get('/reportepdps', 'HomeController@reportepdps')->name('reportepdps');
-        
-
+    
+// ASIGNACION ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Route::get('/asignacion', 'HomeController@asignacion')->name('asignacion');
+    Route::get('/intercambio', 'HomeController@intercambio')->name('intercambio');
+    Route::post('/consultarIntercambio', 'EmpleadoController@consultarIntercambio')->name('consultarIntercambio');
+    
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix
     Route::get('panelcontrolllamadas', 'ControlLLamadaController@panelcontrolllamadas')->name('panelcontrolllamadas');

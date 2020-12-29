@@ -77,8 +77,11 @@ class EmpleadoController extends Controller
         return Empleado::updateUsuario($rq);
     }
     
-
-    public function agentesElastix($cartera){
-        return Empleado::agentesElastix($cartera);
+    // asignacion
+    public function consultarIntercambio(Request $rq){
+        return Empleado::consultarIntercambio($rq);
     }
+    // public function agentesElastix($cartera){
+    //     return Empleado::agentesElastix($cartera);
+    // }
 }

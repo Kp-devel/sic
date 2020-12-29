@@ -64,6 +64,9 @@ Vue.component('lista-gestores', require('./components/Mantenimiento/listaGestore
 Vue.component('reporte-confirmaciones', require('./components/Reportes/reportConfirmaciones.vue').default);
 Vue.component('reporte-pdps', require('./components/Reportes/reportPdps.vue').default);
 
+//asignacion
+Vue.component('migracion-clientes', require('./components/Asignacion/migracionClientes.vue').default);
+
 const app = new Vue({
     el: '#app',
 });

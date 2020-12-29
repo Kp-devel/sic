@@ -326,13 +326,30 @@ class Empleado extends Model
         ",array("id"=>$id,"usu"=>$usuario));
     }
 
-    public static function agentesElastix($cartera){
-        return DB::connection('elastix')->select(DB::raw("
+    // asignacion
+    public static function consultarIntercambio(Request $rq){
+        $de=$rq->de_usuario;
+        $a=$rq->a_usuario;
+        return DB::connection('mysql')->select(DB::raw("
             SELECT 
-                src_FK as extension,
-                concat(codigo,' - ',nombre) as agente
-            FROM agente 
-            where cartera=:car
-        "),array("car"=>$cartera));
+                concat(emp_cod,' - ',emp_nom) as usuario,
+                count(*) as cantidad_actual
+            FROM empleado e 
+            LEFT JOIN cliente c ON e.emp_id=c.emp_tel_id_FK
+            WHERE emp_id in (:de,:a)
+            GROUP BY emp_id
+        "),array(":de"=>$de,"a"=>$a));
     }
+
+
+
+    // public static function agentesElastix($cartera){
+    //     return DB::connection('elastix')->select(DB::raw("
+    //         SELECT 
+    //             src_FK as extension,
+    //             concat(codigo,' - ',nombre) as agente
+    //         FROM agente 
+    //         where cartera=:car
+    //     "),array("car"=>$cartera));
+    // }
 }
