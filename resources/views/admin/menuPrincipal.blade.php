@@ -46,7 +46,7 @@
                 <img src="{{asset('img/mantenimiento.svg')}}" alt="" class="img-fluid" width="140px" height="60px">
                 <p class="mb-0 px-1 pt-2 pb-1 font215">Mantenimiento<br></p>
             </a>
-            <!-- <a href="{{route('mantenimiento')}}" class="menu-card p-3">
+            <!-- <a href="{{route('asignacion')}}" class="menu-card p-3">
                 <img src="{{asset('img/asignacion.svg')}}" alt="" class="img-fluid" width="100px" height="60px">
                 <p class="mb-0 px-1 pt-2 pb-1 font-15">Asignación<br>de Usuarios</p>
             </a> -->

@@ -32,6 +32,9 @@ class ClienteController extends Controller
         $prioridad=$rq->prioridad;
         $numproducto=$rq->numproducto;
         $tipo=$rq->tipo;
+        $respuesta_gestion=$rq->respuesta_gestion;
+        $fecha_gestion_inicio=$rq->fecha_gestion_inicio;
+        $fecha_gestion_fin=$rq->fecha_gestion_fin;
         $acceso=auth()->user()->emp_tip_acc;
         if($acceso==2){
             return cliente::listarClientes($rq);
@@ -40,7 +43,9 @@ class ClienteController extends Controller
             &&	$respuesta==null &&	$fec_desde=='undefined-undefined-' &&	$fec_hasta=='undefined-undefined-' 
             &&	$ordenar==null   &&	$camp==null &&	$deuda==null &&	$capital==null &&	$importe==null 
             &&	$sueldo==null    &&	$entidades==null &&	$score==null &&	$motivo==null &&	$oficina==null 
-            &&	$descuento==null &&	$prioridad==null && $numproducto==null){
+            &&	$descuento==null &&	$prioridad==null && $numproducto==null && $respuesta_gestion==null 
+            &&  $fecha_gestion_inicio==null && $fecha_gestion_fin==null
+            ){
                 return [];
             }else{
                 return cliente::listarClientes($rq);

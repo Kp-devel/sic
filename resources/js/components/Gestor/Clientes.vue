@@ -124,6 +124,34 @@
                                 </td>
                             </tr>
                             <tr class="font-12"> 
+                                <td>Rpta. Gest.</td>
+                                <td colspan="3">
+                                    <select class="form-control font-12 form-control-sm " v-model="busqueda.respuesta_gestion">
+                                        <option value="">Seleccionar</option>
+                                        <option v-for="(item,index) in respuestas" :key="index" :value="item.res_id">{{item.res_des}}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="font-12" v-if="busqueda.respuesta_gestion==33"> 
+                                <td>Motivo No Pago</td>
+                                <td colspan="3">
+                                    <select class="form-control font-12 form-control-sm " v-model="busqueda.motivo_gestion">
+                                        <option value="">Seleccionar</option>
+                                        <option v-for="(item,index) in motivosnopago" :key="index" :value="item.id">{{item.motivo}}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="font-12" v-if="busqueda.respuesta_gestion!=''"> 
+                                <td>F. Gest. Desde</td>
+                                <td>
+                                    <input type="text" class="form-control font-12 form-control-sm" v-model="busqueda.fecha_gestion_inicio" placeholder="dd/mm/aaaa"  v-on:keyup.enter="listCLientes()">
+                                </td>
+                                <td class="text-right pr-1">F. Gest. Hasta</td>
+                                <td>
+                                    <input type="text" class="form-control font-12 form-control-sm w-5" v-model="busqueda.fecha_gestion_fin" placeholder="dd/mm/aaaa" v-on:keyup.enter="listCLientes()">
+                                </td>
+                            </tr>
+                            <tr class="font-12"> 
                                 <td>Cartera</td>
                                 <td colspan="3">
                                     <select class="form-control font-12 form-control-sm mb-1" v-model="busqueda.cartera" @change="cargarDatosBusqueda(busqueda.cartera)">
@@ -438,7 +466,7 @@
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 paginate: ['lista'],
                 lista: [],
-                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:'',capital:'',importe:'',oficina:'',descuento:'',prioridad:'',cartera:'',numproducto:''},
+                busqueda:{codigo:'',dni:'',nombre:'',telefono:'',tramo:'',respuesta:'',pdp_desde:'',pdp_hasta:'',ordenar:'',camp:'',deuda:'',sueldo:'',entidades:'',score:'',motivo:'',capital:'',importe:'',oficina:'',descuento:'',prioridad:'',cartera:'',numproducto:'',respuesta_gestion:'',fecha_gestion_inicio:'',fecha_gestion_fin:'',motivo_gestion:''},
                 //codigo:'',
                 loading:false,
                 loading2:false,
@@ -473,7 +501,9 @@
         },
         watch:{
             'busqueda.pdp_desde': function(val){this.busqueda.pdp_desde = this.validarFormatoFecha(val)},
-            'busqueda.pdp_hasta': function(val){this.busqueda.pdp_hasta = this.validarFormatoFecha(val)}            
+            'busqueda.pdp_hasta': function(val){this.busqueda.pdp_hasta = this.validarFormatoFecha(val)},
+            'busqueda.fecha_gestion_inicio': function(val){this.busqueda.fecha_gestion_inicio = this.validarFormatoFecha(val)},
+            'busqueda.fecha_gestion_fin': function(val){this.busqueda.fecha_gestion_fin = this.validarFormatoFecha(val)}
         },
         methods:{
             validarFormatoFecha(value){
@@ -517,6 +547,10 @@
                 this.busqueda.descuento='';
                 this.busqueda.cartera='';
                 this.busqueda.numproducto='';
+                this.busqueda.respuesta_gestion='';
+                this.busqueda.fecha_gestion_inicio='';
+                this.busqueda.fecha_gestion_fin='';
+                this.busqueda.motivo_gestion='';
                 this.entidades=[];
                 this.score=[];
                 this.descuentos=[];
@@ -536,6 +570,7 @@
                 }
             },
             parametros(){
+                // fecha de pdps
                 const fechas_i =  this.busqueda.pdp_desde.split('/');                   
                 const nuevaFecha_i = `${fechas_i[2]}-${fechas_i[1]}-${fechas_i[0]}`
                 const fec_desde= nuevaFecha_i.split(' ').join('');
@@ -544,6 +579,16 @@
                 const nuevaFecha_f = `${fechas_f[2]}-${fechas_f[1]}-${fechas_f[0]}`
                 const fec_hasta= nuevaFecha_f.split(' ').join('');
                 
+                // fecha de gestion
+                const fecha_gestion_i =  this.busqueda.fecha_gestion_inicio.split('/');                   
+                const nueva_fecha_gestion_i = `${fecha_gestion_i[2]}-${fecha_gestion_i[1]}-${fecha_gestion_i[0]}`
+                const fechaGestionInicio= nueva_fecha_gestion_i.split(' ').join('');
+
+                const fecha_gestion_f =  this.busqueda.fecha_gestion_fin.split('/');                   
+                const nueva_fecha_gestion_f = `${fecha_gestion_f[2]}-${fecha_gestion_f[1]}-${fecha_gestion_f[0]}`
+                const fechaGestionFin= nueva_fecha_gestion_f.split(' ').join('');
+                
+
                 this.dataBusqueda = {
                     codigo : this.busqueda.codigo,
                     dni : this.busqueda.dni,
@@ -567,7 +612,11 @@
                     descuento:this.busqueda.descuento,
                     tipo:0,
                     cartera:this.busqueda.cartera,
-                    numproducto:this.busqueda.numproducto
+                    numproducto:this.busqueda.numproducto,
+                    respuesta_gestion:this.busqueda.respuesta_gestion,
+                    fecha_gestion_inicio:fechaGestionInicio,
+                    fecha_gestion_fin:fechaGestionFin,
+                    motivo_gestion:this.busqueda.motivo_gestion
                 };
             },
             listCLientes(){

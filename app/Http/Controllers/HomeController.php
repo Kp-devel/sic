@@ -552,4 +552,24 @@ class HomeController extends Controller
         }
     }
 
+    public function asignacion(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            return view('admin.asignacion.asignacion');
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function intercambio(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $usuarios=Empleado::listEmpleadosActivos();
+            $usuarios=json_encode($usuarios);
+            return view('admin.asignacion.intercambio',compact("usuarios"));
+        }else{
+            return view('errors.403');
+        }
+    }
+    
 }

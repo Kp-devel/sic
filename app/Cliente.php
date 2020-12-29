@@ -35,7 +35,10 @@ class Cliente extends Model
         $numproducto=$rq->numproducto;
         $carteraBusqueda=$rq->cartera;
         $tipo=$rq->tipo;
-        
+        $respuesta_gestion=$rq->respuesta_gestion;
+        $fecha_gestion_inicio=$rq->fecha_gestion_inicio;
+        $fecha_gestion_fin=$rq->fecha_gestion_fin;
+        $motivo_gestion=$rq->motivo_gestion;
         //dd($camp);
         $idEmpleado=auth()->user()->emp_id;
         $cartera=session()->get('datos')->idcartera;
@@ -185,6 +188,7 @@ class Cliente extends Model
 
         }
 
+        // ultima respuesta
         if($respuesta!= null){
             if($respuesta==0){
                 $sql = $sql." and res_id_FK IS NULL ";
@@ -197,16 +201,27 @@ class Cliente extends Model
                 $parametros_busquedas["res"]=$respuesta;
             }
         }
+
         if($fec_desde!= "undefined-undefined-" && $fec_hasta!= "undefined-undefined-"){
             $sql = $sql." and cli_id in (select cli_id_FK as id from compromiso_cliente where date_format(com_cli_fec_pag,'%Y-%m-%d') between :fecInicio and :fecFin)
                           and res_id_FK not in (2,38,37) ";
             $parametros_busquedas["fecInicio"]=$fec_desde;
             $parametros_busquedas["fecFin"]=$fec_hasta;
         }
-        // if($fec_hasta!= "undefined-undefined-"){
-        //     $sql = $sql." and date_format(ges_cli_com_fec,'%Y-%m-%d') <='$fec_hasta' ";
-        // }
- 
+        
+        // respuesta y fecha de geestion
+        if($respuesta_gestion!= null && $fecha_gestion_fin!= "undefined-undefined-" && $fecha_gestion_inicio!= "undefined-undefined-"){
+            $sqlMotivo="";
+            if($respuesta_gestion==33 && $motivo_gestion!=''){
+                $sqlMotivo=" and mot_id_FK=:motivo ";
+                $parametros_busquedas["motivo"]=$motivo_gestion;
+            }
+            $sql .=" and (select count(*) from gestion_cliente where cli_id_FK=cli_id and res_id_FK=:res_ges and date(ges_cli_fec) between :fecInicioGes and :fecFinGes $sqlMotivo)>0 ";
+            $parametros_busquedas["res_ges"]=$respuesta_gestion;
+            $parametros_busquedas["fecInicioGes"]=$fecha_gestion_inicio;
+            $parametros_busquedas["fecFinGes"]=$fecha_gestion_fin;
+        }
+
         if( $cantidad_cli>0){
             $sql = $sql." and cli_cod in ($cadena_cli) and car_id_FK in (".substr($carteraPlan,1,strlen($carteraPlan)).") ";
         } else if($cantidad_cli == 0 ) {
