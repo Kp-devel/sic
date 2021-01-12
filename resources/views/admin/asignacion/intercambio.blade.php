@@ -16,6 +16,8 @@
         <div class="py-3">
             <migracion-clientes
              :usuarios="{{$usuarios}}"
+             :carteras="{{$carteras}}"
+             :codigo="{{$codAleatorio}}"
              />
         </div>
     </div>         

@@ -4,25 +4,25 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label class="font-bold">DNI</label>
-                    <input class="form-control" v-model="buscar.dni" @keypress.enter="buscarEmpleados()">
+                    <input type="text" class="form-control" v-model="buscar.dni" @keypress.enter="buscarEmpleados()">
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
                     <label class="font-bold">Firma</label>
-                    <input class="form-control" v-model="buscar.firma" @keypress.enter="buscarEmpleados()">
+                    <input type="text" class="form-control" v-model="buscar.firma" @keypress.enter="buscarEmpleados()">
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
                     <label class="font-bold">Usuario SIC</label>
-                    <input class="form-control" v-model="buscar.codigo" @keypress.enter="buscarEmpleados()">
+                    <input type="text" class="form-control" v-model="buscar.codigo" @keypress.enter="buscarEmpleados()">
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
                     <label class="font-bold">Nombre</label>
-                    <input class="form-control" v-model="buscar.nombre" @keypress.enter="buscarEmpleados()">
+                    <input type="text" class="form-control" v-model="buscar.nombre" @keypress.enter="buscarEmpleados()">
                 </div>
             </div>
             <div class="col-md-3">

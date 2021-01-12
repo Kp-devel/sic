@@ -19,7 +19,7 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 use Illuminate\Http\Request;
 use App\Reporte;
 
-class TablaConfirmacionesSheet implements FromCollection, WithHeadings,WithColumnFormatting,WithStyles,WithStrictNullComparison
+class TablaConfirmacionesSheet implements FromCollection, WithHeadings,WithColumnFormatting,WithStyles,WithStrictNullComparison,ShouldAutoSize
 {
     
     use Exportable;

@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class Reporte extends Model
 {
@@ -829,8 +830,7 @@ class Reporte extends Model
             select month(fecha) as mes, meta,mes_nombre from indicadores.cartera
             where cartera_id_fk=$cartera
             and meta>0
-            and year(fecha) = year(now())
-            and month(fecha) BETWEEN month(now()) - 3 and month(now())
+            and date_format(fecha,'%Y%m') between date_format(ADDDATE(now(),INTERVAL -3 MONTH),'%Y%m') and date_format(now(),'%Y%m')
         "));
 
         $pagos=DB::select(DB::raw("
@@ -851,12 +851,10 @@ class Reporte extends Model
             meta, 
             sum(pag_cli_mon) as recupero
             from pago_cliente_2 as p
-            INNER JOIN indicadores.cartera as c
-            on p.car_id_FK=c.cartera_id_fk
+            INNER JOIN indicadores.cartera as c on p.car_id_FK=c.cartera_id_fk
             where car_id_FK=$cartera
-            and year(pag_cli_fec) = year(now())
             and day(pag_cli_fec) < day(now())
-            and month(pag_cli_fec) BETWEEN month(now()) - 3 and month(now())
+            and date_format(pag_cli_fec,'%Y%m') between date_format(ADDDATE(now(),INTERVAL -3 MONTH),'%Y%m') and date_format(now(),'%Y%m')
             and date_format(fecha,'%Y-%m')=date_format(pag_cli_fec,'%Y-%m')
             GROUP by month(pag_cli_fec),mes,meta
             order by month(pag_cli_fec)
@@ -871,8 +869,7 @@ class Reporte extends Model
             select month(fecha) as mes, meta,mes_nombre from indicadores.cartera
             where cartera_id_fk=$cartera
             and meta>0
-            and year(fecha) = year(now())
-            and month(fecha) BETWEEN month(now()) - 3 and month(now())
+            and date_format(fecha,'%Y%m') between date_format(ADDDATE(now(),INTERVAL -3 MONTH),'%Y%m') and date_format(now(),'%Y%m')
         "));
         $pagos=DB::select(DB::raw("
             select month(ges_cli_conf_fec) m, (case
@@ -892,15 +889,12 @@ class Reporte extends Model
                 meta, 
                 sum(ges_cli_conf_can) as recupero
                 from gestion_cliente as g
-                INNER JOIN cliente as c
-                on g.cli_id_FK=c.cli_id
-                INNER JOIN indicadores.cartera as car
-                on c.car_id_FK=car.cartera_id_fk
+                INNER JOIN cliente as c on g.cli_id_FK=c.cli_id
+                INNER JOIN indicadores.cartera as car on c.car_id_FK=car.cartera_id_fk
                 where car_id_FK=$cartera
-                and res_id_fk=2
-                and year(ges_cli_conf_fec) = year(now())
+                and res_id_FK=2
                 and day(ges_cli_conf_fec) < day(now())
-                and month(ges_cli_conf_fec) BETWEEN month(now()) - 3 and month(now())
+                and date_format(ges_cli_conf_fec,'%Y%m') BETWEEN date_format(ADDDATE(now(),INTERVAL -3 MONTH),'%Y%m') and date_format(now(),'%Y%m')
                 and date_format(fecha,'%Y-%m')=date_format(ges_cli_conf_fec,'%Y-%m')
                 GROUP by month(ges_cli_conf_fec),mes,meta
                 order by month(ges_cli_conf_fec)
@@ -914,8 +908,7 @@ class Reporte extends Model
             select month(fecha) as mes, meta,mes_nombre from indicadores.cartera
             where cartera_id_fk=$cartera
             and meta>0
-            and year(fecha) = year(now())
-            and month(fecha) BETWEEN month(now()) - 3 and month(now())-1
+            and date_format(fecha,'%Y%m') BETWEEN date_format(ADDDATE(now(),INTERVAL -3 MONTH),'%Y%m') and date_format(ADDDATE(now(),INTERVAL -1 MONTH),'%Y%m')
         "));
 
         $pagos=DB::select(DB::raw("
@@ -939,8 +932,7 @@ class Reporte extends Model
             INNER JOIN indicadores.cartera as c
             on p.car_id_FK=c.cartera_id_fk
             where car_id_FK=$cartera
-            and year(pag_cli_fec) = year(now())
-            and month(pag_cli_fec) BETWEEN month(now()) - 3 and month(now())-1
+            and date_format(pag_cli_fec,'%Y%m') between date_format(ADDDATE(now(),INTERVAL -3 MONTH),'%Y%m') and date_format(ADDDATE(now(),INTERVAL -1 MONTH),'%Y%m')
             and date_format(fecha,'%Y-%m')=date_format(pag_cli_fec,'%Y-%m')
             GROUP by month(pag_cli_fec),mes,meta
             order by month(pag_cli_fec)
@@ -956,8 +948,7 @@ class Reporte extends Model
             select month(fecha) as mes, meta,mes_nombre from indicadores.cartera
             where cartera_id_fk=$cartera
             and meta>0
-            and year(fecha) = year(now())
-            and month(fecha) BETWEEN month(now()) - 3 and month(now())-1
+            and date_format(fecha,'%Y%m') between date_format(ADDDATE(now(),INTERVAL -3 MONTH),'%Y%m') and date_format(ADDDATE(now(),INTERVAL -1 MONTH),'%Y%m')
         "));
         $pagos=DB::select(DB::raw("
             select month(ges_cli_conf_fec) m, (case
@@ -977,14 +968,11 @@ class Reporte extends Model
                 meta, 
                 sum(ges_cli_conf_can) as recupero
                 from gestion_cliente as g
-                INNER JOIN cliente as c
-                on g.cli_id_FK=c.cli_id
-                INNER JOIN indicadores.cartera as car
-                on c.car_id_FK=car.cartera_id_fk
+                INNER JOIN cliente as c on g.cli_id_FK=c.cli_id
+                INNER JOIN indicadores.cartera as car on c.car_id_FK=car.cartera_id_fk
                 where car_id_FK=$cartera
                 and res_id_fk=2
-                and year(ges_cli_conf_fec) = year(now())
-                and month(ges_cli_conf_fec) BETWEEN month(now()) - 3 and month(now())-1
+                and date_format(ges_cli_conf_fec,'%Y%m') between date_format(ADDDATE(now(),INTERVAL -3 MONTH),'%Y%m') and date_format(ADDDATE(now(),INTERVAL -1 MONTH),'%Y%m')
                 and date_format(fecha,'%Y-%m')=date_format(ges_cli_conf_fec,'%Y-%m')
                 GROUP by month(ges_cli_conf_fec),mes,meta
                 order by month(ges_cli_conf_fec)
@@ -1545,6 +1533,180 @@ class Reporte extends Model
                     GROUP BY ges_cli_id   
         "),array("car"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin));
     }
+
+
+    public static function reporteRankingGestores(Request $rq){
+        $dias=[];
+        $cartera=$rq->cartera;
+        $idcalls=$rq->calls;        
+        $fechaInicio = Carbon::parse($rq->fechaInicio);
+        $fechaFin = Carbon::parse($rq->fechaFin);
+        $diasDiferencia = ($fechaFin->diffInDays($fechaInicio));
+        for($i=0;$i<=$diasDiferencia;$i++){
+            $fecha = Carbon::parse($rq->fechaInicio);
+            if($i==0){
+                $dias[0]=substr($fechaInicio,0,10);
+            }else{
+                $dias[$i]=substr($fecha->addDays($i),0,10);
+            }
+        }
+        
+        $sqlDia="";
+        $sql="";
+        for($k=0;$k<count($dias);$k++){
+            $sqlDia.="sum(if(pago_cli_fec='".$dias[$k]."',pago_cli_mon,0)) as dia$k,";
+            $sql.="sum(dia$k),";
+        }
+      
+        $sqlCall="";
+        if($idcalls!=0){
+            $sqlCall=" and cal_id_FK in ($idcalls)";
+        }
+
+        return DB::connection('mysql')->select(DB::raw("
+                 SELECT
+                    if(gestor is null,'TOTAL',gestor) as gestor,
+                    $sql
+                    sum(pago_cli_mon) as pago,
+                    sum(met_emp_meta) as meta,
+                    if(sum(met_semanal) is null,0,sum(met_semanal)) as meta_semanal,
+                    if(sum(pago_cli_mon) - sum(met_semanal) is null,0,sum(pago_cli_mon) - sum(met_semanal)) as desfase
+                 FROM
+                    (SELECT
+                        pago_gestor,
+                        concat(emp_cod,' - ',emp_nom) as gestor,
+                        $sqlDia
+                        pago_cli_fec,
+                        sum(pago_cli_mon) as pago_cli_mon,
+                        met_emp_meta,
+                        (
+                            (SELECT
+                                porcentaje_ideal
+                            FROM
+                                indicadores.timing
+                            WHERE
+                                fecha_t in (ADDDATE(:fecFin1,INTERVAL -1 DAY))
+                            ) -
+                            (SELECT
+                                if(day(fecha_t)='01',0,porcentaje_ideal)
+                            FROM
+                                indicadores.timing
+                            WHERE
+                                fecha_t in (:fecInicio1)
+                            )
+                        ) * met_emp_meta as met_semanal
+                        -- WEEK(:fecInicio2, 5) - WEEK(DATE_SUB(:fecInicio3, INTERVAL DAYOFMONTH(:fecInicio4) - 1 DAY), 5) + 1 as semana
+                    FROM
+                        creditoy_asignacion.metas_empleado m 
+                    INNER JOIN empleado e on m.met_emp_codigo=e.emp_cod and emp_est=0
+                    LEFT JOIN indicadores.pago p ON m.met_emp_codigo=pago_gestor
+                    WHERE
+                        DATE_FORMAT(met_emp_periodo,'%Y%m') in (DATE_FORMAT(:fecInicio2,'%Y%m'),DATE_FORMAT(:fecFin2,'%Y%m'))
+                    and pago_cli_fec BETWEEN :fecInicio and :fecFin
+                    and car_id=:car1
+                    and met_emp_cartera=:car2
+                    $sqlCall
+                    GROUP BY pago_gestor
+                )t
+                GROUP BY gestor WITH ROLLUP
+                
+        "),array("car1"=>$cartera,"car2"=>$cartera,"fecInicio"=>$fechaInicio,"fecFin"=>$fechaFin,"fecInicio1"=>$fechaInicio,"fecFin1"=>$fechaFin,"fecInicio2"=>$fechaInicio,"fecFin2"=>$fechaFin));
+    }
+
+    public static function reporteConfirmacionesPagos(Request $rq){
+        $fecInicio=$rq->fechaInicio;
+        $fecFin=$rq->fechaFin;
+        return DB::connection('mysql')->select(DB::raw("
+                SELECT
+                    if(cartera is null,'TOTAL',cartera) as cartera,
+                    if(t_conf is null,0,t_conf) as t_conf,
+                    if(t_pagos is null,0,t_pagos) as t_pagos,
+                    if(t_pag_ges is null,0,t_pag_ges) as t_pag_ges,
+                    if(t_pag_sup is null,0,t_pag_sup) as t_pag_sup,
+                    if(t_pag_rest is null,0,t_pag_rest) as t_pag_rest,
+                    if(t_conf_sin_pag is null,0,t_conf_sin_pag) as t_conf_sin_pag
+                FROM
+                    (SELECT
+                        cartera,
+                        sum(conf) as t_conf,
+                        sum(monto) as t_pagos,
+                        sum(pag_gestor)as t_pag_ges,
+                        sum(pag_super) as t_pag_sup,
+                        sum(pag_restante) as t_pag_rest,
+                        sum(conf_sin_pagos) as t_conf_sin_pag
+                    FROM
+                    (
+                    SELECT
+                        car_nom as cartera,
+                        tt.car_id,
+                        (
+                            SELECT
+                                sum(ges_cli_conf_can)
+                            FROM
+                                cliente cc
+                            INNER JOIN gestion_cliente g ON cc.cli_id = g.cli_id_FK
+                            WHERE ges_cli_fec BETWEEN :fecInicio2 and :fecFin2
+                            and res_id_FK=2
+                            and car_id_FK=tt.car_id
+                        )as conf,
+                        monto,
+                        pag_gestor,
+                        pag_super,
+                        pag_restante,
+                        (
+                            SELECT
+                                sum(ges_cli_conf_can)
+                            FROM
+                                cliente cc
+                        INNER JOIN gestion_cliente g ON cc.cli_id = g.cli_id_FK
+                            WHERE ges_cli_fec BETWEEN :fecInicio3 and :fecFin3
+                            and res_id_FK=2
+                            and car_id_FK=tt.car_id
+                            AND (
+                                SELECT
+                                    count(*)
+                                FROM
+                                    indicadores.pago
+                                WHERE
+                                    pago_cli_fec BETWEEN :fecInicio1 and :fecFin1
+                                    and car_id=tt.car_id
+                                    and pago_cli_cod=cc.cli_cod
+                            ) = 0
+                        )as conf_sin_pagos
+                    FROM
+                        (SELECT
+                            t.car_id,
+                            sum(pago_cli_mon) as monto,
+                            sum(pag_gestor) as pag_gestor,
+                            sum(pag_super) as pag_super,
+                            sum(pag_restante) as pag_restante
+                            FROM
+                            (SELECT
+                                    car_id,
+                                    pago_gestor,
+                                    pago_cli_mon,
+                                    if(emp_tip_acc=2,pago_cli_mon,0) as pag_gestor,
+                                    if(emp_tip_acc=1,pago_cli_mon,0) as pag_super,
+                                    if(emp_tip_acc is null,pago_cli_mon,0) as pag_restante
+                                FROM
+                                indicadores.pago p
+                                LEFT JOIN creditoy_cobranzas.empleado e on p.pago_gestor=e.emp_cod
+                                WHERE
+                                    pago_cli_fec BETWEEN :fecInicio and :fecFin
+                            )t
+                        GROUP BY t.car_id
+                    )tt
+                INNER JOIN cartera ca on tt.car_id=ca.car_id
+                )ttt
+                GROUP BY cartera WITH ROLLUP
+                )t
+        "),array("fecInicio"=>$fecInicio,"fecFin"=>$fecFin,
+                "fecInicio1"=>$fecInicio,"fecFin1"=>$fecFin,
+                "fecInicio2"=>$fecInicio,"fecFin2"=>$fecFin,
+                "fecInicio3"=>$fecInicio,"fecFin3"=>$fecFin
+            ));        
+    }
+
 
 }
 

@@ -330,18 +330,218 @@ class Empleado extends Model
     public static function consultarIntercambio(Request $rq){
         $de=$rq->de_usuario;
         $a=$rq->a_usuario;
+        $cartera=$rq->cartera;
         return DB::connection('mysql')->select(DB::raw("
-            SELECT 
+            SELECT
+                if(emp_id=:u_de,1,2) as orden ,
                 concat(emp_cod,' - ',emp_nom) as usuario,
-                count(*) as cantidad_actual
+                count(emp_tel_id_FK) as cantidad_actual
             FROM empleado e 
-            LEFT JOIN cliente c ON e.emp_id=c.emp_tel_id_FK
+            LEFT JOIN cliente c ON e.emp_id=c.emp_tel_id_FK AND cli_est=0 and cli_pas=0 and car_id_FK=:car
             WHERE emp_id in (:de,:a)
             GROUP BY emp_id
-        "),array(":de"=>$de,"a"=>$a));
+            ORDER BY orden
+        "),array("de"=>$de,"a"=>$a,"u_de"=>$de,"car"=>$cartera));
     }
 
+    public static function updateIntercambio(Request $rq){
+        $de=$rq->de_usuario;
+        $a=$rq->a_usuario;
+        $cartera=$rq->cartera;
+        DB::connection('mysql')->update("
+            UPDATE cliente
+            set emp_tel_id_FK=:a
+            WHERE 
+            cli_est=0
+            and cli_pas=0
+            and car_id_FK=:car
+            and emp_tel_id_FK in (:de)
+        ",array("de"=>$de,"a"=>$a,"car"=>$cartera));
+        return "ok";
+    }
+    
+    public static function generarAsignacionMultiple($cod_operacion,$cartera){
+        DB::connection('mysql')->update("
+            update cliente c
+            INNER JOIN creditoy_asignacion.bitacora_repositorio r ON c.cli_cod=r.bit_rep_cli_cod
+            INNER JOIN empleado e on e.emp_cod=r.bit_rep_emp_cod_asig
+            set emp_tel_id_FK=emp_id
+            where cli_est=0
+            and cli_pas=0
+            and car_id_FK=:car
+            and bit_asig_codigo_FK=:cod
+        ",array("cod"=>$cod_operacion,"car"=>$cartera));
 
+        return "ok";
+    }
+
+    public static function insertarBitacoraAsignacion($cod_operacion,$cartera,$tipo){
+        DB::connection('mysql')->insert("
+            insert into creditoy_asignacion.bitacora_asignacion (
+                bit_asig_codigo,
+                bit_asig_cartera,
+                bit_asig_fecha_add,
+                bit_asig_fecha_sub,
+                bit_asig_tipo,
+                bit_asig_estado
+            )values(:oper,:car,now(),null,:tipo,0)
+        ",array("oper"=>$cod_operacion,"car"=>$cartera,'tipo'=>$tipo));
+        return "ok";
+    }
+
+    public static function updateBitacoraRepositorio($cod_operacion,$cartera){
+        DB::connection('mysql')->update("
+            update creditoy_asignacion.bitacora_repositorio r
+            INNER JOIN cliente c on r.bit_rep_cli_cod=c.cli_cod 
+            INNER JOIN empleado e on c.emp_tel_id_FK=e.emp_id
+            set r.bit_rep_emp_tel_cod=e.emp_cod
+            WHERE
+                cli_est=0
+            and cli_pas=0
+            and bit_asig_codigo_FK=:oper
+            and car_id_FK=:car
+        ",array("oper"=>$cod_operacion,"car"=>$cartera));
+        return "ok";
+    }
+
+    public static function codigoAsignacion($codigo){
+        return DB::connection('mysql')->select(DB::raw("
+            select bit_asig_id from creditoy_asignacion.bitacora_asignacion where bit_asig_codigo=:cod
+        "),array("cod"=>$codigo));
+    }
+
+    
+    public static function insertarBitacoraRepositorioIntercambio(Request $rq){
+        $cod_operacion=$rq->codigo;
+        $de=$rq->de_usuario;
+        $a=$rq->a_usuario;
+        $cartera=$rq->cartera;
+        DB::connection('mysql')->insert("
+            insert into creditoy_asignacion.bitacora_repositorio (
+                bit_asig_codigo_FK,
+                bit_rep_cli_cod,
+                bit_rep_emp_tel_cod,
+                bit_rep_emp_cod_asig,
+                bit_rep_estado
+            )
+            select 
+                :oper,
+                cli_cod,
+                emp_cod,
+                (select ee.emp_cod from empleado ee where emp_id=:a),
+                0
+            from
+                cliente c
+            inner join empleado e on c.emp_tel_id_FK=e.emp_id
+            where 
+              cli_est=0
+              and cli_pas=0
+              and emp_tel_id_FK in (:de)
+              and car_id_FK=:car
+        ",array("oper"=>$cod_operacion,"car"=>$cartera,'de'=>$de,'a'=>$a));
+        return "ok";
+    }
+
+    public static function listBitacoraAsignacion(Request $rq){
+        $codigo=$rq->codigo;
+        $fecha=$rq->fecha;
+        $cartera=$rq->cartera;
+        $parametros=array();
+        $sql="";
+
+        if($codigo!=''){
+            $sql.=" and bit_asig_codigo=:cod";
+            $parametros['cod']=$codigo;
+        }
+
+        if($fecha!=''){
+            $sql.=" and date(bit_asig_fecha_add)=:fec";
+            $parametros['fec']=$fecha;
+        }
+
+        if($cartera!=''){
+            $sql.=" and car_id=:car";
+            $parametros['car']=$cartera;
+        }
+        return DB::connection('mysql')->select(DB::raw("
+                    SELECT
+                        bit_asig_codigo as codigo,
+                        bit_asig_fecha_add as fecha,
+                        car_nom as cartera,
+                        car_id as idcartera,
+                        (select count(*) 
+                         from creditoy_asignacion.bitacora_repositorio
+                         where bit_asig_codigo_FK=a.bit_asig_codigo 
+                         and bit_rep_estado=0
+                        ) as clientes,
+                        bit_asig_tipo as tipo
+                    FROM
+                        creditoy_asignacion.bitacora_asignacion a
+                    INNER JOIN creditoy_cobranzas.cartera c on a.bit_asig_cartera=c.car_id
+                    WHERE
+                        bit_asig_estado=0
+                        $sql
+        "),$parametros);
+    }
+
+    public static function updateRegresarAsignacion($codigo,$cartera){
+        DB::connection('mysql')->update("
+            UPDATE cliente c
+            inner join creditoy_asignacion.bitacora_repositorio r on c.cli_cod=r.bit_rep_cli_cod
+            inner join empleado e on r.bit_rep_emp_tel_cod=e.emp_cod
+            set emp_tel_id_FK=emp_id
+            WHERE 
+            cli_est=0
+            and cli_pas=0
+            and car_id_FK=:car
+            and bit_asig_codigo_FK=:oper
+        ",array("oper"=>$codigo,"car"=>$cartera));
+        return "ok";
+    }
+
+    public static function descargarBitacoraRepositorio($codigo){
+        return DB::connection('mysql')->select(DB::raw("
+                    SELECT
+                        bit_rep_cli_cod,
+                        bit_rep_emp_tel_cod,
+                        bit_rep_emp_cod_asig
+                    FROM
+                        creditoy_asignacion.bitacora_repositorio 
+                    WHERE
+                        bit_asig_codigo_FK=:opr
+        "),array("opr"=>$codigo));
+    }
+
+    public static function insertarBitacoraRepositorioIndividual(Request $rq){
+        $cod_operacion=$rq->codigo;
+        $usuario=$rq->usuario;
+        $clientes=$rq->clientes;
+        $cartera=$rq->cartera;
+        DB::connection('mysql')->insert("
+            insert into creditoy_asignacion.bitacora_repositorio (
+                bit_asig_codigo_FK,
+                bit_rep_cli_cod,
+                bit_rep_emp_tel_cod,
+                bit_rep_emp_cod_asig,
+                bit_rep_estado
+            )
+            select 
+                :oper,
+                cli_cod,
+                emp_cod,
+                :usu,
+                0
+            from
+                cliente c
+            left join empleado e on c.emp_tel_id_FK=e.emp_id
+            where 
+              cli_est=0
+              and cli_pas=0
+              and car_id_FK=:car
+              and cli_cod in ($clientes)
+        ",array("oper"=>$cod_operacion,"car"=>$cartera,'usu'=>$usuario));
+        return "ok";
+    }
 
     // public static function agentesElastix($cartera){
     //     return DB::connection('elastix')->select(DB::raw("

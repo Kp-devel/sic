@@ -86,9 +86,6 @@
                 if(!this.registro.modalidad){
                     this.errors.push("Selecciona una modalidad");
                 }
-                if(!this.registro.fecha_ingreso){
-                    this.errors.push("Ingresar una fecha de ingreso");
-                }
                 if(!this.registro.cartera){
                     this.errors.push("Selecionar una cartera");
                 }

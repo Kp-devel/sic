@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Reporte;
 use App\Exports\GestionesExport;
 use App\Exports\ReporteConfirmacionesExport;
+use App\Exports\ReporteConfirmacionesPagosExport;
 use App\Exports\ReportePdpsExport;
+use App\Exports\ReporteRankingExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReporteController extends Controller
@@ -90,5 +92,15 @@ class ReporteController extends Controller
     public function generarReportePdps($cartera,$estructura,$calls,$tipoFecha,$fechaInicio,$fechaFin,$columnas){
         $rq = new Request(array('cartera'=>$cartera,'estructura'=>$estructura,'calls'=>$calls,'tipoFecha'=>$tipoFecha,'fechaInicio'=>$fechaInicio,'fechaFin'=>$fechaFin,'columnas'=>$columnas));
         return (new ReportePdpsExport($rq))->download('reporte_pdps.xlsx');
+    }
+
+    public function generarReporteRanking($cartera,$estructura,$calls,$fechaInicio,$fechaFin){
+        $rq = new Request(array('cartera'=>$cartera,'estructura'=>$estructura,'calls'=>$calls,'fechaInicio'=>$fechaInicio,'fechaFin'=>$fechaFin));
+        return (new ReporteRankingExport($rq))->download('reporte_ranking.xlsx');
+    }
+
+    public function generarReporteConfirmacionesPagos($fechaInicio,$fechaFin){
+        $rq = new Request(array('fechaInicio'=>$fechaInicio,'fechaFin'=>$fechaFin));
+        return (new ReporteConfirmacionesPagosExport($rq))->download('confirmaciones_vs_pagos.xlsx');
     }
 }

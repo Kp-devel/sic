@@ -63,9 +63,14 @@ Vue.component('lista-gestores', require('./components/Mantenimiento/listaGestore
 // reportes
 Vue.component('reporte-confirmaciones', require('./components/Reportes/reportConfirmaciones.vue').default);
 Vue.component('reporte-pdps', require('./components/Reportes/reportPdps.vue').default);
+Vue.component('reporte-ranking', require('./components/Reportes/reportRanking.vue').default);
+Vue.component('reporte-confirmaciones-pagos', require('./components/Reportes/reportConfirmacionesPagos.vue').default);
 
 //asignacion
 Vue.component('migracion-clientes', require('./components/Asignacion/migracionClientes.vue').default);
+Vue.component('asignacion-multiple', require('./components/Asignacion/asignacionMultiple.vue').default);
+Vue.component('asignacion-individual', require('./components/Asignacion/asignacionIndividual.vue').default);
+Vue.component('bitacora-asignacion', require('./components/Asignacion/bitacoraAsignacion.vue').default);
 
 const app = new Vue({
     el: '#app',

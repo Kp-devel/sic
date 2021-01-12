@@ -39,13 +39,14 @@ class ClienteController extends Controller
         if($acceso==2){
             return cliente::listarClientes($rq);
         }else{
+            
             if($codigo==null &&	$dni==null &&	$nombre==null &&	$telefono==null &&   $tramo==null 
             &&	$respuesta==null &&	$fec_desde=='undefined-undefined-' &&	$fec_hasta=='undefined-undefined-' 
             &&	$ordenar==null   &&	$camp==null &&	$deuda==null &&	$capital==null &&	$importe==null 
             &&	$sueldo==null    &&	$entidades==null &&	$score==null &&	$motivo==null &&	$oficina==null 
             &&	$descuento==null &&	$prioridad==null && $numproducto==null && $respuesta_gestion==null 
             &&  $fecha_gestion_inicio==null && $fecha_gestion_fin==null
-            ){
+            ){  
                 return [];
             }else{
                 return cliente::listarClientes($rq);
