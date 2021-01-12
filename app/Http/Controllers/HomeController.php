@@ -236,7 +236,7 @@ class HomeController extends Controller
     
     public function indresumengestionconsolidada(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
-        if($tipo_acceso==5){
+        if($tipo_acceso==5 || $tipo_acceso==6){
             return view('admin.indicadores.reporteResumenGestionConsolidada');
         }else{
             return view('errors.403');
@@ -245,7 +245,7 @@ class HomeController extends Controller
 
     public function indcomparativocartera(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
-        if($tipo_acceso==1 || $tipo_acceso==5){
+        if($tipo_acceso==1 || $tipo_acceso==5 || $tipo_acceso==6){
             $carteras=Cartera::listCarterasUsuario();       
             $carteras=json_encode($carteras);
             return view('admin.indicadores.comparativoCartera',compact('carteras'));
@@ -371,7 +371,7 @@ class HomeController extends Controller
 
     public function indlistadoactualizaciones(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
-        if($tipo_acceso==5){
+        if($tipo_acceso==5 || $tipo_acceso==6){
             return view('admin.indicadores.listadoActualizaciones');
         }else{
             return view('errors.403');
@@ -552,6 +552,28 @@ class HomeController extends Controller
         }
     }
 
+    public function reporteranking(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();       
+            $calls=Respuesta::listaCall();
+            $carteras=json_encode($carteras);
+            $calls=json_encode($calls);
+            return view('admin.reportes.reporteRanking',compact('carteras','calls'));
+        }else{
+            return view('errors.403');
+        }
+    }
+    
+    public function reporteconfirmacionespagos(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            return view('admin.reportes.reporteConfirmacionesPagos');
+        }else{
+            return view('errors.403');
+        }
+    }
+
     public function asignacion(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==6){
@@ -561,15 +583,73 @@ class HomeController extends Controller
         }
     }
 
+    public function asignacionmultiple(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            $codAleatorio='';
+            while($codigo = rand(999,9999)){
+                $res=Empleado::codigoAsignacion($codigo);
+                if(count($res)==0){
+                    $codAleatorio=$codigo;
+                    break;
+                }
+            }
+            return view('admin.asignacion.asignacionMultiple',compact('carteras','codAleatorio'));
+        }else{
+            return view('errors.403');
+        }
+    }
+
     public function intercambio(){
         $tipo_acceso=auth()->user()->emp_tip_acc;
         if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();       
             $usuarios=Empleado::listEmpleadosActivos();
             $usuarios=json_encode($usuarios);
-            return view('admin.asignacion.intercambio',compact("usuarios"));
+            $carteras=json_encode($carteras);
+            $codAleatorio='';
+            while($codigo = rand(999,9999)){
+                $res=Empleado::codigoAsignacion($codigo);
+                if(count($res)==0){
+                    $codAleatorio=$codigo;
+                    break;
+                }
+            }
+            return view('admin.asignacion.intercambio',compact("usuarios","carteras","codAleatorio"));
         }else{
             return view('errors.403');
         }
     }
     
+    public function bitacoraasignacion(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();
+            $carteras=json_encode($carteras);
+            return view('admin.asignacion.bitacoraAsignacion',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }
+
+    public function asignacionindividual(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            $codAleatorio='';
+            while($codigo = rand(999,9999)){
+                $res=Empleado::codigoAsignacion($codigo);
+                if(count($res)==0){
+                    $codAleatorio=$codigo;
+                    break;
+                }
+            }
+            return view('admin.asignacion.asignacionIndividual',compact('carteras','codAleatorio'));
+        }else{
+            return view('errors.403');
+        }
+    }
 }

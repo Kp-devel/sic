@@ -149,7 +149,7 @@
                 }
             },
             limpiar(){
-                this.busqueda={cartera:'',estructura:'1',calls:[],tipoFecha:'1',fechaInicio:'',fechaFin:'',columnas:[1,2,3]};
+                this.busqueda={cartera:'',estructura:'1',calls:[],tipoFecha:'1',fechaInicio:'',fechaFin:'',columnas:[2,3]};
             },
             validacion(){
                 if(!this.busqueda.cartera){

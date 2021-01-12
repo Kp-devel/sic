@@ -255,12 +255,28 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/generarReporteConfirmaciones/{cartera}/{estructura}/{calls}/{tipoFecha}/{fechaInicio}/{fechaFin}/{columnas}', 'ReporteController@generarReporteConfirmaciones')->name('generarReporteConfirmaciones');
     Route::get('/generarReportePdps/{cartera}/{estructura}/{calls}/{tipoFecha}/{fechaInicio}/{fechaFin}/{columnas}', 'ReporteController@generarReportePdps')->name('generarReportePdps');
     Route::get('/reportepdps', 'HomeController@reportepdps')->name('reportepdps');
+    Route::get('/reporteranking', 'HomeController@reporteranking')->name('reporteranking');
+    Route::get('/generarReporteRanking/{cartera}/{estructura}/{calls}/{fechaInicio}/{fechaFin}', 'ReporteController@generarReporteRanking')->name('generarReporteRanking');
+    Route::get('/reporteconfirmacionespagos', 'HomeController@reporteconfirmacionespagos')->name('reporteconfirmacionespagos');
+    Route::get('/generarReporteConfirmacionesPagos/{fechaInicio}/{fechaFin}', 'ReporteController@generarReporteConfirmacionesPagos')->name('generarReporteConfirmacionesPagos');
     
 // ASIGNACION ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     Route::get('/asignacion', 'HomeController@asignacion')->name('asignacion');
+    Route::get('/asignacionmultiple', 'HomeController@asignacionmultiple')->name('asignacionmultiple');
     Route::get('/intercambio', 'HomeController@intercambio')->name('intercambio');
     Route::post('/consultarIntercambio', 'EmpleadoController@consultarIntercambio')->name('consultarIntercambio');
+    Route::post('/updateIntercambio', 'EmpleadoController@updateIntercambio')->name('updateIntercambio');
+    Route::post('/importExcelAsignacion', 'EmpleadoController@importExcelAsignacion')->name('importExcelAsignacion');
+    Route::post('/generarAsignacionMultiple', 'EmpleadoController@generarAsignacionMultiple')->name('generarAsignacionMultiple');
+    Route::get('/generarCodigoAsignacion', 'EmpleadoController@generarCodigoAsignacion')->name('generarCodigoAsignacion');
+    Route::get('/bitacoraasignacion', 'HomeController@bitacoraasignacion')->name('bitacoraasignacion');
+    Route::post('/listBitacoraAsignacion', 'EmpleadoController@listBitacoraAsignacion')->name('listBitacoraAsignacion');
+    Route::get('/updateRegresarAsignacion/{codigo}/{cartera}', 'EmpleadoController@updateRegresarAsignacion')->name('updateRegresarAsignacion');
+    Route::get('/descargarBitacoraRepositorio/{codigo}', 'EmpleadoController@descargarBitacoraRepositorio')->name('descargarBitacoraRepositorio');
+    Route::get('/asignacionindividual', 'HomeController@asignacionindividual')->name('asignacionindividual');
+    Route::post('/generarAsignacionIndividual', 'EmpleadoController@generarAsignacionIndividual')->name('generarAsignacionIndividual');
     
+
 // ELASTIX ------------------------------------------------------------------------------------------------------------------------------
     // control de llamadas - elastix
     Route::get('panelcontrolllamadas', 'ControlLLamadaController@panelcontrolllamadas')->name('panelcontrolllamadas');
