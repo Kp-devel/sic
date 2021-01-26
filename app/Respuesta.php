@@ -228,4 +228,19 @@ class Respuesta extends Model
         $query=DB::connection('mysql')->select(DB::raw($sql));
         return $query;
     }
+
+    public static function listRespuestasCampo(){
+        return DB::connection('mysql')->select(DB::raw("
+            SELECT 
+                res_id,res_des
+            from 
+                respuesta
+            WHERE 
+                res_est=0 and res_pas=0
+                and res_id not in (46,39,10,8,7,13)
+                and res_acc like('%4%')
+            order by res_des 
+            "));
+    }
+
 }

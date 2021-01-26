@@ -225,7 +225,7 @@ class Indicador extends Model
                     order by month(fecha)
                     )
                 )t
-                order by mes desc
+                order by fecha desc
         "),array("car1"=>$cartera,"car2"=>$cartera,"car3"=>$cartera));        
     }
 

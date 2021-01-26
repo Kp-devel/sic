@@ -65,6 +65,7 @@ Vue.component('reporte-confirmaciones', require('./components/Reportes/reportCon
 Vue.component('reporte-pdps', require('./components/Reportes/reportPdps.vue').default);
 Vue.component('reporte-ranking', require('./components/Reportes/reportRanking.vue').default);
 Vue.component('reporte-confirmaciones-pagos', require('./components/Reportes/reportConfirmacionesPagos.vue').default);
+Vue.component('generar-gestiones-ficticias', require('./components/Reportes/generarGestionesFicticias.vue').default);
 
 //asignacion
 Vue.component('migracion-clientes', require('./components/Asignacion/migracionClientes.vue').default);
