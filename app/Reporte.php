@@ -1707,6 +1707,91 @@ class Reporte extends Model
             ));        
     }
 
+    public static function generarGestionesFicticias(Request $rq){
+        $paleta=$rq->paleta;
+        $modalidad=$rq->modalidad;
+        $cantidad=$rq->cantidad;
+        $fechaInicio=$rq->fechaInicio;
+        $fechaFin=$rq->fechaFin;
+        $cartera=$rq->cartera;
+        $parametros=array();
+
+        $inhibir=DB::connection('mysql')->select(DB::raw("select * from creditoy_reporte.inh_detalle"));
+        $array = array();
+        foreach($inhibir as $i){
+            $array[] = $i->detalle;
+        }
+        $cantidad_i=count($array);
+        //dd($array);
+        //dd($cantidad_i);
+
+        $sqlC=" ";
+        $filtro=" ";
+
+        if($modalidad=='1'){
+            $filtro= $filtro."
+                AND ges_cli_acc IN (2)
+				AND emp_tip_acc=2
+            ";
+        }else{
+            $filtro= $filtro."
+                AND ges_cli_acc IN (3,4)
+				AND emp_tip_acc IN (3,4)
+            ";
+        }
+
+        if($cartera=='0'){
+            $filtro = $filtro." and 1=1";
+        }else{
+            $sqlC= $sqlC."
+                 INNER JOIN cliente as c on c.cli_id=g.cli_id_FK
+            ";
+            $filtro = $filtro." and car_id_FK=:car";
+            $parametros["car"]=$cartera;
+        }
+        $sql="
+                SELECT
+                res,
+                ges_cli_det
+                FROM
+                (
+                SELECT
+                    (select res_des from respuesta where res_id=res_id_FK) as res,
+                    ges_cli_det
+                FROM
+                gestion_cliente g 
+                INNER JOIN empleado e on g.emp_id_FK=e.emp_id
+                ";
+
+        $sql= $sql." ".$sqlC." ";
+                
+        $sql= $sql." "." WHERE DATE(ges_cli_fec) BETWEEN :fecInicio AND :fecFin and res_id_FK in (:paleta) and ges_cli_det not in  ('')";
+        
+
+        if($cantidad_i>0){
+            $sql=$sql." AND ( ";
+            for($i=0;$i<$cantidad_i;$i++){ 
+                $sql = $sql." UPPER(ges_cli_det) NOT LIKE ('%".$array[$i]."%')".(($i == $cantidad_i-1)?"":" AND ");
+            }
+            $sql=$sql." ) ";
+        }else{
+            $sql=$sql." AND 1=1 ";
+        }
+        
+        $sql = $sql." ".$filtro."
+                ORDER BY
+                    RAND()
+                ) b
+                LIMIT :cant
+        ";
+
+        $parametros["fecInicio"]=$fechaInicio;
+        $parametros["fecFin"]=$fechaFin;
+        $parametros["paleta"]=$paleta;
+        $parametros["cant"]=$cantidad;
+
+        return DB::connection('mysql')->select(DB::raw($sql),$parametros);
+    }
 
 }
 

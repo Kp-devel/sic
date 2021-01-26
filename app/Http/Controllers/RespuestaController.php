@@ -46,6 +46,10 @@ class RespuestaController extends Controller
         return Respuesta::listRespuestas();
     }
 
+    public function listRespuestasCampo(){
+        return Respuesta::listRespuestasCampo();
+    }
+
     public function listaMotivosNoPago(){
         return Respuesta::listaMotivosNoPago();
     }

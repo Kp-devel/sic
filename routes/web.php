@@ -49,6 +49,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('listasPanelBusqueda', 'RespuestaController@listasPanelBusqueda');
     Route::get('listasBusquedaPorCartera/{car}', 'RespuestaController@listasBusquedaPorCartera');
     Route::get('listRespuestas', 'RespuestaController@listRespuestas');
+    Route::get('listRespuestasCampo', 'RespuestaController@listRespuestasCampo');
     Route::get('listaMotivosNoPago', 'RespuestaController@listaMotivosNoPago');
     Route::get('listaRespuesta/{ubi}', 'RespuestaController@listaRespuestaUbicabilidad');
     Route::get('listaRespuestaSms/{ubi}', 'RespuestaController@listaRespuestaUbicSms');
@@ -259,7 +260,9 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/generarReporteRanking/{cartera}/{estructura}/{calls}/{fechaInicio}/{fechaFin}', 'ReporteController@generarReporteRanking')->name('generarReporteRanking');
     Route::get('/reporteconfirmacionespagos', 'HomeController@reporteconfirmacionespagos')->name('reporteconfirmacionespagos');
     Route::get('/generarReporteConfirmacionesPagos/{fechaInicio}/{fechaFin}', 'ReporteController@generarReporteConfirmacionesPagos')->name('generarReporteConfirmacionesPagos');
-    
+    Route::get('/gestionesficticias', 'HomeController@generarGestionesFicticias')->name('gestionesFicticias');
+    Route::get('/generarficticias/{paleta}/{modalidad}/{cantidad}/{fechaInicio}/{fechaFin}/{cartera}', 'ReporteController@generarGestionesFicticias')->name('generarGestionesFicticias');
+
 // ASIGNACION ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     Route::get('/asignacion', 'HomeController@asignacion')->name('asignacion');
     Route::get('/asignacionmultiple', 'HomeController@asignacionmultiple')->name('asignacionmultiple');

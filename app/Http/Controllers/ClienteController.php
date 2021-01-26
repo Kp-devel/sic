@@ -36,6 +36,7 @@ class ClienteController extends Controller
         $fecha_gestion_inicio=$rq->fecha_gestion_inicio;
         $fecha_gestion_fin=$rq->fecha_gestion_fin;
         $acceso=auth()->user()->emp_tip_acc;
+        $k=0;
         if($acceso==2){
             return cliente::listarClientes($rq);
         }else{
@@ -45,10 +46,11 @@ class ClienteController extends Controller
             &&	$ordenar==null   &&	$camp==null &&	$deuda==null &&	$capital==null &&	$importe==null 
             &&	$sueldo==null    &&	$entidades==null &&	$score==null &&	$motivo==null &&	$oficina==null 
             &&	$descuento==null &&	$prioridad==null && $numproducto==null && $respuesta_gestion==null 
-            &&  $fecha_gestion_inicio==null && $fecha_gestion_fin==null
+            &&  $fecha_gestion_inicio=='undefined-undefined-' && $fecha_gestion_fin=='undefined-undefined-'
             ){  
                 return [];
             }else{
+               
                 return cliente::listarClientes($rq);
             }
         }

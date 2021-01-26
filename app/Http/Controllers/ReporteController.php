@@ -9,6 +9,7 @@ use App\Exports\ReporteConfirmacionesExport;
 use App\Exports\ReporteConfirmacionesPagosExport;
 use App\Exports\ReportePdpsExport;
 use App\Exports\ReporteRankingExport;
+use App\Exports\GenerarGestionesExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReporteController extends Controller
@@ -102,5 +103,11 @@ class ReporteController extends Controller
     public function generarReporteConfirmacionesPagos($fechaInicio,$fechaFin){
         $rq = new Request(array('fechaInicio'=>$fechaInicio,'fechaFin'=>$fechaFin));
         return (new ReporteConfirmacionesPagosExport($rq))->download('confirmaciones_vs_pagos.xlsx');
+    }
+
+    public function generarGestionesFicticias($paleta,$modalidad,$cantidad,$fechaInicio,$fechaFin,$cartera){
+        $rq = new Request(array('paleta'=>$paleta,'modalidad'=>$modalidad,'cantidad'=>$cantidad,'fechaInicio'=>$fechaInicio,'fechaFin'=>$fechaFin,'cartera'=>$cartera));
+        //return Reporte::generarGestionesFicticias($rq);
+        return (new GenerarGestionesExport($rq))->download('gestiones_ficticias.xlsx');
     }
 }
