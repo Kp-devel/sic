@@ -20,7 +20,7 @@
                         <td class="font-11">{{item.fecha}}<br>{{item.hora}}</td>
                         <td class="text-center">
                             <a href="#" id="tooltip" v-if="item.tipo==1 || item.tipo==5" ><i class="fas fa-user-tie fa-lg text-black"></i><span class="tooltiptextc text-center">{{item.empleado}}</span></a>
-                            <a href="#" id="tooltip" v-if="item.tipo==2"><i class="fas fa-headset fa-lg text-black"></i><span class="tooltiptextc text-center">{{item.empleado}}</span></a>
+                            <a href="#" id="tooltip" v-if="item.tipo==2 || item.tipo==8"><i class="fas fa-headset fa-lg text-black"></i><span class="tooltiptextc text-center">{{item.empleado}}</span></a>
                             <!-- <i class="fas fa-user-tie fa-lg" v-if="item.tipo==1 || item.tipo==5" ></i>
                             <i class="fa fa-headset fa-lg" v-if="item.tipo==2"></i> -->
                         </td>
