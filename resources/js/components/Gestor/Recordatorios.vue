@@ -324,7 +324,7 @@
                         this.errorsDatos.push("Selecciona una fecha y/o monto");
                     }
                 }
-                if(this.datos.respuesta==33){
+                if(this.datos.respuesta==33 && this.tipoacceso!=8){
                     if(!this.datos.motivoNoPago){
                         this.errorsDatos.push("Selecciona un motivo de no pago");
                     }
