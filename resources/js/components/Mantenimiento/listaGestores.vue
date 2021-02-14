@@ -3,12 +3,6 @@
         <div class="row">
             <div class="col-md-2">
                 <div class="form-group">
-                    <label class="font-bold">DNI</label>
-                    <input type="text" class="form-control" v-model="buscar.dni" @keypress.enter="buscarEmpleados()">
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="form-group">
                     <label class="font-bold">Firma</label>
                     <input type="text" class="form-control" v-model="buscar.firma" @keypress.enter="buscarEmpleados()">
                 </div>
@@ -69,7 +63,6 @@
                 <table class="table table-hover pb-3">
                     <thead class="bg-blue-3 text-white text-center">
                         <tr>
-                            <td>DNI</td>
                             <td>Nombre ({{total}})</td>
                             <td>Firma</td>
                             <td>Modalidad</td>
@@ -81,10 +74,9 @@
                     </thead>
                     <tbody>
                         <tr v-if="lista==''">
-                            <td colspan="8" class="text-center">No hay resultados</td>
+                            <td colspan="7" class="text-center">No hay resultados</td>
                         </tr>
                         <tr v-else v-for="(item,index) in paginated('lista')" :key="index">
-                            <td class="text-center">{{item.dni}}</td>
                             <td class="text-left px-2">{{item.nombre}}</td>
                             <td class="text-center">{{item.firma}}</td>
                             <td class="text-center">{{item.modalidad}}</td>
@@ -92,8 +84,6 @@
                             <td class="text-left px-2">{{item.usuario}}</td>
                             <td class="text-center"><span class="badge p-2" :class="{'badge-success':item.idestado==0,'badge-danger':item.idestado!=0}">{{item.estado}}</span></td>
                             <td class="text-center">
-                                <!-- <a href="" class="btn btn-outline-blue btn-sm" @click.prevent="modalFirma(item.id,item.firma,item.nombre)" title="Agregar Firma"><i class="fa fa-signature fa-sm"></i></a> -->
-                                <!-- <a href="" class="btn btn-outline-blue btn-sm" @click.prevent="modalEditar(item.id,item.dni,item.nombre,item.firma,item.modalidad,item.usuario,item.cartera)" title="Actualizar Datos"><i class="fa fa-edit fa-sm"></i></a> -->
                                 <div class="btn-group" role="group">
                                 <button id="btnGroupDrop1" type="button" class="btn btn-outline-blue dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Opciones
@@ -101,8 +91,8 @@
                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="z-index:9">
                                     <a class="dropdown-item" href=""  @click.prevent="modalFirma(item.id,item.firma,item.nombre)">Asignar Firma</a>
                                     <a class="dropdown-item" href=""  @click.prevent="modalAsignar(item.id,item.nombre,item.codigousuario)">Asignar Usuario</a>
-                                    <a class="dropdown-item" href=""  @click.prevent="modalEditar(item.id,item.nombre,item.dni,item.modalidad,item.idcartera,item.firma)">Editar Datos</a>
-                                    <a class="dropdown-item" href=""  @click.prevent="modalLaboral(item.firma,item.nombre)" v-if="item.firma!=''">Historial Laboral</a>
+                                    <a class="dropdown-item" href=""  @click.prevent="modalEditar(item.id,item.nombre,item.modalidad,item.idcartera,item.firma)">Editar Datos</a>
+                                    <!-- <a class="dropdown-item" href=""  @click.prevent="modalLaboral(item.firma,item.nombre)" v-if="item.firma!=''">Historial Laboral</a> -->
                                 </div>
                             </div>
                             </td>
@@ -130,12 +120,6 @@
                     <div class="modal-body px-4 pt-4 pb-5">
                         <p class="font-bold text-blue mb-0">Datos Personales</p>
                         <div class="row mb-3">
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label for="">DNI</label>
-                                    <input type="text" class="form-control" v-model="registro.dni">
-                                </div>
-                            </div>
                             <div class="col-md-7">
                                 <div class="form-group">
                                     <label for="">Nombre y Apellidos</label>
@@ -340,11 +324,11 @@
         props:['carteras','gestores','usuarios'],
         data() {
             return {
-                buscar:{dni:'',nombre:'',codigo:'',firma:'',modalidad:'',cartera:'',estado:'0'},
+                buscar:{nombre:'',codigo:'',firma:'',modalidad:'',cartera:'',estado:'0'},
                 spinnerBuscar:'',
                 paginate: ['lista'],
                 lista:[],
-                registro:{nombre:'',firma:'',modalidad:'',cartera:'',dni:''},
+                registro:{nombre:'',firma:'',modalidad:'',cartera:''},
                 total:0,
                 spinnerActualizar:false,
                 actualizar:{nombre:'',firma:'',id:''},
@@ -468,12 +452,11 @@
                 this.registroLaboral.cartera='';
                 this.registroLaboral.reemplazo='';
             },
-            modalEditar(id,nombre,dni,modalidad,cartera,firma){
+            modalEditar(id,nombre,modalidad,cartera,firma){
                 this.spinnerActualizar=false;
                 this.mensaje='';
                 this.registro.id=id;
                 this.registro.nombre=nombre;
-                this.registro.dni=dni;
                 this.registro.modalidad=modalidad;
                 this.registro.cartera=cartera;
                 this.registro.firma=firma;
@@ -482,9 +465,6 @@
             },
             validarDatos(){
                 this.errors=[];
-                if(!this.registro.dni){
-                    this.errors.push("Ingresar un DNI");
-                }
                 if(!this.registro.nombre){
                     this.errors.push("Ingresar un nombre");
                 }
@@ -511,7 +491,6 @@
             },
             limpiar(){
                 this.buscar.codigo='';
-                this.buscar.dni='';
                 this.buscar.modalidad='';
                 this.buscar.firma='';
                 this.buscar.nombre='';

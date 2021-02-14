@@ -3,13 +3,7 @@
         <div>
             <p class="font-bold text-blue mb-0">Datos Personales</p>
             <div class="row mb-3">
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="">DNI</label>
-                        <input type="text" class="form-control" v-model="registro.dni">
-                    </div>
-                </div>
-                <div class="col-md-4">
+                <div class="col-md-7">
                     <div class="form-group">
                         <label for="">Nombre y Apellidos</label>
                         <input type="text" class="form-control" v-model="registro.nombre">
@@ -29,7 +23,8 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="">Modalidad</label>
-                        <select class="form-control selectpicker" v-model="registro.modalidad" title="Seleccionar">
+                        <select class="form-control" v-model="registro.modalidad" title="Seleccionar">
+                            <option value="">Seleccionar</option>
                             <option value="TC">Tiempo Completo</option>
                             <option value="MM">Medio Tiempo Mañana</option>
                             <option value="MT">Medio Tiempo Tarde</option>
@@ -40,13 +35,22 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="">Cartera a trabajar</label>
-                        <select class="form-control selectpicker"  v-model="registro.cartera"  title="Seleccionar">
+                        <select class="form-control"  v-model="registro.cartera"  title="Seleccionar">
+                            <option value="">Seleccionar</option>
                             <option v-for="(item,index) in carteras" :key="index" :value="item.id">{{item.cartera}}</option>
                         </select>
                     </div>
                 </div>
                 <!-- <div class="col-md-5"></div> -->
                 
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="">Firma</label>
+                        <input type="text" class="form-control" v-model="registro.firma">
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row" v-if="errors!=''">
@@ -69,7 +73,7 @@
         props:['carteras'],
         data() {
             return {
-                registro:{nombre:'',fecha_ingreso:'',modalidad:'',cartera:'',dni:''},
+                registro:{nombre:'',fecha_ingreso:'',modalidad:'',cartera:'',firma:''},
                 spinnerRegistrar:'',
                 errors:[]
             }
@@ -77,9 +81,6 @@
         methods:{
             validarDatos(){
                 this.errors=[];
-                if(!this.registro.dni){
-                    this.errors.push("Ingresar un dni");
-                }
                 if(!this.registro.nombre){
                     this.errors.push("Ingresar un nombre");
                 }
@@ -105,15 +106,13 @@
                 }
             },
             limpiar(){
-                this.registro.dni="";
                 this.registro.cartera="";
                 this.registro.fecha_ingreso="";
                 this.registro.nombre="";
                 this.registro.modalidad="";
+                this.registro.firma="";
             }
         },
-        updated() {
-            $('.selectpicker').selectpicker('refresh'); 
-        }
+        
     }
 </script>

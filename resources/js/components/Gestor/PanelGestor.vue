@@ -9,7 +9,7 @@
                     <i v-if="recordatorio!=''" class="fa fa-circle text-danger pt-3 pl-0" style="position:absolute;"></i>
                 </a>
             </div>
-            <recordatorio v-if="recordatorio" :recordatorio="recordatorio" :telefonos="telRecordatorio" :pdp="pdpsRecordatorio" :cant_contacto="contactoRecordatorio" :gestiones="historicoGestiones"/>
+            <recordatorio v-if="recordatorio" :recordatorio="recordatorio" :telefonos="telRecordatorio" :pdp="pdpsRecordatorio" :cant_contacto="contactoRecordatorio" :gestiones="historicoGestiones" :tipoacceso="tipoacceso"/>
             <!-- lista de clientes y menu -->
             <clientes :userlogeado="userlogeado" :tipoacceso="tipoacceso" />   
         </div>
@@ -64,7 +64,7 @@
                     </div>
                     <!-- panel de registro de gestion -->
                     
-                    <formRegistrarGestion :id-cliente="idCliente" :tipo="1" :telefonosgenerales="detalleGeneral['telefonos']" :valcontacto="detalleGeneral['validar_contacto']"  :datospdp="detalleGeneral['pdps']" />
+                    <formRegistrarGestion :id-cliente="idCliente" :tipo="1" :telefonosgenerales="detalleGeneral['telefonos']" :valcontacto="detalleGeneral['validar_contacto']"  :datospdp="detalleGeneral['pdps']" :tipoacceso="tipoacceso"/>
                     
                     <!-- botones laterales -->
                     <div class="btns-lateral">

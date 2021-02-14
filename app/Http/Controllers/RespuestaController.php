@@ -55,7 +55,12 @@ class RespuestaController extends Controller
     }
 
     public function listaRespuestaUbicabilidad($ubic){
-        return Respuesta::listaRespuestaUbicabilidad($ubic);
+        $acceso=auth()->user()->emp_tip_acc;
+        if($acceso==8){
+            return Respuesta::listaRespuestaUbicabilidadBolsa($ubic);
+        }else{
+            return Respuesta::listaRespuestaUbicabilidad($ubic);
+        }
     }
 
     public function listaRespuestaUbicSms($ubic){

@@ -123,11 +123,11 @@ class Empleado extends Model
     }
 
     public static function insertarGestor(Request $rq){
-        $dni=$rq->dni;
         $nombre=$rq->nombre;
         $fecha_ingreso=$rq->fecha_ingreso;
         $cartera=$rq->cartera;
         $modalidad=$rq->modalidad;
+        $firma=isset($rq->firma)?$rq->firma:'';
         $contacto=0;
         $pdp=0;
         if($modalidad=='TC'){
@@ -146,8 +146,8 @@ class Empleado extends Model
         DB::connection('mysql')->insert("
             insert into sub_empleado
             (emp_nom, emp_firma, emp_mod,car_id_FK,encargado,emp_est_con,emp_est_com,emp_est,emp_tolerancia)
-            values(:nom, '', :mod, :car, '', :con, :pdp, 0, null)
-        ",array('nom'=>$nombre, 'mod'=>$modalidad,'car'=>$cartera,'con'=>$contacto,'pdp'=>$pdp));
+            values(:nom, :firma, :mod, :car, '', :con, :pdp, 0, null)
+        ",array('nom'=>$nombre,'firma'=>$firma, 'mod'=>$modalidad,'car'=>$cartera,'con'=>$contacto,'pdp'=>$pdp));
         return "ok";
     }
 
@@ -156,7 +156,6 @@ class Empleado extends Model
         $nombre=$rq->nombre;
         $firma=$rq->firma;
         $modalidad=$rq->modalidad;
-        $dni=$rq->dni;
         $estado=$rq->estado;
         $cartera=$rq->cartera;
         $sql="";
@@ -182,10 +181,7 @@ class Empleado extends Model
             $sql.=" and s.emp_firma like (:firma) ";
             $parametros["firma"]="%".$firma."%";
         }
-        // if($dni!=''){
-        //     $sql.=" and s.emp_dni=:dni ";
-        //     $parametros["dni"]=$dni;
-        // }
+        
         if($cartera!=''){
             $sql.=" and s.car_id_FK=:car ";
             $parametros["car"]=$cartera;
@@ -228,7 +224,6 @@ class Empleado extends Model
 
     public static function updateGestor(Request $rq){
         $id=$rq->id;
-        $dni=$rq->dni;
         $nombre=$rq->nombre;
         $cartera=$rq->cartera;
         $modalidad=$rq->modalidad;

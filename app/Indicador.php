@@ -192,9 +192,12 @@ class Indicador extends Model
         }
 
         return DB::connection('mysql')->select(DB::raw("
-                 SELECT *
+                 SELECT 
+                    mes,
+                    total
                  FROM(   
                      (SELECT
+                        fecha,
                         month(fecha) as mes,
                         count(cuenta) as total
                     FROM
@@ -213,6 +216,7 @@ class Indicador extends Model
                     )
                     union all
                     (SELECT
+                        fecha,
                         month(fecha) as mes,
                         count(cuenta) as total
                     FROM

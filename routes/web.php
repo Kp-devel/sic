@@ -57,6 +57,12 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('listaEntidades', 'RespuestaController@listaEntidades');
     Route::get('listaOficinas', 'RespuestaController@listaOficinas');
     
+    // ACTUALIZAR PAGOS POR cartera
+    Route::get('/cargarpagos', 'HomeController@cargarPagos')->name('cargarpagos');
+    Route::post('/actualizarPagosCartera', 'PagoController@actualizarPagosCartera')->name('actualizarPagosCartera');
+    // Route::post('/importExcelPagos', 'PagoController@importExcelPagos')->name('importExcelPagos');
+
+
 // SMS--------------------------------------------------------------------------------------------
     // vistas sms
     Route::get('/sms', 'HomeController@sms')->name('sms');
