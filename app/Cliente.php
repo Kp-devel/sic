@@ -42,6 +42,9 @@ class Cliente extends Model
         //dd($camp);
         $idEmpleado=auth()->user()->emp_id;
         $cartera=session()->get('datos')->idcartera;
+        if($cartera==''){
+            $cartera=0;
+        }
         $acceso=auth()->user()->emp_tip_acc;
         if($camp!= null){
             $fec_actual=Carbon::now();
@@ -138,7 +141,7 @@ class Cliente extends Model
 
         $parametros_busquedas=array();
 
-        if($acceso==2){
+        if($acceso==2 || $acceso==8){
             $sql.=" and emp_tel_id_FK=:emp ";
             $parametros_busquedas["emp"]=$idEmpleado;
         }

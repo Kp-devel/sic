@@ -17,7 +17,7 @@ class HomeController extends Controller
         if($tipo_acceso==1 || $tipo_acceso==5 || $tipo_acceso==6 || $tipo_acceso==7){
             return view('admin.menuPrincipal');
         }
-        if($tipo_acceso==2){
+        if($tipo_acceso==2 || $tipo_acceso==8){
             return view('gestor.clientes');
         }
     }
@@ -666,5 +666,14 @@ class HomeController extends Controller
         }
     }
 
-    
+    public function cargarPagos(){
+        $tipo_acceso=auth()->user()->emp_tip_acc;
+        if($tipo_acceso==6){
+            $carteras=Cartera::listCarterasUsuario();       
+            $carteras=json_encode($carteras);
+            return view('admin.reportes.cargarPagos',compact('carteras'));
+        }else{
+            return view('errors.403');
+        }
+    }    
 }

@@ -210,7 +210,7 @@
                                     </select>
                                 </td>
                                 <td colspan="2">
-                                    <div class="d-flex justify-content-end" v-if="tipoacceso==2">
+                                    <div class="d-flex justify-content-end" v-if="tipoacceso==2 || tipoacceso==8">
                                         Listar PT
                                         <div class="pt-1">
                                             <input type="checkbox" class="ml-2" v-model="busqueda.camp">
@@ -233,7 +233,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="datos-mes" v-if="tipoacceso==2">
+                <div class="datos-mes" v-if="tipoacceso==2 || tipoacceso==8">
                     <div class="d-flex">
                         <div class="pr-1">
                             <i class="rounded-circle fa fa-chart-pie bg-blue text-white p-1"></i>
@@ -357,7 +357,7 @@
                         <div class="container-fluid px-0">
                             <div class="navbar-wrapper d-flex">
                                 <a href="" class="icono-bars waves-effect" @click.prevent="menu()"><i class="fa fa-bars fa-lg"></i></a>
-                                <a href="" v-if="tipoacceso==1 || tipoacceso==5 || tipoacceso==6" class="icono-bars waves-effect" @click.prevent="menuPrincipal()" title="Menu Principal"><i class="fa fa-home fa-lg"></i></a>
+                                <a href="" v-if="tipoacceso==1 || tipoacceso==5 || tipoacceso==6 || tipoacceso==7" class="icono-bars waves-effect" @click.prevent="menuPrincipal()" title="Menu Principal"><i class="fa fa-home fa-lg"></i></a>
                             </div>
                             <button class="navbar-toggler p-0" type="button" data-toggle="collapse" data-target="#navigation"  aria-expanded="false" aria-label="Toggle navigation">
                                  <img src="img/center.jpeg" alt="" width="35px" height="35px" class=" rounded-circle border">
@@ -492,7 +492,7 @@
         },
         created(){
              this.listaPanelBusqueda();
-             if(this.tipoacceso==2){
+             if(this.tipoacceso==2 || this.tipoacceso==8){
                  this.datosMes(); 
              }
              this.estadoCampana();   

@@ -37,7 +37,7 @@ class ClienteController extends Controller
         $fecha_gestion_fin=$rq->fecha_gestion_fin;
         $acceso=auth()->user()->emp_tip_acc;
         $k=0;
-        if($acceso==2){
+        if($acceso==2 || $acceso==8){
             return cliente::listarClientes($rq);
         }else{
             

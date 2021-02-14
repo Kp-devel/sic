@@ -32,7 +32,9 @@ class Gestion extends Model
             $montoConf=$monto;
         }
         
-        if($resp==33){
+        $acceso=auth()->user()->emp_tip_acc;
+
+        if($resp==33 && $acceso!=8){
             $motivo=$rq->motivoNoPago;
         }
 

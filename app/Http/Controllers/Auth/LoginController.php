@@ -30,6 +30,7 @@ class LoginController extends Controller
                      when emp_tip_acc=5 then 'Administrador'
                      when emp_tip_acc=6 then 'Sistemas'
                      when emp_tip_acc=7 then 'RRHH'
+                     when emp_tip_acc=8 then 'Call'
                 end as perfil
             from 
                 empleado e

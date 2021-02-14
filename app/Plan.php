@@ -569,6 +569,9 @@ class Plan extends Model
     
     public static function datosPlanUsuario(){
         $cartera=session()->get('datos')->idcartera;
+        if($cartera==''){
+            $cartera=0;
+        }
         $fec_actual=Carbon::now();
         return DB::connection('mysql')->select(DB::raw("
                     select fecha_i as fechaInicio,fecha_f as fechaFin

@@ -37,17 +37,4 @@ class AsignacionMultipleBaseImport implements ToModel, WithBatchInserts,WithChun
         return 300;
     }
 
-    /*DB::connection('mysql')->select(DB::raw("
-                                        SELECT emp_cod
-                                        FROM
-                                            creditoy_cobranzas.cliente c
-                                        INNER JOIN creditoy_cobranzas.empleado e on c.emp_tel_id_FK=e.emp_id
-                                        WHERE
-                                        cli_est=0
-                                        and cli_pas=0
-                                        and car_id_FK=:car
-                                        and cli_cod=:cod
-                                        limit 1
-                                    "),array("cod"=>$row[0],"car"=>$this->cartera))
-                                    */
 }

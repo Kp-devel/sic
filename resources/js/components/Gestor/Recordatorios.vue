@@ -114,7 +114,7 @@
                                                         <option value="">Seleccionar</option>
                                                         <option value="0">Contacto</option>
                                                         <option value="1">No Contacto</option>
-                                                        <option value="2">No Disponible</option>
+                                                        <option value="2" v-if="tipoacceso!=8">No Disponible</option>
                                                     </select>
                                                 </td>
                                             </tr>
@@ -235,7 +235,7 @@
 
 <script>
     export default {
-        props:['recordatorio',"telefonos","cant_contacto","pdps","gestiones"],      
+        props:['recordatorio',"telefonos","cant_contacto","pdps","gestiones","tipoacceso"],      
         data() {
             return {
                 respuestas:[],
@@ -270,12 +270,14 @@
             },
             listarMotivos(){
                 this.motivos=[];
-                axios.get("listaMotivosNoPago").then(res=>{
-                    if(res.data){
-                        this.motivos=res.data;
-                        this.viewMotivo=true;
-                    }
-                })
+                if(this.tipoacceso!=8){
+                    axios.get("listaMotivosNoPago").then(res=>{
+                        if(res.data){
+                            this.motivos=res.data;
+                            this.viewMotivo=true;
+                        }
+                    })
+                }
             },
             fechaCalendario(rpta){
                 if(rpta==2){
