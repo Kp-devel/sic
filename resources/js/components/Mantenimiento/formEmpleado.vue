@@ -34,6 +34,7 @@
                             <option value="2">GESTOR TELEFÓNICO</option>
                             <option value="7">RRHH</option>
                             <option value="6">SISTEMAS</option>
+                            <option value="8">GESTOR TELEFÓNICO - BOLSA</option>
                         </select>
                     </div>
                     <div class="form-group" v-if="registro.tipo_acceso!=2 && registro.tipo_acceso!=6">
