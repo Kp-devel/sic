@@ -294,11 +294,12 @@
                     let ultDia=new Date(anio, mes, 0);
                     mes=mes<10? '0'+mes:mes;
                     dia=dia<10? '0'+dia:dia;
-                    if(diaMax<=ultDia.getDate()){
+                    /*if(diaMax<=ultDia.getDate()){
                         diaMax=diaMax<10? '0'+diaMax:diaMax;
                     }else{
                         diaMax = ultDia.getDate();
-                    }
+                    }*/
+                    diaMax = ultDia.getDate();
                     this.fechaActual=`${anio}-${mes}-${dia}`;
                     this.fechaMax=`${anio}-${mes}-${diaMax}`;
                 }
