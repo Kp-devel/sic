@@ -286,6 +286,9 @@
                                     setTimeout(() => {
                                         this.mensaje="";
                                     }, 5000);
+                                }else{
+                                    this.loadButton=false;
+                                    toastr.warning(res.data[0], 'Tener en cuenta!',{"progressBar": true,"positionClass": "toast-top-center",});
                                 }
                             });
                         }

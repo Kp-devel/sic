@@ -64,7 +64,7 @@
                     </div>
                     <!-- panel de registro de gestion -->
                     
-                    <formRegistrarGestion :id-cliente="idCliente" :tipo="1" :telefonosgenerales="detalleGeneral['telefonos']" :valcontacto="detalleGeneral['validar_contacto']"  :datospdp="detalleGeneral['pdps']" :tipoacceso="tipoacceso"/>
+                    <formRegistrarGestion :id-cliente="idCliente" :tipo="1" :telefonosgenerales="detalleGeneral['telefonos']" :valcontacto="detalleGeneral['validar_contacto']"  :datospdp="detalleGeneral['pdps']" :tipoacceso="tipoacceso" />
                     
                     <!-- botones laterales -->
                     <div class="btns-lateral">
@@ -109,12 +109,11 @@
                 pdpsRecordatorio:[],
                 contactoRecordatorio:[],
                 historicoGestiones:[],
-                idClienteRec:''
+                idClienteRec:'',
                 // viewalerta:'false'
             }
         },
         created(){
-            // this.verRecordatorios();
         },
         methods:{
             cerrarDetalle(){
