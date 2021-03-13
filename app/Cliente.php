@@ -541,6 +541,8 @@ class Cliente extends Model
         $sql="
             select 
                     cli_cod,
+                    cli_nom as nombre,
+                    cli_num_doc as doc,
                     cli_inf_entidades as entidades,
                     cli_inf_score as score,
                     cli_dir_dir as direccion,
