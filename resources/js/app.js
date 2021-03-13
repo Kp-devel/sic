@@ -75,6 +75,10 @@ Vue.component('asignacion-multiple', require('./components/Asignacion/asignacion
 Vue.component('asignacion-individual', require('./components/Asignacion/asignacionIndividual.vue').default);
 Vue.component('bitacora-asignacion', require('./components/Asignacion/bitacoraAsignacion.vue').default);
 
+
+//integracion ocm
+Vue.component('integracion', require('./components/ocm/PanelGestor.vue').default);
+
 const app = new Vue({
     el: '#app',
 });

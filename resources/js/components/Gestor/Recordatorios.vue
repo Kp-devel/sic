@@ -271,7 +271,7 @@
             listarMotivos(){
                 this.motivos=[];
                 if(this.tipoacceso!=8){
-                    axios.get("listaMotivosNoPago").then(res=>{
+                    axios.get("motivo/listaMotivosNoPago").then(res=>{
                         if(res.data){
                             this.motivos=res.data;
                             this.viewMotivo=true;

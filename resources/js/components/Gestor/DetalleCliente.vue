@@ -4,9 +4,9 @@
             <table width="100%" v-for="(item,index) in info" :key="index">
                 <tr class="font-12"> 
                     <td class="text-right pr-1">Código</td>
-                    <td class=""><label class="form-control font-12 form-control-sm mb-1 w-100 h-100">{{datos[0].codigo? datos[0].codigo:'-'}}</label></td>
+                    <td class=""><label class="form-control font-12 form-control-sm mb-1 w-100 h-100">{{item.cli_cod? item.cli_cod:'-'}}</label></td>
                     <td class="font-11 pr-1 text-right">DNI/RUC</td>
-                    <td><label class="form-control font-12 form-control-sm mb-1 w-100 h-100">{{formatoVacio(datos[0].dni)}}</label></td>
+                    <td><label class="form-control font-12 form-control-sm mb-1 w-100 h-100">{{formatoVacio(item.doc)}}</label></td>
                 </tr>
                 <tr class="font-12" v-if="tipoacceso!=2"> 
                     <td class="text-right pr-1">Gest. Telf.</td>

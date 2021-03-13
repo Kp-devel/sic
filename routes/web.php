@@ -50,7 +50,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('listasBusquedaPorCartera/{car}', 'RespuestaController@listasBusquedaPorCartera');
     Route::get('listRespuestas', 'RespuestaController@listRespuestas');
     Route::get('listRespuestasCampo', 'RespuestaController@listRespuestasCampo');
-    Route::get('listaMotivosNoPago', 'RespuestaController@listaMotivosNoPago');
+    Route::get('motivo/listaMotivosNoPago', 'RespuestaController@listaMotivosNoPago');
     Route::get('listaRespuesta/{ubi}', 'RespuestaController@listaRespuestaUbicabilidad');
     Route::get('listaRespuestaSms/{ubi}', 'RespuestaController@listaRespuestaUbicSms');
     Route::get('listaScore/{cartera}', 'RespuestaController@listaScore');
@@ -296,9 +296,22 @@ Route::group(['middleware' => ['auth']], function(){
     // empleado
     Route::get('agentesElastix/{cartera}', 'EmpleadoController@agentesElastix')->name('agentesElastix');    
 
-
     
-    //errors---------------------------------------------------------------------------
+    
+// integracion OCM -------------------------------------------------------------------------------
+    Route::get('datosCliente/{id}', 'ClienteController@orbelite');
+    Route::get('datosCliente/listaRespuesta/{ubi}', 'RespuestaController@listaRespuestaUbicabilidad');
+    Route::post('datosCliente/insertarGestion', 'GestionController@insertarGestion');
+    Route::get('datosCliente/listaPagos/{id}', 'PagoController@listaPagos');
+    Route::get('datosCliente/historicoGestiones/{id}', 'ClienteController@historicoGestiones');
+    Route::post('datosCliente/insertarTel', 'TelefonoController@insertarTelefonos');
+    Route::get('datosCliente/listaTel/{id}', 'TelefonoController@listaTelefonos');
+    Route::put('datosCliente/updateEmail', 'ClienteController@updateEmail');
+    Route::get('datosCliente/motivo/listaMotivosNoPago', 'RespuestaController@listaMotivosNoPago');
+    
+
+
+//errors---------------------------------------------------------------------------
     // 403
     Route::get('/403', function(){return view('errors.403');});
     

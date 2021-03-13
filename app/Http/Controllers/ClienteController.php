@@ -101,4 +101,25 @@ class ClienteController extends Controller
     public function updateEmail(Request $rq){
         return cliente::updateEmail($rq);
     }
+
+
+    // integracion ocm
+    public function orbelite($id){
+        $infoCliente=cliente::infoCliente($id);
+        $infoCuenta=cliente::infoDeuda($id);
+        $historicoGestiones=cliente::historicoGestiones($id);
+        $telefonos=Telefono::infoTelefonos($id);
+        $validacion_contacto=Gestion::validarContacto($id);
+        $validacion_pdp=Gestion::validarPDP($id);
+
+        $datosgenerales=['infoCliente'=>$infoCliente,
+                         'cuentas'=>$infoCuenta,
+                         'gestiones'=>$historicoGestiones,
+                         'telefonos'=>$telefonos,
+                         'validar_contacto'=>$validacion_contacto,
+                         'pdps'=>$validacion_pdp
+                        ];
+        $datosgenerales=JSON_encode($datosgenerales);
+        return view('integracion.cliente',compact("id","datosgenerales"));                        
+    }
 }
